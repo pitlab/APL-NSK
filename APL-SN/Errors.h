@@ -1,0 +1,29 @@
+//kody b³êdów
+const int ERR_OK				= 0;	//bez b³êdu
+const int ERR_NOT_CONNECTED		= 1;	//nie po³¹czono z portem szeregowym
+const int ERR_CANT_CONNECT		= 2;	//nie mozna po³¹czyæ z portem 
+const int ERR_INVALID_DATA_SIZE	= 3;	//niew³aœciwy rozmiar danych
+const int ERR_INVALID_COMMAND	= 4;	//niew³asciwe polecenie
+const int ERR_SEND_DATA			= 5;	//b³¹d wysy³ania danych
+const int ERR_RECEIVE_FILE		= 6;	//problem z odbiorem danych
+const int ERR_ZLY_NAGLOWEK		= 7;	//zdekodowano z³y nag³ówek ramki
+const int ERR_ZLY_ADRESAT		= 8;	//ramka jest przeznaczona dla kogoœ innego
+const int ERR_ZLE_POLECENIE		= 9;	//zdekodowano z³e polecenie
+const int ERR_CRC16				= 10;	//zdekodowano z³¹ sumê kontroln¹
+const int ERR_ZLY_STAN_PROT		= 11;	//wykryto z³y stan protoko³u
+
+const int ERR_NO_FILE			= 12;	//nie znaleziono takiego pliku
+const int ERR_FILE_READ			= 13;	//problem z odczytem pliku
+const int ERR_SEEK_FILE			= 14;	//problem z ustawieniem pozycji w pliku
+const int ERR_TIMEOUT			= 15;	//timeout oczekiwania na przyjscie danych
+const int ERR_ZLE_DANE			= 16;	//niew³asciwe dane
+const int ERR_NO_DATA_RECEIVED	= 17;	//nie odebrano ¿adnych danych
+const int ERR_OPEN_PORT			= 18;	//nie mozna otworzyæ portu
+const int ERR_CONNECTED			= 19;	//jest ju¿ po³¹czony
+const int ERR_INVALID_ADDRESS	= 20;	//niew³aœciwy adres danych logera
+const int ERR_FILE_FORMAT		= 21;	//niew³aœciwy format pliku
+const int ERR_PLIK_ZA_DLUGI		= 22;	//plik zbyt d³ugi
+const int ERR_NR_ZMIENNEJ_EE	= 23;	//odczytano niew³aœciwy numer zmiennej EEPROM
+const int ERR_WERSJA_CPU		= 24;	//nieprawid³owa wersja CPU
+const int ERR_KASUJ_FLASH_CPU	= 25;	//b³¹d kasowania pamiêci flash kontrolera
+const int ERR_PROGR_FLASH_CPU	= 26;	//b³¹d programowania pamiêci flash kontrolera

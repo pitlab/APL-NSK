@@ -1,0 +1,15 @@
+﻿REGEDIT
+; Tego pliku REG może użyć program instalacyjny.
+;   Jeśli program instalacyjny nie jest dostępny, pozycje poniżej będą
+;   zarejestrowane automatycznie w elemencie InitInstance za pomocą wywołania
+;   CWinApp::RegisterShellFileTypes i COleObjectFactory::UpdateRegistryAll.
+
+HKEY_CLASSES_ROOT\.apl = APLSN.Document
+HKEY_CLASSES_ROOT\APLSN.Document\shell\open\command = APL-SN.EXE %1
+HKEY_CLASSES_ROOT\APLSN.Document\shell\open\ddeexec = [open("%1")]
+HKEY_CLASSES_ROOT\APLSN.Document\shell\open\ddeexec\application = APL-SN
+    ; uwaga: aplikacja jest opcjonalna
+    ;  (domyślnie to nazwa aplikacji w poleceniu)
+
+HKEY_CLASSES_ROOT\APLSN.Document = APL-SN.Document
+

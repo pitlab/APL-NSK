@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="APL-SN.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildFrm.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="APL-SNDoc.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="APL-SNView.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="FileView.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassView.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewTree.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputWnd.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertiesWnd.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="GniazdoSieci.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Protokol.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="RS232.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Errors.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="multithreading.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="APL-SN.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildFrm.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="APL-SNDoc.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="APL-SNView.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="FileView.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassView.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewTree.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="OutputWnd.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertiesWnd.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="GniazdoSieci.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Protokol.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="RS232.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="APL-SN.reg" />
+    <None Include="res\APLSN.rc2">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="APLSN.rc">
+      <Filter>Pliki zasobów</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\file_view.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\file_view_hc.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\class_view.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\class_view_hc.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\fileview.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\fileview_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\classview.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\classview_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\explorer.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\explorer_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\sort.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\sort_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\menuimages.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\menuimages_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\output_wnd.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\output_wnd_hc.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\properties_wnd.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\properties_wnd_hc.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\properties.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\properties_hc.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\userimages.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\APL-SNDoc.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\APL-SN.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\Toolbar256.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
