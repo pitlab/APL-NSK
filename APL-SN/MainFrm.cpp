@@ -13,6 +13,7 @@
 #endif
 
 // CMainFrame
+static const TCHAR APP_VER[] = _T("1.0.1");
 
 IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWndEx)
 
@@ -51,6 +52,7 @@ static UINT indicators[] =
 // Tworzenie/niszczenie obiektu CMainFrame
 
 CMainFrame::CMainFrame() noexcept
+: m_bPolaczono(FALSE)
 {
 	// TODO: dodaj tutaj kod inicjowania elementu członkowskiego
 }
@@ -135,9 +137,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
-	//m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
-	DockPane(&m_wndFileView);
+	//m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
+	m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
+	//DockPane(&m_wndFileView);
+	DockPane(&m_wndClassView);
 	CDockablePane* pTabbedBar = nullptr;
 	//m_wndClassView.AttachToTabWnd(&m_wndFileView, DM_SHOW, TRUE, &pTabbedBar);
 	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
@@ -171,8 +174,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// zwiększa użyteczność paska zadań, ponieważ razem z miniaturą jest widoczna nazwa dokumentu.
 	ModifyStyle(0, FWS_PREFIXTITLE);
 
-	//m_sGniazdoSluchajace.UstawRodzica(this);
-	//m_sGniazdoSluchajace.UstawRodzica(this);
 	m_bPolaczono = FALSE;
 
 	return 0;
@@ -192,7 +193,7 @@ BOOL CMainFrame::CreateDockingWindows()
 {
 	BOOL bNameValid;
 
-	/*/ Utwórz widok klasy
+	// Utwórz widok klasy
 	CString strClassView;
 	bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
 	ASSERT(bNameValid);
@@ -200,9 +201,9 @@ BOOL CMainFrame::CreateDockingWindows()
 	{
 		TRACE0("Nie można utworzyć okna widoku klasy\n");
 		return FALSE; // utworzenie nie powiodło się
-	}*/
+	}
 
-	// Utwórz widok pliku
+	/*/ Utwórz widok pliku
 	CString strFileView;
 	bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
 	ASSERT(bNameValid);
@@ -210,7 +211,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	{
 		TRACE0("Nie można utworzyć okna widoku pliku\n");
 		return FALSE; // utworzenie nie powiodło się
-	}
+	}*/
 
 	// Utwórz okno danych wyjściowych
 	CString strOutputWnd;
@@ -239,10 +240,10 @@ BOOL CMainFrame::CreateDockingWindows()
 void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 {
 	HICON hFileViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_FILE_VIEW_HC : IDI_FILE_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-	m_wndFileView.SetIcon(hFileViewIcon, FALSE);
+	//m_wndFileView.SetIcon(hFileViewIcon, FALSE);
 
 	HICON hClassViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_CLASS_VIEW_HC : IDI_CLASS_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-	//m_wndClassView.SetIcon(hClassViewIcon, FALSE);
+	m_wndClassView.SetIcon(hClassViewIcon, FALSE);
 
 	HICON hOutputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_OUTPUT_WND_HC : IDI_OUTPUT_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
 	m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
@@ -366,7 +367,7 @@ void CMainFrame::OnUpdatePolacz(CCmdUI* pCmdUI)
 void CMainFrame::OnWyslij()
 {
 	CTime czas;
-	int dlugosc, wyslanie, err;
+	int dlugosc, wyslanie;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
 	m_strKomunikatWych.Format(L"Komunikat z godziny %d:%d:%d", czas.GetHour(), czas.GetMinute(), czas.GetSecond());

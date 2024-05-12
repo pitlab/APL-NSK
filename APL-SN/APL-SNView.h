@@ -3,7 +3,8 @@
 //
 
 #pragma once
-#include "Protokol.h"
+//#include "Protokol.h"
+#include "Komunikacja.h"
 
 
 class CAPLSNView : public CView
@@ -27,22 +28,18 @@ protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
-	//CGniazdoSieci	  m_sGniazdoSluchajace;
-	//CGniazdoSieci	  m_sGniazdoPolaczenia;
+
 // Implementacja
 public:
 	virtual ~CAPLSNView();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
-	void OnPolacz();
-	void OnAkceptuj();
 #endif
 
 protected:
-	CProtokol m_cProtokol;
-	BOOL m_bPolaczonoETH;
-	BOOL m_bPolaczonoUART;
+	CKomunikacja m_cKomunikacja;
+	BOOL m_bPolaczono;
 
 // Wygenerowano funkcje mapy komunikatów
 protected:

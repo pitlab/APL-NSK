@@ -12,7 +12,7 @@
 
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
-#include "komunikaty_sieci.h"
+#include "KomunikatySieci.h"
 #include "Errors.h"
 
 #ifdef _DEBUG
@@ -40,28 +40,25 @@ END_MESSAGE_MAP()
 
 CAPLSNView::CAPLSNView() noexcept
 {
-	uint8_t chErr = m_cProtokol.PolaczPort(ETH, 4000, 0, L"127.0.0.1", this);
-	if (chErr == ERR_OK)
-		m_bPolaczonoETH = TRUE;
-	else
-		m_bPolaczonoETH = FALSE;
+	uint8_t chErr;
 
-	chErr = m_cProtokol.PolaczPort(UART, 0, 115200, L"COM5", this);
+	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
+	m_cKomunikacja.UstawNumerPortuETH(4000);
+	m_cKomunikacja.UstawTypPolaczenia(ETHS);
+	chErr = m_cKomunikacja.Polacz(this);
 	if (chErr == ERR_OK)
-		m_bPolaczonoUART = TRUE;
+		m_bPolaczono = TRUE;
 	else
-		m_bPolaczonoUART = FALSE;
+		m_bPolaczono = FALSE;
 }
 
 
 CAPLSNView::~CAPLSNView()
 {
-	if (m_bPolaczonoETH)
-		m_cProtokol.ZamknijPort(ETH);
-
-	if (m_bPolaczonoUART)
-		m_cProtokol.ZamknijPort(UART);
+	if (m_bPolaczono)
+		m_cKomunikacja.Rozlacz();
 }
+
 
 BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
@@ -148,15 +145,7 @@ CAPLSNDoc* CAPLSNView::GetDocument() const // wbudowana jest wersja bez debugowa
 
 //połączenie sieciowe APL do okna widoku
 
-void CAPLSNView::OnPolacz()
-{
 
-}
-
-void CAPLSNView::OnAkceptuj()
-{
-	
-}
 
 
 
@@ -172,28 +161,28 @@ void CAPLSNView::OnAkceptuj()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 {
-	char chBufor[1025];
-	int iRozmiar, iOdebrano;
+	//char chBufor[1025];
+	//int iRozmiar;
 
 	CAPLSNDoc* pDoc = GetDocument();
 	assert(pDoc);
 
-	iRozmiar = sizeof(chBufor);
+	//iRozmiar = sizeof(chBufor);
 	switch (nInputcode)
 	{
-	case ON_ACCEPT:		m_cProtokol.AkceptujPolaczenieETH();	
+	case ON_ACCEPT:		m_cKomunikacja.AkceptujPolaczenieETH();
 		pDoc->SetTitle(L"Ustanowiono połączenie ETH");
 		break;
 
-	case ON_SEND:	m_cProtokol.WyslanoDaneETH();
+	case ON_SEND:	m_cKomunikacja.WyslanoDaneETH();
 		//pDoc->SetTitle(L"Wysłano dane");
 		break;
 
-	case ON_RECEIVE:	m_cProtokol.OdbierzDaneETH();
-		pDoc->SetTitle(L"Odebrano dane");
+	case ON_RECEIVE:	m_cKomunikacja.OdebranoDaneETH();
+		pDoc->SetTitle(m_cKomunikacja.m_strNazwa);		
 		break;
 
-	case ON_CLOSE:		m_cProtokol.ZamknijPort(ETH);			
+	case ON_CLOSE:		
 		pDoc->SetTitle(L"Zamknięto port ETH");
 		break;
 	}
