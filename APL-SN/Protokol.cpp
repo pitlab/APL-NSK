@@ -22,18 +22,21 @@ Ramki wystêpuj¹ w dwu typach identyfikowanych najstarszym bitem pola POLECENIE:
 */
 
 
+//inicjuj zmienne statyczny u¿ywane w¹tkach odbiorczych
+HANDLE			CProtokol::m_hZdarzenieRamkaDanychGotowa = NULL;
+HANDLE			CProtokol::m_hZdarzenieRamkaTelemetriiGotowa = NULL;
+CGniazdoSieci	CProtokol::m_cGniazdoSluchajace;
+CGniazdoSieci	CProtokol::m_cGniazdoPolaczenia;
+BOOL			CProtokol::m_bKoniecWatkuUart = FALSE;
+BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
+
 
 CProtokol::CProtokol() 
 	: m_iLecznikWejRamekTelemetrii(0)
 	, m_iLecznikWejRamekZwyklych(0)
-	, pWskWatkuSluchajacego(NULL)
-	, m_bKoniecWatku(FALSE)
 	, m_chStanProtokolu(0)
 	, m_iOdebranoETH(0)
 	, m_bWyslanoETH(FALSE)
-	, m_hZdarzenieRamkaDanychGotowa(NULL)
-	, m_hZdarzenieRamkaTelemetriiGotowa(NULL)
-	//, m_hZdarzenieNawiazanoPolaczenieETH(NULL)
 	, m_chAdresOdbiorcy(0)
 	, m_chAdresNadawcy(0)
 	, m_chIloscDanychRamki(0)
@@ -42,7 +45,6 @@ CProtokol::CProtokol()
 	, m_chZnakCzasu(0)
 	, m_sCRC16(0)
 	, m_chTypPortu(0)
-	, m_chDaneWe{0}
 	, m_chDaneWy{0}
 	, m_chBuforOdbiorczyETH{0}
 {
@@ -71,20 +73,20 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 {
 	uint8_t chErr = ERR_CANT_CONNECT;
 	DWORD dwErr;
-	//uint32_t nErr;
-	//LPVOID pWnd = NULL;
+
 	m_chTypPortu = 0;	//niezainicjowany port
+
+	//utwórz zdarzenie sygnalizuj¹ce przyjœcie ramki
+	m_hZdarzenieRamkaDanychGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 
 	switch (chTypPortu)
 	{
-	case UART:	
+	case UART:
 		chErr = m_cPortSzeregowy.Connect(nNumerPortu, nPredkosc);
 		if (chErr == ERR_OK)
 		{
-			//utwórz zdarzenie sygnalizuj¹ce przyjœcie ramki
-			m_hZdarzenieRamkaDanychGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
-			m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
-			pWskWatkuSluchajacego = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
+			pWskWatkuSluchajacegoUart = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 			m_chTypPortu = UART;
 		}
 		break;
@@ -92,7 +94,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	case USB:	break;
 
 	case ETHS:	//ethernet jako serwer
-		m_cGniazdoSluchajace.UstawRodzica(pWnd);	
+		m_cGniazdoSluchajace.UstawRodzica(pWnd);
 		m_cGniazdoPolaczenia.UstawRodzica(pWnd);		//jest potrzebne do uruchomienia accept
 		if (m_cGniazdoSluchajace.Create(nNumerPortu, SOCK_STREAM, FD_READ | FD_WRITE | FD_ACCEPT | FD_CLOSE, strAdres))
 		{
@@ -107,6 +109,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		if (m_cGniazdoSluchajace.Listen())
 		{
 			m_chTypPortu = ETHS;
+			pWskWatkuSluchajacegoEth = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 			chErr = ERR_OK;
 		}
 		else
@@ -119,9 +122,24 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	case ETHK:	//ethernet jako klient
 		//m_hZdarzenieNawiazanoPolaczenieETH = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 		m_cGniazdoPolaczenia.UstawRodzica(pWnd);
-		if (m_cGniazdoPolaczenia.Create())
+		//if (m_cGniazdoPolaczenia == NULL)
+		//{
+			if (m_cGniazdoPolaczenia.Create())
+			{
+				chErr = ERR_OK;
+			}
+			else
+			{
+				chErr = ERR_CANT_CONNECT;
+				dwErr = GetLastError();
+			}
+		//}
+
+		if (m_cGniazdoPolaczenia.Connect(strAdres, nNumerPortu))
 		{
 			chErr = ERR_OK;
+			dwErr = GetLastError();		
+			
 		}
 		else
 		{
@@ -129,11 +147,12 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 			dwErr = GetLastError();
 		}
 
-		m_cGniazdoPolaczenia.Connect(strAdres, nNumerPortu);
+		pWskWatkuSluchajacegoEth = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 		//nErr = WaitForSingleObject(m_hZdarzenieNawiazanoPolaczenieETH, 5000);
 		//if (nErr == WAIT_TIMEOUT)
 			//chErr = ERR_CANT_CONNECT;
-		chErr = ERR_OK;
+	
+		
 		break;
 
 	default: chErr = ERR_ZLY_TYP_PORTU;	break;
@@ -165,10 +184,9 @@ void CProtokol::PolaczonoETH()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Generuje potwierdzenie odebrania danych przez ethernet. Jest wywo³ywane z okna w³aœciciela
-// Przez wska¿nik odsy³a wektor z odebranymi ramkami
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//void CProtokol::OdbierzDaneETH(uint8_t* chPolecenie, uint8_t* chDaneWy, uint8_t* chIloscDanychRamki)
+
 void CProtokol::OdbierzDaneETH()
 {
 	m_iOdebranoETH = m_cGniazdoPolaczenia.Receive(m_chBuforOdbiorczyETH, ROZM_DANYCH_WE_ETH);
@@ -201,8 +219,8 @@ uint8_t CProtokol::ZamknijPort(void)
 	{
 	case UART:	
 		chErr = m_cPortSzeregowy.Disconnect();	
-		m_bKoniecWatku = TRUE;
-		WaitForSingleObject(pWskWatkuSluchajacego, INFINITE); 
+		m_bKoniecWatkuUart = TRUE;
+		WaitForSingleObject(pWskWatkuSluchajacegoUart, INFINITE);
 		break;
 
 	case ETHS:	
@@ -213,6 +231,8 @@ uint8_t CProtokol::ZamknijPort(void)
 	case ETHK:
 		if (m_cGniazdoPolaczenia.m_bPolaczone)
 			m_cGniazdoPolaczenia.Close();
+		m_bKoniecWatkuEth = TRUE;
+		WaitForSingleObject(pWskWatkuSluchajacegoEth, INFINITE);
 		break;
 
 	case USB:	break;
@@ -231,30 +251,43 @@ uint8_t CProtokol::ZamknijPort(void)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CProtokol::WatekSluchajPortuCom(LPVOID pParam)
 {
+	m_bKoniecWatkuUart = FALSE;
 	return reinterpret_cast<CProtokol*>(pParam)->WlasciwyWatekSluchajPortuCom();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wywo³uje w¹tek s³uchaj¹cy portu komunikacyjnego
+// [we] pParam - typ zamykanego portu
+// Zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CProtokol::WatekSluchajPortuEth(LPVOID pParam)
+{
+	m_bKoniecWatkuEth = FALSE;
+	return reinterpret_cast<CProtokol*>(pParam)->WlasciwyWatekSluchajPortuEth();
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// W¹tek s³uchaj¹cy portu komunikacyjnego
+// W¹tek s³uchaj¹cy portu Com
 // Zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 {
 	unsigned int iOdczytano;
 	uint8_t chErr;
+	uint8_t chBuforOdb[ROZM_DANYCH_WE_UART + ROZM_CIALA_RAMKI];
 
 	if (!m_cPortSzeregowy.GetConnectedState())
 		return ERR_NOT_CONNECTED;
 
-	while (!m_bKoniecWatku)
+	while (!m_bKoniecWatkuUart)
 	{
-		chErr = m_cPortSzeregowy.ReceiveData(m_chDaneWe, &iOdczytano, ROZM_DANYCH_WE_UART);
+		chErr = m_cPortSzeregowy.ReceiveData(chBuforOdb, &iOdczytano, ROZM_DANYCH_WE_UART);
 		if (chErr == ERR_OK)
 		{
 			//analizuj dane binarne bajt po bajcie
-			AnalizujOdebraneDane(m_chDaneWe, iOdczytano);
+			AnalizujOdebraneDane(chBuforOdb, iOdczytano);
 			
 		}
 	}
@@ -262,16 +295,48 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 }
 
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// W¹tek s³uchaj¹cy portu Ethernet
+// Zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
+{
+	unsigned int iOdczytano = 0;
+	uint8_t chBuforOdb[ROZM_DANYCH_WE_ETH + ROZM_CIALA_RAMKI];
+	uint32_t nErr;
+
+	WaitForSingleObject(m_cGniazdoSluchajace.hZdarzeniePolaczonoEth, INFINITE);		//czekaj na po³¹czenie
+
+	while (!m_bKoniecWatkuEth)
+	{
+		WaitForSingleObject(m_cGniazdoSluchajace.hZdarzenieOdebranoEth, INFINITE);		//czekaj na odbiór danych
+
+		//iOdczytano = m_cGniazdoSluchajace.Receive(chBuforOdb, ROZM_DANYCH_WE_ETH);
+		iOdczytano = m_cGniazdoPolaczenia.Receive(chBuforOdb, ROZM_DANYCH_WE_ETH);
+		if (iOdczytano != SOCKET_ERROR)		
+		{
+			//analizuj dane binarne bajt po bajcie
+			AnalizujOdebraneDane(chBuforOdb, iOdczytano);
+		}
+	}
+	return ERR_OK;
+}
+
+
+
+
 void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 {
-	unsigned int x;
+	unsigned int x, n;
 	uint8_t chErr;
 	BOOL bRamkaTelemetrii;
 	_Ramka sRamka;
 
-	for (x = 0; x < iOdczytano; x++)
+	for (n = 0; n < iOdczytano; n++)
 	{
-		chErr = AnalizujRamke(chDaneWe[x], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
+		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODB_NAGLOWKA) && (m_chIloscDanychRamki > -1))
 		{
 			bRamkaTelemetrii = (BOOL)(m_chPolecenie & 0x80);
@@ -287,6 +352,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				sRamka.chPolecenie = m_chPolecenie;
 				sRamka.chZnakCzasu = m_chZnakCzasu;
 				sRamka.chRozmiar = m_chIloscDanychRamki;
+				sRamka.chAdrNadawcy = m_chAdresNadawcy;
 				for (x = 0; x < m_chIloscDanychRamki; x++)
 					sRamka.dane.push_back(m_chDaneWy[x]);
 
@@ -305,6 +371,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				sRamka.chPolecenie = m_chPolecenie;
 				sRamka.chZnakCzasu = m_chZnakCzasu;
 				sRamka.chRozmiar = m_chIloscDanychRamki;
+				sRamka.chAdrNadawcy = m_chAdresNadawcy;
 				for (x = 0; x < m_chIloscDanychRamki; x++)
 					sRamka.dane.push_back(m_chDaneWy[x]);
 
@@ -401,7 +468,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	int32_t x, iRozmiar, iNumer;
 	uint8_t chRamka[ROZM_DANYCH_WE_UART + ROZM_CIALA_RAMKI];
 	clock_t poczatek, koniec;
-	std::vector< BinaryFrame > vPrzychodzaceRamki;
+//	std::vector< BinaryFrame > vPrzychodzaceRamki;
 	uint32_t iCzasOczekiwania;
 
 	//zachowaj wskaŸniki. B¹d¹ potrzebne do retransmisji.
@@ -430,6 +497,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 		chErr = WyslijRamke(m_chTypPortu, chRamka, chRozmiarWy + ROZM_CIALA_RAMKI);
 		if (chErr == ERR_OK)
 		{
+			//gdy przyjdzie odpowiedŸ to zostanie wygenerowane zdarzenie: m_hZdarzenieRamkaDanychGotowa. Czekaj na nie
 			poczatek = clock();
 			do
 			{
@@ -438,19 +506,19 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 				if (nErr == WAIT_TIMEOUT)
 					nErr = GetLastError();	//breakpoint do testowania timeoutu
 
-				//odbierz ramkê
-				EnterCriticalSection(&m_SekcjaKrytycznaPolecen);
-				//vPrzychodzaceRamki.clear();
-				//vPrzychodzaceRamki.swap(m_inputAnswerData);
-				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
+				m_iOdebranoETH = m_cGniazdoPolaczenia.Receive(m_chBuforOdbiorczyETH, ROZM_DANYCH_WE_ETH);
+
+
 				koniec = clock();
 				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 
 				//sprawdŸ wszystkie odebrane ramki która z nich ma taki sam TimeStamp jak nadawcza
-				iRozmiar = (uint32_t)vPrzychodzaceRamki.size();
+				//iRozmiar = (uint32_t)vPrzychodzaceRamki.size();
+				iRozmiar = (uint32_t)m_vRamkaZOdpowiedzia.size();				
 				for (x = 0; x < iRozmiar; x++)
 				{
-					if (vPrzychodzaceRamki[x].time == chZnakczasu)	//porównuj czas
+					//if (vPrzychodzaceRamki[x].time == chZnakczasu)	//porównuj czas
+					if (m_vRamkaZOdpowiedzia[x].chZnakCzasu == chZnakczasu)	//porównuj czas
 					{
 						iNumer = x;	//zapamiêtaj indeks ramki
 						bRamkaOK = TRUE;
@@ -460,10 +528,12 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 			if (iCzasOczekiwania < iCzasNaRamke)
 			{
-				iRozmiar = (uint32_t)vPrzychodzaceRamki[iNumer].data.size();
+				//iRozmiar = (uint32_t)vPrzychodzaceRamki[iNumer].data.size();
+				iRozmiar = (uint32_t)m_vRamkaZOdpowiedzia[iNumer].dane.size();
 				*chRozmiarWe = iRozmiar;
 				for (x = 0; x < iRozmiar; x++)
-					*chDaneWe++ = vPrzychodzaceRamki[iNumer].data[x];
+					//*chDaneWe++ = vPrzychodzaceRamki[iNumer].data[x];
+					*chDaneWe++ = m_vRamkaZOdpowiedzia[iNumer].dane[x];
 				bPolecenieGotowe = TRUE;
 			}
 			else
@@ -526,7 +596,7 @@ uint8_t CProtokol::WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t ch
 	switch (chTypPortu)
 	{
 	case UART:	chErr = m_cPortSzeregowy.SendFrame(wskRamka, chRozmiar); break;
-
+	case ETHS:
 	case ETHK:	iWyslanych = m_cGniazdoPolaczenia.Send(wskRamka, chRozmiar); 
 		if (iWyslanych == SOCKET_ERROR)
 			chErr = ERR_SEND_DATA;
@@ -569,7 +639,7 @@ uint8_t CProtokol::AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu,  ui
 		break;
 
 	case PR_ODB_ADR_ODBIORCY:
-		if ((chDaneWe == ADRES_STACJI) | (chDaneWe == ADRES_BROADCAST))
+		if ((chDaneWe == m_chAdresOdbiorcy) | (chDaneWe == ADRES_BROADCAST))
 		{
 			*chStanProtokolu = PR_ODB_ADR_NADAWCY;
 			m_sCRC16 = LiczCRC16(chDaneWe, m_sCRC16);

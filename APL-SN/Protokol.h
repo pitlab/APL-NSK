@@ -15,7 +15,7 @@
 #define ROZM_DANYCH_WE_ETH	1024
 #define ROZM_DANYCH_WY_ETH	1024
 #define ROZM_CIALA_RAMKI	8
-#define TR_TIMEOUT			150		//timeout ramki w ms
+#define TR_TIMEOUT			250		//timeout ramki w ms
 #define TR_PROB_WYSLANIA	3
 
 //stany protoko³u odbioru ramki
@@ -62,27 +62,33 @@ public:
 	void AkceptujPolaczenieETH();
 	uint8_t WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDaneWy, uint8_t chRozmiarWy, uint8_t* chDaneWe, uint8_t* chRozmiarWe, uint32_t iCzasNaRamke = TR_TIMEOUT);
 	void UstawAdresy(uint8_t chAdresOdb, uint8_t chAdresNad) { m_chAdresOdbiorcy = chAdresOdb; m_chAdresNadawcy = chAdresNad; }
+	uint8_t PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chZnakCzasu, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka);
+	uint8_t WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t chRozmiar);
+	
 
 private:
 	static uint8_t WatekSluchajPortuCom(LPVOID pParam);
+	static uint8_t WatekSluchajPortuEth(LPVOID pParam);
 	void AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano);
-	uint8_t PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chZnakCzasu, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka);
 	uint8_t AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu, uint8_t* chAdresNadawcy, uint8_t* chZnakCzasu, uint8_t* chPolecenie, uint8_t* chRozmiarDanychWy, uint8_t* chWskOdbDanej, uint8_t* chDaneWy, uint16_t* sCRC16);
 	uint8_t CzyscBuforPortu(uint8_t chTypPortu);
-	uint8_t WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t chRozmiar);
+	
 
 private:
 	uint8_t			m_chTypPortu;		//rodzaj nawi¹zanego po³¹czenia
 	CPortSzeregowy	m_cPortSzeregowy;
 	uint8_t WlasciwyWatekSluchajPortuCom();
+	uint8_t WlasciwyWatekSluchajPortuEth();
 	uint16_t LiczCRC16(uint8_t dane, uint16_t crc);
-	CGniazdoSieci	m_cGniazdoSluchajace;
-	CGniazdoSieci	m_cGniazdoPolaczenia;
-	HANDLE			m_hZdarzenieRamkaDanychGotowa;
-	HANDLE			m_hZdarzenieRamkaTelemetriiGotowa;
-	//HANDLE			m_hZdarzenieNawiazanoPolaczenieETH;
-	CWinThread*		pWskWatkuSluchajacego;
-	BOOL			m_bKoniecWatku;
+	static CGniazdoSieci	m_cGniazdoSluchajace;
+	static CGniazdoSieci	m_cGniazdoPolaczenia;
+	static HANDLE			m_hZdarzenieRamkaDanychGotowa;
+	static HANDLE			m_hZdarzenieRamkaTelemetriiGotowa;
+	CWinThread*				pWskWatkuSluchajacegoUart;
+	CWinThread*				pWskWatkuSluchajacegoEth;
+	static BOOL				m_bKoniecWatkuUart;
+	static BOOL				m_bKoniecWatkuEth;
+
 	
 	int				m_iLecznikWejRamekTelemetrii;		///< Zlicza przychodz¹ce ramki
 	int				m_iLecznikWejRamekZwyklych;
@@ -101,7 +107,7 @@ private:
 	uint8_t m_chOdbieranyBajt;
 	uint16_t m_sCRC16;
 	uint8_t m_chPolecenie;
-	uint8_t m_chDaneWe[ROZM_DANYCH_WE_UART + ROZM_CIALA_RAMKI];
+	
 	uint8_t m_chDaneWy[ROZM_DANYCH_WY_UART + ROZM_CIALA_RAMKI];
 };
 

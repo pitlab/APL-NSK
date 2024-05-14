@@ -26,5 +26,6 @@ struct _Ramka
 	uint8_t chPolecenie;
 	uint8_t chZnakCzasu;
 	uint8_t chRozmiar;
+	uint8_t chAdrNadawcy;
 	std::vector <uint8_t> dane;
 };

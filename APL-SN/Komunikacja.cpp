@@ -19,6 +19,7 @@ CKomunikacja::CKomunikacja()
 , m_chTypPolaczenia(0)
 , m_iNumerPortuETH(0)
 , m_strAdresPortuETH("")
+, m_strNazwa("")
 , m_iNumerPortuUART(0)
 , m_iPredkoscUART(115200)
 {
@@ -83,6 +84,7 @@ void CKomunikacja::OdebranoDaneETH()
 {
 //	std::vector< m_cProto.BinaryFrame > vInputAnswerData;
 	_Ramka s_Ramka;
+	uint8_t chRamkaOdpowiedzi[20];
 	int n, m;
 
 	m_cProto.OdbierzDaneETH();
@@ -92,8 +94,13 @@ void CKomunikacja::OdebranoDaneETH()
 		switch (s_Ramka.chPolecenie)
 		{
 		case POL_NAZWA: //przysz³a nazwa BSP
-			for (m = 0; m < s_Ramka.dane.size(); m++)
-				m_strNazwa.AppendChar(s_Ramka.dane[m]);
+			m_strNazwa = L"";
+			for (m = 0; m < s_Ramka.chRozmiar; m++)
+				m_strNazwa.Insert(m, s_Ramka.dane[m]);
+
+			//wyœlij odpowiedŸ
+			m_cProto.PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, s_Ramka.chZnakCzasu, POL_OK, NULL, 0, chRamkaOdpowiedzi);
+			m_cProto.WyslijRamke(m_chTypPolaczenia, chRamkaOdpowiedzi, ROZM_CIALA_RAMKI);
 			break;
 		}
 	}
@@ -104,6 +111,9 @@ void CKomunikacja::OdebranoDaneETH()
 
 
 }
+
+
+
 
 void CKomunikacja::WyslanoDaneETH()
 {

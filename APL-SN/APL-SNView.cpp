@@ -175,7 +175,7 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 		break;
 
 	case ON_SEND:	m_cKomunikacja.WyslanoDaneETH();
-		//pDoc->SetTitle(L"Wysłano dane");
+		pDoc->SetTitle(L"Wysłano dane");
 		break;
 
 	case ON_RECEIVE:	m_cKomunikacja.OdebranoDaneETH();
