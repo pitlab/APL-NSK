@@ -23,12 +23,16 @@ Ramki wystêpuj¹ w dwu typach identyfikowanych najstarszym bitem pola POLECENIE:
 
 
 //inicjuj zmienne statyczny u¿ywane w¹tkach odbiorczych
-HANDLE			CProtokol::m_hZdarzenieRamkaDanychGotowa = NULL;
+HANDLE			CProtokol::m_hZdarzenieRamkaPolecenGotowa = NULL;
 HANDLE			CProtokol::m_hZdarzenieRamkaTelemetriiGotowa = NULL;
 CGniazdoSieci	CProtokol::m_cGniazdoSluchajace;
 CGniazdoSieci	CProtokol::m_cGniazdoPolaczenia;
 BOOL			CProtokol::m_bKoniecWatkuUart = FALSE;
 BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
+CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
+CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
+std::vector <_Ramka> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
+std::vector <_Ramka> CProtokol::m_vRamkaPolecenia;
 
 
 CProtokol::CProtokol() 
@@ -50,6 +54,8 @@ CProtokol::CProtokol()
 {
 	InitializeCriticalSection(&m_SekcjaKrytycznaPolecen);
 	InitializeCriticalSection(&m_SekcjaKrytycznaTelemetrii);
+	m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 }
 
 
@@ -77,7 +83,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	m_chTypPortu = 0;	//niezainicjowany port
 
 	//utwórz zdarzenie sygnalizuj¹ce przyjœcie ramki
-	m_hZdarzenieRamkaDanychGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 	m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 
 	switch (chTypPortu)
@@ -305,13 +311,11 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 {
 	unsigned int iOdczytano = 0;
 	uint8_t chBuforOdb[ROZM_DANYCH_WE_ETH + ROZM_CIALA_RAMKI];
-	uint32_t nErr;
 
-	WaitForSingleObject(m_cGniazdoSluchajace.hZdarzeniePolaczonoEth, INFINITE);		//czekaj na po³¹czenie
-
+	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth, INFINITE);		//czekaj na po³¹czenie
 	while (!m_bKoniecWatkuEth)
 	{
-		WaitForSingleObject(m_cGniazdoSluchajace.hZdarzenieOdebranoEth, INFINITE);		//czekaj na odbiór danych
+		WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzenieOdebranoEth, INFINITE);		//czekaj na odbiór danych
 
 		//iOdczytano = m_cGniazdoSluchajace.Receive(chBuforOdb, ROZM_DANYCH_WE_ETH);
 		iOdczytano = m_cGniazdoPolaczenia.Receive(chBuforOdb, ROZM_DANYCH_WE_ETH);
@@ -376,9 +380,9 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 					sRamka.dane.push_back(m_chDaneWy[x]);
 
 				//wstaw strukturê do wektora
-				m_vRamkaZOdpowiedzia.push_back(sRamka);
+				m_vRamkaPolecenia.push_back(sRamka);
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
-				SetEvent(m_hZdarzenieRamkaDanychGotowa);
+				SetEvent(m_hZdarzenieRamkaPolecenGotowa);
 			}
 		}
 	}
@@ -397,7 +401,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 // [o] wskRamka* - wska¿nik na bufor gotowej ramki
 // Zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chZnakCzasu, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka)
+uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka)
 {
 	uint8_t n;
 	uint8_t* chKopiaDane = wskRamka;
@@ -406,7 +410,7 @@ uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t ch
 	*wskRamka++ = NAGLOWEK;
 	*wskRamka++ = chAdrOdb;
 	*wskRamka++ = chAdrNad;
-	*wskRamka++ = chZnakCzasu;
+	*wskRamka++ = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
 	*wskRamka++ = chPolecenie;
 	*wskRamka++ = chRozmiar;
 	for (n = 0; n < chRozmiar; n++)
@@ -459,7 +463,6 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 {
 	uint8_t* chKopiaDaneWe;
 	uint8_t* chKopiaRozmiarWe;
-	uint8_t chZnakczasu;
 	BOOL bPolecenieGotowe = FALSE;
 	BOOL bRamkaOK = FALSE;
 	uint8_t chLicznikRetransmisji = 0;
@@ -475,8 +478,8 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	chKopiaDaneWe = chDaneWe;
 	chKopiaRozmiarWe = chRozmiarWe;
 
-	chZnakczasu = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund
-	PrzygotujRamke(chAdrOdb, chAdrNad, chZnakczasu, chPolecenie, chDaneWy, chRozmiarWy, chRamka);
+	
+	PrzygotujRamke(chAdrOdb, chAdrNad, chPolecenie, chDaneWy, chRozmiarWy, chRamka);
 
 	while (!bPolecenieGotowe && (chLicznikRetransmisji < TR_PROB_WYSLANIA))
 	{
@@ -502,11 +505,11 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 			do
 			{
 				//wersja na zdarzeniach - wychodzi na timeoucie
-				nErr = WaitForSingleObject(m_hZdarzenieRamkaDanychGotowa, iCzasNaRamke);
+				nErr = WaitForSingleObject(m_hZdarzenieRamkaPolecenGotowa, iCzasNaRamke);
 				if (nErr == WAIT_TIMEOUT)
 					nErr = GetLastError();	//breakpoint do testowania timeoutu
 
-				m_iOdebranoETH = m_cGniazdoPolaczenia.Receive(m_chBuforOdbiorczyETH, ROZM_DANYCH_WE_ETH);
+				//m_iOdebranoETH = m_cGniazdoPolaczenia.Receive(m_chBuforOdbiorczyETH, ROZM_DANYCH_WE_ETH);
 
 
 				koniec = clock();
@@ -514,11 +517,11 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 				//sprawdŸ wszystkie odebrane ramki która z nich ma taki sam TimeStamp jak nadawcza
 				//iRozmiar = (uint32_t)vPrzychodzaceRamki.size();
-				iRozmiar = (uint32_t)m_vRamkaZOdpowiedzia.size();				
+				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
 				for (x = 0; x < iRozmiar; x++)
 				{
 					//if (vPrzychodzaceRamki[x].time == chZnakczasu)	//porównuj czas
-					if (m_vRamkaZOdpowiedzia[x].chZnakCzasu == chZnakczasu)	//porównuj czas
+					if (m_vRamkaPolecenia[x].chZnakCzasu == chRamka[PR_ODB_ZNAK_CZASU])	//porównuj czas
 					{
 						iNumer = x;	//zapamiêtaj indeks ramki
 						bRamkaOK = TRUE;
@@ -529,11 +532,11 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 			if (iCzasOczekiwania < iCzasNaRamke)
 			{
 				//iRozmiar = (uint32_t)vPrzychodzaceRamki[iNumer].data.size();
-				iRozmiar = (uint32_t)m_vRamkaZOdpowiedzia[iNumer].dane.size();
+				iRozmiar = (uint32_t)m_vRamkaPolecenia[iNumer].dane.size();
 				*chRozmiarWe = iRozmiar;
 				for (x = 0; x < iRozmiar; x++)
 					//*chDaneWe++ = vPrzychodzaceRamki[iNumer].data[x];
-					*chDaneWe++ = m_vRamkaZOdpowiedzia[iNumer].dane[x];
+					*chDaneWe++ = m_vRamkaPolecenia[iNumer].dane[x];
 				bPolecenieGotowe = TRUE;
 			}
 			else

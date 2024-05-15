@@ -9,8 +9,8 @@ public:
 	virtual ~CGniazdoSieci();
 	BOOL m_bPolaczone;
 	void UstawRodzica(CView* pWnd);
-	static HANDLE hZdarzeniePolaczonoEth;
-	static HANDLE hZdarzenieOdebranoEth;
+	static HANDLE m_hZdarzeniePolaczonoEth;
+	static HANDLE m_hZdarzenieOdebranoEth;
 
 
 private:

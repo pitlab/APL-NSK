@@ -8,16 +8,16 @@
 
 
 //inicjuj zmienne statyczne używane wątku
-HANDLE		CGniazdoSieci::hZdarzeniePolaczonoEth = NULL;
-HANDLE		CGniazdoSieci::hZdarzenieOdebranoEth = NULL;
+HANDLE		CGniazdoSieci::m_hZdarzeniePolaczonoEth = NULL;
+HANDLE		CGniazdoSieci::m_hZdarzenieOdebranoEth = NULL;
 
 
 CGniazdoSieci::CGniazdoSieci()
 : m_pWnd(NULL)
 , m_bPolaczone(FALSE)
 {
-	hZdarzeniePolaczonoEth = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
-	hZdarzenieOdebranoEth = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	m_hZdarzeniePolaczonoEth = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	m_hZdarzenieOdebranoEth = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 }
 
 CGniazdoSieci::~CGniazdoSieci()
@@ -48,6 +48,7 @@ void CGniazdoSieci::OnAccept(int nErrorCode)
 	if (nErrorCode == 0)
 	{
 		m_pWnd->SendMessage(WM_INPUT, ON_ACCEPT, nErrorCode);
+		SetEvent(m_hZdarzeniePolaczonoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
 	}
 	CAsyncSocket::OnAccept(nErrorCode);
 }
@@ -76,7 +77,7 @@ void CGniazdoSieci::OnConnect(int nErrorCode)
 	{
 		m_pWnd->SendMessage(WM_INPUT, ON_CONNECT, nErrorCode);
 		m_bPolaczone = TRUE;
-		SetEvent(hZdarzeniePolaczonoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
+		SetEvent(m_hZdarzeniePolaczonoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
 	}
 	else
 		m_bPolaczone = FALSE;	
@@ -92,7 +93,7 @@ void CGniazdoSieci::OnConnect(int nErrorCode)
 void CGniazdoSieci::OnReceive(int nErrorCode)
 {
 	if (nErrorCode == 0)
-		SetEvent(hZdarzenieOdebranoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
+		SetEvent(m_hZdarzenieOdebranoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
 	CAsyncSocket::OnReceive(nErrorCode);
 }
 

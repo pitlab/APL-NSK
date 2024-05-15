@@ -16,7 +16,7 @@ public:
 	void OdebranoDaneETH();
 	void WyslanoDaneETH();
 
-
+	void UstawRodzica(CView* pWnd);
 	void UstawNumerPortuETH(uint32_t iNumer) { m_iNumerPortuETH = iNumer; }
 	uint32_t PobierzNumerPortuETH() { return m_iNumerPortuETH; }
 	void UstawAdresPortuETH(CString strAdres) { m_strAdresPortuETH = strAdres; }
@@ -26,17 +26,33 @@ public:
 	void UstawPredkoscPortuUART(uint32_t iPredkosc) { m_iPredkoscUART = iPredkosc; }
 	uint32_t PobierzPredkoscPortuUART() { return m_iPredkoscUART; }
 
-	uint8_t WyslijSwojaNazwe(CString strNazwa);
+	uint8_t PobierzNazweBSP(CString* strNazwa);
+	uint8_t WyslijOK(uint8_t chAdrOdb);
+
+	//struktura zbieraj¹ca parametry BSP
+	struct _sWron
+	{
+		uint8_t chAdres;
+		CString strNazwa;
+	};
+	std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju
 
 
 private:
 	CProtokol m_cProto;
+	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
+	uint8_t WlasciwyWatekDekodujRamkiPolecen();
+	static BOOL m_bKoniecWatkuDekoderaPolecen;
 	BOOL m_bPolaczono = FALSE;
 	uint8_t m_chTypPolaczenia = ETHS;
 	uint32_t m_iNumerPortuETH;
 	CString m_strAdresPortuETH;
 	uint32_t m_iNumerPortuUART;
 	uint32_t m_iPredkoscUART;
+	uint8_t m_chRamkaWych[ROZM_DANYCH_WY_UART + ROZM_CIALA_RAMKI];
+	CView* m_pWnd;
+	CWinThread* pWskWatkuDekodujacego;
+	
 
 	//pola publiczne z odbieranymi danymi
 public:

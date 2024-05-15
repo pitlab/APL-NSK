@@ -42,6 +42,7 @@ CAPLSNView::CAPLSNView() noexcept
 {
 	uint8_t chErr;
 
+	m_cKomunikacja.UstawRodzica(this);
 	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
 	m_cKomunikacja.UstawNumerPortuETH(4000);
 	m_cKomunikacja.UstawTypPolaczenia(ETHS);

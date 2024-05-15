@@ -34,10 +34,12 @@
 #define WIELOMIAN_CRC	 0x1021
 
 //nazwy poleceñ protoko³u
-#define POL_OK			0	//akceptacja
-#define POL_NIE			1	//brak akceptacji
-#define POL_NAZWA		2	//przesy³ana nazwa
+#define POL_OK					0x00	//akceptacja
+#define POL_NIE					0x01	//brak akceptacji
+#define POL_MOJE_ID				0x02	//urz¹dzenie przedstawia siê w sieci
+//#define POL_POBIERZ_NAZWE		0x03	//pobierz nazwe od BSP
 
+//polecenia typu broadcast, bez odpowiedzi
 
 
 class CProtokol //: public CAsyncSocket
@@ -50,9 +52,10 @@ public:
 	//std::vector< BinaryFrame > m_inputTelemetryData;	//Kolejka danych telemetrycznych przychodz¹cych z urz¹dzenia.
 	//std::vector< BinaryFrame > m_inputAnswerData;		//Kolejka danych bêd¹cych odpowiedziami na polecenia  
 
-	std::vector <_Ramka> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
-	std::vector <_Ramka> m_vRamkaZOdpowiedzia;
-
+	static std::vector <_Ramka> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
+	static std::vector <_Ramka> m_vRamkaPolecenia;
+	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
+	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
 	uint8_t ZamknijPort();
 	void PolaczonoETH();
@@ -62,7 +65,7 @@ public:
 	void AkceptujPolaczenieETH();
 	uint8_t WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDaneWy, uint8_t chRozmiarWy, uint8_t* chDaneWe, uint8_t* chRozmiarWe, uint32_t iCzasNaRamke = TR_TIMEOUT);
 	void UstawAdresy(uint8_t chAdresOdb, uint8_t chAdresNad) { m_chAdresOdbiorcy = chAdresOdb; m_chAdresNadawcy = chAdresNad; }
-	uint8_t PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chZnakCzasu, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka);
+	uint8_t PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka);
 	uint8_t WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t chRozmiar);
 	
 
@@ -82,8 +85,7 @@ private:
 	uint16_t LiczCRC16(uint8_t dane, uint16_t crc);
 	static CGniazdoSieci	m_cGniazdoSluchajace;
 	static CGniazdoSieci	m_cGniazdoPolaczenia;
-	static HANDLE			m_hZdarzenieRamkaDanychGotowa;
-	static HANDLE			m_hZdarzenieRamkaTelemetriiGotowa;
+
 	CWinThread*				pWskWatkuSluchajacegoUart;
 	CWinThread*				pWskWatkuSluchajacegoEth;
 	static BOOL				m_bKoniecWatkuUart;
@@ -93,8 +95,8 @@ private:
 	int				m_iLecznikWejRamekTelemetrii;		///< Zlicza przychodz¹ce ramki
 	int				m_iLecznikWejRamekZwyklych;
 	//void getIncommingAnswerFrames(std::vector< BinaryFrame >& _frames);
-	CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
-	CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
+	static CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
+	static CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
 	uint8_t			m_chBuforOdbiorczyETH[ROZM_DANYCH_WE_ETH];		//bufor odbiorczy ethernetu
 	uint32_t		m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
 	BOOL			m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet
