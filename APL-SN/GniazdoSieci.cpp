@@ -22,6 +22,9 @@ CGniazdoSieci::CGniazdoSieci()
 
 CGniazdoSieci::~CGniazdoSieci()
 {
+	CloseHandle(m_hZdarzeniePolaczonoEth);
+	CloseHandle(m_hZdarzenieOdebranoEth);
+
 }
 
 
@@ -93,7 +96,10 @@ void CGniazdoSieci::OnConnect(int nErrorCode)
 void CGniazdoSieci::OnReceive(int nErrorCode)
 {
 	if (nErrorCode == 0)
+	{
 		SetEvent(m_hZdarzenieOdebranoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
+		m_pWnd->SendMessage(WM_INPUT, ON_RECEIVE, nErrorCode);
+	}
 	CAsyncSocket::OnReceive(nErrorCode);
 }
 

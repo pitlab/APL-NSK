@@ -35,7 +35,7 @@ public:
 		uint8_t chAdres;
 		CString strNazwa;
 	};
-	std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju
+	static std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju
 
 
 private:
@@ -44,7 +44,7 @@ private:
 	uint8_t WlasciwyWatekDekodujRamkiPolecen();
 	static BOOL m_bKoniecWatkuDekoderaPolecen;
 	BOOL m_bPolaczono = FALSE;
-	uint8_t m_chTypPolaczenia = ETHS;
+	static uint8_t m_chTypPolaczenia;
 	uint32_t m_iNumerPortuETH;
 	CString m_strAdresPortuETH;
 	uint32_t m_iNumerPortuUART;

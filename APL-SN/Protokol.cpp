@@ -61,6 +61,8 @@ CProtokol::CProtokol()
 
 CProtokol::~CProtokol()
 {
+	CloseHandle(m_hZdarzenieRamkaPolecenGotowa);
+	CloseHandle(m_hZdarzenieRamkaTelemetriiGotowa);
 	DeleteCriticalSection(&m_SekcjaKrytycznaPolecen);
 	DeleteCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 }
@@ -83,8 +85,8 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	m_chTypPortu = 0;	//niezainicjowany port
 
 	//utwórz zdarzenie sygnalizuj¹ce przyjœcie ramki
-	m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
-	m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	//m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
+	//m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 
 	switch (chTypPortu)
 	{
@@ -169,6 +171,16 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odbiera dane na aktywnym interfejsie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CProtokol::OdbierzDane()
+{
+	uint8_t chErr = ERR_OK;
+	return chErr;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Generuje potwierdzenie nawi¹zania po³¹czenia przez ethernet. Jest wywo³ywane z okna w³aœciciela
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,8 +207,7 @@ void CProtokol::PolaczonoETH()
 
 void CProtokol::OdbierzDaneETH()
 {
-	m_iOdebranoETH = m_cGniazdoPolaczenia.Receive(m_chBuforOdbiorczyETH, ROZM_DANYCH_WE_ETH);
-	AnalizujOdebraneDane(m_chBuforOdbiorczyETH, m_iOdebranoETH);
+
 }
 
 
@@ -312,7 +323,7 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 	unsigned int iOdczytano = 0;
 	uint8_t chBuforOdb[ROZM_DANYCH_WE_ETH + ROZM_CIALA_RAMKI];
 
-	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth, INFINITE);		//czekaj na po³¹czenie
+	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth, INFINITE);		//czekaj na po³¹czenie	
 	while (!m_bKoniecWatkuEth)
 	{
 		WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzenieOdebranoEth, INFINITE);		//czekaj na odbiór danych

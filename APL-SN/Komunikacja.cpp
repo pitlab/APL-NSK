@@ -11,7 +11,8 @@ pakuje dane w ramki i przesy³a przy u¿yciu podrzêdnej klasy CProtokol
 */
 
 BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
-
+std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
+uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,13 +20,14 @@ BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 CKomunikacja::CKomunikacja()
-: m_bPolaczono(FALSE)
-, m_chTypPolaczenia(0)
-, m_iNumerPortuETH(0)
-, m_strAdresPortuETH("")
-, m_strNazwa("")
-, m_iNumerPortuUART(0)
-, m_iPredkoscUART(115200)
+	: m_bPolaczono(FALSE)
+	//, m_chTypPolaczenia(0)
+	, m_iNumerPortuETH(0)
+	, m_strAdresPortuETH("")
+	, m_strNazwa("")
+	, m_iNumerPortuUART(0)
+	, m_iPredkoscUART(115200)
+	
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 }
@@ -155,14 +157,13 @@ uint8_t CKomunikacja::WatekDekodujRamkiPolecen(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 {
-	unsigned int iOdczytano;
 	uint8_t chErr;
-	uint8_t chBuforOdb[ROZM_DANYCH_WE_UART + ROZM_CIALA_RAMKI];
 	_Ramka s_Ramka;
-	//uint8_t chRamkaOdpowiedzi[20];
 	int n, m;
 	BOOL bMamyTo;
 	_sWron sWron;
+	CString strNazwa = L" ";
+	std::vector <_sWron>::iterator iter;	//iterator wektora wronów
 
 	while (!m_bKoniecWatkuDekoderaPolecen)
 	{		
@@ -174,27 +175,33 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 			switch (s_Ramka.chPolecenie)
 			{
 			case POL_MOJE_ID: //przysz³a ramka z identyfikatorem nowego BSP
-				m_strNazwa = L"";
+				//m_strNazwa = L"";
 				for (m = 0; m < s_Ramka.chRozmiar; m++)
-					m_strNazwa.Insert(m, s_Ramka.dane[m]);
+					strNazwa.Insert(m, s_Ramka.dane[m]);
 
 				//sprawdŸ czy w roju mamy ju¿ tego wrona
 				bMamyTo = FALSE;
-				for (m = 0; m < m_vRoj.size(); m++)
+				if (m_vRoj.size())
 				{
-					if (m_vRoj[0].chAdres == s_Ramka.chAdrNadawcy)
+					for (iter = m_vRoj.begin(); iter < m_vRoj.end(); iter++)
 					{
-						bMamyTo = TRUE;
-						break;
-					}
-					//je¿eli nie mamy to go dodaj
-					if (bMamyTo == FALSE)
-					{
-						sWron.chAdres = s_Ramka.chAdrNadawcy;
-						sWron.strNazwa = m_strNazwa;
-						m_vRoj.push_back(sWron);
+						if (iter->chAdres == s_Ramka.chAdrNadawcy)
+						{
+							if (iter->strNazwa != strNazwa)
+								iter->strNazwa = strNazwa;
+							bMamyTo = TRUE;
+							break;
+						}
 					}
 				}
+				//je¿eli nie mamy to go dodaj
+				if (bMamyTo == FALSE)
+				{
+					sWron.chAdres = s_Ramka.chAdrNadawcy;
+					sWron.strNazwa = strNazwa;
+					m_vRoj.push_back(sWron);
+				}	
+				strNazwa = L"";
 				WyslijOK(s_Ramka.chAdrNadawcy);		//wyœlij odpowiedŸ
 				break;
 
@@ -215,10 +222,10 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
 {
 	uint8_t chErr = ERR_OK;
-	_Ramka s_Ramka;
+	//_Ramka s_Ramka;
+	uint8_t chRamka[ROZM_CIALA_RAMKI];
 
-	m_cProto.PrzygotujRamke(chAdrOdb, ADRES_STACJI, POL_OK, NULL, 0, m_chRamkaWych);
-	chErr = m_cProto.WyslijRamke(m_chTypPolaczenia, m_chRamkaWych, ROZM_CIALA_RAMKI);
-
+	m_cProto.PrzygotujRamke(chAdrOdb, ADRES_STACJI, POL_OK, NULL, 0, chRamka);
+	chErr = m_cProto.WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
 	return chErr;
 }

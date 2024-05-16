@@ -40,17 +40,7 @@ END_MESSAGE_MAP()
 
 CAPLSNView::CAPLSNView() noexcept
 {
-	uint8_t chErr;
 
-	m_cKomunikacja.UstawRodzica(this);
-	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
-	m_cKomunikacja.UstawNumerPortuETH(4000);
-	m_cKomunikacja.UstawTypPolaczenia(ETHS);
-	chErr = m_cKomunikacja.Polacz(this);
-	if (chErr == ERR_OK)
-		m_bPolaczono = TRUE;
-	else
-		m_bPolaczono = FALSE;
 }
 
 
@@ -65,6 +55,17 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
 	//  styl kaskadowy CREATESTRUCT
+	uint8_t chErr;
+
+	m_cKomunikacja.UstawRodzica(this);
+	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
+	m_cKomunikacja.UstawNumerPortuETH(4000);
+	m_cKomunikacja.UstawTypPolaczenia(ETHS);
+	chErr = m_cKomunikacja.Polacz(this);
+	if (chErr == ERR_OK)
+		m_bPolaczono = TRUE;
+	else
+		m_bPolaczono = FALSE;
 
 	return CView::PreCreateWindow(cs);
 	return TRUE;
@@ -175,12 +176,12 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 		pDoc->SetTitle(L"Ustanowiono połączenie ETH");
 		break;
 
-	case ON_SEND:	m_cKomunikacja.WyslanoDaneETH();
+	case ON_SEND:	//m_cKomunikacja.WyslanoDaneETH();
 		pDoc->SetTitle(L"Wysłano dane");
 		break;
 
-	case ON_RECEIVE:	m_cKomunikacja.OdebranoDaneETH();
-		pDoc->SetTitle(m_cKomunikacja.m_strNazwa);		
+	case ON_RECEIVE:	//m_cKomunikacja.OdebranoDaneETH();
+		//pDoc->SetTitle(m_cKomunikacja.m_vRoj[0].strNazwa);		
 		break;
 
 	case ON_CLOSE:		
