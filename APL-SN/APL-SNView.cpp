@@ -34,11 +34,18 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 //	ON_MESSAGE(111, &CAPLSNView::OnAccept)
 //ON_WM_XBUTTONUP()
 ON_WM_INPUT()
+ON_COMMAND(ID_KONFIG_PORT, &CAPLSNView::OnKonfigPort)
+ON_UPDATE_COMMAND_UI(ID_KONFIG_PORT, &CAPLSNView::OnUpdateKonfigPort)
+ON_COMMAND(ID_POLACZ_COM, &CAPLSNView::OnPolaczCom)
+ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
+ON_COMMAND(ID_POLACZ_ETH, &CAPLSNView::OnPolaczEth)
+ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CAPLSNView::OnUpdatePolaczEth)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
 
 CAPLSNView::CAPLSNView() noexcept
+: m_bPolaczono(FALSE)
 {
 
 }
@@ -189,4 +196,75 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 		break;
 	}
 
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Otwiera okno aktualiacji parametrów portów komunikacyjnych
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnKonfigPort()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	m_cKonfigPolacz.DoModal();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku połącz eth w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Łączy się z portem com / UART
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnPolaczCom()
+{
+	m_cKomunikacja.UstawTypPolaczenia(UART);
+	m_cKomunikacja.UstawNumerPortuUART(6);
+	m_cKomunikacja.UstawPredkoscPortuUART(115200);
+	m_cKomunikacja.Polacz(this);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku połącz com w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Łączy się z portem ethernet
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnPolaczEth()
+{
+	m_cKomunikacja.UstawTypPolaczenia(ETHS);
+	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
+	m_cKomunikacja.UstawNumerPortuETH(4000);
+	m_cKomunikacja.Polacz(this);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku połącz eth w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnUpdatePolaczEth(CCmdUI* pCmdUI)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 }

@@ -195,12 +195,13 @@
     <ClInclude Include="Komunikacja.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="multithreading.h" />
+    <ClInclude Include="KonfigPolacz.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Protokol.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="RS232.h" />
+    <ClInclude Include="PortSzeregowy.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ViewTree.h" />
   </ItemGroup>
@@ -213,6 +214,7 @@
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="Komunikacja.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="KonfigPolacz.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -222,7 +224,7 @@
     </ClCompile>
     <ClCompile Include="PropertiesWnd.cpp" />
     <ClCompile Include="Protokol.cpp" />
-    <ClCompile Include="RS232.cpp" />
+    <ClCompile Include="PortSzeregowy.cpp" />
     <ClCompile Include="ViewTree.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,9 @@
 #endif
 
 #include "resource.h"       // główne symbole
-
+#include "KonfigPolacz.h"
+#include "PortSzeregowy.h"
+#include "Protokol.h"
 
 // CAPLSNApp:
 // Aby uzyskać implementację klasy, zobacz APL-SN.cpp
@@ -24,6 +26,8 @@ public:
 public:
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
+	CPortSzeregowy& getPortSzeregowy();
+	CProtokol& getProtokol();
 
 // Implementacja
 	BOOL  m_bHiColorIcons;
@@ -34,6 +38,12 @@ public:
 
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
+
+
+	private:	
+	CPortSzeregowy	m_cPortSzeregowy;
+	CProtokol m_cProtokol;
+
 };
 
 extern CAPLSNApp theApp;

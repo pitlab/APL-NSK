@@ -72,6 +72,12 @@
 #define IDS_FIND_TAB                    302
 #define IDS_EXPLORER                    305
 #define IDS_EDIT_MENU                   306
+#define IDD_PORT                        310
+#define IDD_DIALOG1                     312
+#define IDC_COMBO_PORT_COM              1000
+#define IDC_COMBO_PREDKOSC              1001
+#define IDC_EDIT_ADRES                  1005
+#define IDC_EDIT_PORT_ETH               1006
 #define ID_POLACZ                       32771
 #define ID_WYSLIJ                       32772
 #define ID_ZAMKNIJ                      32773
@@ -81,14 +87,17 @@
 #define ID_BUTTON32780                  32780
 #define ID_KLIENT                       32780
 #define ID_SERWER                       32781
+#define ID_POLACZ_COM                   32782
+#define ID_POLACZ_ETH                   32783
+#define ID_KONFIG_PORT                  32784
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        310
-#define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_RESOURCE_VALUE        314
+#define _APS_NEXT_COMMAND_VALUE         32785
+#define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

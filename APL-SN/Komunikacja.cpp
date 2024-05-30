@@ -27,7 +27,7 @@ CKomunikacja::CKomunikacja()
 	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
-	
+	//, m_chRamkaWych((uint8_t)0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 }
@@ -59,8 +59,8 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	uint8_t chErr = ERR_NOT_CONNECTED;
 	switch (m_chTypPolaczenia)
 	{
-	case UART:	chErr = m_cProto.PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		break;
-	case ETHS:	chErr = m_cProto.PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);	break;
+	case UART:	chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		break;
+	case ETHS:	chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);	break;
 	case USB:	break;
 	
 	default:	break;
@@ -76,7 +76,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 uint8_t CKomunikacja::Rozlacz()
 {
 	uint8_t chErr = ERR_OK;
-	chErr = m_cProto.ZamknijPort();			
+	chErr = getProtokol().ZamknijPort();
 	return chErr;
 }
 
@@ -84,7 +84,7 @@ uint8_t CKomunikacja::Rozlacz()
 
 void CKomunikacja::AkceptujPolaczenieETH()
 {
-	m_cProto.AkceptujPolaczenieETH();
+	getProtokol().AkceptujPolaczenieETH();
 }
 
 //
@@ -101,7 +101,7 @@ void CKomunikacja::OdebranoDaneETH()
 	* Dodaæ podzia³ na telemetriê i ramki z odpowiedzi¹ - osobne w¹tki?
 	*/
 
-	m_cProto.OdbierzDaneETH();
+	getProtokol().OdbierzDaneETH();
 	
 
 	//int iRozmiar = m_cProto.m_inputAnswerData.size();
@@ -115,7 +115,7 @@ void CKomunikacja::OdebranoDaneETH()
 
 void CKomunikacja::WyslanoDaneETH()
 {
-	m_cProto.WyslanoDaneETH();
+	getProtokol().WyslanoDaneETH();
 }
 
 
@@ -131,8 +131,8 @@ uint8_t CKomunikacja::PobierzNazweBSP(CString* strNazwa)
 	
 	
 
-	m_cProto.PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, POL_MOJE_ID, NULL, 0, m_chRamkaWych);
-	m_cProto.WyslijRamke(m_chTypPolaczenia, m_chRamkaWych, ROZM_CIALA_RAMKI);
+	getProtokol().PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, POL_MOJE_ID, NULL, 0, m_chRamkaWych);
+	getProtokol().WyslijRamke(m_chTypPolaczenia, m_chRamkaWych, ROZM_CIALA_RAMKI);
 	
 	return chErr;
 }
@@ -157,7 +157,7 @@ uint8_t CKomunikacja::WatekDekodujRamkiPolecen(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 {
-	uint8_t chErr;
+	//uint8_t chErr;
 	_Ramka s_Ramka;
 	int n, m;
 	BOOL bMamyTo;
@@ -167,11 +167,11 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 
 	while (!m_bKoniecWatkuDekoderaPolecen)
 	{		
-		WaitForSingleObject(m_cProto.m_hZdarzenieRamkaPolecenGotowa, INFINITE);		//czekaj na odbiór zdekodowanej ramki danych
-		m_cProto.m_vRamkaPolecenia.size();
-		for (n = 0; n < m_cProto.m_vRamkaPolecenia.size(); n++)
+		WaitForSingleObject(getProtokol().m_hZdarzenieRamkaPolecenGotowa, INFINITE);		//czekaj na odbiór zdekodowanej ramki danych
+		//m_cProto.m_vRamkaPolecenia.size();
+		for (n = 0; n < getProtokol().m_vRamkaPolecenia.size(); n++)
 		{
-			s_Ramka = m_cProto.m_vRamkaPolecenia[n];
+			s_Ramka = getProtokol().m_vRamkaPolecenia[n];
 			switch (s_Ramka.chPolecenie)
 			{
 			case POL_MOJE_ID: //przysz³a ramka z identyfikatorem nowego BSP
@@ -208,7 +208,7 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 			default:	break;
 			}
 		}
-		m_cProto.m_vRamkaPolecenia.clear();	//wyczyœæ wektor
+		getProtokol().m_vRamkaPolecenia.clear();	//wyczyœæ wektor
 	}
 	return ERR_OK;
 }
@@ -225,7 +225,7 @@ uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
 	//_Ramka s_Ramka;
 	uint8_t chRamka[ROZM_CIALA_RAMKI];
 
-	m_cProto.PrzygotujRamke(chAdrOdb, ADRES_STACJI, POL_OK, NULL, 0, chRamka);
-	chErr = m_cProto.WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
+	getProtokol().PrzygotujRamke(chAdrOdb, ADRES_STACJI, POL_OK, NULL, 0, chRamka);
+	chErr = getProtokol().WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
 	return chErr;
 }

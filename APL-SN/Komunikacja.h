@@ -39,7 +39,7 @@ public:
 
 
 private:
-	CProtokol m_cProto;
+	//CProtokol m_cProto;
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
 	uint8_t WlasciwyWatekDekodujRamkiPolecen();
 	static BOOL m_bKoniecWatkuDekoderaPolecen;

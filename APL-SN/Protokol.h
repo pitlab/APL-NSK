@@ -1,6 +1,5 @@
 #pragma once
-
-#include "RS232.h"
+#include "PortSzeregowy.h"
 #include "GniazdoSieci.h"
 #include <queue>
 #include "KomunikatySieci.h"
@@ -47,11 +46,8 @@ class CProtokol //: public CAsyncSocket
 public:
 	CProtokol();	//noexcept;
 	virtual ~CProtokol();
-
-
 	//std::vector< BinaryFrame > m_inputTelemetryData;	//Kolejka danych telemetrycznych przychodz¹cych z urz¹dzenia.
-	//std::vector< BinaryFrame > m_inputAnswerData;		//Kolejka danych bêd¹cych odpowiedziami na polecenia  
-
+	//std::vector< BinaryFrame > m_inputAnswerData;		//Kolejka danych bêd¹cych odpowiedziami na polecenia 
 	static std::vector <_Ramka> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
 	static std::vector <_Ramka> m_vRamkaPolecenia;
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
@@ -59,7 +55,6 @@ public:
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
 	uint8_t ZamknijPort();
 	void PolaczonoETH();
-	//void OdbierzDaneETH();
 	void OdbierzDaneETH();
 	void WyslanoDaneETH();	
 	void AkceptujPolaczenieETH();
@@ -79,28 +74,27 @@ private:
 	
 
 private:
-	uint8_t			m_chTypPortu;		//rodzaj nawi¹zanego po³¹czenia
-	CPortSzeregowy	m_cPortSzeregowy;
+	uint8_t	m_chTypPortu;		//rodzaj nawi¹zanego po³¹czenia
 	uint8_t WlasciwyWatekSluchajPortuCom();
 	uint8_t WlasciwyWatekSluchajPortuEth();
 	uint16_t LiczCRC16(uint8_t dane, uint16_t crc);
-	static CGniazdoSieci	m_cGniazdoSluchajace;
-	static CGniazdoSieci	m_cGniazdoPolaczenia;
+	static CGniazdoSieci m_cGniazdoSluchajace;
+	static CGniazdoSieci m_cGniazdoPolaczenia;
 
-	CWinThread*				pWskWatkuSluchajacegoUart;
-	CWinThread*				pWskWatkuSluchajacegoEth;
-	static BOOL				m_bKoniecWatkuUart;
-	static BOOL				m_bKoniecWatkuEth;
+	CWinThread*	pWskWatkuSluchajacegoUart;
+	CWinThread*	pWskWatkuSluchajacegoEth;
+	static BOOL	m_bKoniecWatkuUart;
+	static BOOL	m_bKoniecWatkuEth;
 
 	
-	int				m_iLecznikWejRamekTelemetrii;		///< Zlicza przychodz¹ce ramki
-	int				m_iLecznikWejRamekZwyklych;
+	int	m_iLecznikWejRamekTelemetrii;		///< Zlicza przychodz¹ce ramki
+	int	m_iLecznikWejRamekZwyklych;
 	//void getIncommingAnswerFrames(std::vector< BinaryFrame >& _frames);
 	static CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 	static CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
-	uint8_t			m_chBuforOdbiorczyETH[ROZM_DANYCH_WE_ETH];		//bufor odbiorczy ethernetu
-	uint32_t		m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
-	BOOL			m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet
+	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_WE_ETH];		//bufor odbiorczy ethernetu
+	uint32_t m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
+	BOOL m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet
 
 	uint8_t	m_chStanProtokolu;
 	uint8_t	m_chAdresOdbiorcy;
@@ -110,9 +104,11 @@ private:
 	uint8_t m_chOdbieranyBajt;
 	uint16_t m_sCRC16;
 	uint8_t m_chPolecenie;
-	
 	uint8_t m_chDaneWy[ROZM_DANYCH_WY_UART + ROZM_CIALA_RAMKI];
 };
 
+
+
+CProtokol& getProtokol();
 
 

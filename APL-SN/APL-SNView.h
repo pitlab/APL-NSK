@@ -39,6 +39,7 @@ public:
 
 protected:
 	CKomunikacja m_cKomunikacja;
+	CKonfigPolacz m_cKonfigPolacz;
 	BOOL m_bPolaczono;
 
 // Wygenerowano funkcje mapy komunikatów
@@ -50,6 +51,12 @@ protected:
 
 public:
 	afx_msg void OnRawInput(UINT nInputcode, HRAWINPUT hRawInput);
+	afx_msg void OnKonfigPort();
+	afx_msg void OnUpdateKonfigPort(CCmdUI* pCmdUI);
+	afx_msg void OnPolaczCom();
+	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
+	afx_msg void OnPolaczEth();
+	afx_msg void OnUpdatePolaczEth(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

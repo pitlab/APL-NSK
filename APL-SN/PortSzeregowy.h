@@ -28,5 +28,7 @@ private:
 
 };
 
-//CPortSzeregowy& getPortSzeregowy();
+CPortSzeregowy& getPortSzeregowy();
+
+
 

@@ -23,9 +23,9 @@ struct BinaryFrame
 
 struct _Ramka
 {
-	uint8_t chPolecenie;
-	uint8_t chZnakCzasu;
-	uint8_t chRozmiar;
-	uint8_t chAdrNadawcy;
+	uint8_t chPolecenie = 0;
+	uint8_t chZnakCzasu = 0;
+	uint8_t chRozmiar = 0;
+	uint8_t chAdrNadawcy = 0;
 	std::vector <uint8_t> dane;
 };

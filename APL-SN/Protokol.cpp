@@ -82,7 +82,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	uint8_t chErr = ERR_CANT_CONNECT;
 	DWORD dwErr;
 
-	m_chTypPortu = 0;	//niezainicjowany port
+	//m_chTypPortu = 0;	//niezainicjowany port
 
 	//utwórz zdarzenie sygnalizuj¹ce przyjœcie ramki
 	//m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
@@ -91,7 +91,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	switch (chTypPortu)
 	{
 	case UART:
-		chErr = m_cPortSzeregowy.Connect(nNumerPortu, nPredkosc);
+		chErr = getPortSzeregowy().Connect(nNumerPortu, nPredkosc);
 		if (chErr == ERR_OK)
 		{
 			pWskWatkuSluchajacegoUart = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
@@ -235,7 +235,7 @@ uint8_t CProtokol::ZamknijPort(void)
 	switch(m_chTypPortu)
 	{
 	case UART:	
-		chErr = m_cPortSzeregowy.Disconnect();	
+		chErr = getPortSzeregowy().Disconnect();
 		m_bKoniecWatkuUart = TRUE;
 		WaitForSingleObject(pWskWatkuSluchajacegoUart, INFINITE);
 		break;
@@ -295,12 +295,15 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 	uint8_t chErr;
 	uint8_t chBuforOdb[ROZM_DANYCH_WE_UART + ROZM_CIALA_RAMKI];
 
-	if (!m_cPortSzeregowy.GetConnectedState())
+	
+	if (!getPortSzeregowy().GetConnectedState())
 		return ERR_NOT_CONNECTED;
 
 	while (!m_bKoniecWatkuUart)
 	{
-		chErr = m_cPortSzeregowy.ReceiveData(chBuforOdb, &iOdczytano, ROZM_DANYCH_WE_UART);
+		chErr = getPortSzeregowy().ReceiveData(chBuforOdb, &iOdczytano, ROZM_DANYCH_WE_UART);
+		//chErr = 0;
+		//iOdczytano = 0;
 		if (chErr == ERR_OK)
 		{
 			//analizuj dane binarne bajt po bajcie
@@ -573,16 +576,16 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 uint8_t CProtokol::CzyscBuforPortu(uint8_t chTypPortu)
 {
 	uint8_t chErr = ERR_OK;
-	int32_t iRozmiar;
+	int32_t iRozmiar = 0;
 
 	switch (chTypPortu)
 	{
 	case UART:
-		iRozmiar = m_cPortSzeregowy.InBufSize();
+		iRozmiar = getPortSzeregowy().InBufSize();
 		if (iRozmiar)
 		{
-			m_cPortSzeregowy.PurgeIncomingData();
-			iRozmiar = m_cPortSzeregowy.InBufSize();	//test zajêtoœci bufora odbiorczego po czyszczeniu
+			getPortSzeregowy().PurgeIncomingData();
+			iRozmiar = getPortSzeregowy().InBufSize();	//test zajêtoœci bufora odbiorczego po czyszczeniu
 		}
 		break;
 	case ETHK:		
@@ -609,7 +612,7 @@ uint8_t CProtokol::WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t ch
 
 	switch (chTypPortu)
 	{
-	case UART:	chErr = m_cPortSzeregowy.SendFrame(wskRamka, chRozmiar); break;
+	case UART:	chErr = getPortSzeregowy().SendFrame(wskRamka, chRozmiar); break;
 	case ETHS:
 	case ETHK:	iWyslanych = m_cGniazdoPolaczenia.Send(wskRamka, chRozmiar); 
 		if (iWyslanych == SOCKET_ERROR)

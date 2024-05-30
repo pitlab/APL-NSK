@@ -13,6 +13,7 @@
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -27,6 +28,7 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_COMMAND(ID_FILE_OPEN, &CWinAppEx::OnFileOpen)
 	// Standardowe polecenie konfiguracji wydruku
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
+
 END_MESSAGE_MAP()
 
 
@@ -48,7 +50,7 @@ CAPLSNApp::CAPLSNApp() noexcept
 
 	// TODO: Zastąp ciąg identyfikatora aplikacji poniżej za pomocą unikatowego ciągu identyfikatora; zalecane
 	// format ciągu to CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("APLSN.AppID.NoVersion"));
+	SetAppID(_T("PitLab.APLSN2.v1_0"));
 
 	// TODO: W tym miejscu dodaj kod konstruktora,
 	// Umieść wszystkie znaczące inicjacje w InitInstance
@@ -102,7 +104,7 @@ BOOL CAPLSNApp::InitInstance()
 	// Zmień klucz rejestru, w którym są przechowywane ustawienia
 	// TODO: zmodyfikuj ten ciąg, aby był poprawny
 	// takie jak nazwa firmy lub organizacji
-	SetRegistryKey(_T("Aplikacje lokalne wygenerowane przez kreatora aplikacji"));
+	SetRegistryKey(_T("AutoPitLot_Stacja_Naziemna_v2"));
 	LoadStdProfileSettings(4);  // Ładuj opcje ze standardowego pliku INI (włącznie z listą ostatnio używanych)
 
 
@@ -190,6 +192,8 @@ protected:
 // Implementacja
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -202,6 +206,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+
 END_MESSAGE_MAP()
 
 // Polecenie aplikacji uruchamiające okno dialogowe
@@ -235,5 +240,24 @@ void CAPLSNApp::SaveCustomState()
 
 // procedury obsługi komunikatów klasy CAPLSNApp
 
+CPortSzeregowy& CAPLSNApp::getPortSzeregowy()
+{
+	return m_cPortSzeregowy;
+}
+
+CPortSzeregowy& getPortSzeregowy()
+{
+	return theApp.getPortSzeregowy();
+}
 
 
+
+CProtokol& CAPLSNApp::getProtokol()
+{
+	return m_cProtokol;
+}
+
+CProtokol& getProtokol()
+{
+	return theApp.getProtokol();
+}

@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <assert.h>
-#include "RS232.h"
+#include "PortSzeregowy.h"
 #include <atlstr.h>
 
 CPortSzeregowy::CPortSzeregowy() :

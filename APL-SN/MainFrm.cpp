@@ -367,7 +367,8 @@ void CMainFrame::OnUpdatePolacz(CCmdUI* pCmdUI)
 void CMainFrame::OnWyslij()
 {
 	CTime czas;
-	int dlugosc, wyslanie;
+	int dlugosc;
+	//int wyslanie;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
 	m_strKomunikatWych.Format(L"Komunikat z godziny %d:%d:%d", czas.GetHour(), czas.GetMinute(), czas.GetSecond());
