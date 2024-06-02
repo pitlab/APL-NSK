@@ -1,5 +1,6 @@
 #pragma once
-#define ROZM_DANYCH_WE	1024
+#define ROZM_DANYCH_WE		1024
+#define LICZBA_INSTANCJI	2		//obecnie mamy gniazdo s³uchaj¹ce i gniazdo po³aczenia
 
 // Element docelowy polecenia CGniazdoSieci
 class CGniazdoSieci : public CAsyncSocket
@@ -9,8 +10,10 @@ public:
 	virtual ~CGniazdoSieci();
 	BOOL m_bPolaczone;
 	void UstawRodzica(CView* pWnd);
-	static HANDLE m_hZdarzeniePolaczonoEth;
-	static HANDLE m_hZdarzenieOdebranoEth;
+	int m_wskaznikInstancji;
+	static int m_LicznikInstancji;
+	static HANDLE m_hZdarzeniePolaczonoEth[LICZBA_INSTANCJI];
+	static HANDLE m_hZdarzenieOdebranoEth[LICZBA_INSTANCJI];
 
 
 private:

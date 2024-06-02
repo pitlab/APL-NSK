@@ -20,14 +20,13 @@ uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 CKomunikacja::CKomunikacja()
-	: m_bPolaczono(FALSE)
-	//, m_chTypPolaczenia(0)
+	: m_bPolaczonoUart(FALSE)
+	, m_bPolaczonoEth(FALSE)
 	, m_iNumerPortuETH(0)
 	, m_strAdresPortuETH("")
 	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
-	//, m_chRamkaWych((uint8_t)0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 }
@@ -59,8 +58,18 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	uint8_t chErr = ERR_NOT_CONNECTED;
 	switch (m_chTypPolaczenia)
 	{
-	case UART:	chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		break;
-	case ETHS:	chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);	break;
+	case UART:	
+		chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		
+		if (chErr == ERR_OK)
+			m_bPolaczonoUart = TRUE;
+		break;
+
+	case ETHS:	
+		chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);
+		if (chErr == ERR_OK)
+			m_bPolaczonoEth = TRUE;
+		break;
+
 	case USB:	break;
 	
 	default:	break;
@@ -76,7 +85,15 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 uint8_t CKomunikacja::Rozlacz()
 {
 	uint8_t chErr = ERR_OK;
-	chErr = getProtokol().ZamknijPort();
+	
+	if (m_bPolaczonoEth)
+		chErr = getProtokol().ZamknijPort(ETHK);
+	chErr = getProtokol().ZamknijPort(ETHS);
+	m_bPolaczonoEth = FALSE;
+
+	if (m_bPolaczonoUart)
+		chErr = getProtokol().ZamknijPort(UART);
+	m_bPolaczonoUart = FALSE;
 	return chErr;
 }
 
@@ -131,7 +148,7 @@ uint8_t CKomunikacja::PobierzNazweBSP(CString* strNazwa)
 	
 	
 
-	getProtokol().PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, POL_MOJE_ID, NULL, 0, m_chRamkaWych);
+	getProtokol().PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, PK_POBIERZ_ID, NULL, 0, m_chRamkaWych);
 	getProtokol().WyslijRamke(m_chTypPolaczenia, m_chRamkaWych, ROZM_CIALA_RAMKI);
 	
 	return chErr;
@@ -168,13 +185,12 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 	while (!m_bKoniecWatkuDekoderaPolecen)
 	{		
 		WaitForSingleObject(getProtokol().m_hZdarzenieRamkaPolecenGotowa, INFINITE);		//czekaj na odbiór zdekodowanej ramki danych
-		//m_cProto.m_vRamkaPolecenia.size();
 		for (n = 0; n < getProtokol().m_vRamkaPolecenia.size(); n++)
 		{
 			s_Ramka = getProtokol().m_vRamkaPolecenia[n];
 			switch (s_Ramka.chPolecenie)
 			{
-			case POL_MOJE_ID: //przysz³a ramka z identyfikatorem nowego BSP
+			case PK_POBIERZ_ID: //przysz³a ramka z identyfikatorem nowego BSP
 				//m_strNazwa = L"";
 				for (m = 0; m < s_Ramka.chRozmiar; m++)
 					strNazwa.Insert(m, s_Ramka.dane[m]);
@@ -216,16 +232,72 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Wysy³a aplikacji swoj¹ nazwê 
+// Wysy³a ramkê OK 
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
 {
-	uint8_t chErr = ERR_OK;
-	//_Ramka s_Ramka;
 	uint8_t chRamka[ROZM_CIALA_RAMKI];
 
-	getProtokol().PrzygotujRamke(chAdrOdb, ADRES_STACJI, POL_OK, NULL, 0, chRamka);
-	chErr = getProtokol().WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
+	getProtokol().PrzygotujRamke(chAdrOdb, ADRES_STACJI, PK_OK, NULL, 0, chRamka);
+	return getProtokol().WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zrobienia zdjêcia
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t* sBuforZdjecia)
+{
+	//uint8_t chRamka[ROZM_CIALA_RAMKI + 5];
+	uint8_t chDane[5];
+	uint8_t x, chErr, chOdebrano;
+	uint32_t nPobrano, nRozmiarDanych;
+	m_unia8_16.dane16 = sSzerokosc;
+	chDane[0] = m_unia8_16.dane8[0];
+	chDane[1] = m_unia8_16.dane8[1];
+	m_unia8_16.dane16 = sWysokosc;
+	chDane[2] = m_unia8_16.dane8[0];
+	chDane[3] = m_unia8_16.dane8[1];
+
+	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 4, chDane, &chOdebrano);
+	if (chErr == ERR_OK)
+	{
+		//sprawdŸ status wykonania zdjêcia
+		chDane[0] = SGZ_CZEKA;
+		while (chDane[0] == SGZ_CZEKA)
+		{
+			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POB_STAT_ZDJECIA, NULL, 0, chDane, &chOdebrano);
+			if (chErr == ERR_OK)
+			{
+				if (chDane[0] == SGZ_BLAD)
+					return SGZ_BLAD;
+			}
+		}
+
+		//pobierz zdjêcie
+		nPobrano = 0;
+		nRozmiarDanych = (uint32_t)(sSzerokosc * sWysokosc);
+		while (nPobrano < nRozmiarDanych)
+		{
+			m_unia8_32.dane32 = nPobrano;	//offset pobieranych danych zdjêcia
+			for (x = 0; x < 4; x++)
+				chDane[x] = m_unia8_32.dane8[x];
+
+			//rozmiar paczki
+			if ((nRozmiarDanych - nPobrano) > ROZM_DANYCH_UART)
+				chDane[4] = ROZM_DANYCH_UART;
+			else
+				chDane[4] = nRozmiarDanych - nPobrano;
+
+			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano), &chOdebrano);
+			if (chErr == ERR_OK)
+			{
+				nPobrano += chOdebrano;
+			}
+		}
+	}	
 	return chErr;
 }
+		 

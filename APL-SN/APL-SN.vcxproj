@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\PoleceniaKomunikacyjne.h" />
     <ClInclude Include="APL-SN.h" />
     <ClInclude Include="APL-SNDoc.h" />
     <ClInclude Include="APL-SNView.h" />

@@ -81,22 +81,16 @@
 #define ID_POLACZ                       32771
 #define ID_WYSLIJ                       32772
 #define ID_ZAMKNIJ                      32773
-#define ID_BUTTON32775                  32775
-#define ID_SERWER_KLIENT                32775
-#define ID_BUTTON32779                  32779
-#define ID_BUTTON32780                  32780
-#define ID_KLIENT                       32780
-#define ID_SERWER                       32781
-#define ID_POLACZ_COM                   32782
-#define ID_POLACZ_ETH                   32783
-#define ID_KONFIG_PORT                  32784
+#define ID_POLACZ_COM                   32774
+#define ID_ZROB_ZDJECIE                 32775
+#define ID_KONFIG_PORT                  32776
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32785
+#define _APS_NEXT_COMMAND_VALUE         32787
 #define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

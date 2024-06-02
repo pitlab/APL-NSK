@@ -25,7 +25,8 @@ public:
 	uint32_t PobierzNumerPortuUART() { return m_iNumerPortuUART; }
 	void UstawPredkoscPortuUART(uint32_t iPredkosc) { m_iPredkoscUART = iPredkosc; }
 	uint32_t PobierzPredkoscPortuUART() { return m_iPredkoscUART; }
-
+	BOOL CzyPolaczonoUart() { return m_bPolaczonoUart; }
+	BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
 	uint8_t PobierzNazweBSP(CString* strNazwa);
 	uint8_t WyslijOK(uint8_t chAdrOdb);
 
@@ -43,19 +44,30 @@ private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
 	uint8_t WlasciwyWatekDekodujRamkiPolecen();
 	static BOOL m_bKoniecWatkuDekoderaPolecen;
-	BOOL m_bPolaczono = FALSE;
+	BOOL m_bPolaczonoUart;
+	BOOL m_bPolaczonoEth;
 	static uint8_t m_chTypPolaczenia;
 	uint32_t m_iNumerPortuETH;
 	CString m_strAdresPortuETH;
 	uint32_t m_iNumerPortuUART;
 	uint32_t m_iPredkoscUART;
-	uint8_t m_chRamkaWych[ROZM_DANYCH_WY_UART + ROZM_CIALA_RAMKI];
+	uint8_t m_chRamkaWych[ROZMIAR_RAMKI_UART];
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
-	
+	union _un8_16
+	{
+		uint16_t dane16;
+		uint8_t dane8[2];
+	} m_unia8_16;
+	union _un8_32
+	{
+		uint32_t dane32;
+		uint8_t dane8[4];
+	} m_unia8_32;
 
 	//pola publiczne z odbieranymi danymi
 public:
 	CString m_strNazwa;
+	uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t *sBuforZdjecia);
 };
 

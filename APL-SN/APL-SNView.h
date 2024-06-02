@@ -55,8 +55,10 @@ public:
 	afx_msg void OnUpdateKonfigPort(CCmdUI* pCmdUI);
 	afx_msg void OnPolaczCom();
 	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
-	afx_msg void OnPolaczEth();
-	afx_msg void OnUpdatePolaczEth(CCmdUI* pCmdUI);
+//	afx_msg void OnPolaczEth();
+//	afx_msg void OnUpdatePolaczEth(CCmdUI* pCmdUI);
+	afx_msg void OnZrobZdjecie();
+	afx_msg void OnUpdateZrobZdjecie(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

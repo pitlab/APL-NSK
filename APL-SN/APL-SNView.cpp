@@ -31,16 +31,14 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CAPLSNView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
-//	ON_MESSAGE(111, &CAPLSNView::OnAccept)
-//ON_WM_XBUTTONUP()
-ON_WM_INPUT()
-ON_COMMAND(ID_KONFIG_PORT, &CAPLSNView::OnKonfigPort)
-ON_UPDATE_COMMAND_UI(ID_KONFIG_PORT, &CAPLSNView::OnUpdateKonfigPort)
-ON_COMMAND(ID_POLACZ_COM, &CAPLSNView::OnPolaczCom)
-ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
-ON_COMMAND(ID_POLACZ_ETH, &CAPLSNView::OnPolaczEth)
-ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CAPLSNView::OnUpdatePolaczEth)
-END_MESSAGE_MAP()
+	ON_WM_INPUT()
+	ON_COMMAND(ID_KONFIG_PORT, &CAPLSNView::OnKonfigPort)
+	ON_UPDATE_COMMAND_UI(ID_KONFIG_PORT, &CAPLSNView::OnUpdateKonfigPort)
+	ON_COMMAND(ID_POLACZ_COM, &CAPLSNView::OnPolaczCom)
+	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
+	ON_COMMAND(ID_ZROB_ZDJECIE, &CAPLSNView::OnZrobZdjecie)
+	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
+	END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
 
@@ -80,14 +78,35 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 
 // Rysowanie obiektu CAPLSNView
 
-void CAPLSNView::OnDraw(CDC* /*pDC*/)
+void CAPLSNView::OnDraw(CDC* pDC)
 {
+	uint32_t x, y;
+	uint8_t chKolor[3];
+	uint16_t sPix;
+	COLORREF crKolor;
 	CAPLSNDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
 	// TODO: tutaj dodaj kod rysowania danych natywnych
+	if (pDoc->m_bZdjecieGotowe)
+	{
+		for (y = 0; y < 240; y++)
+		{
+			for (x = 0; x < 320; x++)
+			{
+				sPix = pDoc->m_sZdjecie[y * 320 + x];
+				chKolor[0] = (sPix & 0xF800) >> 11;		//R
+				chKolor[1] = (sPix & 0x070E) >> 5;		//G
+				chKolor[2] = (sPix & 0x001F);			//B
+				crKolor = RGB(chKolor[0], chKolor[1], chKolor[2]);
+
+				pDC->SetPixel(x, y, crKolor);
+			}
+		}
+		pDoc->m_bZdjecieGotowe = FALSE;
+	}
 }
 
 
@@ -231,7 +250,10 @@ void CAPLSNView::OnPolaczCom()
 	m_cKomunikacja.UstawTypPolaczenia(UART);
 	m_cKomunikacja.UstawNumerPortuUART(6);
 	m_cKomunikacja.UstawPredkoscPortuUART(115200);
-	m_cKomunikacja.Polacz(this);
+	if (m_cKomunikacja.CzyPolaczonoUart())
+		m_cKomunikacja.Rozlacz();
+	else
+		m_cKomunikacja.Polacz(this);
 }
 
 
@@ -241,30 +263,39 @@ void CAPLSNView::OnPolaczCom()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+	pCmdUI->Enable(!m_cKomunikacja.CzyPolaczonoUart());
+}
 
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// wywyła polecenie zrobienia zdjecia
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnZrobZdjecie()
+{
+	uint8_t chErr;
+
+	CAPLSNDoc* pDoc = GetDocument();
+	assert(pDoc);
+
+	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
+
+	pDoc->m_bZdjecieGotowe = FALSE;
+	chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
+	if (chErr == ERR_OK)
+		pDoc->m_bZdjecieGotowe = TRUE;
+	Invalidate(TRUE);
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Łączy się z portem ethernet
+// Aktualizuje stan przycisku zrób zdjęcie w pasku narzędzi
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnPolaczEth()
+void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
-	m_cKomunikacja.UstawTypPolaczenia(ETHS);
-	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
-	m_cKomunikacja.UstawNumerPortuETH(4000);
-	m_cKomunikacja.Polacz(this);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Aktualizuje stan przycisku połącz eth w pasku narzędzi
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnUpdatePolaczEth(CCmdUI* pCmdUI)
-{
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
 }

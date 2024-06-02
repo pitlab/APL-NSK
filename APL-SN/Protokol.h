@@ -3,40 +3,10 @@
 #include "GniazdoSieci.h"
 #include <queue>
 #include "KomunikatySieci.h"
+#include "..\..\..\include\PoleceniaKomunikacyjne.h"
 
-#define UART	1
-#define ETHS	2	//ethernet jako serwer
-#define ETHK	3	//ethernet jako klient
-#define USB		4
 
-#define ROZM_DANYCH_WE_UART	128
-#define ROZM_DANYCH_WY_UART	128
-#define ROZM_DANYCH_WE_ETH	1024
-#define ROZM_DANYCH_WY_ETH	1024
-#define ROZM_CIALA_RAMKI	8
-#define TR_TIMEOUT			250		//timeout ramki w ms
-#define TR_PROB_WYSLANIA	3
-
-//stany protoko³u odbioru ramki
-#define PR_ODB_NAGLOWKA		0
-#define PR_ODB_ADR_ODBIORCY	1
-#define PR_ODB_ADR_NADAWCY	2
-#define PR_ODB_ZNAK_CZASU	3
-#define PR_ODB_POLECENIE	4
-#define PR_ODB_ROZMIAR		5
-#define PR_ODB_DANE			6
-#define PR_ODB_CRC16		7
-
-#define NAGLOWEK			0xAA
-#define ADRES_STACJI		0x00
-#define ADRES_BROADCAST		0xFF
-#define WIELOMIAN_CRC	 0x1021
-
-//nazwy poleceñ protoko³u
-#define POL_OK					0x00	//akceptacja
-#define POL_NIE					0x01	//brak akceptacji
-#define POL_MOJE_ID				0x02	//urz¹dzenie przedstawia siê w sieci
-//#define POL_POBIERZ_NAZWE		0x03	//pobierz nazwe od BSP
+#define PK_UST_ROZD_KAMERY	5
 
 //polecenia typu broadcast, bez odpowiedzi
 
@@ -53,7 +23,7 @@ public:
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
-	uint8_t ZamknijPort();
+	uint8_t ZamknijPort(uint8_t chTypPortu);
 	void PolaczonoETH();
 	void OdbierzDaneETH();
 	void WyslanoDaneETH();	
@@ -63,14 +33,17 @@ public:
 	uint8_t PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka);
 	uint8_t WyslijRamke(uint8_t chTypPortu, uint8_t* wskRamka, uint8_t chRozmiar);
 	uint8_t OdbierzDane();
+	int m_wskaznikInstancji;
+	static int m_LicznikInstancji;
 	
 
 private:
-	static uint8_t WatekSluchajPortuCom(LPVOID pParam);
-	static uint8_t WatekSluchajPortuEth(LPVOID pParam);
+	static UINT WatekSluchajPortuCom(LPVOID pParam);
+	static UINT WatekSluchajPortuEth(LPVOID pParam);
 	void AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano);
 	uint8_t AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu, uint8_t* chAdresNadawcy, uint8_t* chZnakCzasu, uint8_t* chPolecenie, uint8_t* chRozmiarDanychWy, uint8_t* chWskOdbDanej, uint8_t* chDaneWy, uint16_t* sCRC16);
 	uint8_t CzyscBuforPortu(uint8_t chTypPortu);
+	clock_t m_Koniec;
 	
 
 private:
@@ -92,7 +65,7 @@ private:
 	//void getIncommingAnswerFrames(std::vector< BinaryFrame >& _frames);
 	static CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 	static CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
-	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_WE_ETH];		//bufor odbiorczy ethernetu
+	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_ETH];		//bufor odbiorczy ethernetu
 	uint32_t m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
 	BOOL m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet
 
@@ -104,8 +77,10 @@ private:
 	uint8_t m_chOdbieranyBajt;
 	uint16_t m_sCRC16;
 	uint8_t m_chPolecenie;
-	uint8_t m_chDaneWy[ROZM_DANYCH_WY_UART + ROZM_CIALA_RAMKI];
+	uint8_t m_chDaneWy[ROZMIAR_RAMKI_UART];
 };
+
+
 
 
 

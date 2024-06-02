@@ -39,7 +39,6 @@ protected:  // osadzone elementy członkowskie paska sterowania
 	CMFCToolBar       m_wndToolBar;
 	CMFCStatusBar     m_wndStatusBar;
 	CMFCToolBarImages m_UserImages;
-	//CFileView         m_wndFileView;
 	CClassView        m_wndClassView;
 	COutputWnd        m_wndOutput;
 	CPropertiesWnd    m_wndProperties;
@@ -56,24 +55,6 @@ protected:
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 public:
-	afx_msg void OnPolacz();
-	afx_msg void OnUpdatePolacz(CCmdUI* pCmdUI);
-	afx_msg void OnWyslij();
-	afx_msg void OnUpdateWyslij(CCmdUI* pCmdUI);
-	afx_msg void OnZamknij();
-	afx_msg void OnUpdateZamknij(CCmdUI* pCmdUI);
-//	afx_msg void OnSerwerKlient();
-//	afx_msg void OnUpdateSerwerKlient(CCmdUI* pCmdUI);
-
-#define SERWER	1
-#define KLIENT	2
-	int m_iTypPolaczenia = SERWER;
-	afx_msg void OnKlient();
-	afx_msg void OnUpdateKlient(CCmdUI* pCmdUI);
-	afx_msg void OnSerwer();
-	afx_msg void OnUpdateSerwer(CCmdUI* pCmdUI);
-	void OnAccept();
-	void OnConnect();
 	CString m_strKomunikatWych;
 	BOOL m_bPolaczono;
 };
