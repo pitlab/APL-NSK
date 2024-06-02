@@ -29,6 +29,7 @@ END_MESSAGE_MAP()
 // Tworzenie/niszczenie obiektu CAPLSNDoc
 
 CAPLSNDoc::CAPLSNDoc() noexcept
+	: m_bZdjecieGotowe(FALSE)
 {
 	// TODO: tutaj dodaj jednorazowy kod konstruowania
 

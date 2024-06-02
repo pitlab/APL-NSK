@@ -7,7 +7,7 @@ class CKomunikacja
 public:
 	CKomunikacja();	//noexcept;
 	virtual ~CKomunikacja();
-
+	static HANDLE m_hZdarzeniePaczkaDanych;
 
 	void UstawTypPolaczenia(uint8_t chTyp) { m_chTypPolaczenia = chTyp; }
 	uint8_t Polacz(CView* pWnd);
@@ -54,6 +54,7 @@ private:
 	uint8_t m_chRamkaWych[ROZMIAR_RAMKI_UART];
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
+	
 	union _un8_16
 	{
 		uint16_t dane16;

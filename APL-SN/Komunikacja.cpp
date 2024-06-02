@@ -13,6 +13,7 @@ pakuje dane w ramki i przesy³a przy u¿yciu podrzêdnej klasy CProtokol
 BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
 std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
 uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
+HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,7 @@ CKomunikacja::CKomunikacja()
 	, m_iPredkoscUART(115200)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
+	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("Paczka")); // auto-reset event, non-signalled state
 }
 
 
@@ -40,6 +42,7 @@ CKomunikacja::~CKomunikacja()
 {	
 	m_bKoniecWatkuDekoderaPolecen = TRUE;
 	WaitForSingleObject(pWskWatkuDekodujacego, INFINITE);
+	CloseHandle(m_hZdarzeniePaczkaDanych);
 }
 
 
@@ -264,6 +267,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t
 	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 4, chDane, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
+		SetEvent(m_hZdarzeniePaczkaDanych);
 		//sprawdŸ status wykonania zdjêcia
 		chDane[0] = SGZ_CZEKA;
 		while (chDane[0] == SGZ_CZEKA)
@@ -278,26 +282,29 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t
 
 		//pobierz zdjêcie
 		nPobrano = 0;
-		nRozmiarDanych = (uint32_t)(sSzerokosc * sWysokosc);
+		nRozmiarDanych = (uint32_t)(sSzerokosc * sWysokosc * 2);
 		while (nPobrano < nRozmiarDanych)
 		{
-			m_unia8_32.dane32 = nPobrano;	//offset pobieranych danych zdjêcia
+			m_unia8_32.dane32 = nPobrano/4;	//offset pobieranych danych zdjêcia, /4 - konwersja z bajtów s³owa 32/bit 
 			for (x = 0; x < 4; x++)
 				chDane[x] = m_unia8_32.dane8[x];
 
-			//rozmiar paczki
+			//rozmiar paczki danych do pobrania
 			if ((nRozmiarDanych - nPobrano) > ROZM_DANYCH_UART)
 				chDane[4] = ROZM_DANYCH_UART;
 			else
 				chDane[4] = nRozmiarDanych - nPobrano;
 
-			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano), &chOdebrano);
+			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano/2), &chOdebrano);
 			if (chErr == ERR_OK)
 			{
 				nPobrano += chOdebrano;
+				SetEvent(m_hZdarzeniePaczkaDanych);
 			}
 		}
 	}	
 	return chErr;
 }
-		 
+	
+
+

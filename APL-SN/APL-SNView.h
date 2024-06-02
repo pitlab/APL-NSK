@@ -16,6 +16,8 @@ protected: // utwórz tylko na podstawie serializacji
 // Atrybuty
 public:
 	CAPLSNDoc* GetDocument() const;
+	static uint8_t WatekRysujPasekPostepu(LPVOID pParam);
+	uint8_t WlasciwyWatekRysujPasekPostepu();
 
 // Operacje
 public:
@@ -28,6 +30,7 @@ protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+	CWinThread* pWskWatkuPaskaPostepu;
 
 // Implementacja
 public:
@@ -41,6 +44,9 @@ protected:
 	CKomunikacja m_cKomunikacja;
 	CKonfigPolacz m_cKonfigPolacz;
 	BOOL m_bPolaczono;
+	BOOL m_bKoniecWatkuPaskaPostepu;
+	uint16_t m_sLiczbaFragmentowPaskaPostepu;
+	uint16_t m_sBiezacyStanPaskaPostepu;
 
 // Wygenerowano funkcje mapy komunikatów
 protected:

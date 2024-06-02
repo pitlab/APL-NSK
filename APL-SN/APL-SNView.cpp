@@ -45,7 +45,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
 {
-
+	
 }
 
 
@@ -85,6 +85,7 @@ void CAPLSNView::OnDraw(CDC* pDC)
 	uint16_t sPix;
 	COLORREF crKolor;
 	CAPLSNDoc* pDoc = GetDocument();
+	RECT prost;
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
@@ -97,9 +98,9 @@ void CAPLSNView::OnDraw(CDC* pDC)
 			for (x = 0; x < 320; x++)
 			{
 				sPix = pDoc->m_sZdjecie[y * 320 + x];
-				chKolor[0] = (sPix & 0xF800) >> 11;		//R
-				chKolor[1] = (sPix & 0x070E) >> 5;		//G
-				chKolor[2] = (sPix & 0x001F);			//B
+				chKolor[0] = ((sPix & 0xF800) >> 11)*8;		//R
+				chKolor[1] = ((sPix & 0x070E) >> 5)*4;		//G
+				chKolor[2] = (sPix & 0x001F)*8;			//B
 				crKolor = RGB(chKolor[0], chKolor[1], chKolor[2]);
 
 				pDC->SetPixel(x, y, crKolor);
@@ -107,7 +108,14 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		}
 		pDoc->m_bZdjecieGotowe = FALSE;
 	}
-}
+
+	//rysuj pasek postepu
+	pDC->GetBoundsRect(&prost, DCB_RESET);
+	float fPrzyrost = prost.right  / m_sLiczbaFragmentowPaskaPostepu;
+
+	prost.top = prost.bottom - 10;
+	prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
+	pDC->Rectangle(&prost);}
 
 
 // Drukowanie obiektu CAPLSNView
@@ -281,12 +289,20 @@ void CAPLSNView::OnZrobZdjecie()
 	assert(pDoc);
 
 	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
+	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
+	m_bKoniecWatkuPaskaPostepu = FALSE;
+	pWskWatkuPaskaPostepu = AfxBeginThread((AFX_THREADPROC)WatekRysujPasekPostepu, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 
+	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
+	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
 	chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
 	if (chErr == ERR_OK)
+	{
 		pDoc->m_bZdjecieGotowe = TRUE;
-	Invalidate(TRUE);
+		m_bKoniecWatkuPaskaPostepu = TRUE;
+		Invalidate(TRUE);
+	}
 }
 
 
@@ -298,4 +314,36 @@ void CAPLSNView::OnZrobZdjecie()
 void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wywołuje wątek rysujący pasek postępu
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WatekRysujPasekPostepu(LPVOID pParam)
+{
+	return reinterpret_cast<CAPLSNView*>(pParam)->WlasciwyWatekRysujPasekPostepu();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wątek  rysujący pasek postępu
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
+{
+	uint32_t nErr;
+
+	while (!m_bKoniecWatkuPaskaPostepu)
+	{
+		nErr = WaitForSingleObject(m_cKomunikacja.m_hZdarzeniePaczkaDanych, 200);
+		if (nErr != WAIT_TIMEOUT)
+		{
+			m_sBiezacyStanPaskaPostepu++;
+			Invalidate(TRUE);
+		}
+	}
+	return ERR_OK;
 }
