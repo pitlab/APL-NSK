@@ -6,7 +6,6 @@
 //#include "Protokol.h"
 #include "Komunikacja.h"
 
-
 class CAPLSNView : public CView
 {
 protected: // utwórz tylko na podstawie serializacji
@@ -31,6 +30,7 @@ protected:
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	CWinThread* pWskWatkuPaskaPostepu;
+	void CzytajRejestr();
 
 // Implementacja
 public:
@@ -47,6 +47,14 @@ protected:
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
+	uint8_t m_chAdresAutopilota;
+
+public:
+	uint8_t m_chNumerPortuCom;
+	uint8_t m_chTypPolaczenia;	//0=UART, 1=ETH
+	uint8_t m_chNumerIP[4];	
+	uint32_t m_nPredkoscPortuCom;
+	uint32_t m_nNumerPortuEth;
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
@@ -61,8 +69,6 @@ public:
 	afx_msg void OnUpdateKonfigPort(CCmdUI* pCmdUI);
 	afx_msg void OnPolaczCom();
 	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
-//	afx_msg void OnPolaczEth();
-//	afx_msg void OnUpdatePolaczEth(CCmdUI* pCmdUI);
 	afx_msg void OnZrobZdjecie();
 	afx_msg void OnUpdateZrobZdjecie(CCmdUI* pCmdUI);
 };

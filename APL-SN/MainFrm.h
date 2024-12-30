@@ -57,6 +57,7 @@ protected:
 public:
 	CString m_strKomunikatWych;
 	BOOL m_bPolaczono;
+	afx_msg void OnUstawParkamery();
 };
 
 

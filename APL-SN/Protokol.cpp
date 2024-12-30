@@ -178,6 +178,8 @@ uint8_t CProtokol::OdbierzDane()
 	return chErr;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Generuje potwierdzenie nawi¹zania po³¹czenia przez ethernet. Jest wywo³ywane z okna w³aœciciela
 // zwraca: nic
@@ -186,6 +188,7 @@ void CProtokol::AkceptujPolaczenieETH(void)
 {
 	m_cGniazdoSluchajace.Accept(m_cGniazdoPolaczenia);
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,11 +201,12 @@ void CProtokol::PolaczonoETH()
 	//SetEvent(m_hZdarzenieNawiazanoPolaczenieETH);
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Generuje potwierdzenie odebrania danych przez ethernet. Jest wywo³ywane z okna w³aœciciela
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 void CProtokol::OdbierzDaneETH()
 {
 
@@ -270,6 +274,8 @@ UINT CProtokol::WatekSluchajPortuCom(LPVOID pParam)
 	return reinterpret_cast<CProtokol*>(pParam)->WlasciwyWatekSluchajPortuCom();
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wywo³uje w¹tek s³uchaj¹cy portu komunikacyjnego
 // [we] pParam - typ zamykanego portu
@@ -311,7 +317,6 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // W¹tek s³uchaj¹cy portu Ethernet
 // Zwraca: kod b³êdu
@@ -331,12 +336,11 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 		if (iOdczytano != SOCKET_ERROR)		
 		{
 			//analizuj dane binarne bajt po bajcie
-			AnalizujOdebraneDane(chBuforOdb, iOdczytano);
+			getProtokol().AnalizujOdebraneDane(chBuforOdb, iOdczytano);
 		}
 	}
 	return ERR_OK;
 }
-
 
 
 

@@ -73,25 +73,38 @@
 #define IDS_EXPLORER                    305
 #define IDS_EDIT_MENU                   306
 #define IDD_PORT                        310
-#define IDD_DIALOG1                     312
+#define IDD_USTAWIENIA_KAMERY           311
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
 #define IDC_EDIT_PORT_ETH               1006
-#define ID_POLACZ                       32771
-#define ID_WYSLIJ                       32772
-#define ID_ZAMKNIJ                      32773
-#define ID_POLACZ_COM                   32774
-#define ID_ZROB_ZDJECIE                 32775
-#define ID_KONFIG_PORT                  32776
+#define IDC_SLIDER1                     1007
+#define IDC_SLID_SZER_ZDJECIA           1007
+#define IDC_SLID_WYS_ZDJECIA            1008
+#define IDC_SLID_ZOOM_ZDJECIA2          1009
+#define IDC_CHECK_ODWR_PION             1010
+#define IDC_CHECK_ODWR_POZ              1011
+#define IDC_COMBO_TRYB_DIAGNOSTYCZNY    1012
+#define IDC_STATIC_SZEROKOSC            1014
+#define IDC_STATIC_WYSOKOSC             1015
+#define IDC_RAD_UART                    1016
+#define IDC_RADIO2                      1017
+#define IDC_RAD_ETH                     1017
+#define ID_POLACZ                       2001
+#define ID_WYSLIJ                       2002
+#define ID_ZAMKNIJ                      2003
+#define ID_POLACZ_COM                   2004
+#define ID_ZROB_ZDJECIE                 2005
+#define ID_KONFIG_PORT                  2006
+#define ID_USTAW_PARKAMERY              2007
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32787
-#define _APS_NEXT_CONTROL_VALUE         1007
+#define _APS_NEXT_RESOURCE_VALUE        316
+#define _APS_NEXT_COMMAND_VALUE         32790
+#define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

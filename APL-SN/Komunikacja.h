@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Protokol.h"
+//#include "Protokol.h"
+
 
 class CKomunikacja
 {
@@ -36,11 +37,10 @@ public:
 		uint8_t chAdres;
 		CString strNazwa;
 	};
-	static std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju
-
+	//static std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju 
+	
 
 private:
-	//CProtokol m_cProto;
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
 	uint8_t WlasciwyWatekDekodujRamkiPolecen();
 	static BOOL m_bKoniecWatkuDekoderaPolecen;
@@ -51,7 +51,7 @@ private:
 	CString m_strAdresPortuETH;
 	uint32_t m_iNumerPortuUART;
 	uint32_t m_iPredkoscUART;
-	uint8_t m_chRamkaWych[ROZMIAR_RAMKI_UART];
+	uint8_t m_chRamkaWych[20];
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
 	
@@ -69,6 +69,10 @@ private:
 	//pola publiczne z odbieranymi danymi
 public:
 	CString m_strNazwa;
-	uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t *sBuforZdjecia);
+	//uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t *sBuforZdjecia);
+	uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia);
+	uint8_t PobierzKamere(uint8_t chAdres, uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
+	uint8_t UstawKamere(uint8_t chAdres, uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi);
 };
 
+CKomunikacja& getKomunikacja();

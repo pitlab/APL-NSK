@@ -2,7 +2,7 @@
 #include "Komunikacja.h"
 #include "Errors.h"
 #include "KomunikatySieci.h"
-
+#include "Protokol.h"
 /*
 Klasa komunikacyjna poœrednicz¹ca miêdzy aplikacj¹ a protoko³em komunikacyjnym. 
 Aplikacja przesy³a polecenia wymiany danych a klasa nawi¹zuje po³¹czenie po znanym sobie interfejsie
@@ -11,9 +11,11 @@ pakuje dane w ramki i przesy³a przy u¿yciu podrzêdnej klasy CProtokol
 */
 
 BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
-std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
+//std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
 uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +179,6 @@ uint8_t CKomunikacja::WatekDekodujRamkiPolecen(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 {
-	//uint8_t chErr;
 	_Ramka s_Ramka;
 	int n, m;
 	BOOL bMamyTo;
@@ -200,7 +201,7 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 
 				//sprawdŸ czy w roju mamy ju¿ tego wrona
 				bMamyTo = FALSE;
-				if (m_vRoj.size())
+				/*if (m_vRoj.size())
 				{
 					for (iter = m_vRoj.begin(); iter < m_vRoj.end(); iter++)
 					{
@@ -212,16 +213,16 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 							break;
 						}
 					}
-				}
+				}*/
 				//je¿eli nie mamy to go dodaj
-				if (bMamyTo == FALSE)
+				/*if (bMamyTo == FALSE)
 				{
 					sWron.chAdres = s_Ramka.chAdrNadawcy;
 					sWron.strNazwa = strNazwa;
 					m_vRoj.push_back(sWron);
-				}	
+				}*/	
 				strNazwa = L"";
-				WyslijOK(s_Ramka.chAdrNadawcy);		//wyœlij odpowiedŸ
+				CKomunikacja::WyslijOK(s_Ramka.chAdrNadawcy);		//wyœlij odpowiedŸ				
 				break;
 
 			default:	break;
@@ -251,20 +252,21 @@ uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
 // Wysy³a polecenie zrobienia zdjêcia
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t* sBuforZdjecia)
+//uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t* sBuforZdjecia)
+uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
 {
 	//uint8_t chRamka[ROZM_CIALA_RAMKI + 5];
 	uint8_t chDane[5];
 	uint8_t x, chErr, chOdebrano;
 	uint32_t nPobrano, nRozmiarDanych;
-	m_unia8_16.dane16 = sSzerokosc;
+	/*m_unia8_16.dane16 = sSzerokosc;
 	chDane[0] = m_unia8_16.dane8[0];
 	chDane[1] = m_unia8_16.dane8[1];
 	m_unia8_16.dane16 = sWysokosc;
 	chDane[2] = m_unia8_16.dane8[0];
-	chDane[3] = m_unia8_16.dane8[1];
+	chDane[3] = m_unia8_16.dane8[1];*/
 
-	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 4, chDane, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 0, chDane, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
 		SetEvent(m_hZdarzeniePaczkaDanych);
@@ -282,7 +284,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t
 
 		//pobierz zdjêcie
 		nPobrano = 0;
-		nRozmiarDanych = (uint32_t)(sSzerokosc * sWysokosc * 2);
+		nRozmiarDanych = (uint32_t)(320 * 240 * 2);
 		while (nPobrano < nRozmiarDanych)
 		{
 			m_unia8_32.dane32 = nPobrano/4;	//offset pobieranych danych zdjêcia, /4 - konwersja z bajtów s³owa 32/bit 
@@ -308,3 +310,56 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t
 	
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie odczytu konfiguracji kamery
+// parametry:
+// [i] chAdres - adres autopilota
+// [o] *chSzerWy i *chWysWy - wskaŸniki na szerokoœæ i wysokoœæ wyjœciowa kamery skalowana przez 16
+// [o] *chSzerWe i *chWysWe - wskaŸniki na szerokoœæ i wysokoœæ z jakiej zbiera i skaluje kamera, skalowana przez 16
+// [o] *chTrybDiagn - wskaŸnik na kod trybu diagnostycznego
+// [o] *chFlagi - zbiór bitów definiuj¹cych funkcjonalnoœæ: bit 0: odwróæ w poziomie, bit 1: odwróæ w pionie, bit 2: 1=zdjecie, 0=film
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::PobierzKamere(uint8_t chAdres, uint8_t *chSzerWy, uint8_t *chWysWy, uint8_t *chSzerWe, uint8_t *chWysWe, uint8_t *chTrybDiagn, uint8_t *chFlagi)
+{
+	uint8_t chDane[6];
+	uint8_t chErr, chOdebrano;
+
+	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POB_PAR_KAMERY, NULL, 0, chDane, &chOdebrano);
+	if (chErr == ERR_OK)
+	{
+		*chSzerWy = chDane[0];
+		*chWysWy = chDane[1];
+		*chSzerWe = chDane[2];
+		*chWysWe = chDane[3];
+		*chTrybDiagn = chDane[4];
+		*chFlagi = chDane[5];
+	}	
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zapisu konfiguracji kamery
+// parametry:
+// chSzerWy i chWysWy - szerokoœæ i wysokoœæ wyjœciowa kamery skalowana przez 16
+// chSzerWe i chWysWe - szerokoœæ i wysokoœæ z jakiej zbiera i skaluje kamera, skalowana przez 16
+// chTrybDiagn - kod trybu diagnostycznego
+// chFlagi - zbiór bitów definiuj¹cych funkcjonalnoœæ: bit 0: odwróæ w poziomie, bit 1: odwróæ w pionie, bit 2: 1=zdjecie, 0=film
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::UstawKamere(uint8_t chAdres, uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi)
+{
+	uint8_t chDane[6];
+	uint8_t chOdebrano;
+
+	chDane[0] = chSzerWy;
+	chDane[1] = chWysWy;
+	chDane[2] = chSzerWe;
+	chDane[3] = chWysWe;
+	chDane[4] = chTrybDiagn;
+	chDane[5] = chFlagi;
+
+	return getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 5, chDane, &chOdebrano);
+}

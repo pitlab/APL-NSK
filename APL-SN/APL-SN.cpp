@@ -104,7 +104,7 @@ BOOL CAPLSNApp::InitInstance()
 	// Zmień klucz rejestru, w którym są przechowywane ustawienia
 	// TODO: zmodyfikuj ten ciąg, aby był poprawny
 	// takie jak nazwa firmy lub organizacji
-	SetRegistryKey(_T("AutoPitLot_Stacja_Naziemna_v2"));
+	SetRegistryKey(_T("PitLab"));
 	LoadStdProfileSettings(4);  // Ładuj opcje ze standardowego pliku INI (włącznie z listą ostatnio używanych)
 
 
@@ -160,6 +160,7 @@ BOOL CAPLSNApp::InitInstance()
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
 
+
 	return TRUE;
 }
 
@@ -193,7 +194,6 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -206,6 +206,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+
 
 END_MESSAGE_MAP()
 
@@ -261,3 +262,5 @@ CProtokol& getProtokol()
 {
 	return theApp.getProtokol();
 }
+
+

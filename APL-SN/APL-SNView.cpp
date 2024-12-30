@@ -14,6 +14,8 @@
 #include "APL-SNView.h"
 #include "KomunikatySieci.h"
 #include "Errors.h"
+#include <stdio.h>
+#include <string.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,12 +40,13 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
 	ON_COMMAND(ID_ZROB_ZDJECIE, &CAPLSNView::OnZrobZdjecie)
 	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
-	END_MESSAGE_MAP()
+END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
 
 CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
+, m_chAdresAutopilota(2)
 {
 	
 }
@@ -62,10 +65,18 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 	//  styl kaskadowy CREATESTRUCT
 	uint8_t chErr;
 
+	CzytajRejestr();
+	//uint8_t m_chNumerIP[4];
+
+
 	m_cKomunikacja.UstawRodzica(this);
 	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
-	m_cKomunikacja.UstawNumerPortuETH(4000);
-	m_cKomunikacja.UstawTypPolaczenia(ETHS);
+	m_cKomunikacja.UstawNumerPortuETH(m_nNumerPortuEth);
+	m_cKomunikacja.UstawTypPolaczenia(m_chTypPolaczenia + UART);
+	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
+	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
+	
+
 	chErr = m_cKomunikacja.Polacz(this);
 	if (chErr == ERR_OK)
 		m_bPolaczono = TRUE;
@@ -111,7 +122,7 @@ void CAPLSNView::OnDraw(CDC* pDC)
 
 	//rysuj pasek postepu
 	pDC->GetBoundsRect(&prost, DCB_RESET);
-	float fPrzyrost = prost.right  / m_sLiczbaFragmentowPaskaPostepu;
+	float fPrzyrost = (float)prost.right  / m_sLiczbaFragmentowPaskaPostepu;
 
 	prost.top = prost.bottom - 10;
 	prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
@@ -233,7 +244,11 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnKonfigPort()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	m_cKonfigPolacz.UstawNumerPortuCom(m_chNumerPortuCom);
+	m_cKonfigPolacz.UstawPredkoscPortuCom(m_nPredkoscPortuCom);
+	m_cKonfigPolacz.UstawNumerPortuEth(m_nNumerPortuEth);
+	m_cKonfigPolacz.UstawAdresIP(m_chNumerIP);
+	m_cKonfigPolacz.UstawTypPolaczenia(m_chTypPolaczenia);
 	m_cKonfigPolacz.DoModal();
 }
 
@@ -255,13 +270,13 @@ void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
-	m_cKomunikacja.UstawTypPolaczenia(UART);
-	m_cKomunikacja.UstawNumerPortuUART(6);
-	m_cKomunikacja.UstawPredkoscPortuUART(115200);
+	/*m_cKomunikacja.UstawTypPolaczenia(UART + m_chTypPolaczenia);
+	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
+	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	if (m_cKomunikacja.CzyPolaczonoUart())
 		m_cKomunikacja.Rozlacz();
 	else
-		m_cKomunikacja.Polacz(this);
+		m_cKomunikacja.Polacz(this);*/
 }
 
 
@@ -296,7 +311,8 @@ void CAPLSNView::OnZrobZdjecie()
 	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
 	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
-	chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
+	//chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
+	chErr = m_cKomunikacja.ZrobZdjecie(m_chAdresAutopilota, pDoc->m_sZdjecie);
 	if (chErr == ERR_OK)
 	{
 		pDoc->m_bZdjecieGotowe = TRUE;
@@ -342,8 +358,157 @@ uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 		if (nErr != WAIT_TIMEOUT)
 		{
 			m_sBiezacyStanPaskaPostepu++;
-			Invalidate(TRUE);
+			this->Invalidate(TRUE);
+			//Invalidate(TRUE);
 		}
 	}
 	return ERR_OK;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje ustawienia z rejestru
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::CzytajRejestr()
+{
+	int x, y;
+	DWORD dwWartosc;
+	CString Str;
+	wchar_t chNapis[50];
+	HKEY hkSoftware, hkPitLab, hkAplSn, hkSettings;
+	LONG result;
+	DWORD dwDisp;
+	DWORD dwRegType, dwRegSize;
+
+	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
+	if (result == ERROR_SUCCESS)
+	{
+		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
+		if (result == ERROR_SUCCESS)
+		{
+			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
+			if (result == ERROR_SUCCESS)
+			{
+				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
+				if (result == ERROR_SUCCESS)
+				{
+					result = RegQueryValueEx(hkSettings, L"NrPortuCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+					if (result == ERROR_SUCCESS)
+					{
+						m_chNumerPortuCom = (uint8_t)(dwWartosc & 0xFF);
+					}
+				}				
+			}
+		}
+	}
+
+	//odczytaj rejestr i ustaw pozycje z odczytaną prędkością portu COM
+	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
+	if (result == ERROR_SUCCESS)
+	{
+		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
+		if (result == ERROR_SUCCESS)
+		{
+			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
+			if (result == ERROR_SUCCESS)
+			{
+				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
+				if (result == ERROR_SUCCESS)
+				{
+					result = RegQueryValueEx(hkSettings, L"PredkoscCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+					if (result == ERROR_SUCCESS)
+					{
+						m_nPredkoscPortuCom = (uint32_t)(dwWartosc & 0xFFFFFFFF);
+					}
+				}
+			}
+		}
+	}
+
+	//Odczytaj z rejestru adres IP
+	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
+	if (result == ERROR_SUCCESS)
+	{
+		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
+		if (result == ERROR_SUCCESS)
+		{
+			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
+			if (result == ERROR_SUCCESS)
+			{
+				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
+				if (result == ERROR_SUCCESS)
+				{
+					//za pierwszym razem zwraca błąd ERROR_MORE_DATA sugerujący że bufor jest za mały ale powiększanie nie pomaga
+					result = RegQueryValueExW(hkSettings, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
+					result = RegQueryValueExW(hkSettings, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
+					if (result == ERROR_SUCCESS)
+					{
+						//wchar_t chNapis[50] = { L"123.234.156.012" };
+						wchar_t* pwNapis;
+
+						pwNapis = chNapis;
+						for (x = 0; x < 4; x++)
+						{							
+							m_chNumerIP[x] = _wtoi(pwNapis);
+							pwNapis = wcschr(chNapis, L'.');							
+							for (y = 0; y <= (pwNapis - chNapis); y++)
+							{
+								chNapis[y] = L' ';
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//odczytaj numer portu ETH
+	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
+	if (result == ERROR_SUCCESS)
+	{
+		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
+		if (result == ERROR_SUCCESS)
+		{
+			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
+			if (result == ERROR_SUCCESS)
+			{
+				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
+				if (result == ERROR_SUCCESS)
+				{
+					result = RegQueryValueExW(hkSettings, L"PortETH", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+					if (result == ERROR_SUCCESS)
+					{
+						m_nNumerPortuEth = (uint32_t)(dwWartosc & 0xFFFFFFFF);
+					}
+				}				
+			}
+		}
+	}
+
+
+	//ustaw widoczność aktywnych kontrolek
+	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
+	if (result == ERROR_SUCCESS)
+	{
+		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
+		if (result == ERROR_SUCCESS)
+		{
+			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
+			if (result == ERROR_SUCCESS)
+			{
+				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
+				if (result == ERROR_SUCCESS)
+				{
+					result = RegQueryValueExW(hkSettings, L"TypPortu", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+					if (result == ERROR_SUCCESS)
+					{
+						m_chTypPolaczenia = (uint8_t)(dwWartosc & 0x1);						
+					}
+				}
+			}
+		}
+	}
+}
+
