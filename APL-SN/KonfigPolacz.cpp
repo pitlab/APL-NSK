@@ -86,6 +86,7 @@ void CKonfigPolacz::OnBnClickedOk()
 				if (result == ERROR_SUCCESS)
 				{
 					result = RegSetValueExW(hkSettings, L"NrPortuCOM", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
+					RegCloseKey(hkSettings);
 				}
 			}
 		}
@@ -238,7 +239,7 @@ BOOL CKonfigPolacz::OnInitDialog()
 	SP_DEVINFO_DATA devInfo;
 	devInfo.cbSize = sizeof devInfo;
 	TCHAR s[80];
-	TCHAR str[96];
+	//TCHAR str[96];
 	COMBOBOXEXITEM cbei;
 	cbei.mask = CBEIF_IMAGE | CBEIF_LPARAM | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE | CBEIF_TEXT;
 	cbei.pszText = s;
@@ -283,20 +284,12 @@ BOOL CKonfigPolacz::OnInitDialog()
 			
 		}
 		m_cPortCom.AddString(s);
-
-
-	/*	cbei.iItem = myFindIndex(hCombo, cbei.lParam); // helper for sorting by COM number
-		SendMessage(hCombo, CBEM_INSERTITEM, 0, (LPARAM)&cbei);
-		if (UINT(cbei.lParam) != nr) continue;
-		ComboBox_SetCurSel(hCombo, cbei.iItem);*/
 	}
 	SetupDiDestroyDeviceInfoList(devs);
 
-	uint32_t x, y, nPos;
+	int32_t x, y, nPos;
 	CString Str;
 	wchar_t chNapis[200];
-
-	LONG result;
 	uint32_t nValue;
 
 	

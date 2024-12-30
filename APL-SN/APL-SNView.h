@@ -5,6 +5,7 @@
 #pragma once
 //#include "Protokol.h"
 #include "Komunikacja.h"
+#include "CDaneFlash.h"
 
 class CAPLSNView : public CView
 {
@@ -43,6 +44,7 @@ public:
 protected:
 	CKomunikacja m_cKomunikacja;
 	CKonfigPolacz m_cKonfigPolacz;
+	CDaneFlash m_cDaneFlash;
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
@@ -71,6 +73,8 @@ public:
 	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
 	afx_msg void OnZrobZdjecie();
 	afx_msg void OnUpdateZrobZdjecie(CCmdUI* pCmdUI);
+	afx_msg void OnZapiszPamiec();
+	afx_msg void OnUpdateZapiszPamiec(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

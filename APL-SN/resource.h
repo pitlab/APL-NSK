@@ -74,6 +74,7 @@
 #define IDS_EDIT_MENU                   306
 #define IDD_PORT                        310
 #define IDD_USTAWIENIA_KAMERY           311
+#define IDD_ZAPISZ_FLASH                316
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -88,8 +89,12 @@
 #define IDC_STATIC_SZEROKOSC            1014
 #define IDC_STATIC_WYSOKOSC             1015
 #define IDC_RAD_UART                    1016
-#define IDC_RADIO2                      1017
 #define IDC_RAD_ETH                     1017
+#define IDC_BUT_CZYTAJ_PLIK             1018
+#define IDC_BUT_ZAPISZ_FLASH            1020
+#define IDC_BUT_KASUJ_FLASH             1021
+#define IDC_LIST2                       1023
+#define IDC_LISTA_KOMUNIKATOW           1023
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -97,14 +102,15 @@
 #define ID_ZROB_ZDJECIE                 2005
 #define ID_KONFIG_PORT                  2006
 #define ID_USTAW_PARKAMERY              2007
+#define ID_ZAPISZ_PAMIEC                32790
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1018
+#define _APS_NEXT_RESOURCE_VALUE        318
+#define _APS_NEXT_COMMAND_VALUE         32791
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

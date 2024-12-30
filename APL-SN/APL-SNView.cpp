@@ -40,6 +40,8 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
 	ON_COMMAND(ID_ZROB_ZDJECIE, &CAPLSNView::OnZrobZdjecie)
 	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
+	ON_COMMAND(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnZapiszPamiec)
+	ON_UPDATE_COMMAND_UI(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnUpdateZapiszPamiec)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -270,13 +272,13 @@ void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
-	/*m_cKomunikacja.UstawTypPolaczenia(UART + m_chTypPolaczenia);
+	m_cKomunikacja.UstawTypPolaczenia(UART + m_chTypPolaczenia);
 	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
 	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	if (m_cKomunikacja.CzyPolaczonoUart())
 		m_cKomunikacja.Rozlacz();
 	else
-		m_cKomunikacja.Polacz(this);*/
+		m_cKomunikacja.Polacz(this);
 }
 
 
@@ -363,6 +365,27 @@ uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 		}
 	}
 	return ERR_OK;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Otwiera okno dialogowe Zapisz Pamięć Flash
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnZapiszPamiec()
+{
+	m_cDaneFlash.DoModal();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku Zapisz Pamięć Flash w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
 }
 
 
@@ -511,4 +534,5 @@ void CAPLSNView::CzytajRejestr()
 		}
 	}
 }
+
 

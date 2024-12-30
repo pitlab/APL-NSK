@@ -189,6 +189,7 @@
     <ClInclude Include="APL-SN.h" />
     <ClInclude Include="APL-SNDoc.h" />
     <ClInclude Include="APL-SNView.h" />
+    <ClInclude Include="CDaneFlash.h" />
     <ClInclude Include="CRegistry.h" />
     <ClInclude Include="Errors.h" />
     <ClInclude Include="GniazdoSieci.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="APL-SN.cpp" />
     <ClCompile Include="APL-SNDoc.cpp" />
     <ClCompile Include="APL-SNView.cpp" />
+    <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CRegistry.cpp" />
     <ClCompile Include="GniazdoSieci.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
