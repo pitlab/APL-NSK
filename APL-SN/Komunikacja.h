@@ -1,7 +1,7 @@
 #pragma once
 
 //#include "Protokol.h"
-
+#define WIELKOSC_ROJU	4
 
 class CKomunikacja
 {
@@ -29,16 +29,33 @@ public:
 	BOOL CzyPolaczonoUart() { return m_bPolaczonoUart; }
 	BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
 	uint8_t PobierzNazweBSP(CString* strNazwa);
-	uint8_t WyslijOK(uint8_t chAdrOdb);
+	uint8_t WyslijOK();
+	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
+	uint8_t PobierzKamere(uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
+	uint8_t UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi);
+	uint8_t ZapiszFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
+	uint8_t SkasujSektorFlash(uint32_t nAdresPamieci);
+
 
 	//struktura zbieraj¹ca parametry BSP
 	struct _sWron
 	{
 		uint8_t chAdres;
 		CString strNazwa;
-	};
+	} m_stWron[WIELKOSC_ROJU];
 	//static std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju 
-	
+	union _un8_16
+	{
+		uint16_t dane16;
+		uint8_t dane8[2];
+	} m_unia8_16;
+
+	union _un8_32
+	{
+		uint32_t dane32;
+		uint16_t dane16[2];
+		uint8_t dane8[4];
+	} m_unia8_32;
 
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
@@ -51,28 +68,18 @@ private:
 	CString m_strAdresPortuETH;
 	uint32_t m_iNumerPortuUART;
 	uint32_t m_iPredkoscUART;
-	uint8_t m_chRamkaWych[20];
+	uint8_t m_chRamkaWych[260];
+	uint8_t m_chRamkaPrzy[260];
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
 	
-	union _un8_16
-	{
-		uint16_t dane16;
-		uint8_t dane8[2];
-	} m_unia8_16;
-	union _un8_32
-	{
-		uint32_t dane32;
-		uint8_t dane8[4];
-	} m_unia8_32;
+
 
 	//pola publiczne z odbieranymi danymi
 public:
 	CString m_strNazwa;
-	//uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t *sBuforZdjecia);
-	uint8_t ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia);
-	uint8_t PobierzKamere(uint8_t chAdres, uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
-	uint8_t UstawKamere(uint8_t chAdres, uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi);
+	uint8_t m_chAdresAutopilota;
+	
 };
 
 CKomunikacja& getKomunikacja();

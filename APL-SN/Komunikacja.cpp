@@ -194,6 +194,13 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 			s_Ramka = getProtokol().m_vRamkaPolecenia[n];
 			switch (s_Ramka.chPolecenie)
 			{
+			case PK_OK:	//przysz³a ramka OK
+			case PK_BLAD:	//przysz³a ramka z kodem b³êdu
+				//m_stPotwierdzenie.chTyp = s_Ramka.chPolecenie;
+				//m_stPotwierdzenie.chKodBledu = s_Ramka.dane[0];
+				//m_stPotwierdzenie.chParametr = s_Ramka.dane[1];
+				break;
+
 			case PK_POBIERZ_ID: //przysz³a ramka z identyfikatorem nowego BSP
 				//m_strNazwa = L"";
 				for (m = 0; m < s_Ramka.chRozmiar; m++)
@@ -222,7 +229,8 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 					m_vRoj.push_back(sWron);
 				}*/	
 				strNazwa = L"";
-				CKomunikacja::WyslijOK(s_Ramka.chAdrNadawcy);		//wyœlij odpowiedŸ				
+				m_chAdresAutopilota = s_Ramka.chAdrNadawcy;
+				CKomunikacja::WyslijOK();		//wyœlij odpowiedŸ				
 				break;
 
 			default:	break;
@@ -239,11 +247,11 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 // Wysy³a ramkê OK 
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
+uint8_t CKomunikacja::WyslijOK()
 {
 	uint8_t chRamka[ROZM_CIALA_RAMKI];
 
-	getProtokol().PrzygotujRamke(chAdrOdb, ADRES_STACJI, PK_OK, NULL, 0, chRamka);
+	getProtokol().PrzygotujRamke(m_chAdresAutopilota, ADRES_STACJI, PK_OK, NULL, 0, chRamka);
 	return getProtokol().WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
 }
 
@@ -253,7 +261,7 @@ uint8_t CKomunikacja::WyslijOK(uint8_t chAdrOdb)
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t* sBuforZdjecia)
-uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
+uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 {
 	//uint8_t chRamka[ROZM_CIALA_RAMKI + 5];
 	uint8_t chDane[5];
@@ -266,7 +274,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
 	chDane[2] = m_unia8_16.dane8[0];
 	chDane[3] = m_unia8_16.dane8[1];*/
 
-	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 0, chDane, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 0, chDane, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
 		SetEvent(m_hZdarzeniePaczkaDanych);
@@ -274,7 +282,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
 		chDane[0] = SGZ_CZEKA;
 		while (chDane[0] == SGZ_CZEKA)
 		{
-			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POB_STAT_ZDJECIA, NULL, 0, chDane, &chOdebrano);
+			chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POB_STAT_ZDJECIA, NULL, 0, chDane, &chOdebrano);
 			if (chErr == ERR_OK)
 			{
 				if (chDane[0] == SGZ_BLAD)
@@ -297,7 +305,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
 			else
 				chDane[4] = nRozmiarDanych - nPobrano;
 
-			chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano/2), &chOdebrano);
+			chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano/2), &chOdebrano);
 			if (chErr == ERR_OK)
 			{
 				nPobrano += chOdebrano;
@@ -320,12 +328,12 @@ uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t* sBuforZdjecia)
 // [o] *chFlagi - zbiór bitów definiuj¹cych funkcjonalnoœæ: bit 0: odwróæ w poziomie, bit 1: odwróæ w pionie, bit 2: 1=zdjecie, 0=film
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::PobierzKamere(uint8_t chAdres, uint8_t *chSzerWy, uint8_t *chWysWy, uint8_t *chSzerWe, uint8_t *chWysWe, uint8_t *chTrybDiagn, uint8_t *chFlagi)
+uint8_t CKomunikacja::PobierzKamere(uint8_t *chSzerWy, uint8_t *chWysWy, uint8_t *chSzerWe, uint8_t *chWysWe, uint8_t *chTrybDiagn, uint8_t *chFlagi)
 {
 	uint8_t chDane[6];
 	uint8_t chErr, chOdebrano;
 
-	chErr = getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_POB_PAR_KAMERY, NULL, 0, chDane, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POB_PAR_KAMERY, NULL, 0, chDane, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
 		*chSzerWy = chDane[0];
@@ -343,13 +351,13 @@ uint8_t CKomunikacja::PobierzKamere(uint8_t chAdres, uint8_t *chSzerWy, uint8_t 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wysy³a polecenie zapisu konfiguracji kamery
 // parametry:
-// chSzerWy i chWysWy - szerokoœæ i wysokoœæ wyjœciowa kamery skalowana przez 16
-// chSzerWe i chWysWe - szerokoœæ i wysokoœæ z jakiej zbiera i skaluje kamera, skalowana przez 16
-// chTrybDiagn - kod trybu diagnostycznego
-// chFlagi - zbiór bitów definiuj¹cych funkcjonalnoœæ: bit 0: odwróæ w poziomie, bit 1: odwróæ w pionie, bit 2: 1=zdjecie, 0=film
+// [i] chSzerWy i chWysWy - szerokoœæ i wysokoœæ wyjœciowa kamery skalowana przez 16
+// [i] chSzerWe i chWysWe - szerokoœæ i wysokoœæ z jakiej zbiera i skaluje kamera, skalowana przez 16
+// [i] chTrybDiagn - kod trybu diagnostycznego
+// [i] chFlagi - zbiór bitów definiuj¹cych funkcjonalnoœæ: bit 0: odwróæ w poziomie, bit 1: odwróæ w pionie, bit 2: 1=zdjecie, 0=film
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::UstawKamere(uint8_t chAdres, uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi)
+uint8_t CKomunikacja::UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi)
 {
 	uint8_t chDane[6];
 	uint8_t chOdebrano;
@@ -361,5 +369,57 @@ uint8_t CKomunikacja::UstawKamere(uint8_t chAdres, uint8_t chSzerWy, uint8_t chW
 	chDane[4] = chTrybDiagn;
 	chDane[5] = chFlagi;
 
-	return getProtokol().WyslijOdbierzRamke(chAdres, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 5, chDane, &chOdebrano);
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 5, m_chRamkaPrzy, &chOdebrano);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zapisu danych pod wskazany adres we flash. Optymalne jest programowanie co najmniej ca³ymi stronami po 16 s³ów (32 bajty)
+// parametry:
+// [i] chAdresAPL - adres autopilota
+// [i] nAdres - adres bezwzglêdny pocz¹tku obszaru pamiêci z zakresu 0x68000000..0x6A000000
+// [i] *sDane - wskaŸnik na bufor z danymi do zaprogramowania
+// [i] chRozmiar - iloœæ s³ów do zapisu max 128
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar)
+{
+	uint8_t chOdebrano = 0;
+
+	if (chRozmiar > 128)
+		return ERR_INVALID_DATA_SIZE;
+
+	m_unia8_32.dane32 = nAdresPamieci;
+	for (uint8_t n=0; n<4; n++)
+		m_chRamkaWych[n] = m_unia8_32.dane8[n];
+	m_chRamkaWych[4] = chRozmiar;	
+
+	for (uint8_t n = 0; n < chRozmiar; n++)
+	{
+		m_unia8_16.dane16 = sDane[n];
+		m_chRamkaWych[2*n + 5] = m_unia8_16.dane8[0];
+		m_chRamkaWych[2*n + 6] = m_unia8_16.dane8[1];
+	}
+	
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FLASH, m_chRamkaWych, (2*chRozmiar)+5, m_chRamkaPrzy, &chOdebrano, 1000);	//timeout normalny bo Buffer Programming time = 750us
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie skasowania sektora pamieci flash o rozmiarze 128kB
+// parametry:
+// [i] chAdresAPL - adres autopilota
+// [i] nAdresPamieci - adres bezwzglêdny pocz¹tku obszaru pamiêci z zakresu 0x68000000..0x6A000000
+// // zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::SkasujSektorFlash(uint32_t nAdresPamieci)
+{
+	uint8_t chOdebrano = 0;
+
+	m_unia8_32.dane32 = nAdresPamieci;
+	for (uint8_t n = 0; n < 4; n++)
+		m_chRamkaWych[n] = m_unia8_32.dane8[n];
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_KASUJ_FLASH, m_chRamkaWych, 4, m_chRamkaPrzy, &chOdebrano, 2000);	//du¿y timeout bo Sector Erase time = 1100 ms
 }

@@ -50,7 +50,7 @@ CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
 , m_chAdresAutopilota(2)
 {
-	
+	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 }
 
 
@@ -314,7 +314,7 @@ void CAPLSNView::OnZrobZdjecie()
 	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
 	//chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
-	chErr = m_cKomunikacja.ZrobZdjecie(m_chAdresAutopilota, pDoc->m_sZdjecie);
+	chErr = m_cKomunikacja.ZrobZdjecie(pDoc->m_sZdjecie);
 	if (chErr == ERR_OK)
 	{
 		pDoc->m_bZdjecieGotowe = TRUE;
@@ -400,137 +400,80 @@ void CAPLSNView::CzytajRejestr()
 	DWORD dwWartosc;
 	CString Str;
 	wchar_t chNapis[50];
-	HKEY hkSoftware, hkPitLab, hkAplSn, hkSettings;
-	LONG result;
-	DWORD dwDisp;
+	HKEY hKey;
+	LONG lErr;
+	DWORD dwResult;
 	DWORD dwRegType, dwRegSize;
 
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
+		lErr = RegQueryValueEx(hKey, L"NrPortuCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+		if (lErr == ERROR_SUCCESS)
 		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegQueryValueEx(hkSettings, L"NrPortuCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-					if (result == ERROR_SUCCESS)
-					{
-						m_chNumerPortuCom = (uint8_t)(dwWartosc & 0xFF);
-					}
-				}				
-			}
+			m_chNumerPortuCom = (uint8_t)(dwWartosc & 0xFF);
+			RegCloseKey(hKey);
 		}
 	}
 
 	//odczytaj rejestr i ustaw pozycje z odczytaną prędkością portu COM
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
+		lErr = RegQueryValueEx(hKey, L"PredkoscCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+		if (lErr == ERROR_SUCCESS)
 		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegQueryValueEx(hkSettings, L"PredkoscCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-					if (result == ERROR_SUCCESS)
-					{
-						m_nPredkoscPortuCom = (uint32_t)(dwWartosc & 0xFFFFFFFF);
-					}
-				}
-			}
+			m_nPredkoscPortuCom = (uint32_t)(dwWartosc & 0xFFFFFFFF);
+			RegCloseKey(hKey);
 		}
 	}
 
 	//Odczytaj z rejestru adres IP
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
+	//za pierwszym razem zwraca błąd ERROR_MORE_DATA sugerujący że bufor jest za mały ale powiększanie nie pomaga
+		lErr = RegQueryValueExW(hKey, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
+		lErr = RegQueryValueExW(hKey, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
+		if (lErr == ERROR_SUCCESS)
 		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
+			wchar_t* pwNapis;
+			pwNapis = chNapis;
+			for (x = 0; x < 4; x++)
+			{							
+				m_chNumerIP[x] = _wtoi(pwNapis);
+				pwNapis = wcschr(chNapis, L'.');							
+				for (y = 0; y <= (pwNapis - chNapis); y++)
 				{
-					//za pierwszym razem zwraca błąd ERROR_MORE_DATA sugerujący że bufor jest za mały ale powiększanie nie pomaga
-					result = RegQueryValueExW(hkSettings, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
-					result = RegQueryValueExW(hkSettings, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
-					if (result == ERROR_SUCCESS)
-					{
-						//wchar_t chNapis[50] = { L"123.234.156.012" };
-						wchar_t* pwNapis;
-
-						pwNapis = chNapis;
-						for (x = 0; x < 4; x++)
-						{							
-							m_chNumerIP[x] = _wtoi(pwNapis);
-							pwNapis = wcschr(chNapis, L'.');							
-							for (y = 0; y <= (pwNapis - chNapis); y++)
-							{
-								chNapis[y] = L' ';
-							}
-						}
-					}
+					chNapis[y] = L' ';
 				}
 			}
+			RegCloseKey(hKey);
 		}
 	}
 
 	//odczytaj numer portu ETH
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
+		lErr = RegQueryValueExW(hKey, L"PortETH", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+		if (lErr == ERROR_SUCCESS)
 		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegQueryValueExW(hkSettings, L"PortETH", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-					if (result == ERROR_SUCCESS)
-					{
-						m_nNumerPortuEth = (uint32_t)(dwWartosc & 0xFFFFFFFF);
-					}
-				}				
-			}
+			m_nNumerPortuEth = (uint32_t)(dwWartosc & 0xFFFFFFFF);
+			RegCloseKey(hKey);
 		}
+		
 	}
 
-
 	//ustaw widoczność aktywnych kontrolek
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
+		lErr = RegQueryValueExW(hKey, L"TypPortu", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
+		if (lErr == ERROR_SUCCESS)
 		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegQueryValueExW(hkSettings, L"TypPortu", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-					if (result == ERROR_SUCCESS)
-					{
-						m_chTypPolaczenia = (uint8_t)(dwWartosc & 0x1);						
-					}
-				}
-			}
+			m_chTypPolaczenia = (uint8_t)(dwWartosc & 0x1);		
+			RegCloseKey(hKey);
 		}
 	}
 }

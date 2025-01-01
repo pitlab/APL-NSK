@@ -60,9 +60,9 @@ void CKonfigPolacz::OnBnClickedOk()
 	DWORD dwWartosc;
 	CString Str;
 	wchar_t chNapis[90];
-	HKEY hkSoftware, hkPitLab, hkAplSn, hkSettings;
-	LONG result;
-	DWORD dwDisp;
+	HKEY hKey;
+	LONG lErr;
+	DWORD dwResult;
 
 	UpdateData(TRUE);
 	nPos = m_cPortCom.GetCurSel();
@@ -73,25 +73,13 @@ void CKonfigPolacz::OnBnClickedOk()
 	chNapis[x] = 0;
 	dwWartosc = _wtoi((const wchar_t*)chNapis);
 
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
-		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegSetValueExW(hkSettings, L"NrPortuCOM", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
-					RegCloseKey(hkSettings);
-				}
-			}
-		}
+		lErr = RegSetValueExW(hKey, L"NrPortuCOM", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
+		RegCloseKey(hKey);
 	}
-	if (result != ERROR_SUCCESS)
+	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
 	UpdateData(FALSE);
 
@@ -103,24 +91,13 @@ void CKonfigPolacz::OnBnClickedOk()
 	chNapis[x] = 0;
 	dwWartosc = _wtoi((const wchar_t*)chNapis);
 
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
-		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegSetValueExW(hkSettings, L"PredkoscCOM", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
-				}
-			}
-		}
+		lErr = RegSetValueExW(hKey, L"PredkoscCOM", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
+		RegCloseKey(hKey);
 	}
-	if (result != ERROR_SUCCESS)
+	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
 
 
@@ -128,24 +105,13 @@ void CKonfigPolacz::OnBnClickedOk()
 		chNapis[x] = m_strAdresIP.GetAt(x);
 	chNapis[x] = 0;
 
-	result = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
-		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegSetValueExW(hkSettings, L"AdresIP", 0, REG_SZ, (LPBYTE)&chNapis, 2 * m_strAdresIP.GetLength() + 1);
-				}
-			}
-		}
+		lErr = RegSetValueExW(hKey, L"AdresIP", 0, REG_SZ, (LPBYTE)&chNapis, 2 * m_strAdresIP.GetLength() + 1);
+		RegCloseKey(hKey);
 	}
-	if (result != ERROR_SUCCESS)
+	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
 
 	for (x = 0; x < m_strPortETH.GetLength(); x++)
@@ -153,48 +119,25 @@ void CKonfigPolacz::OnBnClickedOk()
 	chNapis[x] = 0;
 	dwWartosc = _wtoi((const wchar_t*)chNapis);
 
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
-		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegSetValueExW(hkSettings, L"PortETH", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
-				}
-			}
-		}
+		lErr = RegSetValueExW(hKey, L"PortETH", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
+		RegCloseKey(hKey);
 	}
-	if (result != ERROR_SUCCESS)
+	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
 
 	dwWartosc = m_bTypPolaczenia;
 
-	result = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", 0, KEY_ALL_ACCESS, &hkSoftware);
-	if (result == ERROR_SUCCESS)
+	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
+	if (lErr == ERROR_SUCCESS)
 	{
-		result = RegCreateKeyExW(hkSoftware, L"PitLab", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkPitLab, &dwDisp);
-		if (result == ERROR_SUCCESS)
-		{
-			result = RegCreateKeyExW(hkPitLab, L"APL-SN", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkAplSn, &dwDisp);
-			if (result == ERROR_SUCCESS)
-			{
-				result = RegCreateKeyExW(hkAplSn, L"Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkSettings, &dwDisp);
-				if (result == ERROR_SUCCESS)
-				{
-					result = RegSetValueExW(hkSettings, L"TypPortu", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
-				}
-			}
-		}
+		lErr = RegSetValueExW(hKey, L"TypPortu", 0, REG_DWORD, (LPBYTE)&dwWartosc, 4);
+		RegCloseKey(hKey);
 	}
-	if (result != ERROR_SUCCESS)
+	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
-
 
 	CDialogEx::OnOK();
 }
