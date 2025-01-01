@@ -2,6 +2,7 @@
 
 //#include "Protokol.h"
 #define WIELKOSC_ROJU	4
+#define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
 
 class CKomunikacja
 {

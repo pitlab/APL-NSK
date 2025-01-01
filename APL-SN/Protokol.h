@@ -3,7 +3,7 @@
 #include "GniazdoSieci.h"
 #include <queue>
 #include "KomunikatySieci.h"
-#include "..\..\..\include\PoleceniaKomunikacyjne.h"
+#include "polecenia_komunikacyjne.h"
 
 
 #define PK_UST_ROZD_KAMERY	5

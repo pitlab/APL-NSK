@@ -8,8 +8,8 @@ class CDaneFlash : public CDialogEx
 	DECLARE_DYNAMIC(CDaneFlash)
 //#define ROZMIAR_SPISU_KOMUNIKATOW	256
 #define ROZMIAR_SPISU_KOMUNIKATOW	8
-//#define ADRES_POCZATKU_KOMUNIKATOW	0x68020000
-#define ADRES_POCZATKU_KOMUNIKATOW	0x68030000
+#define ADRES_POCZATKU_KOMUNIKATOW	0x68020000
+//#define ADRES_POCZATKU_KOMUNIKATOW	0x68030000
 #define LICZBA_SEKTOROW_KOMUNIKATOW	6			//sektor to 128kB
 
 	struct _SpisTresci
@@ -19,19 +19,19 @@ class CDaneFlash : public CDialogEx
 	};
 	struct _PlikWav
 	{
-		uint8_t chRiff[4];				//0..3
-		uint32_t nRozmiarPliku;			//4..7
-		uint8_t chWave[4];				//8..11
-		uint8_t chfmt[4];				//12..15
-		uint32_t nRozmiarFormatuDanych;	//16..19
-		uint16_t sTypFormatu;			//20..21
+		uint8_t chRiff[4];				//0..3		CHUNK ID "FIFF"
+		uint32_t nRozmiarPliku;			//4..7		(file size) - 8
+		uint8_t chWave[4];				//8..11		RIFF Type "WAVE"
+		uint8_t chfmt[4];				//12..15	CHUNK ID "fmt "
+		uint32_t nRozmiarFormatuDanych;	//16..19	16 + extra format bytes
+		uint16_t sTypFormatu;			//20..21	compression code 1=uncompressed
 		uint16_t sLiczbaKanalow;		//22..23
 		uint32_t nCzestProbkowania;		//24..27
 		uint32_t nBajtowNaSek;			//28..31
 		uint16_t sBajtowNaProbke;		//32..33
 		uint16_t sBitowNaProbke;		//34..35
 		uint8_t chData[4];				//36..39
-		uint32_t nLiczbaDanych;			//40..43
+		uint32_t nLiczbaDanych;			//40..43	extra format bytes
 	};
 
 	union _uWav

@@ -378,6 +378,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				m_vRamkaTelemetryczna.push_back(sRamka);
 				LeaveCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+				TRACE("SetEvent: Telemetria\n");
 			}
 			else
 			{
@@ -398,7 +399,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();
 				SetEvent(m_hZdarzenieRamkaPolecenGotowa);	
-				TRACE("SetEvent\n");
+				TRACE("SetEvent: Polecenia\n");
 			}
 		}
 	}
@@ -514,7 +515,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 		}
 
 		//wyslij ramkê
-		TRACE("Wyœlij ramke\n" );
+		TRACE("Wyœlij ramkê, ret=%d\n", chLicznikRetransmisji);
 
 		chErr = WyslijRamke(m_chTypPortu, chRamka, chRozmiarWy + ROZM_CIALA_RAMKI);
 		if (chErr == ERR_OK)

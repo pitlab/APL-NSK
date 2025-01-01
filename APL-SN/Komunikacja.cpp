@@ -266,6 +266,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 	//uint8_t chRamka[ROZM_CIALA_RAMKI + 5];
 	uint8_t chDane[5];
 	uint8_t x, chErr, chOdebrano;
+	uint8_t chLicznikBledow = 0;
 	uint32_t nPobrano, nRozmiarDanych;
 	/*m_unia8_16.dane16 = sSzerokosc;
 	chDane[0] = m_unia8_16.dane8[0];
@@ -286,7 +287,14 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 			if (chErr == ERR_OK)
 			{
 				if (chDane[0] == SGZ_BLAD)
-					return SGZ_BLAD;
+					return ERR_BLAD_KAMERY;
+				chLicznikBledow = 0;
+			}
+			else
+			{
+				chLicznikBledow++;
+				if (chLicznikBledow > LICZBA_PROB_ZANIM_ZGLOSI_BLAD)
+					return ERR_TIMEOUT;
 			}
 		}
 
@@ -310,6 +318,13 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 			{
 				nPobrano += chOdebrano;
 				SetEvent(m_hZdarzeniePaczkaDanych);
+				chLicznikBledow = 0;
+			}
+			else
+			{
+				chLicznikBledow++;
+				if (chLicznikBledow > LICZBA_PROB_ZANIM_ZGLOSI_BLAD)
+					return ERR_TIMEOUT;;
 			}
 		}
 	}	
@@ -386,23 +401,25 @@ uint8_t CKomunikacja::UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chS
 uint8_t CKomunikacja::ZapiszFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar)
 {
 	uint8_t chOdebrano = 0;
+	uint8_t chDaneWychodzace[256];
+	uint8_t chDanePrzychodzace[2];
 
 	if (chRozmiar > 128)
 		return ERR_INVALID_DATA_SIZE;
 
 	m_unia8_32.dane32 = nAdresPamieci;
 	for (uint8_t n=0; n<4; n++)
-		m_chRamkaWych[n] = m_unia8_32.dane8[n];
-	m_chRamkaWych[4] = chRozmiar;	
+		chDaneWychodzace[n] = m_unia8_32.dane8[n];
+	chDaneWychodzace[4] = chRozmiar;		//liczba s³ów 16-bitowych do zapisu
 
 	for (uint8_t n = 0; n < chRozmiar; n++)
 	{
 		m_unia8_16.dane16 = sDane[n];
-		m_chRamkaWych[2*n + 5] = m_unia8_16.dane8[0];
-		m_chRamkaWych[2*n + 6] = m_unia8_16.dane8[1];
+		chDaneWychodzace[2*n + 5] = m_unia8_16.dane8[0];
+		chDaneWychodzace[2*n + 6] = m_unia8_16.dane8[1];
 	}
 	
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FLASH, m_chRamkaWych, (2*chRozmiar)+5, m_chRamkaPrzy, &chOdebrano, 1000);	//timeout normalny bo Buffer Programming time = 750us
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FLASH, chDaneWychodzace, (2*chRozmiar)+5, chDanePrzychodzace, &chOdebrano, 1000);	//timeout normalny bo Buffer Programming time = 750us
 }
 
 

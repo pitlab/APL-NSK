@@ -28,3 +28,4 @@ const uint8_t ERR_WERSJA_CPU		= 24;	//nieprawid³owa wersja CPU
 const uint8_t ERR_KASUJ_FLASH_CPU	= 25;	//b³¹d kasowania pamiêci flash kontrolera
 const uint8_t ERR_PROGR_FLASH_CPU	= 26;	//b³¹d programowania pamiêci flash kontrolera
 const uint8_t ERR_ZLY_TYP_PORTU		= 27;	//niew³aœciwy lub niezdefiniowany typ portu komunikacyjnego
+const uint8_t ERR_BLAD_KAMERY		= 28;	//kamera zwróci³a b³¹d

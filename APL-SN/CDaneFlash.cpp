@@ -57,7 +57,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	uint32_t nAdresPoczatkuSampla = ADRES_POCZATKU_KOMUNIKATOW + ROZMIAR_SPISU_KOMUNIKATOW * 8;
 	uint32_t nRozmiarSampla;
 	CString strNapis;
-
+	char chBuforPliku[30];
 
 	szFile[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -137,7 +137,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			}
 
 			//odczytaj nagłówek pliku do unii bufora i struktury nagłówka
-			fgets((char*)m_uNaglowekWav.chBufor, 44, pPlikSampla);
+			fgets((char*)m_uNaglowekWav.chBufor, 44+1, pPlikSampla);
 			
 			//walidacja napisów RIFF i WAVE
 			if ((m_uNaglowekWav.strPlikWav.chRiff[0] != 'R') || (m_uNaglowekWav.strPlikWav.chWave[0] != 'W'))
@@ -154,12 +154,39 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 				MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
 				break;	
 			}
+
+			//walidacja kompresji
+			if (m_uNaglowekWav.strPlikWav.sTypFormatu != 1)
+			{
+				MessageBoxW(L"Dane nie mogą być skompresowane!", _T("Błąd!"), MB_ICONEXCLAMATION);
+				break;
+			}
 			nRozmiarSampla = m_uNaglowekWav.strPlikWav.nRozmiarPliku - 36;
+
+			//wczytaj z pliku "extra firmat bytes" z pola nLiczbaDanych
+			if (m_uNaglowekWav.strPlikWav.nLiczbaDanych < sizeof(chBuforPliku))
+				fgets(chBuforPliku, m_uNaglowekWav.strPlikWav.nLiczbaDanych+1, pPlikSampla);
+			else
+			{
+				MessageBoxW(L"Nieoczekiwany format pliku wav!", _T("Błąd!"), MB_ICONEXCLAMATION);
+				break;
+			}
+
+			//odczytaj ostatni "chunk" = "data" i nastepujący po nim rozmiar danych sampla
+			fgets(chBuforPliku, 9, pPlikSampla);
+			if ((chBuforPliku[0] == 'd') && (chBuforPliku[1] == 'a') && (chBuforPliku[2] == 't') && (chBuforPliku[3] == 'a'))
+			{
+				for (int n = 0; n < 4; n++)
+					cKomunikacja.m_unia8_32.dane8[n] = chBuforPliku[n + 4];
+				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla
+			}
+
+			
 
 			//odczytaj resztę pliku i przepisz do wektora
 			for (uint32_t n = 0; n < nRozmiarSampla / 2; n++)
 			{
-				fgets((char*)cKomunikacja.m_unia8_16.dane8, 2, pPlikSampla);
+				fgets((char*)cKomunikacja.m_unia8_16.dane8, 2+1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
 				m_vPamiecKomunikatow.push_back(cKomunikacja.m_unia8_16.dane16);
 			}
 			fclose(pPlikSampla);
@@ -199,30 +226,32 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CDaneFlash::OnBnClickedButZapiszFlash()
 {
-#define ROZMIAR_PACZKI	128	//wyrażony w słowach
+#define ROZMIAR_PACZKI	120	//wyrażony w słowach
 	CString strNapis;
-	uint32_t nRozmiar = (uint32_t)(m_vPamiecKomunikatow.size() / ROZMIAR_PACZKI);
-	uint32_t nAdres = ADRES_POCZATKU_KOMUNIKATOW;
-	uint8_t chErr;	
-	m_ctlPasekPostepu.SetRange(0, nRozmiar-1);
+	uint32_t nIloscPaczek = (uint32_t)(m_vPamiecKomunikatow.size() / ROZMIAR_PACZKI);
+	uint32_t nAdres = (uint32_t)ADRES_POCZATKU_KOMUNIKATOW;
+	uint8_t chErr;
+	uint8_t chRozmarWysylanychDanych;
+	m_ctlPasekPostepu.SetRange(0, nIloscPaczek -1);
 
-	//wysyłaj paczkami o rozmiarze ROZMIAR_PACZKI
-	for (uint32_t n = 0; n < nRozmiar; n++)
-	{
-		chErr = cKomunikacja.ZapiszFlash(nAdres, (uint16_t*)&m_vPamiecKomunikatow[n* ROZMIAR_PACZKI], ROZMIAR_PACZKI);
-		if (chErr == ERR_OK)
-		{
-			nAdres += ROZMIAR_PACZKI;
-			nRozmiar--;
-			m_ctlPasekPostepu.SetPos(n);
-		}
+	//w ramce oprócz danych idzie jeszcze 4 bajty adresu i 1 bajt rozmiaru danych, więc wysyłaj odpowiednio mniej danych aby nie przepełnić ramki max 256 bajtów
+	for (uint32_t n = 0; n < nIloscPaczek; n++)
+	{		
+		if (m_vPamiecKomunikatow.size() > ROZMIAR_PACZKI)
+			chRozmarWysylanychDanych = ROZMIAR_PACZKI;
 		else
+			chRozmarWysylanychDanych = (uint8_t)m_vPamiecKomunikatow.size();
+		
+		chErr = cKomunikacja.ZapiszFlash(nAdres, (uint16_t*)&m_vPamiecKomunikatow[n* ROZMIAR_PACZKI], chRozmarWysylanychDanych);
+		if (chErr != ERR_OK)		
 		{
 			strNapis.Format(L"Wystąpił błąd wysyłania polecenia nr %d", chErr);
 			MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
 			m_ctlPasekPostepu.SetPos(0);
 			return;
 		}	
+		nAdres += ROZMIAR_PACZKI;
+		m_ctlPasekPostepu.SetPos(n);
 	}
 }
 
