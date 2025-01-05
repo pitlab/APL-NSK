@@ -7,10 +7,13 @@ class CDaneFlash : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDaneFlash)
 //#define ROZMIAR_SPISU_KOMUNIKATOW	256
-#define ROZMIAR_SPISU_KOMUNIKATOW	8
-#define ADRES_POCZATKU_KOMUNIKATOW	0x68020000
-//#define ADRES_POCZATKU_KOMUNIKATOW	0x68030000
-#define LICZBA_SEKTOROW_KOMUNIKATOW	6			//sektor to 128kB
+#define ROZMIAR_SPISU_KOMUNIKATOW		8
+#define ADRES_POCZATKU_KOMUNIKATOW		0x68040000
+#define LICZBA_SEKTOROW_KOMUNIKATOW		6			//sektor to 128kB
+#define ROZMIAR_SEKTORA_FLASH			(128*1024)
+#define ROZMIAR_SEKTORA16_FLASH			(64*1024)
+#define ROZMIAR_BUFORA_FLASH			512
+#define ROZMIAR_BUFORA16_FLASH			256
 
 	struct _SpisTresci
 	{
@@ -62,4 +65,6 @@ public:
 	_uWav m_uNaglowekWav;
 	afx_msg void OnBnClickedButKasujFlash();
 	CProgressCtrl m_ctlPasekPostepu;
+	afx_msg void OnBnClickedButCzytajFlash();
+	virtual BOOL OnInitDialog();
 };

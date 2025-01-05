@@ -106,11 +106,11 @@ void CAPLSNView::OnDraw(CDC* pDC)
 	// TODO: tutaj dodaj kod rysowania danych natywnych
 	if (pDoc->m_bZdjecieGotowe)
 	{
-		for (y = 0; y < 240; y++)
+		for (y = 0; y < 320; y++)
 		{
-			for (x = 0; x < 320; x++)
+			for (x = 0; x < 480; x++)
 			{
-				sPix = pDoc->m_sZdjecie[y * 320 + x];
+				sPix = pDoc->m_sZdjecie[y * 480 + x];
 				chKolor[0] = ((sPix & 0xF800) >> 11)*8;		//R
 				chKolor[1] = ((sPix & 0x070E) >> 5)*4;		//G
 				chKolor[2] = (sPix & 0x001F)*8;			//B

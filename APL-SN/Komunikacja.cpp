@@ -300,7 +300,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 
 		//pobierz zdjêcie
 		nPobrano = 0;
-		nRozmiarDanych = (uint32_t)(320 * 240 * 2);
+		nRozmiarDanych = (uint32_t)(480 * 320 * 2);
 		while (nPobrano < nRozmiarDanych)
 		{
 			m_unia8_32.dane32 = nPobrano/4;	//offset pobieranych danych zdjêcia, /4 - konwersja z bajtów s³owa 32/bit 
@@ -398,28 +398,24 @@ uint8_t CKomunikacja::UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chS
 // [i] chRozmiar - iloœæ s³ów do zapisu max 128
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar)
+uint8_t CKomunikacja::ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar)
 {
 	uint8_t chOdebrano = 0;
-	uint8_t chDaneWychodzace[256];
+	uint8_t chDaneWychodzace[255-3];
 	uint8_t chDanePrzychodzace[2];
 
-	if (chRozmiar > 128)
+	if (chRozmiar > 252)
 		return ERR_INVALID_DATA_SIZE;
 
-	m_unia8_32.dane32 = nAdresPamieci;
-	for (uint8_t n=0; n<4; n++)
-		chDaneWychodzace[n] = m_unia8_32.dane8[n];
-	chDaneWychodzace[4] = chRozmiar;		//liczba s³ów 16-bitowych do zapisu
+	m_unia8_16.dane16 = sAdresBufora/2;		//w APL bufor jest 16-bitowy
+	chDaneWychodzace[0] = m_unia8_16.dane8[0];
+	chDaneWychodzace[1] = m_unia8_16.dane8[1];
+	chDaneWychodzace[2] = chRozmiar/2;		//liczba s³ów 16-bitowych do zapisu
 
 	for (uint8_t n = 0; n < chRozmiar; n++)
-	{
-		m_unia8_16.dane16 = sDane[n];
-		chDaneWychodzace[2*n + 5] = m_unia8_16.dane8[0];
-		chDaneWychodzace[2*n + 6] = m_unia8_16.dane8[1];
-	}
+		chDaneWychodzace[n + 3] = chDane[n];
 	
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FLASH, chDaneWychodzace, (2*chRozmiar)+5, chDanePrzychodzace, &chOdebrano, 1000);	//timeout normalny bo Buffer Programming time = 750us
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_BUFOR, chDaneWychodzace, chRozmiar+3, chDanePrzychodzace, &chOdebrano);	//timeout normalny
 }
 
 
@@ -439,4 +435,57 @@ uint8_t CKomunikacja::SkasujSektorFlash(uint32_t nAdresPamieci)
 	for (uint8_t n = 0; n < 4; n++)
 		m_chRamkaWych[n] = m_unia8_32.dane8[n];
 	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_KASUJ_FLASH, m_chRamkaWych, 4, m_chRamkaPrzy, &chOdebrano, 2000);	//du¿y timeout bo Sector Erase time = 1100 ms
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zapisu danych z bufora pod wskazany adres we flash. 
+// parametry:
+// [i] nAdres - adres bezwzglêdny pocz¹tku obszaru pamiêci z zakresu 0x68000000..0x6A000000
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszFlash(uint32_t nAdresPamieci)
+{
+	uint8_t chOdebrano = 0;
+	uint8_t chDaneWychodzace[4];
+	uint8_t chDanePrzychodzace[2];
+
+	m_unia8_32.dane32 = nAdresPamieci;
+	for (uint8_t n = 0; n < 4; n++)
+		chDaneWychodzace[n] = m_unia8_32.dane8[n];
+
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FLASH, chDaneWychodzace, 4, chDanePrzychodzace, &chOdebrano, 500);	//Sector Programming time = 192ms (pdf str.46)
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zapisu danych z bufora pod wskazany adres we flash. 
+// parametry:
+// [i] nAdres - adres bezwzglêdny pocz¹tku obszaru pamiêci z zakresu 0x68000000..0x6A000000
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[256];
+
+	m_unia8_32.dane32 = nAdresPamieci;
+	for (uint8_t n = 0; n < 4; n++)
+		chDaneWychodzace[n] = m_unia8_32.dane8[n];
+	chDaneWychodzace[4] = chRozmiar;
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_FLASH, chDaneWychodzace, 5, chDanePrzychodzace, &chOdebrano);
+	if (chErr == ERR_OK)
+	{
+		for (uint8_t n = 0; n < chOdebrano/2; n++)
+		{
+			m_unia8_32.dane8[0] = chDanePrzychodzace[2 * n + 0];
+			m_unia8_32.dane8[1] = chDanePrzychodzace[2 * n + 1];
+			sDane[n] = m_unia8_32.dane16[0];
+		}
+	}
+	return chErr;
 }

@@ -34,9 +34,11 @@ public:
 	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
 	uint8_t PobierzKamere(uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
 	uint8_t UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi);
-	uint8_t ZapiszFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
+	uint8_t ZapiszFlash(uint32_t nAdresPamieci);
 	uint8_t SkasujSektorFlash(uint32_t nAdresPamieci);
-
+	//uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint16_t* sDane, uint8_t chRozmiar);
+	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);
+	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
 
 	//struktura zbieraj¹ca parametry BSP
 	struct _sWron

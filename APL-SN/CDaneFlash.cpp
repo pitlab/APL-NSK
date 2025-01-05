@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CDaneFlash, CDialogEx)
 	ON_BN_CLICKED(IDC_BUT_CZYTAJ_PLIK, &CDaneFlash::OnBnClickedButCzytajPlik)
 	ON_BN_CLICKED(IDC_BUT_ZAPISZ_FLASH, &CDaneFlash::OnBnClickedButZapiszFlash)
 	ON_BN_CLICKED(IDC_BUT_KASUJ_FLASH, &CDaneFlash::OnBnClickedButKasujFlash)
+	ON_BN_CLICKED(IDC_BUT_CZYTAJ_FLASH, &CDaneFlash::OnBnClickedButCzytajFlash)
 END_MESSAGE_MAP()
 
 
@@ -89,7 +90,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	Error = _wfopen_s(&pPlikKomunikatow, szFile, _T("r"));
 	if (Error != NULL)
 	{
-		MessageBoxW(_T("Nie mogę odczytać pliku komunikatów: komunikaty_pl.txt!"), _T("Błąd!"), MB_ICONEXCLAMATION);
+		MessageBoxW(_T("Nie mogę odczytać pliku komunikatów: komunikaty_pl.txt!"), _T("Ojojoj!"), MB_ICONEXCLAMATION);
 		return;
 	}
 
@@ -132,7 +133,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			if (Error != NULL)
 			{
 				strNapis.Format(L"Nie mogę odczytać pliku %s", chNazwaSampla);
-				MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 
@@ -143,7 +144,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			if ((m_uNaglowekWav.strPlikWav.chRiff[0] != 'R') || (m_uNaglowekWav.strPlikWav.chWave[0] != 'W'))
 			{
 				strNapis.Format(L"Nie rozpoznaję formatu pliku %s", chNazwaSampla);
-				MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 
@@ -151,14 +152,14 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			if ((m_uNaglowekWav.strPlikWav.nCzestProbkowania != 16000) || (m_uNaglowekWav.strPlikWav.sLiczbaKanalow != 1))
 			{
 				strNapis.Format(L"Plik %s musi mieć 1 kanał i częstotliwość próbkowania 16kHz", chNazwaSampla);
-				MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;	
 			}
 
 			//walidacja kompresji
 			if (m_uNaglowekWav.strPlikWav.sTypFormatu != 1)
 			{
-				MessageBoxW(L"Dane nie mogą być skompresowane!", _T("Błąd!"), MB_ICONEXCLAMATION);
+				MessageBoxW(L"Dane nie mogą być skompresowane!", _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 			nRozmiarSampla = m_uNaglowekWav.strPlikWav.nRozmiarPliku - 36;
@@ -168,7 +169,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 				fgets(chBuforPliku, m_uNaglowekWav.strPlikWav.nLiczbaDanych+1, pPlikSampla);
 			else
 			{
-				MessageBoxW(L"Nieoczekiwany format pliku wav!", _T("Błąd!"), MB_ICONEXCLAMATION);
+				MessageBoxW(L"Nieoczekiwany format pliku wav!", _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 
@@ -180,8 +181,6 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 					cKomunikacja.m_unia8_32.dane8[n] = chBuforPliku[n + 4];
 				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla
 			}
-
-			
 
 			//odczytaj resztę pliku i przepisz do wektora
 			for (uint32_t n = 0; n < nRozmiarSampla / 2; n++)
@@ -216,7 +215,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	m_ctlListaKomunikatow.SetFocus();
 	m_ctlListaKomunikatow.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
 	m_SpisKomunikatow[0].nAdres = ADRES_POCZATKU_KOMUNIKATOW + ROZMIAR_SPISU_KOMUNIKATOW * 8;
-
+	GetDlgItem(IDC_BUT_ZAPISZ_FLASH)->EnableWindow(TRUE);	//włącz przycisk zapisu flash
 }
 
 
@@ -226,33 +225,67 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CDaneFlash::OnBnClickedButZapiszFlash()
 {
-#define ROZMIAR_PACZKI	120	//wyrażony w słowach
+#define ROZMIAR_PACZKI	200	//W ramce oprócz danych idzie jeszcze 4 bajty adresu i 1 bajt rozmiaru danych, więc wysyłaj odpowiednio mniej danych aby nie przepełnić ramki max 256 bajtów
 	CString strNapis;
-	uint32_t nIloscPaczek = (uint32_t)(m_vPamiecKomunikatow.size() / ROZMIAR_PACZKI);
-	uint32_t nAdres = (uint32_t)ADRES_POCZATKU_KOMUNIKATOW;
+	int32_t nIloscSlowDoWyslania = m_vPamiecKomunikatow.size();	//ilość słów
+	uint32_t nAdresFlash = (uint32_t)ADRES_POCZATKU_KOMUNIKATOW;
+	uint16_t sAdresBufora = 0;
 	uint8_t chErr;
 	uint8_t chRozmarWysylanychDanych;
-	m_ctlPasekPostepu.SetRange(0, nIloscPaczek -1);
+	uint8_t chPaczka[ROZMIAR_PACZKI];
+	uint32_t nIloscWyslanychSlow = 0;
+	m_ctlPasekPostepu.SetRange(0, nIloscSlowDoWyslania -1);
+	GetDlgItem(IDC_PROGRESS1)->EnableWindow(TRUE);
 
-	//w ramce oprócz danych idzie jeszcze 4 bajty adresu i 1 bajt rozmiaru danych, więc wysyłaj odpowiednio mniej danych aby nie przepełnić ramki max 256 bajtów
-	for (uint32_t n = 0; n < nIloscPaczek; n++)
+	do
 	{		
-		if (m_vPamiecKomunikatow.size() > ROZMIAR_PACZKI)
-			chRozmarWysylanychDanych = ROZMIAR_PACZKI;
+		//sprawdź czy czy są jeszcze dane do wysłania
+		if ((nIloscSlowDoWyslania - nIloscWyslanychSlow) < ROZMIAR_PACZKI / 2)
+			chRozmarWysylanychDanych = 2*(nIloscSlowDoWyslania - nIloscWyslanychSlow);
 		else
-			chRozmarWysylanychDanych = (uint8_t)m_vPamiecKomunikatow.size();
-		
-		chErr = cKomunikacja.ZapiszFlash(nAdres, (uint16_t*)&m_vPamiecKomunikatow[n* ROZMIAR_PACZKI], chRozmarWysylanychDanych);
+			chRozmarWysylanychDanych = ROZMIAR_PACZKI;
+
+		//sprawdź czy jest jeszcze miejsce w buforze
+		if (sAdresBufora + chRozmarWysylanychDanych > ROZMIAR_BUFORA_FLASH)
+			chRozmarWysylanychDanych = ROZMIAR_BUFORA_FLASH - sAdresBufora;
+
+		//przepisz słowa z wektora na bajty do wysłania ramką
+		for (uint8_t n = 0; n < chRozmarWysylanychDanych/2; n++)
+		{
+			cKomunikacja.m_unia8_16.dane16 = m_vPamiecKomunikatow[n + nIloscWyslanychSlow];
+			chPaczka[2 * n + 0] = cKomunikacja.m_unia8_16.dane8[0];
+			chPaczka[2 * n + 1] = cKomunikacja.m_unia8_16.dane8[1];
+		}
+
+		chErr = cKomunikacja.ZapiszBuforFlash(sAdresBufora, chPaczka, chRozmarWysylanychDanych);
 		if (chErr != ERR_OK)		
 		{
 			strNapis.Format(L"Wystąpił błąd wysyłania polecenia nr %d", chErr);
-			MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
+			MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 			m_ctlPasekPostepu.SetPos(0);
 			return;
-		}	
-		nAdres += ROZMIAR_PACZKI;
-		m_ctlPasekPostepu.SetPos(n);
-	}
+		}			
+		sAdresBufora += chRozmarWysylanychDanych;		
+		nIloscWyslanychSlow += chRozmarWysylanychDanych / 2;
+		m_ctlPasekPostepu.SetPos(nIloscWyslanychSlow);
+
+		//jezeli pełen bufor lub koniec danych to zapisz bufor do flash
+		if ((sAdresBufora == ROZMIAR_BUFORA_FLASH) || (nIloscWyslanychSlow == nIloscSlowDoWyslania))
+		{
+			chErr = cKomunikacja.ZapiszFlash(nAdresFlash);	//Adresem jest początek obszaru
+			if (chErr != ERR_OK)
+			{
+				strNapis.Format(L"Wystąpił błąd  nr %d zapisu sektora flash", chErr);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
+				m_ctlPasekPostepu.SetPos(0);
+				GetDlgItem(IDC_PROGRESS1)->EnableWindow(FALSE);
+				return;
+			}
+			nAdresFlash += sAdresBufora;
+			sAdresBufora = 0;	//zacznij napełnianie kolejnego bufora				
+		}
+	} while (nIloscWyslanychSlow < nIloscSlowDoWyslania);
+	return;
 }
 
 
@@ -278,11 +311,65 @@ void CDaneFlash::OnBnClickedButKasujFlash()
 		else
 		{
 			strNapis.Format(L"Wystąpił błąd wysyłania polecenia nr %d", chErr);
-			MessageBoxW(strNapis, _T("Błąd!"), MB_ICONEXCLAMATION);
+			MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 			m_ctlPasekPostepu.SetPos(0);
 			return;
 		}
 	}
 	m_ctlPasekPostepu.SetPos(0);
 	UpdateData(FALSE);
+}
+
+
+
+
+void CDaneFlash::OnBnClickedButCzytajFlash()
+{
+#define ROZMIAR_BUF_SEKT	64
+	FILE* pPlikSektora; 
+	long Error;
+	uint8_t chErr;
+	CString strNapis;
+
+	uint16_t sBufor[ROZMIAR_BUF_SEKT];
+
+	Error = _wfopen_s(&pPlikSektora, L"sektor.bin", L"w");
+	if (!Error)
+	{
+		m_ctlPasekPostepu.SetRange(0, (ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT) - 1);
+		for (uint32_t n = 0; n < ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT; n++)
+		{
+			chErr = cKomunikacja.CzytajFlash(ADRES_POCZATKU_KOMUNIKATOW + (n * ROZMIAR_BUF_SEKT), sBufor, ROZMIAR_BUF_SEKT);
+			if (chErr == ERR_OK)
+			{
+				fwrite(sBufor, sizeof(uint16_t), ROZMIAR_BUF_SEKT, pPlikSektora);
+				m_ctlPasekPostepu.SetPos(n);
+				UpdateData(FALSE);
+			}
+			else
+			{
+				strNapis.Format(L"Wystąpił błąd nr %d wysyłania polecenia", chErr);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
+				m_ctlPasekPostepu.SetPos(0);
+				return;
+			}
+		}
+		fclose(pPlikSektora);
+	}
+	m_ctlPasekPostepu.SetPos(0);
+	UpdateData(FALSE);
+}
+
+
+BOOL CDaneFlash::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  Dodaj tutaj dodatkową inicjację
+	GetDlgItem(IDC_PROGRESS1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUT_ZAPISZ_FLASH)->EnableWindow(FALSE);
+	
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }

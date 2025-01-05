@@ -44,4 +44,5 @@ public:
 	BOOL m_bTypPolaczenia;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHotitemchangeRadUart(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedCancel();
 };
