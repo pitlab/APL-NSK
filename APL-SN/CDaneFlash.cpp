@@ -234,7 +234,9 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 	uint8_t chRozmarWysylanychDanych;
 	uint8_t chPaczka[ROZMIAR_PACZKI];
 	uint32_t nIloscWyslanychSlow = 0;
-	m_ctlPasekPostepu.SetRange(0, nIloscSlowDoWyslania -1);
+
+	//dane wejsciowe są liczbami 16-bitowymi, więc nIloscSlowDoWyslania jest liczbą zbyt dużą więc
+	m_ctlPasekPostepu.SetRange(0, (uint16_t)((nIloscSlowDoWyslania >>8) -1));
 	GetDlgItem(IDC_PROGRESS1)->EnableWindow(TRUE);
 
 	do
@@ -267,7 +269,8 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 		}			
 		sAdresBufora += chRozmarWysylanychDanych;		
 		nIloscWyslanychSlow += chRozmarWysylanychDanych / 2;
-		m_ctlPasekPostepu.SetPos(nIloscWyslanychSlow);
+
+		m_ctlPasekPostepu.SetPos((uint16_t)(nIloscWyslanychSlow>>8));
 
 		//jezeli pełen bufor lub koniec danych to zapisz bufor do flash
 		if ((sAdresBufora == ROZMIAR_BUFORA_FLASH) || (nIloscWyslanychSlow == nIloscSlowDoWyslania))
@@ -302,7 +305,7 @@ void CDaneFlash::OnBnClickedButKasujFlash()
 	m_ctlPasekPostepu.SetRange(0, LICZBA_SEKTOROW_KOMUNIKATOW-1);
 	for (uint8_t n = 0; n < LICZBA_SEKTOROW_KOMUNIKATOW; n++)
 	{
-		chErr = cKomunikacja.SkasujSektorFlash(ADRES_POCZATKU_KOMUNIKATOW + n * 0x10000);
+		chErr = cKomunikacja.SkasujSektorFlash(ADRES_POCZATKU_KOMUNIKATOW + n * ROZMIAR_SEKTORA_FLASH);
 		if (chErr == ERR_OK)
 		{			
 			m_ctlPasekPostepu.SetPos(n);
