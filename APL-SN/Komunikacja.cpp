@@ -30,6 +30,7 @@ CKomunikacja::CKomunikacja()
 	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
+	//, m_iPredkoscUART(19200)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("Paczka")); // auto-reset event, non-signalled state

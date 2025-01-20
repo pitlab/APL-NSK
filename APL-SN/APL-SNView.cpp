@@ -313,7 +313,6 @@ void CAPLSNView::OnZrobZdjecie()
 	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
 	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
-	//chErr = m_cKomunikacja.ZrobZdjecie(2, 320, 240, pDoc->m_sZdjecie);
 	chErr = m_cKomunikacja.ZrobZdjecie(pDoc->m_sZdjecie);
 	if (chErr == ERR_OK)
 	{

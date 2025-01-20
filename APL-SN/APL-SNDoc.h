@@ -17,7 +17,7 @@ public:
 
 // Operacje
 public:
-	uint16_t m_sZdjecie[320*240];
+	uint16_t m_sZdjecie[480*320];
 	bool m_bZdjecieGotowe;
 
 // Przesłania

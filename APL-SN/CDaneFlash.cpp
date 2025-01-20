@@ -59,6 +59,7 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	uint32_t nRozmiarSampla;
 	CString strNapis;
 	char chBuforPliku[30];
+	int16_t sSampel[2];
 
 	szFile[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -182,11 +183,15 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla
 			}
 
+			
 			//odczytaj resztę pliku i przepisz do wektora
 			for (uint32_t n = 0; n < nRozmiarSampla / 2; n++)
 			{
-				fgets((char*)cKomunikacja.m_unia8_16.dane8, 2+1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
-				m_vPamiecKomunikatow.push_back(cKomunikacja.m_unia8_16.dane16);
+				//fgets((char*)cKomunikacja.m_unia8_16.dane8, 2+1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
+				fgets((char*)sSampel, 2 + 1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
+				//m_vPamiecKomunikatow.push_back(cKomunikacja.m_unia8_16.dane16);
+				m_vPamiecKomunikatow.push_back(sSampel[0]);
+				//m_vPamiecKomunikatow.push_back(n & 0xFFFF);		//syntetyczne dane, wydają się być OK
 			}
 			fclose(pPlikSampla);
 			
@@ -235,7 +240,7 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 	uint8_t chPaczka[ROZMIAR_PACZKI];
 	uint32_t nIloscWyslanychSlow = 0;
 
-	//dane wejsciowe są liczbami 16-bitowymi, więc nIloscSlowDoWyslania jest liczbą zbyt dużą więc
+	//dane wejsciowe są liczbami 16-bitowymi, więc nIloscSlowDoWyslania jest liczbą zbyt dużą więc podziel przez 256
 	m_ctlPasekPostepu.SetRange(0, (uint16_t)((nIloscSlowDoWyslania >>8) -1));
 	GetDlgItem(IDC_PROGRESS1)->EnableWindow(TRUE);
 
@@ -270,7 +275,7 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 		sAdresBufora += chRozmarWysylanychDanych;		
 		nIloscWyslanychSlow += chRozmarWysylanychDanych / 2;
 
-		m_ctlPasekPostepu.SetPos((uint16_t)(nIloscWyslanychSlow>>8));
+		m_ctlPasekPostepu.SetPos((uint16_t)(nIloscWyslanychSlow>>8)+1);
 
 		//jezeli pełen bufor lub koniec danych to zapisz bufor do flash
 		if ((sAdresBufora == ROZMIAR_BUFORA_FLASH) || (nIloscWyslanychSlow == nIloscSlowDoWyslania))
@@ -308,7 +313,7 @@ void CDaneFlash::OnBnClickedButKasujFlash()
 		chErr = cKomunikacja.SkasujSektorFlash(ADRES_POCZATKU_KOMUNIKATOW + n * ROZMIAR_SEKTORA_FLASH);
 		if (chErr == ERR_OK)
 		{			
-			m_ctlPasekPostepu.SetPos(n);
+			m_ctlPasekPostepu.SetPos(n+1);
 			UpdateData(FALSE);
 		}
 		else
@@ -336,7 +341,7 @@ void CDaneFlash::OnBnClickedButCzytajFlash()
 
 	uint16_t sBufor[ROZMIAR_BUF_SEKT];
 
-	Error = _wfopen_s(&pPlikSektora, L"sektor.bin", L"w");
+	Error = _wfopen_s(&pPlikSektora, L"sektor.bin", L"wb");
 	if (!Error)
 	{
 		m_ctlPasekPostepu.SetRange(0, (ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT) - 1);
@@ -346,7 +351,7 @@ void CDaneFlash::OnBnClickedButCzytajFlash()
 			if (chErr == ERR_OK)
 			{
 				fwrite(sBufor, sizeof(uint16_t), ROZMIAR_BUF_SEKT, pPlikSektora);
-				m_ctlPasekPostepu.SetPos(n);
+				m_ctlPasekPostepu.SetPos(n+1);
 				UpdateData(FALSE);
 			}
 			else
