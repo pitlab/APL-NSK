@@ -214,7 +214,7 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 	//int iRozmiar;
 
 	CAPLSNDoc* pDoc = GetDocument();
-	assert(pDoc);
+	//assert(pDoc);
 
 	//iRozmiar = sizeof(chBufor);
 	switch (nInputcode)
@@ -303,7 +303,7 @@ void CAPLSNView::OnZrobZdjecie()
 	uint8_t chErr;
 
 	CAPLSNDoc* pDoc = GetDocument();
-	assert(pDoc);
+	//assert(pDoc);
 
 	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
 	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia

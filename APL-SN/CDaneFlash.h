@@ -67,4 +67,5 @@ public:
 	CProgressCtrl m_ctlPasekPostepu;
 	afx_msg void OnBnClickedButCzytajFlash();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedButton1();
 };

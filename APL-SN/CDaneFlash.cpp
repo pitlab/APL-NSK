@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CDaneFlash, CDialogEx)
 	ON_BN_CLICKED(IDC_BUT_ZAPISZ_FLASH, &CDaneFlash::OnBnClickedButZapiszFlash)
 	ON_BN_CLICKED(IDC_BUT_KASUJ_FLASH, &CDaneFlash::OnBnClickedButKasujFlash)
 	ON_BN_CLICKED(IDC_BUT_CZYTAJ_FLASH, &CDaneFlash::OnBnClickedButCzytajFlash)
+	ON_BN_CLICKED(IDC_BUTTON1, &CDaneFlash::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -115,9 +116,9 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	m_vPamiecKomunikatow.clear();
 	for (uint16_t n = 0; n < ROZMIAR_SPISU_KOMUNIKATOW; n++)
 	{
-		m_vPamiecKomunikatow.push_back(0xABCD);	//adres
+		m_vPamiecKomunikatow.push_back(0xADAD);	//adres
 		m_vPamiecKomunikatow.push_back(n);
-		m_vPamiecKomunikatow.push_back(0xCDEF);	//rozmiar
+		m_vPamiecKomunikatow.push_back(0xCDAB);	//rozmiar
 		m_vPamiecKomunikatow.push_back(n);
 	}
 	
@@ -180,18 +181,14 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			{
 				for (int n = 0; n < 4; n++)
 					cKomunikacja.m_unia8_32.dane8[n] = chBuforPliku[n + 4];
-				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla
+				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla w bajtach
 			}
 
-			
 			//odczytaj resztę pliku i przepisz do wektora
 			for (uint32_t n = 0; n < nRozmiarSampla / 2; n++)
 			{
-				//fgets((char*)cKomunikacja.m_unia8_16.dane8, 2+1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
-				fgets((char*)sSampel, 2 + 1, pPlikSampla);	//liczba wskazuje na liczbę znaków łacznie ze znakiem terminalnym, więc aby wczytać 2 znaki trzeba podać 3
-				//m_vPamiecKomunikatow.push_back(cKomunikacja.m_unia8_16.dane16);
+				fread((char*)sSampel, 2, 1, pPlikSampla);	
 				m_vPamiecKomunikatow.push_back(sSampel[0]);
-				//m_vPamiecKomunikatow.push_back(n & 0xFFFF);		//syntetyczne dane, wydają się być OK
 			}
 			fclose(pPlikSampla);
 			
@@ -380,4 +377,78 @@ BOOL CDaneFlash::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
+}
+
+
+
+//generuje syntetyczny plik wav do testów poprawnosci transferu
+void CDaneFlash::OnBnClickedButton1()
+{
+	FILE* pPlikWav;
+	long Error;
+	uint8_t chErr;
+	char chBufor[78] = { "RIFFfk  WAVEfmt 10001010830007002010LIST4676INFOISFTe000Lavf58.29.1000data k"};
+	CString strNapis;
+	uint16_t sBufor;
+
+	Error = _wfopen_s(&pPlikWav, L"test.wav.bin", L"wb");
+	if (!Error)
+	{
+		//pierwszy wiersz
+		chBufor[6] = 1;
+		chBufor[7] = 1;
+
+		//2 wiersz
+		chBufor[16] = 0x10;
+		chBufor[17] = 0x00;
+		chBufor[18] = 0x00;
+		chBufor[19] = 0x00;
+		chBufor[20] = 0x01;
+		chBufor[21] = 0x00;
+		chBufor[22] = 0x01;
+		chBufor[23] = 0x00;
+
+		chBufor[24] = 0x80;
+		chBufor[25] = 0x3E;
+		chBufor[26] = 0x00;
+		chBufor[27] = 0x00;
+		chBufor[28] = 0x00;
+		chBufor[29] = 0x7D;
+		chBufor[30] = 0x00;
+		chBufor[31] = 0x00;
+
+		//3 wiersz
+		chBufor[32] = 0x02;
+		chBufor[33] = 0x00;
+		chBufor[34] = 0x10;
+		chBufor[35] = 0x00;
+
+		chBufor[40] = 0x1A;
+		chBufor[41] = 0x00;
+		chBufor[42] = 0x00;
+		chBufor[43] = 0x00;
+
+		//4 wiersz
+		chBufor[52] = 0x0E;
+		chBufor[53] = 0x00;
+		chBufor[54] = 0x00;
+		chBufor[55] = 0x00;
+
+		//5 wiersz
+		chBufor[67] = 0x00;
+
+		chBufor[76] = 0x01;
+		chBufor[77] = 0x00;
+
+
+		fwrite(chBufor, sizeof(uint8_t), 78, pPlikWav);
+
+		for (uint32_t n = 0; n < ROZMIAR_SEKTORA16_FLASH; n++)
+		{
+			sBufor = n & 0xFFFF;
+			fwrite(&sBufor, sizeof(uint16_t), 1, pPlikWav);			
+		}
+		fclose(pPlikWav);
+	}
+
 }
