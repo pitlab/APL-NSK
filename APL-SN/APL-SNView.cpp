@@ -93,7 +93,7 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CAPLSNView::OnDraw(CDC* pDC)
 {
-	uint32_t x, y;
+	int32_t x, y;
 	uint8_t chKolor[3];
 	uint16_t sPix;
 	COLORREF crKolor;
@@ -122,18 +122,41 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		pDoc->m_bZdjecieGotowe = FALSE;
 	}
 
+
 	//rysuj pasek postepu
 	pDC->GetBoundsRect(&prost, DCB_RESET);
 	float fPrzyrost = (float)prost.right  / m_sLiczbaFragmentowPaskaPostepu;
-
+	
 	prost.top = prost.bottom - 10;
 	prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
-	pDC->Rectangle(&prost);}
+	pDC->Rectangle(&prost);
+
+	//rysowanie wykresów telemetrii
+	RECT okno;
+	float fSkalaX, fSkalaY;
+	pDC->GetBoundsRect(&okno, DCB_RESET);
+	uint32_t nLiczbaDanych = (uint32_t)getProtokol().m_vRamkaTelemetryczna.size();
+	_Telemetria stDaneTele;
+
+
+	fSkalaX = (float)okno.right / nLiczbaDanych;
+	fSkalaY = (float)okno.bottom / 20.0f;
+	if (nLiczbaDanych < okno.right)
+	{
+		pDC->MoveTo(0, okno.bottom/2);
+		for (x = 0; x < nLiczbaDanych; x++)
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
+			y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
+			pDC->LineTo(x, y);
+		}
+	}
+
+}
+
 
 
 // Drukowanie obiektu CAPLSNView
-
-
 void CAPLSNView::OnFilePrintPreview()
 {
 #ifndef SHARED_HANDLERS
@@ -163,6 +186,8 @@ void CAPLSNView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 	OnContextMenu(this, point);
 }
 
+
+//darzenie aktywacji menu kontekstowego w oknie dokumentu
 void CAPLSNView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS

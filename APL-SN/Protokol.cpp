@@ -30,7 +30,7 @@ BOOL			CProtokol::m_bKoniecWatkuUart = FALSE;
 BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
-std::vector <_Ramka> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
+std::vector <_Telemetria> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
 std::vector <_Ramka> CProtokol::m_vRamkaPolecenia;
 int				CProtokol::m_LicznikInstancji = 0;
 
@@ -350,6 +350,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	uint8_t chErr;
 	BOOL bRamkaTelemetrii;
 	_Ramka sRamka;
+	_Telemetria sTelemetria;
+	float fTemp;
 
 	TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)
@@ -357,25 +359,25 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
-			bRamkaTelemetrii = (BOOL)(m_chPolecenie & 0x80);
-			if (bRamkaTelemetrii)
-				m_chPolecenie &= ~0x80;	//maska dla bitu telemetrii
-
+			bRamkaTelemetrii = (BOOL)(m_chPolecenie == PK_TELEMETRIA);
 			if (bRamkaTelemetrii)
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);
-				//m_inputTelemetryData.push_back(BinaryFrame(m_iLecznikWejRamekTelemetrii++, m_chPolecenie, m_chZnakCzasu, m_chDaneWy, m_chIloscDanychRamki));
 
 				//zbierz dane ramki do struktury
-				sRamka.chPolecenie = m_chPolecenie;
-				sRamka.chZnakCzasu = m_chZnakCzasu;
-				sRamka.chRozmiar = m_chIloscDanychRamki;
-				sRamka.chAdrNadawcy = m_chAdresNadawcy;
-				for (x = 0; x < m_chIloscDanychRamki; x++)
-					sRamka.dane.push_back(m_chDaneWy[x]);
+				sTelemetria.chZnakCzasu = m_chZnakCzasu;
+				sTelemetria.chAdrNadawcy = m_chAdresNadawcy;
+				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
+					sTelemetria.chBityDanych[x] = m_chDaneWy[x];
+
+				for (x = 0; x < (m_chIloscDanychRamki - LICZBA_BAJTOW_ID_TELEMETRII) / 2; x++)
+				{
+					fTemp = Char2Float16(&m_chDaneWy[2 * x + LICZBA_BAJTOW_ID_TELEMETRII]);
+					sTelemetria.dane.push_back(fTemp);
+				}
 
 				//wstaw strukturê do wektora
-				m_vRamkaTelemetryczna.push_back(sRamka);
+				m_vRamkaTelemetryczna.push_back(sTelemetria);
 				LeaveCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
 				TRACE("SetEvent: Telemetria\n");
@@ -727,3 +729,37 @@ uint8_t CProtokol::AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu,  ui
 	return chErr;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//dokonaj konwersji 2 bajtów na float (po³owa precyzji)
+//znaczenie bitów obu formatów float, 32 bitowego pojedyñczej precyzji i 16 bitowego p³owy precyzji
+//gdzie z=znak, c=wyk³adnik, m=mantysa
+//float32: zccccccc cmmmmmmm mmmmmmmm mmmmmmmm	(1+8+23)
+//float16: zcccccmm mmmmmmmm (1+5+10)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+float CProtokol::Char2Float16(uint8_t* chDane)
+{
+	typedef union
+	{
+		unsigned char array[4];
+		float fuData;
+	} fUnion;
+	fUnion temp;
+	unsigned char chCecha, chTemp;
+	unsigned short sMantysa;
+
+	chTemp = *(chDane + 1);
+
+	temp.array[3] = chTemp & 0x80;	//znak liczby
+	chCecha = ((chTemp & 0x7C) >> 2) + (127 - 15);	//cecha 
+	temp.array[3] += chCecha >> 1;
+	temp.array[2] = (chCecha & 1) << 7;		//najm³odszy bit wyk³adnika
+
+	sMantysa = 0x100 * (chTemp & 0x03) + *chDane;		//mantysa
+	temp.array[2] += (unsigned char)((sMantysa & 0x03F8) >> 3);
+	temp.array[1] = (unsigned char)(sMantysa & 0x0007) << 5;
+	temp.array[0] = 0;
+
+	return temp.fuData;
+}

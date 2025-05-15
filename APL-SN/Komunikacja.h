@@ -1,6 +1,7 @@
 #pragma once
 
 //#include "Protokol.h"
+#include <queue>
 #define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
 
@@ -60,6 +61,7 @@ public:
 		uint8_t dane8[4];
 	} m_unia8_32;
 
+
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
 	uint8_t WlasciwyWatekDekodujRamkiPolecen();
@@ -75,14 +77,14 @@ private:
 	uint8_t m_chRamkaPrzy[260];
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
-	
+
+
 
 
 	//pola publiczne z odbieranymi danymi
 public:
 	CString m_strNazwa;
-	uint8_t m_chAdresAutopilota;
-	
+	uint8_t m_chAdresAutopilota;	
 };
 
 CKomunikacja& getKomunikacja();

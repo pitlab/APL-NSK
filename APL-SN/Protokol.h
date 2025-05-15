@@ -18,7 +18,7 @@ public:
 	virtual ~CProtokol();
 	//std::vector< BinaryFrame > m_inputTelemetryData;	//Kolejka danych telemetrycznych przychodz¹cych z urz¹dzenia.
 	//std::vector< BinaryFrame > m_inputAnswerData;		//Kolejka danych bêd¹cych odpowiedziami na polecenia 
-	static std::vector <_Ramka> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
+	static std::vector <_Telemetria> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
 	static std::vector <_Ramka> m_vRamkaPolecenia;
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
@@ -43,6 +43,7 @@ private:
 	void AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano);
 	uint8_t AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu, uint8_t* chAdresNadawcy, uint8_t* chZnakCzasu, uint8_t* chPolecenie, uint8_t* chRozmiarDanychWy, uint8_t* chWskOdbDanej, uint8_t* chDaneWy, uint16_t* sCRC16);
 	uint8_t CzyscBuforPortu(uint8_t chTypPortu);
+	float Char2Float16(uint8_t* chDane);
 	clock_t m_Koniec;
 	
 

@@ -3,6 +3,7 @@
 #include "Errors.h"
 #include "KomunikatySieci.h"
 #include "Protokol.h"
+#include "APL-SNDoc.h"
 /*
 Klasa komunikacyjna poœrednicz¹ca miêdzy aplikacj¹ a protoko³em komunikacyjnym. 
 Aplikacja przesy³a polecenia wymiany danych a klasa nawi¹zuje po³¹czenie po znanym sobie interfejsie
@@ -187,6 +188,7 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 	CString strNazwa = L" ";
 	std::vector <_sWron>::iterator iter;	//iterator wektora wronów
 
+
 	while (!m_bKoniecWatkuDekoderaPolecen)
 	{		
 		WaitForSingleObject(getProtokol().m_hZdarzenieRamkaPolecenGotowa, INFINITE);		//czekaj na odbiór zdekodowanej ramki danych
@@ -232,6 +234,10 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 				strNazwa = L"";
 				m_chAdresAutopilota = s_Ramka.chAdrNadawcy;
 				CKomunikacja::WyslijOK();		//wyœlij odpowiedŸ				
+				break;
+
+			case PK_TELEMETRIA:
+				
 				break;
 
 			default:	break;

@@ -29,3 +29,11 @@ struct _Ramka
 	uint8_t chAdrNadawcy = 0;
 	std::vector <uint8_t> dane;
 };
+
+struct _Telemetria
+{
+	uint8_t chZnakCzasu = 0;
+	uint8_t chAdrNadawcy = 0;
+	uint8_t chBityDanych[5];
+	std::vector <float> dane;
+};

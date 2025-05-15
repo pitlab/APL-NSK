@@ -140,7 +140,8 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			}
 
 			//odczytaj nagłówek pliku do unii bufora i struktury nagłówka
-			fgets((char*)m_uNaglowekWav.chBufor, 44+1, pPlikSampla);
+			//fgets((char*)m_uNaglowekWav.chBufor, 44+1, pPlikSampla);
+			fread((char*)m_uNaglowekWav.chBufor, 44, 1, pPlikSampla);
 			
 			//walidacja napisów RIFF i WAVE
 			if ((m_uNaglowekWav.strPlikWav.chRiff[0] != 'R') || (m_uNaglowekWav.strPlikWav.chWave[0] != 'W'))
@@ -161,22 +162,24 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			//walidacja kompresji
 			if (m_uNaglowekWav.strPlikWav.sTypFormatu != 1)
 			{
-				MessageBoxW(L"Dane nie mogą być skompresowane!", _T("Ojojoj!"), MB_ICONEXCLAMATION);
+				strNapis.Format(L"Dane nie mogą być skompresowane: %s!", chNazwaSampla);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 			nRozmiarSampla = m_uNaglowekWav.strPlikWav.nRozmiarPliku - 36;
 
-			//wczytaj z pliku "extra firmat bytes" z pola nLiczbaDanych
-			if (m_uNaglowekWav.strPlikWav.nLiczbaDanych < sizeof(chBuforPliku))
-				fgets(chBuforPliku, m_uNaglowekWav.strPlikWav.nLiczbaDanych+1, pPlikSampla);
+			//wczytaj z pliku "extra format bytes" z pola nLiczbaDanych
+			if (m_uNaglowekWav.strPlikWav.nRozmiarFormatuDanych < sizeof(chBuforPliku))
+				fread(chBuforPliku, m_uNaglowekWav.strPlikWav.nRozmiarFormatuDanych, 1, pPlikSampla);
 			else
 			{
-				MessageBoxW(L"Nieoczekiwany format pliku wav!", _T("Ojojoj!"), MB_ICONEXCLAMATION);
+				strNapis.Format(L"Nieoczekiwany formatu pliku %s!", chNazwaSampla);
+				MessageBoxW(strNapis, _T("Ojojoj!"), MB_ICONEXCLAMATION);
 				break;
 			}
 
 			//odczytaj ostatni "chunk" = "data" i nastepujący po nim rozmiar danych sampla
-			fgets(chBuforPliku, 9, pPlikSampla);
+			fread(chBuforPliku, 8, 1, pPlikSampla);
 			if ((chBuforPliku[0] == 'd') && (chBuforPliku[1] == 'a') && (chBuforPliku[2] == 't') && (chBuforPliku[3] == 'a'))
 			{
 				for (int n = 0; n < 4; n++)
