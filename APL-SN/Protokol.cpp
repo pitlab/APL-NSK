@@ -380,7 +380,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				m_vRamkaTelemetryczna.push_back(sTelemetria);
 				LeaveCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
-				TRACE("SetEvent: Telemetria\n");
+				TRACE("SetEvent: Telemetria\n");				
 			}
 			else
 			{

@@ -17,7 +17,9 @@ protected: // utwórz tylko na podstawie serializacji
 public:
 	CAPLSNDoc* GetDocument() const;
 	static uint8_t WatekRysujPasekPostepu(LPVOID pParam);
+	static uint8_t WatekInvalidujWytkresTelemetrii(LPVOID pParam);
 	uint8_t WlasciwyWatekRysujPasekPostepu();
+	uint8_t WlasciwyWatekInvalidujWytkresTelemetrii();
 
 // Operacje
 public:
@@ -31,6 +33,7 @@ protected:
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	CWinThread* pWskWatkuPaskaPostepu;
+	CWinThread* pWskWatkuOdswiezaniaTelemetrii;
 	void CzytajRejestr();
 
 // Implementacja
@@ -45,8 +48,12 @@ protected:
 	CKomunikacja m_cKomunikacja;
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
+	CProtokol m_cProtokol;
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
+	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
+	BOOL m_bRysujPasekPostepu;
+	BOOL m_bRysujTelemetrie;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
 	uint8_t m_chAdresAutopilota;

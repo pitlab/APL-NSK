@@ -48,6 +48,9 @@ END_MESSAGE_MAP()
 
 CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
+, m_bRysujPasekPostepu(FALSE)
+, m_bRysujTelemetrie(FALSE)
+, m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_chAdresAutopilota(2)
 {
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -81,7 +84,14 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 
 	chErr = m_cKomunikacja.Polacz(this);
 	if (chErr == ERR_OK)
+	{
 		m_bPolaczono = TRUE;
+		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
+		{
+			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
+			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+		}
+	}
 	else
 		m_bPolaczono = FALSE;
 
@@ -124,34 +134,123 @@ void CAPLSNView::OnDraw(CDC* pDC)
 
 
 	//rysuj pasek postepu
-	pDC->GetBoundsRect(&prost, DCB_RESET);
-	float fPrzyrost = (float)prost.right  / m_sLiczbaFragmentowPaskaPostepu;
-	
-	prost.top = prost.bottom - 10;
-	prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
-	pDC->Rectangle(&prost);
-
-	//rysowanie wykresów telemetrii
-	RECT okno;
-	float fSkalaX, fSkalaY;
-	pDC->GetBoundsRect(&okno, DCB_RESET);
-	uint32_t nLiczbaDanych = (uint32_t)getProtokol().m_vRamkaTelemetryczna.size();
-	_Telemetria stDaneTele;
-
-
-	fSkalaX = (float)okno.right / nLiczbaDanych;
-	fSkalaY = (float)okno.bottom / 20.0f;
-	if (nLiczbaDanych < okno.right)
+	if (m_bRysujPasekPostepu)
 	{
-		pDC->MoveTo(0, okno.bottom/2);
-		for (x = 0; x < nLiczbaDanych; x++)
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
-			y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
-			pDC->LineTo(x, y);
-		}
+		pDC->GetBoundsRect(&prost, DCB_RESET);
+		float fPrzyrost = (float)prost.right / m_sLiczbaFragmentowPaskaPostepu;
+
+		prost.top = prost.bottom - 10;
+		prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
+		pDC->Rectangle(&prost);
 	}
 
+	//rysowanie wykresów telemetrii
+	if (m_bRysujTelemetrie)
+	{
+		RECT okno;
+		CPen penWykresuR, penWykresuG, penWykresuB;
+		float fSkalaX, fSkalaY;
+		pDC->GetBoundsRect(&okno, DCB_RESET);
+		uint32_t nLiczbaDanych = (uint32_t)getProtokol().m_vRamkaTelemetryczna.size();
+		_Telemetria stDaneTele;
+
+
+		fSkalaX = (float)okno.right / nLiczbaDanych;
+		fSkalaY = (float)okno.bottom / 40.0f;
+		
+
+		// Create a solid red pen of width 2.
+		penWykresuR.CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
+		penWykresuG.CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
+		penWykresuB.CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+		
+		
+		if (nLiczbaDanych < okno.right)	//dopełnianie okna
+		{		
+			//wykres X
+			pDC->SelectObject(&penWykresuR);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < nLiczbaDanych; x++)
+			{
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
+				if (stDaneTele.dane.size() > 3)
+				{
+					y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
+					pDC->LineTo(x, okno.bottom / 2 + y);
+				}
+			}
+
+			//wykres Y
+			pDC->SelectObject(&penWykresuG);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < nLiczbaDanych; x++)
+			{
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
+				if (stDaneTele.dane.size() > 3)
+				{
+					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
+					pDC->LineTo(x, okno.bottom / 2 + y);
+				}
+			}
+
+			//wykres Z
+			pDC->SelectObject(&penWykresuB);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < nLiczbaDanych; x++)
+			{
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
+				if (stDaneTele.dane.size() > 3)
+				{
+					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
+					pDC->LineTo(x, okno.bottom / 2 + y);
+				}
+			}
+		}
+		else      //przesuwanie zawartości okna
+		{
+			//wykres X
+			pDC->SelectObject(&penWykresuR);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < okno.right; x++)
+			{
+				if (getProtokol().m_vRamkaTelemetryczna.size())
+				{
+					stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+					if (stDaneTele.dane.size())
+					{
+						y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
+						pDC->LineTo(x, okno.bottom / 2 + y);
+					}
+				}
+			}
+
+			//wykres Y
+			pDC->SelectObject(&penWykresuG);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < okno.right; x++)
+			{
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+				if (stDaneTele.dane.size() > 3)
+				{
+					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
+					pDC->LineTo(x, okno.bottom / 2 + y);
+				}
+			}
+
+			//wykres Z
+			pDC->SelectObject(&penWykresuB);
+			pDC->MoveTo(0, okno.bottom / 2);
+			for (x = 0; x < okno.right; x++)
+			{
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+				if (stDaneTele.dane.size() > 3)
+				{
+					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
+					pDC->LineTo(x, okno.bottom / 2 + y);
+				}
+			}
+		}
+	}
 }
 
 
@@ -301,9 +400,19 @@ void CAPLSNView::OnPolaczCom()
 	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
 	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	if (m_cKomunikacja.CzyPolaczonoUart())
+	{
+		m_bKoniecWatkuOdswiezaniaTelemtrii = TRUE;
 		m_cKomunikacja.Rozlacz();
+	}
 	else
+	{
 		m_cKomunikacja.Polacz(this);
+		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
+		{
+			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
+			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+		}
+	}
 }
 
 
@@ -386,6 +495,40 @@ uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 			m_sBiezacyStanPaskaPostepu++;
 			this->Invalidate(TRUE);
 			//Invalidate(TRUE);
+		}
+	}
+	return ERR_OK;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wywołuje wątek rysujący odświeżajacy wukresy telemetrii
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WatekInvalidujWytkresTelemetrii(LPVOID pParam)
+{
+	return reinterpret_cast<CAPLSNView*>(pParam)->WlasciwyWatekInvalidujWytkresTelemetrii();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wątek uruchamiający odświezanie wykresu po przyjściu telemetrii
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
+{
+	uint32_t nErr;
+
+	while (!m_bKoniecWatkuOdswiezaniaTelemtrii)
+	{
+		nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, 200);
+		if (nErr != WAIT_TIMEOUT)
+		{
+			if (this)
+				this->Invalidate(TRUE);
+			m_bRysujTelemetrie = TRUE;
 		}
 	}
 	return ERR_OK;

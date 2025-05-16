@@ -15,7 +15,7 @@ BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
 //std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
 uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
-
+//HANDLE CKomunikacja::m_hZdarzeniePaczkaTelemetrii = NULL;
 
 
 
@@ -34,7 +34,7 @@ CKomunikacja::CKomunikacja()
 	//, m_iPredkoscUART(19200)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
-	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("Paczka")); // auto-reset event, non-signalled state
+	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
 }
 
 
@@ -181,18 +181,19 @@ uint8_t CKomunikacja::WatekDekodujRamkiPolecen(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 {
-	_Ramka s_Ramka;
-	int n, m;
-	BOOL bMamyTo;
-	_sWron sWron;
-	CString strNazwa = L" ";
-	std::vector <_sWron>::iterator iter;	//iterator wektora wronów
+	//_Ramka s_Ramka;
+	//int n, m;
+	//BOOL bMamyTo;
+	//_sWron sWron;
+	//CString strNazwa = L" ";
+	//std::vector <_sWron>::iterator iter;	//iterator wektora wronów
 
 
 	while (!m_bKoniecWatkuDekoderaPolecen)
 	{		
 		WaitForSingleObject(getProtokol().m_hZdarzenieRamkaPolecenGotowa, INFINITE);		//czekaj na odbiór zdekodowanej ramki danych
-		for (n = 0; n < getProtokol().m_vRamkaPolecenia.size(); n++)
+
+		/*for (n = 0; n < getProtokol().m_vRamkaPolecenia.size(); n++)
 		{
 			s_Ramka = getProtokol().m_vRamkaPolecenia[n];
 			switch (s_Ramka.chPolecenie)
@@ -231,7 +232,7 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 					sWron.strNazwa = strNazwa;
 					m_vRoj.push_back(sWron);
 				}*/	
-				strNazwa = L"";
+			/*	strNazwa = L"";
 				m_chAdresAutopilota = s_Ramka.chAdrNadawcy;
 				CKomunikacja::WyslijOK();		//wyœlij odpowiedŸ				
 				break;
@@ -243,7 +244,7 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 			default:	break;
 			}
 		}
-		getProtokol().m_vRamkaPolecenia.clear();	//wyczyœæ wektor
+		getProtokol().m_vRamkaPolecenia.clear();	//wyczyœæ wektor*/
 	}
 	return ERR_OK;
 }

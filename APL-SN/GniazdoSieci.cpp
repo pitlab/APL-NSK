@@ -25,9 +25,12 @@ CGniazdoSieci::CGniazdoSieci()
 
 CGniazdoSieci::~CGniazdoSieci()
 {
-	m_wskaznikInstancji = --m_wskaznikInstancji;
-	CloseHandle(m_hZdarzeniePolaczonoEth[m_wskaznikInstancji]);
-	CloseHandle(m_hZdarzenieOdebranoEth[m_wskaznikInstancji]);
+	m_wskaznikInstancji = --m_LicznikInstancji;
+	if (m_wskaznikInstancji >= 0)
+	{
+		CloseHandle(m_hZdarzeniePolaczonoEth[m_wskaznikInstancji]);
+		CloseHandle(m_hZdarzenieOdebranoEth[m_wskaznikInstancji]);
+	}
 }
 
 
