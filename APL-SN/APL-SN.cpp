@@ -160,7 +160,8 @@ BOOL CAPLSNApp::InitInstance()
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
 
-
+	//int nNumerPortu;
+	//m_cObslugaRejestru.CzytajRejestrInt(L"NrPortuCOM", &nNumerPortu);
 	return TRUE;
 }
 

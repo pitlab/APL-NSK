@@ -5,7 +5,6 @@
 #include "pch.h"
 #include "framework.h"
 #include "APL-SN.h"
-
 #include "MainFrm.h"
 #include "UstawieniaKameryDlg.h"
 
@@ -166,6 +165,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ModifyStyle(0, FWS_PREFIXTITLE);
 
 	m_bPolaczono = FALSE;
+	//int NrPortu;
+	//m_cObslugaRejestru.CzytajRejestrInt(L"NrPortuCOM", &NrPortu);
 
 	return 0;
 }
@@ -265,6 +266,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 void CMainFrame::OnWindowManager()
 {
 	ShowWindowsDialog();
+
 }
 
 void CMainFrame::OnViewCustomize()

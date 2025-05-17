@@ -370,7 +370,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
 					sTelemetria.chBityDanych[x] = m_chDaneWy[x];
 
-				for (x = 0; x < (m_chIloscDanychRamki - LICZBA_BAJTOW_ID_TELEMETRII) / 2; x++)
+				for (uint8_t x = 0; x < (m_chIloscDanychRamki - LICZBA_BAJTOW_ID_TELEMETRII) / 2; x++)
 				{
 					fTemp = Char2Float16(&m_chDaneWy[2 * x + LICZBA_BAJTOW_ID_TELEMETRII]);
 					sTelemetria.dane.push_back(fTemp);

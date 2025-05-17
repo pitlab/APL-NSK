@@ -3,9 +3,10 @@
 //
 
 #pragma once
-//#include "Protokol.h"
+#include "Protokol.h"
 #include "Komunikacja.h"
 #include "CDaneFlash.h"
+#include "Rejestr.h"
 
 class CAPLSNView : public CView
 {
@@ -34,7 +35,6 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	CWinThread* pWskWatkuPaskaPostepu;
 	CWinThread* pWskWatkuOdswiezaniaTelemetrii;
-	void CzytajRejestr();
 
 // Implementacja
 public:
@@ -57,10 +57,11 @@ protected:
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
 	uint8_t m_chAdresAutopilota;
+	CObslugaRejestru m_cObslugaRejestru;
 
 public:
-	uint8_t m_chNumerPortuCom;
-	uint8_t m_chTypPolaczenia;	//0=UART, 1=ETH
+	uint32_t m_nNumerPortuCom;
+	uint32_t m_nTypPolaczenia;	//0=UART, 1=ETH
 	uint8_t m_chNumerIP[4];	
 	uint32_t m_nPredkoscPortuCom;
 	uint32_t m_nNumerPortuEth;

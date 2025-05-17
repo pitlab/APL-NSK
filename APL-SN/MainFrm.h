@@ -8,6 +8,7 @@
 #include "OutputWnd.h"
 #include "PropertiesWnd.h"
 #include "GniazdoSieci.h"
+#include "Rejestr.h"
 
 class CMainFrame : public CMDIFrameWndEx
 {
@@ -58,6 +59,9 @@ public:
 	CString m_strKomunikatWych;
 	BOOL m_bPolaczono;
 	afx_msg void OnUstawParkamery();
+
+private:
+	CObslugaRejestru m_cObslugaRejestru;
 };
 
 

@@ -68,21 +68,20 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
 	//  styl kaskadowy CREATESTRUCT
-	uint8_t chErr;
-
-	CzytajRejestr();
-	//uint8_t m_chNumerIP[4];
-
+	m_cObslugaRejestru.CzytajRejestrIP(L"AdresIP", m_chNumerIP);
+	m_cObslugaRejestru.CzytajRejestrInt(L"PredkoscCOM", &m_nPredkoscPortuCom);
+	m_cObslugaRejestru.CzytajRejestrInt(L"NrPortuCOM", &m_nNumerPortuCom);
+	m_cObslugaRejestru.CzytajRejestrInt(L"PortETH", &m_nNumerPortuEth);
+	m_cObslugaRejestru.CzytajRejestrInt(L"TypPortu", &m_nTypPolaczenia);
 
 	m_cKomunikacja.UstawRodzica(this);
 	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
 	m_cKomunikacja.UstawNumerPortuETH(m_nNumerPortuEth);
-	m_cKomunikacja.UstawTypPolaczenia(m_chTypPolaczenia + UART);
+	m_cKomunikacja.UstawTypPolaczenia((uint8_t)m_nTypPolaczenia);
 	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
-	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
-	
+	m_cKomunikacja.UstawNumerPortuUART(m_nNumerPortuCom);
 
-	chErr = m_cKomunikacja.Polacz(this);
+	uint8_t chErr = m_cKomunikacja.Polacz(this);
 	if (chErr == ERR_OK)
 	{
 		m_bPolaczono = TRUE;
@@ -151,11 +150,11 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		CPen penWykresuR, penWykresuG, penWykresuB;
 		float fSkalaX, fSkalaY;
 		pDC->GetBoundsRect(&okno, DCB_RESET);
-		uint32_t nLiczbaDanych = (uint32_t)getProtokol().m_vRamkaTelemetryczna.size();
+		long lLiczbaDanych = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
 
 
-		fSkalaX = (float)okno.right / nLiczbaDanych;
+		fSkalaX = (float)okno.right / lLiczbaDanych;
 		fSkalaY = (float)okno.bottom / 40.0f;
 		
 
@@ -165,89 +164,135 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		penWykresuB.CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
 		
 		
-		if (nLiczbaDanych < okno.right)	//dopełnianie okna
+		if (lLiczbaDanych < okno.right)	//dopełnianie okna
 		{		
+			uint32_t nX;
 			//wykres X
-			pDC->SelectObject(&penWykresuR);
-			pDC->MoveTo(0, okno.bottom / 2);
-			for (x = 0; x < nLiczbaDanych; x++)
+			std::vector< CPoint > vPunktyWykresuX;
+			vPunktyWykresuX.reserve(okno.right);		
+			nX = 0;
+			for (x = 0; x < lLiczbaDanych; x++)
 			{
 				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
 				if (stDaneTele.dane.size() > 3)
 				{
 					y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
-					pDC->LineTo(x, okno.bottom / 2 + y);
+					vPunktyWykresuX.push_back(CPoint(nX++, y + okno.bottom / 2));
 				}
 			}
+			
 
 			//wykres Y
-			pDC->SelectObject(&penWykresuG);
-			pDC->MoveTo(0, okno.bottom / 2);
-			for (x = 0; x < nLiczbaDanych; x++)
+			std::vector< CPoint > vPunktyWykresuY;
+			vPunktyWykresuY.reserve(okno.right);	
+			nX = 0;
+			for (x = 0; x < lLiczbaDanych; x++)
 			{
 				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
 				if (stDaneTele.dane.size() > 3)
 				{
 					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
-					pDC->LineTo(x, okno.bottom / 2 + y);
+					vPunktyWykresuY.push_back(CPoint(nX++, y + okno.bottom / 2));
 				}
 			}
 
 			//wykres Z
-			pDC->SelectObject(&penWykresuB);
-			pDC->MoveTo(0, okno.bottom / 2);
-			for (x = 0; x < nLiczbaDanych; x++)
+			std::vector< CPoint > vPunktyWykresuZ;
+			vPunktyWykresuZ.reserve(okno.right);
+			nX = 0;
+			for (x = 0; x < lLiczbaDanych; x++)
 			{
 				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
 				if (stDaneTele.dane.size() > 3)
 				{
 					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
-					pDC->LineTo(x, okno.bottom / 2 + y);
+					vPunktyWykresuZ.push_back(CPoint(nX++, y + okno.bottom / 2));
 				}
+			}
+
+			//rysowanie
+			if (vPunktyWykresuX.size() > 2)
+			{
+				pDC->SelectObject(&penWykresuR);
+				VERIFY(pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size()));
+			}
+			
+			if (vPunktyWykresuY.size())
+			{
+				pDC->SelectObject(&penWykresuG);
+				pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
+			}
+
+			if (vPunktyWykresuZ.size())
+			{
+				pDC->SelectObject(&penWykresuB);
+				pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
 			}
 		}
 		else      //przesuwanie zawartości okna
 		{
+			uint32_t nX;
 			//wykres X
-			pDC->SelectObject(&penWykresuR);
-			pDC->MoveTo(0, okno.bottom / 2);
+			std::vector< CPoint > vPunktyWykresuX;
+			vPunktyWykresuX.reserve(okno.right);
+			nX = 0;
 			for (x = 0; x < okno.right; x++)
 			{
 				if (getProtokol().m_vRamkaTelemetryczna.size())
 				{
-					stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+					stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
 					if (stDaneTele.dane.size())
 					{
 						y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
-						pDC->LineTo(x, okno.bottom / 2 + y);
+						vPunktyWykresuX.push_back(CPoint(nX++, y + okno.bottom / 2));
 					}
 				}
 			}
 
 			//wykres Y
-			pDC->SelectObject(&penWykresuG);
-			pDC->MoveTo(0, okno.bottom / 2);
+			std::vector< CPoint > vPunktyWykresuY;
+			vPunktyWykresuY.reserve(okno.right);
+			nX = 0;
 			for (x = 0; x < okno.right; x++)
 			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
 				if (stDaneTele.dane.size() > 3)
 				{
 					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
-					pDC->LineTo(x, okno.bottom / 2 + y);
+					vPunktyWykresuY.push_back(CPoint(nX++, y + okno.bottom / 2));
 				}
 			}
 
 			//wykres Z
-			pDC->SelectObject(&penWykresuB);
-			pDC->MoveTo(0, okno.bottom / 2);
+			std::vector< CPoint > vPunktyWykresuZ;
+			vPunktyWykresuZ.reserve(okno.right);
+			nX = 0;
 			for (x = 0; x < okno.right; x++)
 			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[nLiczbaDanych - okno.right + x];
+				stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
 				if (stDaneTele.dane.size() > 3)
 				{
 					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
-					pDC->LineTo(x, okno.bottom / 2 + y);
+					vPunktyWykresuZ.push_back(CPoint(nX++, y + okno.bottom / 2));
 				}
+			}
+
+			if (vPunktyWykresuX.size())
+			{
+				pDC->SelectObject(&penWykresuR);
+				pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
+			}
+
+			if (vPunktyWykresuY.size())
+			{
+				pDC->SelectObject(&penWykresuG);
+				pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());				
+			}
+
+			if (vPunktyWykresuZ.size())
+			{
+				pDC->SelectObject(&penWykresuB);
+				pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
 			}
 		}
 	}
@@ -370,11 +415,11 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnKonfigPort()
 {
-	m_cKonfigPolacz.UstawNumerPortuCom(m_chNumerPortuCom);
+	m_cKonfigPolacz.UstawNumerPortuCom(m_nNumerPortuCom);
 	m_cKonfigPolacz.UstawPredkoscPortuCom(m_nPredkoscPortuCom);
 	m_cKonfigPolacz.UstawNumerPortuEth(m_nNumerPortuEth);
 	m_cKonfigPolacz.UstawAdresIP(m_chNumerIP);
-	m_cKonfigPolacz.UstawTypPolaczenia(m_chTypPolaczenia);
+	m_cKonfigPolacz.UstawTypPolaczenia(m_nTypPolaczenia);
 	m_cKonfigPolacz.DoModal();
 }
 
@@ -396,8 +441,8 @@ void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
-	m_cKomunikacja.UstawTypPolaczenia(UART + m_chTypPolaczenia);
-	m_cKomunikacja.UstawNumerPortuUART(m_chNumerPortuCom);
+	m_cKomunikacja.UstawTypPolaczenia(UART + m_nTypPolaczenia);
+	m_cKomunikacja.UstawNumerPortuUART(m_nNumerPortuCom);
 	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	if (m_cKomunikacja.CzyPolaczonoUart())
 	{
@@ -553,96 +598,6 @@ void CAPLSNView::OnZapiszPamiec()
 void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Odczytuje ustawienia z rejestru
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::CzytajRejestr()
-{
-	int x, y;
-	DWORD dwWartosc;
-	CString Str;
-	wchar_t chNapis[50];
-	HKEY hKey;
-	LONG lErr;
-	DWORD dwResult;
-	DWORD dwRegType, dwRegSize;
-
-	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
-	if (lErr == ERROR_SUCCESS)
-	{
-		lErr = RegQueryValueEx(hKey, L"NrPortuCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-		if (lErr == ERROR_SUCCESS)
-		{
-			m_chNumerPortuCom = (uint8_t)(dwWartosc & 0xFF);
-			RegCloseKey(hKey);
-		}
-	}
-
-	//odczytaj rejestr i ustaw pozycje z odczytaną prędkością portu COM
-	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
-	if (lErr == ERROR_SUCCESS)
-	{
-		lErr = RegQueryValueEx(hKey, L"PredkoscCOM", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-		if (lErr == ERROR_SUCCESS)
-		{
-			m_nPredkoscPortuCom = (uint32_t)(dwWartosc & 0xFFFFFFFF);
-			RegCloseKey(hKey);
-		}
-	}
-
-	//Odczytaj z rejestru adres IP
-	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
-	if (lErr == ERROR_SUCCESS)
-	{
-	//za pierwszym razem zwraca błąd ERROR_MORE_DATA sugerujący że bufor jest za mały ale powiększanie nie pomaga
-		lErr = RegQueryValueExW(hKey, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
-		lErr = RegQueryValueExW(hKey, L"AdresIP", NULL, &dwRegType, (LPBYTE)&chNapis, &dwRegSize);
-		if (lErr == ERROR_SUCCESS)
-		{
-			wchar_t* pwNapis;
-			pwNapis = chNapis;
-			for (x = 0; x < 4; x++)
-			{							
-				m_chNumerIP[x] = _wtoi(pwNapis);
-				pwNapis = wcschr(chNapis, L'.');							
-				for (y = 0; y <= (pwNapis - chNapis); y++)
-				{
-					chNapis[y] = L' ';
-				}
-			}
-			RegCloseKey(hKey);
-		}
-	}
-
-	//odczytaj numer portu ETH
-	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
-	if (lErr == ERROR_SUCCESS)
-	{
-		lErr = RegQueryValueExW(hKey, L"PortETH", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-		if (lErr == ERROR_SUCCESS)
-		{
-			m_nNumerPortuEth = (uint32_t)(dwWartosc & 0xFFFFFFFF);
-			RegCloseKey(hKey);
-		}
-		
-	}
-
-	//ustaw widoczność aktywnych kontrolek
-	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
-	if (lErr == ERROR_SUCCESS)
-	{
-		lErr = RegQueryValueExW(hKey, L"TypPortu", 0, &dwRegType, (LPBYTE)&dwWartosc, &dwRegSize);
-		if (lErr == ERROR_SUCCESS)
-		{
-			m_chTypPolaczenia = (uint8_t)(dwWartosc & 0x1);		
-			RegCloseKey(hKey);
-		}
-	}
 }
 
 

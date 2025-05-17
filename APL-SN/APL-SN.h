@@ -11,6 +11,7 @@
 #include "KonfigPolacz.h"
 #include "PortSzeregowy.h"
 #include "Protokol.h"
+#include "Komunikacja.h"
 
 // CAPLSNApp:
 // Aby uzyskać implementację klasy, zobacz APL-SN.cpp
@@ -43,6 +44,7 @@ public:
 	private:	
 	CPortSzeregowy	m_cPortSzeregowy;
 	CProtokol m_cProtokol;
+	CKomunikacja m_cKomunikacja;
 
 };
 
