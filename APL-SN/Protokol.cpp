@@ -63,8 +63,16 @@ CProtokol::CProtokol()
 CProtokol::~CProtokol()
 {
 	m_wskaznikInstancji = --m_wskaznikInstancji;
-	CloseHandle(m_hZdarzenieRamkaPolecenGotowa);
-	CloseHandle(m_hZdarzenieRamkaTelemetriiGotowa);
+	if (m_hZdarzenieRamkaPolecenGotowa)
+	{
+		CloseHandle(m_hZdarzenieRamkaPolecenGotowa);
+		m_hZdarzenieRamkaPolecenGotowa = NULL;
+	}
+	if (m_hZdarzenieRamkaTelemetriiGotowa)
+	{
+		CloseHandle(m_hZdarzenieRamkaTelemetriiGotowa);
+		m_hZdarzenieRamkaTelemetriiGotowa = NULL;
+	}
 	DeleteCriticalSection(&m_SekcjaKrytycznaPolecen);
 	DeleteCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 }
@@ -362,8 +370,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 			bRamkaTelemetrii = (BOOL)(m_chPolecenie == PK_TELEMETRIA);
 			if (bRamkaTelemetrii)
 			{
-				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);
-
+				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);				
 				//zbierz dane ramki do struktury
 				sTelemetria.chZnakCzasu = m_chZnakCzasu;
 				sTelemetria.chAdrNadawcy = m_chAdresNadawcy;
@@ -374,10 +381,9 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				{
 					fTemp = Char2Float16(&m_chDaneWy[2 * x + LICZBA_BAJTOW_ID_TELEMETRII]);
 					sTelemetria.dane.push_back(fTemp);
-				}
-
-				//wstaw strukturê do wektora
-				m_vRamkaTelemetryczna.push_back(sTelemetria);
+				}				
+				m_vRamkaTelemetryczna.push_back(sTelemetria);		//wstaw strukturê do wektora
+				sTelemetria.dane.clear();							//po wstawieniu struktury do wektora ramki, czyœæ wektor struktury
 				LeaveCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
 				TRACE("SetEvent: Telemetria\n");				

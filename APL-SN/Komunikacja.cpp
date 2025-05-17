@@ -31,7 +31,6 @@ CKomunikacja::CKomunikacja()
 	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
-	//, m_iPredkoscUART(19200)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
@@ -46,7 +45,11 @@ CKomunikacja::~CKomunikacja()
 {	
 	m_bKoniecWatkuDekoderaPolecen = TRUE;
 	WaitForSingleObject(pWskWatkuDekodujacego, INFINITE);
-	CloseHandle(m_hZdarzeniePaczkaDanych);
+	if (m_hZdarzeniePaczkaDanych)
+	{
+		CloseHandle(m_hZdarzeniePaczkaDanych);
+		m_hZdarzeniePaczkaDanych = NULL;
+	}
 }
 
 

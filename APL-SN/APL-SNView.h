@@ -7,6 +7,7 @@
 #include "Komunikacja.h"
 #include "CDaneFlash.h"
 #include "Rejestr.h"
+#include "DekoderTelemetrii.h"
 
 class CAPLSNView : public CView
 {
@@ -49,6 +50,7 @@ protected:
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
 	CProtokol m_cProtokol;
+	CDekoderTelemetrii m_cDekoderTelemetrii;
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;

@@ -221,6 +221,7 @@
     <ClCompile Include="APL-SNView.cpp" />
     <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CRegistry.cpp" />
+    <ClCompile Include="DEkoderTelemetrii.cpp" />
     <ClCompile Include="GniazdoSieci.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ClassView.cpp" />

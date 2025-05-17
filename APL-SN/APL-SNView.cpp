@@ -53,6 +53,7 @@ CAPLSNView::CAPLSNView() noexcept
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_chAdresAutopilota(2)
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 }
 
@@ -60,12 +61,17 @@ CAPLSNView::CAPLSNView() noexcept
 CAPLSNView::~CAPLSNView()
 {
 	if (m_bPolaczono)
+	{
+		//CKomunikacja m_cKomunikacja = getKomunikacja();
 		m_cKomunikacja.Rozlacz();
+	}
 }
 
 
 BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
 	//  styl kaskadowy CREATESTRUCT
 	m_cObslugaRejestru.CzytajRejestrIP(L"AdresIP", m_chNumerIP);
@@ -108,6 +114,7 @@ void CAPLSNView::OnDraw(CDC* pDC)
 	COLORREF crKolor;
 	CAPLSNDoc* pDoc = GetDocument();
 	RECT prost;
+	long lErr;
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
@@ -148,153 +155,85 @@ void CAPLSNView::OnDraw(CDC* pDC)
 	{
 		RECT okno;
 		CPen penWykresuR, penWykresuG, penWykresuB;
-		float fSkalaX, fSkalaY;
+		float fSkalaY;
+		float fZmienna;
 		pDC->GetBoundsRect(&okno, DCB_RESET);
-		long lLiczbaDanych = (long)getProtokol().m_vRamkaTelemetryczna.size();
+		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
+		int32_t nIndexRamki;
 
-
-		fSkalaX = (float)okno.right / lLiczbaDanych;
+		//fSkalaX = (float)okno.right / lLiczbaRamek;
 		fSkalaY = (float)okno.bottom / 40.0f;
 		
-
-		// Create a solid red pen of width 2.
 		penWykresuR.CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
 		penWykresuG.CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
 		penWykresuB.CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
 		
-		
-		if (lLiczbaDanych < okno.right)	//dopełnianie okna
-		{		
-			uint32_t nX;
-			//wykres X
-			std::vector< CPoint > vPunktyWykresuX;
-			vPunktyWykresuX.reserve(okno.right);		
-			nX = 0;
-			for (x = 0; x < lLiczbaDanych; x++)
-			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
-				if (stDaneTele.dane.size() > 3)
-				{
-					y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
-					vPunktyWykresuX.push_back(CPoint(nX++, y + okno.bottom / 2));
-				}
-			}
-			
-
-			//wykres Y
-			std::vector< CPoint > vPunktyWykresuY;
-			vPunktyWykresuY.reserve(okno.right);	
-			nX = 0;
-			for (x = 0; x < lLiczbaDanych; x++)
-			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
-				if (stDaneTele.dane.size() > 3)
-				{
-					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
-					vPunktyWykresuY.push_back(CPoint(nX++, y + okno.bottom / 2));
-				}
-			}
-
-			//wykres Z
-			std::vector< CPoint > vPunktyWykresuZ;
-			vPunktyWykresuZ.reserve(okno.right);
-			nX = 0;
-			for (x = 0; x < lLiczbaDanych; x++)
-			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[x];
-				if (stDaneTele.dane.size() > 3)
-				{
-					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
-					vPunktyWykresuZ.push_back(CPoint(nX++, y + okno.bottom / 2));
-				}
-			}
-
-			//rysowanie
-			if (vPunktyWykresuX.size() > 2)
-			{
-				pDC->SelectObject(&penWykresuR);
-				VERIFY(pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size()));
-			}
-			
-			if (vPunktyWykresuY.size())
-			{
-				pDC->SelectObject(&penWykresuG);
-				pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
-			}
-
-			if (vPunktyWykresuZ.size())
-			{
-				pDC->SelectObject(&penWykresuB);
-				pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
-			}
-		}
-		else      //przesuwanie zawartości okna
+		//wykres X
+		std::vector< CPoint > vPunktyWykresuX;
+		vPunktyWykresuX.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		x = 0;
+		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
 		{
-			uint32_t nX;
-			//wykres X
-			std::vector< CPoint > vPunktyWykresuX;
-			vPunktyWykresuX.reserve(okno.right);
-			nX = 0;
-			for (x = 0; x < okno.right; x++)
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (!stDaneTele.dane.empty())
 			{
-				if (getProtokol().m_vRamkaTelemetryczna.size())
-				{
-					stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
-					if (stDaneTele.dane.size())
-					{
-						y = (uint32_t)((float)stDaneTele.dane[0] * fSkalaY);
-						vPunktyWykresuX.push_back(CPoint(nX++, y + okno.bottom / 2));
-					}
-				}
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
+				if (lErr == ERR_OK)
+					vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
+		} while ((x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
 
-			//wykres Y
-			std::vector< CPoint > vPunktyWykresuY;
-			vPunktyWykresuY.reserve(okno.right);
-			nX = 0;
-			for (x = 0; x < okno.right; x++)
+		//wykres Y
+		std::vector< CPoint > vPunktyWykresuY;
+		vPunktyWykresuY.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		x = 0;
+		do
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (stDaneTele.dane.size())
 			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
-				if (stDaneTele.dane.size() > 3)
-				{
-					y = (uint32_t)((float)stDaneTele.dane[1] * fSkalaY);
-					vPunktyWykresuY.push_back(CPoint(nX++, y + okno.bottom / 2));
-				}
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
+				if (lErr == ERR_OK)
+					vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
+		} while ((x < okno.right) && (nIndexRamki > 0));
 
-			//wykres Z
-			std::vector< CPoint > vPunktyWykresuZ;
-			vPunktyWykresuZ.reserve(okno.right);
-			nX = 0;
-			for (x = 0; x < okno.right; x++)
+		//wykres Z
+		std::vector< CPoint > vPunktyWykresuZ;
+		vPunktyWykresuZ.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		x = 0;
+		do
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (stDaneTele.dane.size())
 			{
-				stDaneTele = getProtokol().m_vRamkaTelemetryczna[lLiczbaDanych - okno.right + x];
-				if (stDaneTele.dane.size() > 3)
-				{
-					y = (uint32_t)((float)stDaneTele.dane[2] * fSkalaY);
-					vPunktyWykresuZ.push_back(CPoint(nX++, y + okno.bottom / 2));
-				}
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
+				if (lErr == ERR_OK)
+					vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
+		} while ((x < okno.right) && (nIndexRamki > 0));
 
-			if (vPunktyWykresuX.size())
-			{
-				pDC->SelectObject(&penWykresuR);
-				pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
-			}
 
-			if (vPunktyWykresuY.size())
-			{
-				pDC->SelectObject(&penWykresuG);
-				pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());				
-			}
-
-			if (vPunktyWykresuZ.size())
-			{
-				pDC->SelectObject(&penWykresuB);
-				pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
-			}
+		if (vPunktyWykresuX.size())
+		{
+			pDC->SelectObject(&penWykresuR);
+			pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
 		}
+		if (vPunktyWykresuY.size())
+		{
+			pDC->SelectObject(&penWykresuG);
+			pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
+		}
+
+		if (vPunktyWykresuZ.size())
+		{
+			pDC->SelectObject(&penWykresuB);
+			pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
+		}		
 	}
 }
 
@@ -383,6 +322,7 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 	//int iRozmiar;
 
 	CAPLSNDoc* pDoc = GetDocument();
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	//assert(pDoc);
 
 	//iRozmiar = sizeof(chBufor);
@@ -441,6 +381,8 @@ void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 	m_cKomunikacja.UstawTypPolaczenia(UART + m_nTypPolaczenia);
 	m_cKomunikacja.UstawNumerPortuUART(m_nNumerPortuCom);
 	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
@@ -467,6 +409,8 @@ void CAPLSNView::OnPolaczCom()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 	pCmdUI->Enable(!m_cKomunikacja.CzyPolaczonoUart());
 }
 
@@ -482,7 +426,7 @@ void CAPLSNView::OnZrobZdjecie()
 	uint8_t chErr;
 
 	CAPLSNDoc* pDoc = GetDocument();
-	//assert(pDoc);
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
 	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
 	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
@@ -509,6 +453,8 @@ void CAPLSNView::OnZrobZdjecie()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
 }
 
@@ -531,6 +477,8 @@ uint8_t CAPLSNView::WatekRysujPasekPostepu(LPVOID pParam)
 uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 {
 	uint32_t nErr;
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 
 	while (!m_bKoniecWatkuPaskaPostepu)
 	{
@@ -597,6 +545,8 @@ void CAPLSNView::OnZapiszPamiec()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 {
+	//CKomunikacja m_cKomunikacja = getKomunikacja();
+
 	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
 }
 

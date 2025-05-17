@@ -155,6 +155,9 @@
     <ClCompile Include="Rejestr.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="DEkoderTelemetrii.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="APL-SN.reg" />
