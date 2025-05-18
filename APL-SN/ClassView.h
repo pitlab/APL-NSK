@@ -3,6 +3,17 @@
 
 #include "ViewTree.h"
 
+class CDrzewoTelemetrii : public CViewTree
+{
+public:
+
+	uint8_t chOkresTelemetrii;
+	//HTREEITEM InsertItem();
+	//HTREEITEM InsertItem(_In_z_ LPCTSTR lpszItem, _In_ int nImage, _In_ int nSelectedImage,	_In_ HTREEITEM hParent = TVI_ROOT, _In_ HTREEITEM hInsertAfter = TVI_LAST);
+};
+
+
+
 class CClassToolBar : public CMFCToolBar
 {
 	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler)
@@ -21,10 +32,12 @@ public:
 
 	void AdjustLayout();
 	void OnChangeVisualStyle();
-
+	//uint8_t cOkresTelemetrii[100];
+	
 protected:
 	CClassToolBar m_wndToolBar;
-	CViewTree m_wndClassView;
+	//CViewTree m_wndClassView;
+	CDrzewoTelemetrii m_wndClassView;
 	CImageList m_ClassViewImages;
 	UINT m_nCurrSort;
 

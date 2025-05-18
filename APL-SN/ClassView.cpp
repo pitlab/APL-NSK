@@ -5,6 +5,7 @@
 #include "ClassView.h"
 #include "Resource.h"
 #include "APL-SN.h"
+#include "CkonfigTelemetrii.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {
@@ -95,10 +96,10 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Wszystkie polecenia będą kierowane za pośrednictwem tej kontrolki, a nie ramki nadrzędnej:
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
-	CMenu menuSort;
-	menuSort.LoadMenu(IDR_POPUP_SORT);
+	//CMenu menuSort;
+	//menuSort.LoadMenu(IDR_POPUP_SORT);
 
-	m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
+	//m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
 
 	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
 
@@ -124,40 +125,66 @@ void CClassView::OnSize(UINT nType, int cx, int cy)
 
 void CClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("Klasy fikcyjnej aplikacji"), 0, 0);
+	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("Telemetria"), 0, 0);
 	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
-
-	HTREEITEM hClass = m_wndClassView.InsertItem(_T("CFakeAboutDlg"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAboutDlg()"), 3, 3, hClass);
-
 	m_wndClassView.Expand(hRoot, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeApp"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeApp()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("InitInstance()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnAppAbout()"), 3, 3, hClass);
+	HTREEITEM hClass = m_wndClassView.InsertItem(_T("Akcelerometr"), 2, 2, hRoot);
+	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppDoc"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppDoc()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppDoc()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnNewDocument()"), 3, 3, hClass);
+	hClass = m_wndClassView.InsertItem(_T("Żyroskop"), 2, 2, hRoot);
+	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
+	
+	hClass = m_wndClassView.InsertItem(_T("Magnetometr"), 2, 2, hRoot);
+	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś X3"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Y3"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Oś Z3"), 3, 4, hClass);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppView"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppView()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppView()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("GetDocument()"), 3, 3, hClass);
+	hClass = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hRoot);
+	m_wndClassView.InsertItem(_T("Phi tryg."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Theta tryg."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Psi tryg."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Phi kwat."), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Theta kwat."), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Psi kwat."), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Phi akcel."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Theta akcel."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Psi akcel."), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Phi żyro."), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Theta żyro."), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Psi żyro."), 5, 6, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppFrame"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("m_wndMenuBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndToolBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndStatusBar"), 6, 6, hClass);
-
-	hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
+	hClass = m_wndClassView.InsertItem(_T("Baro"), 2, 2, hRoot);
+	m_wndClassView.InsertItem(_T("Cisnienie bzwzgl. 1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Cisnienie bzwzgl. 2"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Wysokosć AGL 1"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Wysokosć AGL 2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Cisnienie różn. 1"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("Cisnienie różn. 2"), 3, 4, hClass);
+	m_wndClassView.InsertItem(_T("IAS 1"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("IAS 2"), 5, 6, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
+
+
+	//hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
+	//m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
 }
 
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
@@ -186,7 +213,11 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	}
 
 	pWndTree->SetFocus();
-	CMenu menu;
+	CKonfigTelemetrii m_cKonfigTelemetrii;
+
+	m_cKonfigTelemetrii.UstawIDZmiennej(5);
+	m_cKonfigTelemetrii.DoModal();
+	/*CMenu menu;
 	menu.LoadMenu(IDR_POPUP_SORT);
 
 	CMenu* pSumMenu = menu.GetSubMenu(0);
@@ -200,7 +231,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
 		UpdateDialogControls(this, FALSE);
-	}
+	}*/
 }
 
 void CClassView::AdjustLayout()
@@ -273,6 +304,7 @@ void CClassView::OnNewFolder()
 	AfxMessageBox(_T("Nowy folder..."));
 }
 
+//uruchamia się przy zmienianie szerokosci panelu
 void CClassView::OnPaint()
 {
 	CPaintDC dc(this); // kontekst urządzenia dotyczący malowania
