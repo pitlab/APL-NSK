@@ -45,4 +45,6 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHotitemchangeRadUart(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedRadUart();
+	afx_msg void OnBnClickedRadEth();
 };

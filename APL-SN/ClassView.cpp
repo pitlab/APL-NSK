@@ -41,6 +41,7 @@ IMPLEMENT_SERIAL(CClassViewMenuButton, CMFCToolBarMenuButton, 1)
 CClassView::CClassView() noexcept
 {
 	m_nCurrSort = ID_SORTING_GROUPBYTYPE;
+	
 }
 
 CClassView::~CClassView()
@@ -130,12 +131,13 @@ void CClassView::FillClassView()
 	m_wndClassView.Expand(hRoot, TVE_EXPAND);
 
 	HTREEITEM hClass = m_wndClassView.InsertItem(_T("Akcelerometr"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
+	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass, (HTREEITEM)0x1000);
+	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass, (HTREEITEM)0x2000);
+	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass, (HTREEITEM)0x3000);
+	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass, (HTREEITEM)0x4000);
+	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass, (HTREEITEM)0x5000);
+	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass, (HTREEITEM)0x6000);
+	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("Żyroskop"), 2, 2, hRoot);
 	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
@@ -144,6 +146,7 @@ void CClassView::FillClassView()
 	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
 	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
 	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
+	m_wndClassView.Expand(hClass, TVE_EXPAND);
 	
 	hClass = m_wndClassView.InsertItem(_T("Magnetometr"), 2, 2, hRoot);
 	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
@@ -155,6 +158,7 @@ void CClassView::FillClassView()
 	m_wndClassView.InsertItem(_T("Oś X3"), 3, 4, hClass);
 	m_wndClassView.InsertItem(_T("Oś Y3"), 3, 4, hClass);
 	m_wndClassView.InsertItem(_T("Oś Z3"), 3, 4, hClass);
+	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hRoot);
 	m_wndClassView.InsertItem(_T("Phi tryg."), 3, 4, hClass);
@@ -189,6 +193,8 @@ void CClassView::FillClassView()
 
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
+	CString strNazwaZmiennej;
+	int nIdZmiennej;
 	CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
 	ASSERT_VALID(pWndTree);
 
@@ -202,6 +208,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	{
 		// Zaznacz kliknięty element:
 		CPoint ptTree = point;
+		
 		pWndTree->ScreenToClient(&ptTree);
 
 		UINT flags = 0;
@@ -209,12 +216,20 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 		if (hTreeItem != nullptr)
 		{
 			pWndTree->SelectItem(hTreeItem);
+			nIdZmiennej = pWndTree->GetIndent();
+			//nIdZmiennej = pWndTree->GetStyle();
+			nIdZmiennej = pWndTree->m_nFlags;			
+			nIdZmiennej = pWndTree->GetDlgCtrlID();
+			nIdZmiennej = pWndTree->GetItemData(hTreeItem);
+			strNazwaZmiennej = pWndTree->GetItemText(hTreeItem);
+			//pWndTree->get
 		}
 	}
 
 	pWndTree->SetFocus();
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 
+	m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
 	m_cKonfigTelemetrii.UstawIDZmiennej(5);
 	m_cKonfigTelemetrii.DoModal();
 	/*CMenu menu;

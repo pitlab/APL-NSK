@@ -42,6 +42,8 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
 	ON_COMMAND(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnZapiszPamiec)
 	ON_UPDATE_COMMAND_UI(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnUpdateZapiszPamiec)
+	ON_WM_SIZE()
+	ON_REGISTERED_MESSAGE(AFX_WM_DRAW2D, &CAPLSNView::OnDraw2d)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -55,6 +57,24 @@ CAPLSNView::CAPLSNView() noexcept
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
+	// Enable D2D support for this window:
+	EnableD2DSupport();
+
+	// Initialize D2D resources:
+	m_pBrushBlack = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Black));
+	//m_pBrushWykresuR
+	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 12);
+
+	m_pTextFormat->Get()->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	m_pTextFormat->Get()->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	D2D1_GRADIENT_STOP gradientStops[2];
+	gradientStops[0].color = D2D1::ColorF(D2D1::ColorF::White);
+	gradientStops[0].position = 0.f;
+	gradientStops[1].color = D2D1::ColorF(D2D1::ColorF::LightSkyBlue);
+	gradientStops[1].position = 1.f;
+
+	m_pLinearGradientBrush = new CD2DLinearGradientBrush(GetRenderTarget(), gradientStops, ARRAYSIZE(gradientStops), D2D1::LinearGradientBrushProperties(D2D1::Point2F(0, 0), D2D1::Point2F(0, 0)));
 }
 
 
@@ -114,7 +134,6 @@ void CAPLSNView::OnDraw(CDC* pDC)
 	COLORREF crKolor;
 	CAPLSNDoc* pDoc = GetDocument();
 	RECT prost;
-	long lErr;
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
@@ -150,91 +169,7 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		pDC->Rectangle(&prost);
 	}
 
-	//rysowanie wykresów telemetrii
-	if (m_bRysujTelemetrie)
-	{
-		RECT okno;
-		CPen penWykresuR, penWykresuG, penWykresuB;
-		float fSkalaY;
-		float fZmienna;
-		pDC->GetBoundsRect(&okno, DCB_RESET);
-		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
-		_Telemetria stDaneTele;
-		int32_t nIndexRamki;
-
-		//fSkalaX = (float)okno.right / lLiczbaRamek;
-		fSkalaY = (float)okno.bottom / 40.0f;
-		
-		penWykresuR.CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
-		penWykresuG.CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
-		penWykresuB.CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
-		
-		//wykres X
-		std::vector< CPoint > vPunktyWykresuX;
-		vPunktyWykresuX.reserve(okno.right);
-		nIndexRamki = lLiczbaRamek - 1;
-		x = 0;
-		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (!stDaneTele.dane.empty())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
-				if (lErr == ERR_OK)
-					vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
-
-		//wykres Y
-		std::vector< CPoint > vPunktyWykresuY;
-		vPunktyWykresuY.reserve(okno.right);
-		nIndexRamki = lLiczbaRamek - 1;
-		x = 0;
-		do
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (stDaneTele.dane.size())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
-				if (lErr == ERR_OK)
-					vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((x < okno.right) && (nIndexRamki > 0));
-
-		//wykres Z
-		std::vector< CPoint > vPunktyWykresuZ;
-		vPunktyWykresuZ.reserve(okno.right);
-		nIndexRamki = lLiczbaRamek - 1;
-		x = 0;
-		do
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (stDaneTele.dane.size())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
-				if (lErr == ERR_OK)
-					vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((x < okno.right) && (nIndexRamki > 0));
-
-
-		if (vPunktyWykresuX.size())
-		{
-			pDC->SelectObject(&penWykresuR);
-			pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
-		}
-		if (vPunktyWykresuY.size())
-		{
-			pDC->SelectObject(&penWykresuG);
-			pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
-		}
-
-		if (vPunktyWykresuZ.size())
-		{
-			pDC->SelectObject(&penWykresuB);
-			pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
-		}		
-	}
+	
 }
 
 
@@ -519,8 +454,6 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 		nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, 200);
 		if (nErr != WAIT_TIMEOUT)
 		{
-			if (this)
-				this->Invalidate(TRUE);
 			m_bRysujTelemetrie = TRUE;
 		}
 	}
@@ -551,3 +484,138 @@ void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 }
 
 
+
+
+void CAPLSNView::OnSize(UINT nType, int cx, int cy)
+{
+	CView::OnSize(nType, cx, cy);
+
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
+	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
+}
+
+
+
+afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
+{
+	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
+	ASSERT_VALID(pRenderTarget);
+	CD2DPointF pktfPoczatek, pktfKoniec;
+
+	CRect okno;
+	GetClientRect(okno);
+
+	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
+	//pRenderTarget->DrawText(_T("Hello, World!"), rect, m_pBrushBlack, m_pTextFormat);
+
+	//rysowanie wykresów telemetrii
+	if (m_bRysujTelemetrie)
+	{	
+		m_bRysujTelemetrie = FALSE;
+		float fSkalaY;
+		float fZmienna;
+		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
+		_Telemetria stDaneTele;
+		int32_t nIndexRamki;
+		int  x;
+		long lErr;
+
+		m_pBrushWykresuR = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Red));
+		m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
+		m_pBrushWykresuB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
+		
+
+		//fSkalaX = (float)okno.right / lLiczbaRamek;
+		fSkalaY = (float)okno.bottom / 40.0f;
+
+		//wykres X
+		std::vector< CPoint > vPunktyWykresuX;
+		//vPunktyWykresuX.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		pktfPoczatek.x = x = 0;
+		pktfPoczatek.y = (float)okno.bottom / 2;
+		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (!stDaneTele.dane.empty())
+			{
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
+				if (lErr == ERR_OK)
+				{
+					pktfKoniec.x = (float)++x;
+					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
+					pktfPoczatek = pktfKoniec;
+				}
+					//vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+			}
+		} while ((x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
+
+		//wykres Y
+		std::vector< CPoint > vPunktyWykresuY;
+		vPunktyWykresuY.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		pktfPoczatek.x = x = 0;
+		pktfPoczatek.y = (float)okno.bottom / 2;
+		do
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (stDaneTele.dane.size())
+			{
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
+				if (lErr == ERR_OK)
+				{
+					pktfKoniec.x = (float)++x;
+					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuG);
+					pktfPoczatek = pktfKoniec;
+				}
+					//vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+			}
+		} while ((x < okno.right) && (nIndexRamki > 0));
+
+		//wykres Z
+		std::vector< CPoint > vPunktyWykresuZ;
+		vPunktyWykresuZ.reserve(okno.right);
+		nIndexRamki = lLiczbaRamek - 1;
+		pktfPoczatek.x = x = 0;
+		pktfPoczatek.y = (float)okno.bottom / 2;
+		do
+		{
+			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
+			if (stDaneTele.dane.size())
+			{
+				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
+				if (lErr == ERR_OK)
+				{
+					pktfKoniec.x = ++x;
+					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
+					pktfPoczatek = pktfKoniec;
+				}
+					//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+			}
+		} while ((x < okno.right) && (nIndexRamki > 0));
+
+		
+
+		/*if (vPunktyWykresuX.size())
+		{
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
+			pDC->SelectObject(&penWykresuR);
+			pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
+		}
+		if (vPunktyWykresuY.size())
+		{
+			pDC->SelectObject(&penWykresuG);
+			pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
+		}
+
+		if (vPunktyWykresuZ.size())
+		{
+			pDC->SelectObject(&penWykresuB);
+			pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
+		}*/
+	}
+	return TRUE;
+}

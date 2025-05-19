@@ -60,6 +60,12 @@ protected:
 	uint16_t m_sBiezacyStanPaskaPostepu;
 	uint8_t m_chAdresAutopilota;
 	CObslugaRejestru m_cObslugaRejestru;
+	CD2DTextFormat* m_pTextFormat;
+	CD2DSolidColorBrush* m_pBrushBlack;
+	CD2DSolidColorBrush* m_pBrushWykresuR;
+	CD2DSolidColorBrush* m_pBrushWykresuG;
+	CD2DSolidColorBrush* m_pBrushWykresuB;
+	CD2DLinearGradientBrush* m_pLinearGradientBrush;
 
 public:
 	uint32_t m_nNumerPortuCom;
@@ -85,6 +91,9 @@ public:
 	afx_msg void OnUpdateZrobZdjecie(CCmdUI* pCmdUI);
 	afx_msg void OnZapiszPamiec();
 	afx_msg void OnUpdateZapiszPamiec(CCmdUI* pCmdUI);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+protected:
+	afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

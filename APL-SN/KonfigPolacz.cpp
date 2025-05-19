@@ -45,6 +45,8 @@ BEGIN_MESSAGE_MAP(CKonfigPolacz, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_ADRES, &CKonfigPolacz::OnEnChangeEditAdres)
 	ON_EN_CHANGE(IDC_EDIT_PORT_ETH, &CKonfigPolacz::OnEnChangeEditPortEth)
 	ON_NOTIFY(BCN_HOTITEMCHANGE, IDC_RAD_UART, &CKonfigPolacz::OnHotitemchangeRadUart)
+	ON_BN_CLICKED(IDC_RAD_UART, &CKonfigPolacz::OnBnClickedRadUart)
+	ON_BN_CLICKED(IDC_RAD_ETH, &CKonfigPolacz::OnBnClickedRadEth)
 END_MESSAGE_MAP()
 
 
@@ -128,7 +130,7 @@ void CKonfigPolacz::OnBnClickedOk()
 	if (lErr != ERROR_SUCCESS)
 		MessageBoxW(L"Nie udało się utworzyć pozycji", L"Ojojoj!", MB_ICONWARNING);
 
-	dwWartosc = m_bTypPolaczenia;
+	dwWartosc = m_chTypPolaczenia;
 
 	lErr = RegCreateKeyExW(HKEY_CURRENT_USER, _T("SOFTWARE\\PitLab\\APL-SN\\Settings"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwResult);
 	if (lErr == ERROR_SUCCESS)
@@ -282,20 +284,20 @@ BOOL CKonfigPolacz::OnInitDialog()
 	m_strPortETH.Format(L"% d", m_chNumerPortuEth);
 
 	//ustaw widoczność aktywnych kontrolek
-	m_bTypPolaczenia = m_chTypPolaczenia;
+	m_bTypPolaczenia = m_chTypPolaczenia - 1;
 	if (m_bTypPolaczenia)
-	{
-		GetDlgItem(IDC_COMBO_PORT_COM)->EnableWindow(FALSE);
-		GetDlgItem(IDC_COMBO_PREDKOSC)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_ADRES)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_PORT_ETH)->EnableWindow(TRUE);
-	}
-	else
 	{
 		GetDlgItem(IDC_COMBO_PORT_COM)->EnableWindow(TRUE);
 		GetDlgItem(IDC_COMBO_PREDKOSC)->EnableWindow(TRUE);
 		GetDlgItem(IDC_EDIT_ADRES)->EnableWindow(FALSE);
 		GetDlgItem(IDC_EDIT_PORT_ETH)->EnableWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_COMBO_PORT_COM)->EnableWindow(FALSE);
+		GetDlgItem(IDC_COMBO_PREDKOSC)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_ADRES)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_PORT_ETH)->EnableWindow(TRUE);
 	}
 
 	UpdateData(FALSE);
@@ -329,5 +331,23 @@ void CKonfigPolacz::OnHotitemchangeRadUart(NMHDR* pNMHDR, LRESULT* pResult)
 		GetDlgItem(IDC_EDIT_ADRES)->EnableWindow(FALSE);
 		GetDlgItem(IDC_EDIT_PORT_ETH)->EnableWindow(FALSE);
 	}
+	UpdateData(FALSE);
+}
+
+
+void CKonfigPolacz::OnBnClickedRadUart()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	UpdateData(TRUE);
+	m_chTypPolaczenia = 1;
+	UpdateData(FALSE);
+}
+
+
+void CKonfigPolacz::OnBnClickedRadEth()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	UpdateData(TRUE);
+	m_chTypPolaczenia = 2;
 	UpdateData(FALSE);
 }

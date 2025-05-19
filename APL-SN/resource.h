@@ -98,7 +98,6 @@
 #define IDC_PROGRESS1                   1024
 #define IDC_BUT_CZYTAJ_FLASH            1025
 #define IDC_BUTTON1                     1026
-#define IDC_COMBO1                      1027
 #define IDC_OKRES_TELEMETRII            1027
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002

@@ -60,6 +60,8 @@ void CKonfigTelemetrii::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 {
 	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
 
+	pWndOther->SetWindowTextW(m_strNazwaZmiennej);
+
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
 	m_ctlOkresTelemetrii.InsertString(0, L"100 Hz");
 	m_ctlOkresTelemetrii.InsertString(1, L"50 Hz");
