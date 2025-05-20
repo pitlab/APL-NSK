@@ -62,6 +62,9 @@ CAPLSNView::CAPLSNView() noexcept
 
 	// Initialize D2D resources:
 	m_pBrushBlack = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Black));
+	m_pBrushWykresuR = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Red));
+	m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
+	m_pBrushWykresuB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 	//m_pBrushWykresuR
 	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 12);
 
@@ -455,6 +458,7 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 		if (nErr != WAIT_TIMEOUT)
 		{
 			m_bRysujTelemetrie = TRUE;
+			this->Invalidate(TRUE);
 		}
 	}
 	return ERR_OK;
@@ -501,7 +505,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
 	ASSERT_VALID(pRenderTarget);
 	CD2DPointF pktfPoczatek, pktfKoniec;
-
 	CRect okno;
 	GetClientRect(okno);
 
@@ -517,12 +520,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
 		int32_t nIndexRamki;
-		int  x;
 		long lErr;
-
-		m_pBrushWykresuR = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Red));
-		m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
-		m_pBrushWykresuB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 		
 
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
@@ -532,7 +530,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuX;
 		//vPunktyWykresuX.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = x = 0;
+		pktfPoczatek.x = 0.0f;
+		pktfKoniec.x = 1.0f;
 		pktfPoczatek.y = (float)okno.bottom / 2;
 		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
 		{
@@ -542,20 +541,21 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x = (float)++x;
+					pktfKoniec.x += 1.0f;
 					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
 					pktfPoczatek = pktfKoniec;
 				}
 					//vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
-		} while ((x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
+		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
 
 		//wykres Y
 		std::vector< CPoint > vPunktyWykresuY;
-		vPunktyWykresuY.reserve(okno.right);
+		//vPunktyWykresuY.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = x = 0;
+		pktfPoczatek.x = 0.0f;
+		pktfKoniec.x = 1.0f;
 		pktfPoczatek.y = (float)okno.bottom / 2;
 		do
 		{
@@ -565,20 +565,21 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x = (float)++x;
+					pktfKoniec.x += 1.0f;
 					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuG);
 					pktfPoczatek = pktfKoniec;
 				}
 					//vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
-		} while ((x < okno.right) && (nIndexRamki > 0));
+		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
 
 		//wykres Z
 		std::vector< CPoint > vPunktyWykresuZ;
-		vPunktyWykresuZ.reserve(okno.right);
+		//vPunktyWykresuZ.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = x = 0;
+		pktfPoczatek.x = 0.0f;
+		pktfKoniec.x = 1.0f;
 		pktfPoczatek.y = (float)okno.bottom / 2;
 		do
 		{
@@ -588,14 +589,14 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x = ++x;
+					pktfKoniec.x += 1.0f;
 					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 					pktfPoczatek = pktfKoniec;
 				}
 					//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
-		} while ((x < okno.right) && (nIndexRamki > 0));
+		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
 
 		
 

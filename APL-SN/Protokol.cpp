@@ -98,8 +98,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		chErr = getPortSzeregowy().Connect(nNumerPortu, nPredkosc);
 		if (chErr == ERR_OK)
 		{
-			//pWskWatkuSluchajacegoUart = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
-			pWskWatkuSluchajacegoUart = AfxBeginThread(WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
+			pWskWatkuSluchajacegoUart = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuCom, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 			m_chTypPortu = UART;
 		}
 		break;
