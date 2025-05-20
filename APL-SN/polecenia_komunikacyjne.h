@@ -19,6 +19,8 @@
 
 #define ROZMIAR_RAMKI_UART	254
 #define ROZM_DANYCH_UART	(ROZMIAR_RAMKI_UART - ROZM_CIALA_RAMKI)
+#define ROZMIAR_NAGLOWKA	6
+#define ROZMIAR_CRC			2
 
 //definicje pól ramki
 #define PR_ODBIOR_NAGL		0
@@ -38,26 +40,28 @@
 #define WIELOMIAN_CRC		0x1021
 
 //nazwy poleceń protokołu
-#define PK_OK				0	//akceptacja
-#define PK_BLAD				1
-#define PK_ZROB_ZDJECIE		2	//polecenie wykonania zdjęcia. We: [0..1] - sSzerokosc zdjecia, [2..3] - wysokość zdjecia
-#define PK_POB_STAT_ZDJECIA	3	//pobierz status gotowości zdjęcia
-#define PK_POBIERZ_ZDJECIE	4	//polecenie przesłania fragmentu zdjecia. We: [0..3] - wskaźnik na pozycje bufora, [4] - rozmiar danych do przesłania
+#define PK_OK					0	//akceptacja
+#define PK_BLAD					1
+#define PK_ZROB_ZDJECIE			2	//polecenie wykonania zdjęcia. We: [0..1] - sSzerokosc zdjecia, [2..3] - wysokość zdjecia
+#define PK_POB_STAT_ZDJECIA		3	//pobierz status gotowości zdjęcia
+#define PK_POBIERZ_ZDJECIE		4	//polecenie przesłania fragmentu zdjecia. We: [0..3] - wskaźnik na pozycje bufora, [4] - rozmiar danych do przesłania
 
-#define PK_USTAW_ID			5	//ustawia identyfikator/adres urządzenia
-#define PK_POBIERZ_ID		6	//pobiera identyfikator/adres urządzenia
-#define PK_UST_TR_PRACY		7	//ustaw tryb pracy
-#define PK_POB_PAR_KAMERY	8	//pobierz parametry pracy kamery
-#define PK_UST_PAR_KAMERY	9	//ustaw parametry pracy kamery
+#define PK_USTAW_ID				5	//ustawia identyfikator/adres urządzenia
+#define PK_POBIERZ_ID			6	//pobiera identyfikator/adres urządzenia
+#define PK_UST_TR_PRACY			7	//ustaw tryb pracy
+#define PK_POB_PAR_KAMERY		8	//pobierz parametry pracy kamery
+#define PK_UST_PAR_KAMERY		9	//ustaw parametry pracy kamery
 
-#define PK_ZAPISZ_BUFOR		10	//zapisz dane do bufora 128kB w pamięci RAM
-#define PK_ZAPISZ_FLASH		11	//zapisz stronę 32 bajtów flash
-#define PK_KASUJ_FLASH		12	//kasuj sektor 128kB flash
-#define PK_CZYTAJ_FLASH		13	//odczytaj zawartość Flash 
+#define PK_ZAPISZ_BUFOR			10	//zapisz dane do bufora 128kB w pamięci RAM
+#define PK_ZAPISZ_FLASH			11	//zapisz stronę 32 bajtów flash
+#define PK_KASUJ_FLASH			12	//kasuj sektor 128kB flash
+#define PK_CZYTAJ_FLASH			13	//odczytaj zawartość Flash 
+#define PK_CZYTAJ_OKRES_TELE	14	//odczytaj okresy telemetrii
+#define PK_ZAPISZ_OKRES_TELE	15	//zapisz okresy telemetrii
 
-#define PK_TELEMETRIA		14	//ramka telemetryczna
+#define PK_TELEMETRIA			99	//ramka telemetryczna
 
-#define PK_ILOSC_POLECEN	15	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
+#define PK_ILOSC_POLECEN		17	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 
 
 

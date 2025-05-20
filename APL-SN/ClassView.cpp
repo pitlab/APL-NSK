@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "APL-SN.h"
 #include "CkonfigTelemetrii.h"
+#include "definicje_telemetrii.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {
@@ -233,6 +234,10 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
 	m_cKonfigTelemetrii.UstawIDZmiennej(chId);
 	m_cKonfigTelemetrii.DoModal();
+	chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
+	pDrzewoTele->UstawOkres(chId, chOkres);
+	Invalidate();
+
 	/*CMenu menu;
 	menu.LoadMenu(IDR_POPUP_SORT);
 
@@ -381,10 +386,10 @@ void CClassView::OnChangeVisualStyle()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CDrzewoTelemetrii::WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent)
 {
-	if (Okres == 255)
+	if (Okres == TEMETETRIA_WYLACZONA)
 		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - wyłącz."), lpszItem);
 	else
-		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, 100.0f / (Okres + 1));
+		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, MAX_CZESTOTLIWOSC_TELEMETRII / (Okres + 1));
 	InsertItem(stZmienne[chId].tchNazwa, nObrazek, nObrazek+1, hParent);
 	stZmienne[chId].m_chOkresTelemetrii = Okres;
 }
@@ -397,12 +402,38 @@ uint8_t CDrzewoTelemetrii::PobierzOkres(uint8_t chId)
 }
 
 
+void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint8_t chOkres)
+{
+	TCHAR tchNazwa[10];
+	int m, n, nDlugosc;
+	//stZmienne[chId].m_chOkresTelemetrii = chOkres;
+
+	//znajdź pozycję myślinika
+	for (n = 0; n < DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII; n++)
+	{
+		if (stZmienne[chId].tchNazwa[n] == '-')
+			break;
+	}
+
+	//wygeneruj napis nowej częstotliwości
+	if (chOkres == TEMETETRIA_WYLACZONA)
+		nDlugosc = swprintf(tchNazwa, 10, _T(" wyłącz."));
+	else
+		nDlugosc = swprintf(tchNazwa, 10, _T(" %.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / (chOkres + 1));
+
+	//wstaw nowy napis do starego
+	for (m=0; m < nDlugosc; m++)
+		stZmienne[chId].tchNazwa[m + n] = tchNazwa[m];
+}
+
+
+
 uint8_t CDrzewoTelemetrii::PobierzId(CString strNazwa)
 {
 	TCHAR tchNazwa[DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII];
 
 	
-	for (uint16_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 	{
 		if (stZmienne[n].tchNazwa == strNazwa)
 			return n;

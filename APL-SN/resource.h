@@ -98,7 +98,8 @@
 #define IDC_PROGRESS1                   1024
 #define IDC_BUT_CZYTAJ_FLASH            1025
 #define IDC_BUTTON1                     1026
-#define IDC_OKRES_TELEMETRII            1027
+#define IDC_LIST2                       1031
+#define IDC_OKRES_TELEMETRII            1031
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -114,7 +115,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

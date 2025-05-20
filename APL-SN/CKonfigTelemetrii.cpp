@@ -5,7 +5,7 @@
 #include "APL-SN.h"
 #include "CKonfigTelemetrii.h"
 #include "afxdialogex.h"
-
+#include "definicje_telemetrii.h"
 
 // Okno dialogowe CKonfigTelemetrii
 
@@ -42,6 +42,12 @@ END_MESSAGE_MAP()
 void CKonfigTelemetrii::OnBnClickedOk()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	CString strNapis;
+
+	int nMiejsceNaLiscie = m_ctlOkresTelemetrii.GetCurSel();
+	m_ctlOkresTelemetrii.GetText(nMiejsceNaLiscie, strNapis);
+	double dCzestotliwosc = _ttof(strNapis);	//wyciagnij częstotliwość z napisu
+	m_nOkres = (int)(KWANT_CZASU_TELEMETRII * 10000 / dCzestotliwosc) - 1;
 	CDialogEx::OnOK();
 }
 
@@ -61,6 +67,8 @@ void CKonfigTelemetrii::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 {
 	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
 	int nPozycja, nPoprzedniaPoz = -1;
+	int nMiejsceNaLiscie = 0;
+	uint8_t chOkres;
 	CString strNapis;
 	
 
@@ -68,33 +76,25 @@ void CKonfigTelemetrii::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 	nPozycja = m_ctlOkresTelemetrii.GetCount();	//liczba pozycji na liście
 	if (nPozycja == 0)
 	{
-		//nie ma komunikatów to je wstaw
-		for (int n = 0; n < 251; n++)
+		//jeżeli nie ma pozycji to je wstaw
+		for (int n = 0; n < 256; n++)
 		{
-			nPozycja = PozycjaDlaOkresu(n);
+			nPozycja = PozycjaDlaOkresu(n, &chOkres);
 			if (nPoprzedniaPoz != nPozycja)
 			{
-				strNapis.Format(_T("%.1f Hz"), 100.0f / (n+1));
+				if (chOkres < 255)
+					strNapis.Format(_T("%.1f Hz"), 100.0f / (chOkres +1));
+				else
+					strNapis.Format(_T("Wyłączone"));
 				m_ctlOkresTelemetrii.InsertString(nPozycja, strNapis);
 				nPoprzedniaPoz = nPozycja;
 			}
 		}
-		/*m_ctlOkresTelemetrii.InsertString(0, L"100 Hz");
-		m_ctlOkresTelemetrii.InsertString(1, L"50 Hz");
-		m_ctlOkresTelemetrii.InsertString(2, L"33,3 Hz");
-		m_ctlOkresTelemetrii.InsertString(3, L"25 Hz");
-		m_ctlOkresTelemetrii.InsertString(4, L"20 Hz");
-		m_ctlOkresTelemetrii.InsertString(5, L"14,3 Hz");
-		m_ctlOkresTelemetrii.InsertString(6, L"10 Hz");
-		m_ctlOkresTelemetrii.InsertString(7, L"5 Hz");
-		m_ctlOkresTelemetrii.InsertString(8, L"2 Hz");
-		m_ctlOkresTelemetrii.InsertString(9, L"1 Hz");
-		m_ctlOkresTelemetrii.InsertString(10, L"0,5 Hz");
-		m_ctlOkresTelemetrii.InsertString(11, L"0,4 Hz");
-		m_ctlOkresTelemetrii.InsertString(12, L"Wyłączony");*/
 	}
-	m_ctlOkresTelemetrii.SetCurSel(5);
-	//m_ctlOkresTelemetrii.SelectString(0, )
+
+	//zaznacz na liście bieżącą pozycję 
+	nPozycja = PozycjaDlaOkresu(m_nOkres, &chOkres);
+	m_ctlOkresTelemetrii.SetCurSel(nPozycja);
 }
 
 	
@@ -110,22 +110,61 @@ void CKonfigTelemetrii::OnLbnSelchangeOkresTelemetrii()
 /// </summary>
 /// <param name="chOkres"></param>
 /// <returns>Obliczony numer pozycji na liście</returns>
-int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres)
+int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres, uint8_t *chZaokraglonyOkres)
 {
 	if (chOkres < 5)
+	{
+		*chZaokraglonyOkres = chOkres;
 		return chOkres;
-	if (chOkres < 7)
-		return 6;	//14,2Hz
-	if (chOkres < 10)
-		return 9;	//10Hz
-	if (chOkres < 20)
-		return 19;	//5Hz
-	if (chOkres < 50)
-		return 49;	//2Hz
-	if (chOkres < 100)
-		return 99;	//1Hz
-	if (chOkres < 200)
-		return 199;	//0,5Hz
-	if (chOkres < 250)
-		return 249;	//0,4Hz
+	}
+	if (chOkres < 7)	//14,2Hz
+	{
+		*chZaokraglonyOkres = 6;
+		return 5;	
+	}
+	if (chOkres < 10)	//10Hz
+	{
+		*chZaokraglonyOkres = 9;
+		return 6;	
+	}
+	if (chOkres < 20)	//5Hz
+	{
+		*chZaokraglonyOkres = 19;
+		return 7;	
+	}
+	if (chOkres < 50)	//2Hz
+	{
+		*chZaokraglonyOkres = 49;	
+		return 8;	
+	}
+	if (chOkres < 100)	//1Hz
+	{
+		*chZaokraglonyOkres = 99;
+		return 9;	
+	}
+	if (chOkres < 200)	//0,5Hz
+	{
+		*chZaokraglonyOkres = 199;
+		return 10;	
+	}
+	if (chOkres < 255)	//0,4Hz
+	{
+		*chZaokraglonyOkres = 249;
+		return 11;	
+	}
+	else               //wyłączone
+	{
+		*chZaokraglonyOkres = 255;
+		return 12;
+	}
+}
+
+/// <summary>
+///  Umożliwia pobranie zaznaczonego okresu telemetrii
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
+uint8_t CKonfigTelemetrii::PobierzOkresTelem(void)
+{
+	return (uint8_t)m_nOkres;
 }

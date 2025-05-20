@@ -1,6 +1,7 @@
 #pragma once
 
 //#include "Protokol.h"
+#include "polecenia_komunikacyjne.h"
 #include <queue>
 #define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
@@ -40,6 +41,8 @@ public:
 	//uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint16_t* sDane, uint8_t chRozmiar);
 	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);
 	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
+	uint8_t CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
+	uint8_t ZapiszOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 
 	//struktura zbieraj¹ca parametry BSP
 	struct _sWron
@@ -85,6 +88,7 @@ private:
 public:
 	CString m_strNazwa;
 	uint8_t m_chAdresAutopilota;	
+	uint8_t m_chOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 };
 
-CKomunikacja& getKomunikacja();
+//CKomunikacja& getKomunikacja();

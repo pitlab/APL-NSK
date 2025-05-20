@@ -264,4 +264,14 @@ CProtokol& getProtokol()
 	return theApp.getProtokol();
 }
 
+/*
+CKonfigTelemetrii& CAPLSNApp::getKonfigTelemetrii()
+{
+	return getKonfigTelemetrii();
+}
 
+
+CKonfigTelemetrii& getKonfigTelemetrii()
+{
+	return theApp.getKonfigTelemetrii();
+}*/

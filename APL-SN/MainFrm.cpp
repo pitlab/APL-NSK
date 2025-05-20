@@ -185,7 +185,7 @@ BOOL CMainFrame::CreateDockingWindows()
 {
 	BOOL bNameValid;
 
-	// Utwórz widok klasy
+	// Utwórz widok klasy - tutaj siedzi konfiguracja telemetrii
 	CString strClassView;
 	bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
 	ASSERT(bNameValid);

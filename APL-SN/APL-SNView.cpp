@@ -113,7 +113,7 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 	uint8_t chErr = m_cKomunikacja.Polacz(this);
 	if (chErr == ERR_OK)
 	{
-		m_bPolaczono = TRUE;
+		m_bPolaczono = TRUE;		
 		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
 		{
 			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;

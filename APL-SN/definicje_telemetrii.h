@@ -1,0 +1,7 @@
+//Definicje telemetrii
+#pragma once
+
+
+#define KWANT_CZASU_TELEMETRII	0.01f	//[s]
+#define MAX_CZESTOTLIWOSC_TELEMETRII (1 / KWANT_CZASU_TELEMETRII)
+#define TEMETETRIA_WYLACZONA	255

@@ -71,7 +71,10 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	case UART:	
 		chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		
 		if (chErr == ERR_OK)
+		{
 			m_bPolaczonoUart = TRUE;
+			chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+		}
 		break;
 
 	case ETHS:	
@@ -498,5 +501,57 @@ uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8
 			sDane[n] = m_unia8_32.dane16[0];
 		}
 	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje z APL listê okresów dla wszystkich zmiennych telemetrycznych
+// parametry:
+// [i] chOKres - wskaŸnik na tablicê z okresem
+// [i] chRozmiar - rozmiar tablicy
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[1];
+	uint8_t chDanePrzychodzace[256];
+
+	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+	chDaneWychodzace[0] = chRozmiar;
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
+	if (chErr == ERR_OK)
+	{
+		ASSERT(chRozmiar == chOdebrano);
+		for (uint8_t n = 0; n < chRozmiar; n++)
+			m_chOkresTelemetrii[n] = chDanePrzychodzace[n];
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zapiosuje do APL listê okresów dla wszystkich zmiennych telemetrycznych
+// parametry:
+// [i] chOKres - wskaŸnik na tablicê z okresem
+// [i] chRozmiar - rozmiar tablicy
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint8_t *chOKres, uint8_t chRozmiar)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	uint8_t chDanePrzychodzace[3];
+
+	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+
+	for (uint8_t n = 0; n < chRozmiar; n++)
+		chDaneWychodzace[n] = *(chOKres + n);
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, chRozmiar, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }

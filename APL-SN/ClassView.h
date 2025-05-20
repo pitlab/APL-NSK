@@ -19,6 +19,7 @@ public:
 	
 	void WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent);
 	uint8_t PobierzOkres(uint8_t chId);
+	void UstawOkres(uint8_t chId, uint8_t chOkres);
 	uint8_t PobierzId(CString strNazwa);
 };
 
