@@ -12,6 +12,7 @@ public:
 	virtual ~CKonfigTelemetrii();
 	void UstawIDZmiennej(uint8_t chID) { m_chIdZmiennej = chID; };
 	void UstawNazweZmiennej(CString nazwa) { m_strNazwaZmiennej = nazwa; };
+	void UstawOkresTelem(uint8_t chOkres) { m_nOkres = chOkres; };
 
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -20,13 +21,17 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
+	int PozycjaDlaOkresu(uint8_t chOkres);
 	uint8_t m_chIdZmiennej;
+	int m_nOkres;
 	CString m_strNazwaZmiennej;
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CComboBox m_ctlOkresTelemetrii;
+	//CComboBox m_ctlOkresTelemetrii;
+	CListBox m_ctlOkresTelemetrii;
 	afx_msg void OnBnClickedOk();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg void OnLbnSelchangeOkresTelemetrii();
 };

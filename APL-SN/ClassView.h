@@ -3,13 +3,23 @@
 
 #include "ViewTree.h"
 
+#define DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII	30
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	100
+
 class CDrzewoTelemetrii : public CViewTree
 {
+	struct DrzewoZmiennychTelemetrii
+	{
+		uint8_t m_chOkresTelemetrii;
+		TCHAR tchNazwa[DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII];
+		uint8_t chIkona;
+	} stZmienne[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 public:
 
-	uint8_t chOkresTelemetrii;
-	//HTREEITEM InsertItem();
-	//HTREEITEM InsertItem(_In_z_ LPCTSTR lpszItem, _In_ int nImage, _In_ int nSelectedImage,	_In_ HTREEITEM hParent = TVI_ROOT, _In_ HTREEITEM hInsertAfter = TVI_LAST);
+	
+	void WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent);
+	uint8_t PobierzOkres(uint8_t chId);
+	uint8_t PobierzId(CString strNazwa);
 };
 
 
@@ -32,7 +42,7 @@ public:
 
 	void AdjustLayout();
 	void OnChangeVisualStyle();
-	//uint8_t cOkresTelemetrii[100];
+	
 	
 protected:
 	CClassToolBar m_wndToolBar;

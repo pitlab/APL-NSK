@@ -57,13 +57,39 @@ BOOL CAPLSNDoc::OnNewDocument()
 
 void CAPLSNDoc::Serialize(CArchive& ar)
 {
+	CFile file;
+	TCHAR szBuf[512];
+	TCHAR pbRead[512];
+	CString string;
+	for (int n = 0; n < 512; n++)
+		szBuf[n] = n;
+
 	if (ar.IsStoring())
 	{
 		// TODO: W tym miejscu dodaj kod przechowywania
+		if (file.Open(_T("CArchive__test__file.txt"), CFile::modeCreate | CFile::modeWrite))
+		{
+			CArchive ar(&file, CArchive::store, 512, szBuf);
+			// Write a string to the archive.
+			ar.WriteString(_T("My string."));
+			if (ar.m_pDocument != NULL)
+				ar.m_pDocument->Serialize(ar);
+			// Flush all of the data to the file.
+			ar.Flush();
+			ar.Close();
+		}
+		
 	}
 	else
 	{
 		// TODO: W tym miejscu dodaj kod ładujący
+		if (file.Open(_T("CArchive__test__file.txt"), CFile::modeCreate | CFile::modeRead))
+		{
+			CArchive ar(&file, CArchive::load, 512, szBuf);
+			ar.Read(pbRead, 100);
+			ar.ReadString(string);
+			ar.Close();
+		}
 	}
 }
 

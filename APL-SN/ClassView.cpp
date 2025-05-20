@@ -131,59 +131,59 @@ void CClassView::FillClassView()
 	m_wndClassView.Expand(hRoot, TVE_EXPAND);
 
 	HTREEITEM hClass = m_wndClassView.InsertItem(_T("Akcelerometr"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass, (HTREEITEM)0x1000);
-	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass, (HTREEITEM)0x2000);
-	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass, (HTREEITEM)0x3000);
-	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass, (HTREEITEM)0x4000);
-	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass, (HTREEITEM)0x5000);
-	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass, (HTREEITEM)0x6000);
+	m_wndClassView.WstawZmiennaTelemetrii(0x00, 19, _T("Oś X1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x02, 19, _T("Oś Y1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x03, 19, _T("Oś Z1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x04, 255, _T("Oś X2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x05, 255, _T("Oś Y2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x06, 255, _T("Oś Z2"), 5, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("Żyroskop"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 0, _T("Predk. kąt. P1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x08, 1, _T("Predk. kąt. Q1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x09, 2, _T("Predk. kąt. R1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0A, 3, _T("Predk. kąt. P2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0B, 4, _T("Predk. kąt. Q2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0C, 5, _T("Predk. kąt. R2"), 5, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 	
 	hClass = m_wndClassView.InsertItem(_T("Magnetometr"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Oś X1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś X2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Oś X3"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Y3"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Oś Z3"), 3, 4, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0D, 6, _T("Pole magn. X1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0E, 7, _T("Pole magn. Y1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x0F, 8, _T("Pole magn. Z1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x10, 9, _T("Pole magn. X2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x11, 10, _T("Pole magn. Y2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x12, 11, _T("Pole magn. Z2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x13, 12, _T("Pole magn. X3"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x14, 13, _T("Pole magn. Y3"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x15, 14, _T("Pole magn. Z3"), 3, hClass); 
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Phi tryg."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Theta tryg."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Psi tryg."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Phi kwat."), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Theta kwat."), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Psi kwat."), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Phi akcel."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Theta akcel."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Psi akcel."), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Phi żyro."), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Theta żyro."), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Psi żyro."), 5, 6, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x16, 255, _T("Trygono. Phi"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x17, 255, _T("Trygono. Theta"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x18, 255, _T("Trygono. Psi"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x19, 255, _T("Kwatern. Phi"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1A, 255, _T("Kwatern. Theta"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1B, 255, _T("Kwatern. Psi"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1C, 255, _T("Akcel. Phi"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1D, 255, _T("Akcel. Theta"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1E, 255, _T("Akcel. Psi"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x1F, 255, _T("Żyro. Phi"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x20, 255, _T("Żyro. Theta"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x21, 255, _T("Żyro. Psi"), 5, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("Baro"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("Cisnienie bzwzgl. 1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Cisnienie bzwzgl. 2"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Wysokosć AGL 1"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Wysokosć AGL 2"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("Cisnienie różn. 1"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("Cisnienie różn. 2"), 3, 4, hClass);
-	m_wndClassView.InsertItem(_T("IAS 1"), 5, 6, hClass);
-	m_wndClassView.InsertItem(_T("IAS 2"), 5, 6, hClass);
+	hClass = m_wndClassView.InsertItem(_T("Barometryczne"), 2, 2, hRoot);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. bzwzgl. 1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. bzwzgl. 2"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Wysokosć AGL 1"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Wysokosć AGL 2"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. różn. 1"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. różn. 2"), 3, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 1"), 5, hClass);
+	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 2"), 5, hClass);
 	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 
@@ -194,11 +194,14 @@ void CClassView::FillClassView()
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
 	CString strNazwaZmiennej;
-	int nIdZmiennej;
-	CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
-	ASSERT_VALID(pWndTree);
+	//int nIdZmiennej;
+	uint8_t chId;
+	uint8_t chOkres;
+	//CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
+	CDrzewoTelemetrii* pDrzewoTele = (CDrzewoTelemetrii*)&m_wndClassView;
+	ASSERT_VALID(pDrzewoTele);
 
-	if (pWnd != pWndTree)
+	if (pWnd != pDrzewoTele)
 	{
 		CDockablePane::OnContextMenu(pWnd, point);
 		return;
@@ -209,28 +212,26 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 		// Zaznacz kliknięty element:
 		CPoint ptTree = point;
 		
-		pWndTree->ScreenToClient(&ptTree);
+		pDrzewoTele->ScreenToClient(&ptTree);
 
 		UINT flags = 0;
-		HTREEITEM hTreeItem = pWndTree->HitTest(ptTree, &flags);
+		
+		HTREEITEM hTreeItem = pDrzewoTele->HitTest(ptTree, &flags);
 		if (hTreeItem != nullptr)
 		{
-			pWndTree->SelectItem(hTreeItem);
-			nIdZmiennej = pWndTree->GetIndent();
-			//nIdZmiennej = pWndTree->GetStyle();
-			nIdZmiennej = pWndTree->m_nFlags;			
-			nIdZmiennej = pWndTree->GetDlgCtrlID();
-			nIdZmiennej = pWndTree->GetItemData(hTreeItem);
-			strNazwaZmiennej = pWndTree->GetItemText(hTreeItem);
-			//pWndTree->get
+			pDrzewoTele->SelectItem(hTreeItem);
+			strNazwaZmiennej = pDrzewoTele->GetItemText(hTreeItem);
+			chId = pDrzewoTele->PobierzId(strNazwaZmiennej);
+			chOkres = pDrzewoTele->PobierzOkres(chId);
 		}
 	}
 
-	pWndTree->SetFocus();
+	pDrzewoTele->SetFocus();
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 
 	m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
-	m_cKonfigTelemetrii.UstawIDZmiennej(5);
+	m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
+	m_cKonfigTelemetrii.UstawIDZmiennej(chId);
 	m_cKonfigTelemetrii.DoModal();
 	/*CMenu menu;
 	menu.LoadMenu(IDR_POPUP_SORT);
@@ -367,4 +368,44 @@ void CClassView::OnChangeVisualStyle()
 
 	m_wndToolBar.CleanUpLockedImages();
 	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* Zablokowano */);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>
+/// Funkcja rozszerza działanie standardowej funkcji InsertItem() przez dodanie okresu i indeksu zmiennej oraz wyświetlenie finalnej częstotliwości</summary>
+/// <param name="chId"></param> - identyfikator zmiennej taki jak w APL3
+/// <param name="Okres"></param> - okres logowania w wielokrotności KWANT_CZASU
+/// <param name="lpszItem"></param> - podstawowa nazwa zmiennej
+/// <param name="hParent"></param> - rodzic tej gałęzi drzewa
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void CDrzewoTelemetrii::WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent)
+{
+	if (Okres == 255)
+		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - wyłącz."), lpszItem);
+	else
+		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, 100.0f / (Okres + 1));
+	InsertItem(stZmienne[chId].tchNazwa, nObrazek, nObrazek+1, hParent);
+	stZmienne[chId].m_chOkresTelemetrii = Okres;
+}
+
+
+
+uint8_t CDrzewoTelemetrii::PobierzOkres(uint8_t chId)
+{
+	return  stZmienne[chId].m_chOkresTelemetrii;
+}
+
+
+uint8_t CDrzewoTelemetrii::PobierzId(CString strNazwa)
+{
+	TCHAR tchNazwa[DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII];
+
+	
+	for (uint16_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+	{
+		if (stZmienne[n].tchNazwa == strNazwa)
+			return n;
+	}
+	return 0;
 }
