@@ -44,6 +44,11 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnUpdateZapiszPamiec)
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(AFX_WM_DRAW2D, &CAPLSNView::OnDraw2d)
+	ON_WM_MOUSEWHEEL()
+	ON_WM_HOTKEY()
+	ON_WM_KEYDOWN()
+	ON_WM_VSCROLL()
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -52,8 +57,14 @@ CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
+, m_bRysujLog(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_chAdresAutopilota(2)
+, m_fZoomPionowo(1.0f)
+, m_fZoomPoziomo(1.0f)
+, m_chZoomPionowo(0)
+, m_nVscroll(0)
+, m_nHScroll(0)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -78,6 +89,9 @@ CAPLSNView::CAPLSNView() noexcept
 	gradientStops[1].position = 1.f;
 
 	m_pLinearGradientBrush = new CD2DLinearGradientBrush(GetRenderTarget(), gradientStops, ARRAYSIZE(gradientStops), D2D1::LinearGradientBrushProperties(D2D1::Point2F(0, 0), D2D1::Point2F(0, 0)));
+
+	RegisterHotKey(this->m_hWnd, 1, MOD_SHIFT | MOD_NOREPEAT, 0x42);  //0x42 is 'b' nie działa.
+
 }
 
 
@@ -451,6 +465,8 @@ uint8_t CAPLSNView::WatekInvalidujWytkresTelemetrii(LPVOID pParam)
 uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 {
 	uint32_t nErr;
+	CAPLSNDoc* pDoc = GetDocument();
+
 
 	while (!m_bKoniecWatkuOdswiezaniaTelemtrii)
 	{
@@ -461,6 +477,13 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 			if (this)
 				this->Invalidate(TRUE);
 		}
+
+		/*if (pDoc->m_bOdczytanoLog)
+		{
+			m_bRysujLog = TRUE;
+			pDoc->m_bOdczytanoLog = FALSE;
+			this->Invalidate(TRUE);
+		}*/
 	}
 	return ERR_OK;
 }
@@ -525,7 +548,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		
 
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
-		fSkalaY = (float)okno.bottom / 40.0f;
+		fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 
 		//wykres X
 		std::vector< CPoint > vPunktyWykresuX;
@@ -598,26 +621,128 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
 		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
+	}
 
-		
-
-		/*if (vPunktyWykresuX.size())
+	CAPLSNDoc* pDoc = GetDocument();
+	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
+	{
+		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+		pktfPoczatek.x = (float)m_nHScroll;
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY );
+		for (int n = 1; n < pDoc->m_vLog[0].vfWartosci.size(); n++)
 		{
-			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
-			pDC->SelectObject(&penWykresuR);
-			pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
+			pktfKoniec.x = (float)(n + m_nHScroll) * m_fZoomPoziomo;
+			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
+			pktfPoczatek = pktfKoniec;
 		}
-		if (vPunktyWykresuY.size())
-		{
-			pDC->SelectObject(&penWykresuG);
-			pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
-		}
-
-		if (vPunktyWykresuZ.size())
-		{
-			pDC->SelectObject(&penWykresuB);
-			pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
-		}*/
 	}
 	return TRUE;
+}
+
+/// <summary>
+/// Reakcja na przekręcenie kółka myszy. Steruje powiększeniem wykresu w poziomie lub pionie
+/// </summary>
+/// <param name="nFlags"></param>
+/// <param name="zDelta"></param>
+/// <param name="pt"></param>
+/// <returns></returns>
+BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	if (zDelta > 0)
+	{
+		if (m_chZoomPionowo)
+			m_fZoomPoziomo *= 1.1;
+		else
+			m_fZoomPionowo *= 1.1;
+	}
+	else
+	{
+		if (m_chZoomPionowo)
+			m_fZoomPoziomo /= 1.1;
+		else
+			m_fZoomPionowo /= 1.1;
+	}
+	Invalidate();
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+//nie działa
+void CAPLSNView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+
+	CView::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
+
+/// <summary>
+/// Raakcja na naciśnięcie klawisza klawiatury
+/// </summary>
+/// <param name="nChar"> - zwracany kod przyciśnietego klawisza</param>
+/// <param name="nRepCnt"></param>
+/// <param name="nFlags"></param>
+void CAPLSNView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	switch (nChar)
+	{
+	case 16: m_chZoomPionowo ^= 0x01;	break;	//shift	-	przełacz zoomowanie między poziomem a pionem
+	case 17: break;	//crtl
+	case 32: break;	//spacja
+	case 91: break;	//windows
+	}
+
+	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+
+void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	//m_nVscroll = nPos;
+	switch (nSBCode)
+	{
+	case SB_BOTTOM:	// Scroll to bottom.
+
+	case SB_ENDSCROLL:	break;		//End scroll.
+	case SB_LINEDOWN:	 m_nVscroll += 5;	break;	//Scroll one line down.
+	case SB_LINEUP:	 //Scroll one line up.
+		if (m_nVscroll > 5)
+			m_nVscroll -= 5;
+		break;
+	case SB_PAGEDOWN: m_nVscroll += 100;	break;	//Scroll one page down.
+	case SB_PAGEUP:	 //Scroll one page up.
+		if (m_nVscroll > 100)
+			m_nVscroll -= 100;
+		break;
+	case SB_THUMBPOSITION:	m_nVscroll = nPos;	break;	 //Scroll to the absolute position.The current position is provided in nPos.
+	case SB_THUMBTRACK:		m_nVscroll = nPos;	break;	//Drag scroll box to specified position.The current position is provided in nPos.
+	case SB_TOP: m_nVscroll = 0;	break;		//Scroll to top.
+
+
+	};
+	Invalidate();
+	//UINT m_nHScroll;
+	CView::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	switch (nSBCode)
+	{
+	case SB_LEFT:	m_nHScroll = 0;	break;	// Scroll to far left.
+	case SB_ENDSCROLL:	break;	//End scroll.
+	case SB_LINELEFT:	if (m_nHScroll > 5)	m_nHScroll -= 5;	break;// Scroll left.
+	case SB_LINERIGHT:	m_nHScroll += 5;	//Scroll right.
+	case SB_PAGELEFT:	if (m_nHScroll > 100)	m_nHScroll -= 100;	break;	//Scroll one page left.
+	case SB_PAGERIGHT:	m_nHScroll += 100;	break;	//Scroll one page right.
+	case SB_RIGHT:	//Scroll to far right.
+	case SB_THUMBPOSITION:	m_nHScroll = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
+	case SB_THUMBTRACK:		m_nHScroll = nPos;	break;	//Drag scroll
+	}
+	Invalidate();
+	CView::OnHScroll(nSBCode, nPos, pScrollBar);
 }

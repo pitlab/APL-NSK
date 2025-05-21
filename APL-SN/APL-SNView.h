@@ -56,6 +56,7 @@ protected:
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
 	BOOL m_bRysujPasekPostepu;
 	BOOL m_bRysujTelemetrie;
+	BOOL m_bRysujLog;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
 	uint8_t m_chAdresAutopilota;
@@ -66,6 +67,11 @@ protected:
 	CD2DSolidColorBrush* m_pBrushWykresuG;
 	CD2DSolidColorBrush* m_pBrushWykresuB;
 	CD2DLinearGradientBrush* m_pLinearGradientBrush;
+	float m_fZoomPoziomo;
+	float m_fZoomPionowo;
+	uint8_t m_chZoomPionowo;
+	UINT m_nVscroll;
+	UINT m_nHScroll;
 
 public:
 	uint32_t m_nNumerPortuCom;
@@ -94,6 +100,12 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 protected:
 	afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

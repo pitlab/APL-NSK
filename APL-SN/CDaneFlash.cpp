@@ -232,7 +232,7 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 {
 #define ROZMIAR_PACZKI	200	//W ramce oprócz danych idzie jeszcze 4 bajty adresu i 1 bajt rozmiaru danych, więc wysyłaj odpowiednio mniej danych aby nie przepełnić ramki max 256 bajtów
 	CString strNapis;
-	int32_t nIloscSlowDoWyslania = m_vPamiecKomunikatow.size();	//ilość słów
+	int32_t nIloscSlowDoWyslania = (int32_t)m_vPamiecKomunikatow.size();	//ilość słów
 	uint32_t nAdresFlash = (uint32_t)ADRES_POCZATKU_KOMUNIKATOW;
 	uint16_t sAdresBufora = 0;
 	uint8_t chErr;
@@ -389,7 +389,6 @@ void CDaneFlash::OnBnClickedButton1()
 {
 	FILE* pPlikWav;
 	long Error;
-	uint8_t chErr;
 	char chBufor[78] = { "RIFFfk  WAVEfmt 10001010830007002010LIST4676INFOISFTe000Lavf58.29.1000data k"};
 	CString strNapis;
 	uint16_t sBufor;

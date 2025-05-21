@@ -5,6 +5,7 @@
 #pragma once
 //#include "FileView.h"
 #include "ClassView.h"
+//#include "FileView.h"
 #include "OutputWnd.h"
 #include "PropertiesWnd.h"
 #include "GniazdoSieci.h"
@@ -41,6 +42,7 @@ protected:  // osadzone elementy członkowskie paska sterowania
 	CMFCStatusBar     m_wndStatusBar;
 	CMFCToolBarImages m_UserImages;
 	CClassView        m_wndClassView;
+	//CFileView		  m_wndFileView;
 	COutputWnd        m_wndOutput;
 	CPropertiesWnd    m_wndProperties;
 

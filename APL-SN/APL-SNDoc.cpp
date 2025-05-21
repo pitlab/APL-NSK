@@ -11,7 +11,8 @@
 #endif
 
 #include "APL-SNDoc.h"
-
+#include "APL-SNView.h"
+#include "Errors.h"
 #include <propkey.h>
 
 #ifdef _DEBUG
@@ -30,8 +31,10 @@ END_MESSAGE_MAP()
 
 CAPLSNDoc::CAPLSNDoc() noexcept
 	: m_bZdjecieGotowe(FALSE)
+	
 {
 	// TODO: tutaj dodaj jednorazowy kod konstruowania
+	m_sZdjecie[0] = 0;
 
 }
 
@@ -58,9 +61,11 @@ BOOL CAPLSNDoc::OnNewDocument()
 void CAPLSNDoc::Serialize(CArchive& ar)
 {
 	CFile file;
-	TCHAR szBuf[512];
-	TCHAR pbRead[512];
+	CHAR szBuf[ROZMIAR_BUFORA_ODCZYTU_LOGU];
+	uint8_t chRead[ROZMIAR_BUFORA_ODCZYTU_LOGU];
 	CString string;
+	CFileException ex;
+	UINT nOdczytano;
 	for (int n = 0; n < 512; n++)
 		szBuf[n] = n;
 
@@ -83,12 +88,17 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 	else
 	{
 		// TODO: W tym miejscu dodaj kod ładujący
-		if (file.Open(_T("CArchive__test__file.txt"), CFile::modeCreate | CFile::modeRead))
+		if (file.Open(ar.m_strFileName, CFile::modeRead | CFile::shareDenyWrite, &ex))
 		{
-			CArchive ar(&file, CArchive::load, 512, szBuf);
-			ar.Read(pbRead, 100);
-			ar.ReadString(string);
+			CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);
+			do {
+				nOdczytano = ar.Read(chRead, ROZMIAR_BUFORA_ODCZYTU_LOGU);
+				m_cAnalizatorLogu.Analizuj(chRead, nOdczytano, m_vLog);
+			} while (nOdczytano);
 			ar.Close();
+			m_bOdczytanoLog = TRUE;
+			//this->Invalidate(TRUE);
+			this->UpdateAllViews(NULL);
 		}
 	}
 }
@@ -163,3 +173,4 @@ void CAPLSNDoc::Dump(CDumpContext& dc) const
 
 
 // Polecenia CAPLSNDoc
+

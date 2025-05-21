@@ -430,7 +430,7 @@ void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint8_t chOkres)
 
 uint8_t CDrzewoTelemetrii::PobierzId(CString strNazwa)
 {
-	TCHAR tchNazwa[DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII];
+	//TCHAR tchNazwa[DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII];
 
 	
 	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
