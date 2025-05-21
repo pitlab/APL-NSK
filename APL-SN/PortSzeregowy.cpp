@@ -19,6 +19,7 @@ CPortSzeregowy::CPortSzeregowy() :
 CPortSzeregowy::~CPortSzeregowy()
 {
 	Disconnect();
+	m_iIloscInstancji--;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,7 @@ unsigned char  CPortSzeregowy::Connect(int nComPort, int nBaudRate)
 	DCB dcb;			//device-control block
 	COMMTIMEOUTS CommTimeouts;
 	m_iComNr = nComPort;
+	m_iIloscInstancji++;
 
 	chErr = OpenPort(nComPort, &m_hComHandle);
 	if(chErr == ERR_OK)

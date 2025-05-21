@@ -458,7 +458,8 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 		if (nErr != WAIT_TIMEOUT)
 		{
 			m_bRysujTelemetrie = TRUE;
-			this->Invalidate(TRUE);
+			if (this)
+				this->Invalidate(TRUE);
 		}
 	}
 	return ERR_OK;
