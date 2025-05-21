@@ -1,10 +1,10 @@
 ﻿
 // APL-SNDoc.h: interfejs klasy CAPLSNDoc
+#include "AnalizatorLogu.h"
 //
 
-
 #pragma once
-
+#define ROZMIAR_BUFORA_ODCZYTU_LOGU		1024
 
 class CAPLSNDoc : public CDocument
 {
@@ -19,12 +19,16 @@ public:
 public:
 	uint16_t m_sZdjecie[480*320];
 	bool m_bZdjecieGotowe;
-	std::vector <float> dane_telemetryczne;
+	//std::vector <float> dane_telemetryczne;
 
 // Przesłania
 public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
+	CAnalizatorLogu m_cAnalizatorLogu;
+	std::vector <CAnalizatorLogu::stZmiennaLogu_t> m_vLog;		//zzmienna przechowująca odczytany log
+
+
 #ifdef SHARED_HANDLERS
 	virtual void InitializeSearchContent();
 	virtual void OnDrawThumbnail(CDC& dc, LPRECT lprcBounds);
@@ -39,7 +43,7 @@ public:
 #endif
 
 protected:
-
+	
 // Wygenerowano funkcje mapy komunikatów
 protected:
 	DECLARE_MESSAGE_MAP()

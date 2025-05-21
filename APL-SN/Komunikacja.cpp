@@ -31,6 +31,8 @@ CKomunikacja::CKomunikacja()
 	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
+	, m_chAdresAutopilota(0)
+	//, m_chOkresTelemetrii[](0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	

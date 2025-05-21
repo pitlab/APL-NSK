@@ -187,7 +187,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\PoleceniaKomunikacyjne.h" />
+    <ClInclude Include="AnalizatorLogu.h" />
     <ClInclude Include="APL-SN.h" />
     <ClInclude Include="APL-SNDoc.h" />
     <ClInclude Include="APL-SNView.h" />
@@ -206,17 +206,18 @@
     <ClInclude Include="KonfigPolacz.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="polecenia_komunikacyjne.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Protokol.h" />
     <ClInclude Include="Rejestr.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="PortSzeregowy.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UstawieniaKamery.h" />
     <ClInclude Include="UstawieniaKameryDlg.h" />
     <ClInclude Include="ViewTree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnalizatorLogu.cpp" />
     <ClCompile Include="APL-SN.cpp" />
     <ClCompile Include="APL-SNDoc.cpp" />
     <ClCompile Include="APL-SNView.cpp" />
