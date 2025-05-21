@@ -65,6 +65,7 @@ CAPLSNView::CAPLSNView() noexcept
 , m_chZoomPionowo(0)
 , m_nVscroll(0)
 , m_nHScroll(0)
+, m_bOknoGotowe(FALSE)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -136,8 +137,9 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 	}
 	else
 		m_bPolaczono = FALSE;
-
+	
 	return CView::PreCreateWindow(cs);
+	
 	return TRUE;
 }
 
@@ -464,26 +466,18 @@ uint8_t CAPLSNView::WatekInvalidujWytkresTelemetrii(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 {
-	uint32_t nErr;
-	CAPLSNDoc* pDoc = GetDocument();
-
-
 	while (!m_bKoniecWatkuOdswiezaniaTelemtrii)
 	{
-		nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, 200);
-		if (nErr != WAIT_TIMEOUT)
+		if (m_bOknoGotowe)
 		{
-			m_bRysujTelemetrie = TRUE;
-			if (this)
-				this->Invalidate(TRUE);
+			uint32_t nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, INFINITY);
+			if (nErr != WAIT_TIMEOUT)
+			{
+				m_bRysujTelemetrie = TRUE;
+				if (this)
+					this->Invalidate(TRUE);
+			}
 		}
-
-		/*if (pDoc->m_bOdczytanoLog)
-		{
-			m_bRysujLog = TRUE;
-			pDoc->m_bOdczytanoLog = FALSE;
-			this->Invalidate(TRUE);
-		}*/
 	}
 	return ERR_OK;
 }
@@ -531,6 +525,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CD2DPointF pktfPoczatek, pktfKoniec;
 	CRect okno;
 	GetClientRect(okno);
+	m_bOknoGotowe = TRUE;
+
 
 	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
 	//pRenderTarget->DrawText(_T("Hello, World!"), rect, m_pBrushBlack, m_pTextFormat);
@@ -626,12 +622,13 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
+		float fSkalaX = (float)okno.right / pDoc->m_vLog[9].vfWartosci.size() * m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		pktfPoczatek.x = (float)m_nHScroll;
+		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY );
 		for (int n = 1; n < pDoc->m_vLog[0].vfWartosci.size(); n++)
 		{
-			pktfKoniec.x = (float)(n + m_nHScroll) * m_fZoomPoziomo;
+			pktfKoniec.x = (float)(n + m_nHScroll) * fSkalaX;
 			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 			pktfPoczatek = pktfKoniec;
@@ -653,16 +650,16 @@ BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	if (zDelta > 0)
 	{
 		if (m_chZoomPionowo)
-			m_fZoomPoziomo *= 1.1;
+			m_fZoomPoziomo *= 1.1f;
 		else
-			m_fZoomPionowo *= 1.1;
+			m_fZoomPionowo *= 1.1f;
 	}
 	else
 	{
 		if (m_chZoomPionowo)
-			m_fZoomPoziomo /= 1.1;
+			m_fZoomPoziomo /= 1.1f;
 		else
-			m_fZoomPionowo /= 1.1;
+			m_fZoomPionowo /= 1.1f;
 	}
 	Invalidate();
 	return CView::OnMouseWheel(nFlags, zDelta, pt);

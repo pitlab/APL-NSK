@@ -75,7 +75,8 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		if (chErr == ERR_OK)
 		{
 			m_bPolaczonoUart = TRUE;
-			chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+			//chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+			//CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 		}
 		break;
 
