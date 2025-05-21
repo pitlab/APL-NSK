@@ -195,6 +195,7 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
+
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -209,6 +210,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 
 
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 // Polecenie aplikacji uruchamiające okno dialogowe
@@ -264,14 +266,3 @@ CProtokol& getProtokol()
 	return theApp.getProtokol();
 }
 
-/*
-CKonfigTelemetrii& CAPLSNApp::getKonfigTelemetrii()
-{
-	return getKonfigTelemetrii();
-}
-
-
-CKonfigTelemetrii& getKonfigTelemetrii()
-{
-	return theApp.getKonfigTelemetrii();
-}*/
