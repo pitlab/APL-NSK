@@ -27,6 +27,7 @@ public:
 	virtual void Serialize(CArchive& ar);
 	CAnalizatorLogu m_cAnalizatorLogu;
 	std::vector <CAnalizatorLogu::stZmiennaLogu_t> m_vLog;		//zzmienna przechowująca odczytany log
+	BOOL m_bOdczytanoLog;
 
 
 #ifdef SHARED_HANDLERS

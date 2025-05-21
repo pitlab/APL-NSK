@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnUpdateZapiszPamiec)
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(AFX_WM_DRAW2D, &CAPLSNView::OnDraw2d)
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -52,8 +53,10 @@ CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
+, m_bRysujLog(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_chAdresAutopilota(2)
+, m_fZoom(1.0f)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -451,6 +454,8 @@ uint8_t CAPLSNView::WatekInvalidujWytkresTelemetrii(LPVOID pParam)
 uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 {
 	uint32_t nErr;
+	CAPLSNDoc* pDoc = GetDocument();
+
 
 	while (!m_bKoniecWatkuOdswiezaniaTelemtrii)
 	{
@@ -460,6 +465,13 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 			m_bRysujTelemetrie = TRUE;
 			this->Invalidate(TRUE);
 		}
+
+		/*if (pDoc->m_bOdczytanoLog)
+		{
+			m_bRysujLog = TRUE;
+			pDoc->m_bOdczytanoLog = FALSE;
+			this->Invalidate(TRUE);
+		}*/
 	}
 	return ERR_OK;
 }
@@ -524,7 +536,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		
 
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
-		fSkalaY = (float)okno.bottom / 40.0f;
+		fSkalaY = (float)okno.bottom / 40.0f * m_fZoom;
 
 		//wykres X
 		std::vector< CPoint > vPunktyWykresuX;
@@ -597,26 +609,34 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
 		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
+	}
 
-		
-
-		/*if (vPunktyWykresuX.size())
+	CAPLSNDoc* pDoc = GetDocument();
+	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
+	{
+		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoom;
+		pktfPoczatek.x = 0.0f;
+		pktfPoczatek.y = pktfKoniec.y = (float)okno.bottom / 2 - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY);
+		for (int n = 1; n < pDoc->m_vLog[0].vfWartosci.size(); n++)
 		{
-			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
-			pDC->SelectObject(&penWykresuR);
-			pDC->Polyline(&vPunktyWykresuX[0], (int)vPunktyWykresuX.size());
+			pktfKoniec.x = (float)n;
+			pktfKoniec.y = (float)okno.bottom / 2 - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
+			pktfPoczatek = pktfKoniec;
 		}
-		if (vPunktyWykresuY.size())
-		{
-			pDC->SelectObject(&penWykresuG);
-			pDC->Polyline(&vPunktyWykresuY[0], (int)vPunktyWykresuY.size());
-		}
-
-		if (vPunktyWykresuZ.size())
-		{
-			pDC->SelectObject(&penWykresuB);
-			pDC->Polyline(&vPunktyWykresuZ[0], (int)vPunktyWykresuZ.size());
-		}*/
 	}
 	return TRUE;
+}
+
+
+BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	if (zDelta > 0)
+		m_fZoom *= 1.1;
+	else
+		m_fZoom /= 1.1;
+	//RedrawWindow();
+	Invalidate();
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }

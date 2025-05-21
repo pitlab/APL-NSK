@@ -11,6 +11,7 @@
 #endif
 
 #include "APL-SNDoc.h"
+#include "APL-SNView.h"
 #include "Errors.h"
 #include <propkey.h>
 
@@ -95,6 +96,9 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 				m_cAnalizatorLogu.Analizuj(chRead, nOdczytano, m_vLog);
 			} while (nOdczytano);
 			ar.Close();
+			m_bOdczytanoLog = TRUE;
+			//this->Invalidate(TRUE);
+			this->UpdateAllViews(NULL);
 		}
 	}
 }
