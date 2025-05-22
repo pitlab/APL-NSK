@@ -445,14 +445,14 @@ uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t ch
 		sCRC = LiczCRC16(*(chKopiaDane+n), sCRC);
 
 	*wskRamka++ = sCRC >> 8;
-	* wskRamka++ = sCRC & 0xFF;
+	*wskRamka++ = sCRC & 0xFF;
 	return ERR_OK;
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Liczy wielomian CRC16
+// Liczy wielomian CRC-16/XMODEM wg. https://crccalc.com/?crc=0xFF%200x00%200x12%200x06%200x00&method=CRC-16&datatype=hex&outtype=hex
 // [i] dane - liczba wejsciowa
 // Zwraca: obliczony wielomian
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -668,7 +668,7 @@ uint8_t CProtokol::AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu,  ui
 		break;
 
 	case PR_ADRES_ODB:
-		if ((chDaneWe == m_chAdresOdbiorcy) | (chDaneWe == ADRES_BROADCAST))
+		if ((chDaneWe == m_chAdresOdbiorcy) || (chDaneWe == ADRES_BROADCAST))
 		{
 			*chStanProtokolu = PR_ADRES_NAD;
 			m_sCRC16 = LiczCRC16(chDaneWe, m_sCRC16);

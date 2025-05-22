@@ -30,7 +30,8 @@ public:
 	uint32_t PobierzPredkoscPortuUART() { return m_iPredkoscUART; }
 	BOOL CzyPolaczonoUart() { return m_bPolaczonoUart; }
 	BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
-	uint8_t PobierzNazweBSP(CString* strNazwa);
+	uint8_t PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP);
+	uint8_t UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t WyslijOK();
 	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
 	uint8_t PobierzKamere(uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
@@ -47,8 +48,12 @@ public:
 	struct _sWron
 	{
 		uint8_t chAdres;
-		CString strNazwa;
+		uint8_t strNazwa[DLUGOSC_NAZWY];
+		uint8_t chAdresIP[4];
 	} m_stWron[WIELKOSC_ROJU];
+
+	uint8_t m_chIndeksWrona;
+
 	union _un8_16
 	{
 		uint16_t dane16;

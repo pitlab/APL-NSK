@@ -52,19 +52,14 @@ void CKonfigTelemetrii::OnBnClickedOk()
 		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 		if (chErr)
 		{
-			MessageBoxExW(this->m_hWnd, _T("Nie można zapisać danych do APL3!"), _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+			CString strKomunikat;
+			strKomunikat.Format(_T("Nie można zapisać danych do APL3! \nKod błędu: %d"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
 			CDialogEx::OnCancel();
 		}
 	}
-	/*CString strNapis;
-
-	int nMiejsceNaLiscie = m_ctlOkresTelemetrii.GetCurSel();
-	m_ctlOkresTelemetrii.GetText(nMiejsceNaLiscie, strNapis);
-	double dCzestotliwosc = _ttof(strNapis);	//wyciagnij częstotliwość z napisu
-	m_nOkres = (int)(MAX_CZESTOTLIWOSC_TELEMETRII / dCzestotliwosc) - 1;*/
 	CDialogEx::OnOK();
 }
-
 
 
 
@@ -123,6 +118,12 @@ int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres, uint8_t *chZaokraglonyO
 }
 
 
+
+/// <summary>
+/// Zwraca wartość okresu na podstawie pozycji na liście częstotliwosci 
+/// </summary>
+/// <param name="nPozycja"></param>
+/// <returns></returns>
 uint8_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 {
 	uint8_t chOkres;
@@ -146,6 +147,11 @@ uint8_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 }
 
 
+
+/// <summary>
+/// Budowanie zawartosci okna konfiguracji telemetrii
+/// </summary>
+/// <returns></returns>
 BOOL CKonfigTelemetrii::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -238,7 +244,9 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	chErr = getKomunikacja().CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 	if (chErr)
 	{
-		MessageBoxExW(this->m_hWnd, _T("Nie można odebrać danych z APL3"), _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+		CString strKomunikat;
+		strKomunikat.Format(_T("Nie można odebrać danych z APL3!\nKod błędu: %d"), chErr);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
 		return FALSE;
 	}
 

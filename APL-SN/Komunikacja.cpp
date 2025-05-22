@@ -32,6 +32,7 @@ CKomunikacja::CKomunikacja()
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
 	, m_chAdresAutopilota(0)
+	, m_chIndeksWrona(0)
 	//, m_chOkresTelemetrii[](0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
@@ -74,9 +75,13 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		
 		if (chErr == ERR_OK)
 		{
-			m_bPolaczonoUart = TRUE;
-			//chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
-			//CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+			//wyœlij na adres rozg³oszeniowy poecenie pobrania adresów i nazwy BSP
+			chErr = PobierzBSP(&m_stWron[m_chIndeksWrona].chAdres, &m_stWron[m_chIndeksWrona].strNazwa[0], &m_stWron[m_chIndeksWrona].chAdresIP[0]);
+			if (chErr == ERR_OK)
+			{
+				m_bPolaczonoUart = TRUE;
+				chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);				
+			}
 		}
 		break;
 
@@ -153,21 +158,52 @@ void CKomunikacja::WyslanoDaneETH()
 
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Wysy³a aplikacji swoj¹ nazwê 
+// Pobiera ID, nazwê oraz numer IP z urz¹dzenia przy pomocuy adresu rozg³oszeniowego, po to aby móc prowadziæ dalsz¹ komunikacjê pinkt do punktu
+// *chId - wskaŸnik na zwracane ID
+// *strNazwa - wskaŸnik na nazwê urz¹dzenia
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::PobierzNazweBSP(CString* strNazwa)
+uint8_t CKomunikacja::PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP)
 {
 	uint8_t chErr = ERR_OK;
-	_Ramka s_Ramka;
-	
-	
+	uint8_t chOdebrano;
+	uint8_t chDanePrzych[32];
 
-	getProtokol().PrzygotujRamke(s_Ramka.chAdrNadawcy, ADRES_STACJI, PK_POBIERZ_ID, NULL, 0, m_chRamkaWych);
-	getProtokol().WyslijRamke(m_chTypPolaczenia, m_chRamkaWych, ROZM_CIALA_RAMKI);
-	
+	chErr = getProtokol().WyslijOdbierzRamke(ADRES_BROADCAST, ADRES_STACJI, PK_POBIERZ_BSP, NULL, 0, chDanePrzych, &chOdebrano);
+	if (!chErr)
+	{
+		*chId = chDanePrzych[0];
+		for (int n = 0; n < DLUGOSC_NAZWY; n++)
+			*(chNazwa + n) = chDanePrzych[n+1];
+		for (int n = 0; n < 4; n++)
+			*(chIP + n) = chDanePrzych[n + 21];
+	}
 	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Ustawia ID, nazwê oraz numer IP dla BSP
+// chId - ID, czyli adres komunikacyjny po UART
+// *strNazwa - wskaŸnik na nazwê urz¹dzenia
+// *chIP - wskaŸnika na adres IP
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP)
+{
+	uint8_t chOdebrano;
+	uint8_t chDaneWych[25];
+
+	chDaneWych[0] = chId;
+	for (int n = 0; n < DLUGOSC_NAZWY; n++)
+		chDaneWych[n + 1] = *(chNazwa + n);
+	for (int n = 0; n < 4; n++)
+		chDaneWych[n + 21] = *(chIP + n);
+
+	return getProtokol().WyslijOdbierzRamke(ADRES_BROADCAST, ADRES_STACJI, PK_POBIERZ_BSP, chDaneWych, 25, NULL, NULL);
 }
 
 

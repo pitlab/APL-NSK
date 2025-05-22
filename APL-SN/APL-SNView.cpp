@@ -758,7 +758,7 @@ void CAPLSNView::UstawScrollOdWidoku()
 
 	if (!GetScrollInfo(SB_HORZ, &scrollInfo))
 	{
-		assert(!"Can't get scroll info");
+		TRACE("Can't get scroll info");
 		return;
 	}
 	m_nMaxScrollPoziomo = max((int)((m_nIloscDanychWykresu - m_nSzerokoscOkna) * m_fZoomPoziomo), 0);
