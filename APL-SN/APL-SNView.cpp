@@ -63,9 +63,10 @@ CAPLSNView::CAPLSNView() noexcept
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
 , m_nVscroll(0)
-, m_nHScroll(0)
 , m_bOknoGotowe(FALSE)
 , m_nIloscDanychWykresu(0)
+, m_nMaxScrollPoziomo(0)
+, m_nBiezacyScrollPoziomo(0)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -90,9 +91,6 @@ CAPLSNView::CAPLSNView() noexcept
 	gradientStops[1].position = 1.f;
 
 	m_pLinearGradientBrush = new CD2DLinearGradientBrush(GetRenderTarget(), gradientStops, ARRAYSIZE(gradientStops), D2D1::LinearGradientBrushProperties(D2D1::Point2F(0, 0), D2D1::Point2F(0, 0)));
-
-	RegisterHotKey(this->m_hWnd, 1, MOD_SHIFT | MOD_NOREPEAT, 0x42);  //0x42 is 'b' nie działa.
-
 }
 
 
@@ -395,7 +393,7 @@ void CAPLSNView::OnZrobZdjecie()
 	{
 		pDoc->m_bZdjecieGotowe = TRUE;
 		m_bKoniecWatkuPaskaPostepu = TRUE;
-		Invalidate(TRUE);
+		Invalidate();
 	}
 }
 
@@ -440,8 +438,7 @@ uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 		if (nErr != WAIT_TIMEOUT)
 		{
 			m_sBiezacyStanPaskaPostepu++;
-			this->Invalidate(TRUE);
-			//Invalidate(TRUE);
+			Invalidate();
 		}
 	}
 	return ERR_OK;
@@ -474,8 +471,7 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 			if (nErr != WAIT_TIMEOUT)
 			{
 				m_bRysujTelemetrie = TRUE;
-				if (this)
-					this->Invalidate(TRUE);
+				Invalidate();
 			}
 		}
 	}
@@ -515,6 +511,7 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
 	m_nSzerokoscOkna = cx;
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
+	UstawScrollOdWidoku();
 }
 
 
@@ -549,8 +546,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuX;
 		//vPunktyWykresuX.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nHScroll;
-		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo;
+		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
 		{
@@ -573,8 +570,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuY;
 		//vPunktyWykresuY.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
-		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
+		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do
 		{
@@ -597,8 +594,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuZ;
 		//vPunktyWykresuZ.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
-		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
+		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do
 		{
@@ -622,17 +619,14 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
 		m_nIloscDanychWykresu = pDoc->m_vLog[9].vfWartosci.size();
-		float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
+		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
+		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		//pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
 		pktfPoczatek.x = 0.0f;
-		//pktfPoczatek.x = (float)m_nHScroll;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY );
-		for (int n = pktfPoczatek.x; n < m_nIloscDanychWykresu; n++)
+		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
-			//pktfKoniec.x = (float)(m_nHScroll + n * fSkalaX);
-			//pktfKoniec.x = (float)(m_nHScroll + n);
-			pktfKoniec.x = (float)(n - m_nHScroll);
+			pktfKoniec.x = (float)(n - m_nBiezacyScrollPoziomo) * fSkalaX;	
 			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 			pktfPoczatek = pktfKoniec;
@@ -725,22 +719,25 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
-	m_nHScroll = nPos;
+	//UINT nKrok = (UINT)(5 * m_fZoomPoziomo);
+	UINT nKrok = 5;
+	//UINT nStrona = (UINT)(m_nSzerokoscOkna * m_fZoomPoziomo);
+	UINT nStrona = m_nSzerokoscOkna;
 	switch (nSBCode)
 	{
-	case SB_LEFT:	m_nHScroll = 0;	break;	// Scroll to far left.
+	case SB_LEFT:	m_nBiezacyScrollPoziomo = 0;	break;	// Scroll to far left.
 	case SB_ENDSCROLL:	break;	//End scroll.
-	case SB_LINELEFT:	if (m_nHScroll > 5)	m_nHScroll -= 5;	break;// Scroll left.
-	case SB_LINERIGHT:	m_nHScroll += 5;	break;	//Scroll right.
-	case SB_PAGELEFT:	if (m_nHScroll > 100)	m_nHScroll -= 100;	break;	//Scroll one page left.
-	case SB_PAGERIGHT:	m_nHScroll += 100;	break;	//Scroll one page right.
+	case SB_LINELEFT:	if (m_nBiezacyScrollPoziomo > nKrok)	m_nBiezacyScrollPoziomo -= nKrok;	break;// Scroll left.
+	case SB_LINERIGHT:	m_nBiezacyScrollPoziomo += nKrok;	break;	//Scroll right.
+	case SB_PAGELEFT:	if (m_nBiezacyScrollPoziomo > nStrona)	m_nBiezacyScrollPoziomo -= nStrona;	break;	//Scroll one page left.
+	case SB_PAGERIGHT:	m_nBiezacyScrollPoziomo += nStrona;	break;	//Scroll one page right.
 	case SB_RIGHT:	//Scroll to far right.
-	case SB_THUMBPOSITION:	m_nHScroll = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
-	case SB_THUMBTRACK:		m_nHScroll = nPos;	break;	//Drag scroll
+	case SB_THUMBPOSITION:	m_nBiezacyScrollPoziomo = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
+	case SB_THUMBTRACK:		m_nBiezacyScrollPoziomo = nPos;	break;	//Drag scroll
 	}
-	UstawScrollOdWidoku();
 	
-	CView::OnHScroll(nSBCode, m_nHScroll, pScrollBar);
+	CView::OnHScroll(nSBCode, m_nBiezacyScrollPoziomo, pScrollBar);
+	UstawScrollOdWidoku();
 	Invalidate();
 }
 
@@ -756,18 +753,16 @@ void CAPLSNView::UstawScrollOdWidoku()
 		assert(!"Can't get scroll info");
 		return;
 	}
+	m_nMaxScrollPoziomo = max((int)((m_nIloscDanychWykresu - m_nSzerokoscOkna) * m_fZoomPoziomo), 0);
+	//m_nMaxScrollPoziomo = max((int)(m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscOkna, 0);
+	//m_nMaxScrollPoziomo = max((int)(((m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscOkna) * m_fZoomPoziomo), 0);	//źle
+	//m_nMaxScrollPoziomo = max((int)((m_nIloscDanychWykresu - m_nSzerokoscOkna)), 0);
+	m_nBiezacyScrollPoziomo = min(m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo);
 
-	//szerokość paska to nMax/nPage
 	scrollInfo.nMin = 0;
-	//scrollInfo.nMax = SCROLL_UNIT;
-	//scrollInfo.nMax = (UINT)(m_nIloscDanychWykresu * m_fZoomPoziomo);
-	scrollInfo.nMax = (UINT)(m_nIloscDanychWykresu);
-
-	scrollInfo.nPos = m_nIloscDanychWykresu;
-	//scrollInfo.nPage = (UINT)(m_nSzerokoscOkna * m_fZoomPoziomo / m_nIloscDanychWykresu );
-	//scrollInfo.nPage = (UINT)(m_nIloscDanychWykresu * m_fZoomPoziomo / m_nSzerokoscOkna);
-	scrollInfo.nPage = (UINT)(m_nIloscDanychWykresu / m_nSzerokoscOkna);
-
+	scrollInfo.nMax = (int)(m_nIloscDanychWykresu * m_fZoomPoziomo);
+	scrollInfo.nPos = m_nBiezacyScrollPoziomo;
+	scrollInfo.nPage = m_nSzerokoscOkna;
 	VERIFY(SetScrollInfo(SB_HORZ, &scrollInfo));
-
+	TRACE("BieżScroll=%d, MaxScroll=%d, Okno=%d, zoom%.1f\n", m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo, m_nSzerokoscOkna, m_fZoomPoziomo);
 }

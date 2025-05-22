@@ -72,12 +72,13 @@ protected:
 	float m_fZoomPoziomo;
 	float m_fZoomPionowo;
 	UINT m_nVscroll;
-	UINT m_nHScroll;
+	//UINT m_nHScroll;
 	void UstawScrollOdWidoku();
 	static const int SCROLL_UNIT = 1 << 24;
-	UINT m_nIloscDanychWykresu;
-	UINT m_nSzerokoscOkna;
-
+	int m_nIloscDanychWykresu;
+	int m_nSzerokoscOkna;
+	int m_nMaxScrollPoziomo;
+	int m_nBiezacyScrollPoziomo;
 
 public:
 	uint32_t m_nNumerPortuCom;
