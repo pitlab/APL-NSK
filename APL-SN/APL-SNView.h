@@ -10,6 +10,7 @@
 #include "DekoderTelemetrii.h"
 
 class CAPLSNView : public CView
+
 {
 protected: // utwórz tylko na podstawie serializacji
 	CAPLSNView() noexcept;
@@ -70,9 +71,13 @@ protected:
 	CD2DLinearGradientBrush* m_pLinearGradientBrush;
 	float m_fZoomPoziomo;
 	float m_fZoomPionowo;
-	uint8_t m_chZoomPionowo;
 	UINT m_nVscroll;
 	UINT m_nHScroll;
+	void UstawScrollOdWidoku();
+	static const int SCROLL_UNIT = 1 << 24;
+	UINT m_nIloscDanychWykresu;
+	UINT m_nSzerokoscOkna;
+
 
 public:
 	uint32_t m_nNumerPortuCom;
@@ -103,7 +108,6 @@ protected:
 	afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

@@ -62,10 +62,10 @@ CAPLSNView::CAPLSNView() noexcept
 , m_chAdresAutopilota(2)
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
-, m_chZoomPionowo(0)
 , m_nVscroll(0)
 , m_nHScroll(0)
 , m_bOknoGotowe(FALSE)
+, m_nIloscDanychWykresu(0)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
@@ -470,7 +470,7 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 	{
 		if (m_bOknoGotowe)
 		{
-			uint32_t nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, INFINITY);
+			uint32_t nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, INFINITE);
 			if (nErr != WAIT_TIMEOUT)
 			{
 				m_bRysujTelemetrie = TRUE;
@@ -513,6 +513,7 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 	CView::OnSize(nType, cx, cy);
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
+	m_nSzerokoscOkna = cx;
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
 }
 
@@ -527,15 +528,12 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	GetClientRect(okno);
 	m_bOknoGotowe = TRUE;
 
-
 	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
-	//pRenderTarget->DrawText(_T("Hello, World!"), rect, m_pBrushBlack, m_pTextFormat);
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie)
 	{	
 		m_bRysujTelemetrie = FALSE;
-		float fSkalaY;
 		float fZmienna;
 		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
@@ -544,15 +542,16 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		
 
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
-		fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+		float fSkalaX = m_fZoomPoziomo;
+		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 
 		//wykres X
 		std::vector< CPoint > vPunktyWykresuX;
 		//vPunktyWykresuX.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = 0.0f;
-		pktfKoniec.x = 1.0f;
-		pktfPoczatek.y = (float)okno.bottom / 2;
+		pktfPoczatek.x = (float)m_nHScroll;
+		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
 		{
 			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
@@ -561,8 +560,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x += 1.0f;
-					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pktfKoniec.x += fSkalaX;
+					pktfKoniec.y = (float)(okno.bottom / 2  + m_nVscroll) - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
 					pktfPoczatek = pktfKoniec;
 				}
@@ -574,9 +573,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuY;
 		//vPunktyWykresuY.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = 0.0f;
-		pktfKoniec.x = 1.0f;
-		pktfPoczatek.y = (float)okno.bottom / 2;
+		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
+		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do
 		{
 			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
@@ -585,8 +584,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x += 1.0f;
-					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pktfKoniec.x += fSkalaX;
+					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuG);
 					pktfPoczatek = pktfKoniec;
 				}
@@ -598,9 +597,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		std::vector< CPoint > vPunktyWykresuZ;
 		//vPunktyWykresuZ.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = 0.0f;
-		pktfKoniec.x = 1.0f;
-		pktfPoczatek.y = (float)okno.bottom / 2;
+		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
+		pktfKoniec.x = (1.0f + (float)m_nHScroll) * fSkalaX;
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
 		do
 		{
 			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
@@ -609,8 +608,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
 				if (lErr == ERR_OK)
 				{
-					pktfKoniec.x += 1.0f;
-					pktfKoniec.y = (float)okno.bottom / 2 - (fZmienna * fSkalaY);
+					pktfKoniec.x += fSkalaX;
+					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 					pktfPoczatek = pktfKoniec;
 				}
@@ -622,13 +621,18 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
-		float fSkalaX = (float)okno.right / pDoc->m_vLog[9].vfWartosci.size() * m_fZoomPoziomo;
+		m_nIloscDanychWykresu = pDoc->m_vLog[9].vfWartosci.size();
+		float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
+		//pktfPoczatek.x = (float)m_nHScroll * fSkalaX;
+		pktfPoczatek.x = 0.0f;
+		//pktfPoczatek.x = (float)m_nHScroll;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY );
-		for (int n = 1; n < pDoc->m_vLog[0].vfWartosci.size(); n++)
+		for (int n = pktfPoczatek.x; n < m_nIloscDanychWykresu; n++)
 		{
-			pktfKoniec.x = (float)(n + m_nHScroll) * fSkalaX;
+			//pktfKoniec.x = (float)(m_nHScroll + n * fSkalaX);
+			//pktfKoniec.x = (float)(m_nHScroll + n);
+			pktfKoniec.x = (float)(n - m_nHScroll);
 			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 			pktfPoczatek = pktfKoniec;
@@ -649,29 +653,23 @@ BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	if (zDelta > 0)
 	{
-		if (m_chZoomPionowo)
-			m_fZoomPoziomo *= 1.1f;
-		else
+		if (nFlags & MK_CONTROL)
 			m_fZoomPionowo *= 1.1f;
+		else
+			m_fZoomPoziomo *= 1.1f;
 	}
 	else
 	{
-		if (m_chZoomPionowo)
-			m_fZoomPoziomo /= 1.1f;
-		else
+		if (nFlags & MK_CONTROL)
 			m_fZoomPionowo /= 1.1f;
+		else
+			m_fZoomPoziomo /= 1.1f; 
 	}
+	UstawScrollOdWidoku();
 	Invalidate();
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-//nie działa
-void CAPLSNView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
-{
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
-
-	CView::OnHotKey(nHotKeyId, nKey1, nKey2);
-}
 
 /// <summary>
 /// Raakcja na naciśnięcie klawisza klawiatury
@@ -684,7 +682,7 @@ void CAPLSNView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	switch (nChar)
 	{
-	case 16: m_chZoomPionowo ^= 0x01;	break;	//shift	-	przełacz zoomowanie między poziomem a pionem
+	case 16: break;	//shift	-	przełacz zoomowanie między poziomem a pionem
 	case 17: break;	//crtl
 	case 32: break;	//spacja
 	case 91: break;	//windows
@@ -720,7 +718,6 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	};
 	Invalidate();
-	//UINT m_nHScroll;
 	CView::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
@@ -728,18 +725,49 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	m_nHScroll = nPos;
 	switch (nSBCode)
 	{
 	case SB_LEFT:	m_nHScroll = 0;	break;	// Scroll to far left.
 	case SB_ENDSCROLL:	break;	//End scroll.
 	case SB_LINELEFT:	if (m_nHScroll > 5)	m_nHScroll -= 5;	break;// Scroll left.
-	case SB_LINERIGHT:	m_nHScroll += 5;	//Scroll right.
+	case SB_LINERIGHT:	m_nHScroll += 5;	break;	//Scroll right.
 	case SB_PAGELEFT:	if (m_nHScroll > 100)	m_nHScroll -= 100;	break;	//Scroll one page left.
 	case SB_PAGERIGHT:	m_nHScroll += 100;	break;	//Scroll one page right.
 	case SB_RIGHT:	//Scroll to far right.
 	case SB_THUMBPOSITION:	m_nHScroll = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
 	case SB_THUMBTRACK:		m_nHScroll = nPos;	break;	//Drag scroll
 	}
+	UstawScrollOdWidoku();
+	
+	CView::OnHScroll(nSBCode, m_nHScroll, pScrollBar);
 	Invalidate();
-	CView::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+
+
+void CAPLSNView::UstawScrollOdWidoku()
+{
+	SCROLLINFO scrollInfo;
+
+	if (!GetScrollInfo(SB_HORZ, &scrollInfo))
+	{
+		assert(!"Can't get scroll info");
+		return;
+	}
+
+	//szerokość paska to nMax/nPage
+	scrollInfo.nMin = 0;
+	//scrollInfo.nMax = SCROLL_UNIT;
+	//scrollInfo.nMax = (UINT)(m_nIloscDanychWykresu * m_fZoomPoziomo);
+	scrollInfo.nMax = (UINT)(m_nIloscDanychWykresu);
+
+	scrollInfo.nPos = m_nIloscDanychWykresu;
+	//scrollInfo.nPage = (UINT)(m_nSzerokoscOkna * m_fZoomPoziomo / m_nIloscDanychWykresu );
+	//scrollInfo.nPage = (UINT)(m_nIloscDanychWykresu * m_fZoomPoziomo / m_nSzerokoscOkna);
+	scrollInfo.nPage = (UINT)(m_nIloscDanychWykresu / m_nSzerokoscOkna);
+
+	VERIFY(SetScrollInfo(SB_HORZ, &scrollInfo));
+
 }
