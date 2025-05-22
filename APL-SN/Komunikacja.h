@@ -2,14 +2,13 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
-#include <queue>
 #define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
 
 class CKomunikacja
 {
 public:
-	CKomunikacja();	//noexcept;
+	CKomunikacja();	
 	virtual ~CKomunikacja();
 	static HANDLE m_hZdarzeniePaczkaDanych;
 
@@ -50,7 +49,6 @@ public:
 		uint8_t chAdres;
 		CString strNazwa;
 	} m_stWron[WIELKOSC_ROJU];
-	//static std::vector <_sWron> m_vRoj;		//wektor przechowuj¹cy wszystkie wrony w roju 
 	union _un8_16
 	{
 		uint16_t dane16;
@@ -63,7 +61,6 @@ public:
 		uint16_t dane16[2];
 		uint8_t dane8[4];
 	} m_unia8_32;
-
 
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);
@@ -81,9 +78,6 @@ private:
 	CView* m_pWnd;
 	CWinThread* pWskWatkuDekodujacego;
 
-
-
-
 	//pola publiczne z odbieranymi danymi
 public:
 	CString m_strNazwa;
@@ -91,4 +85,4 @@ public:
 	uint8_t m_chOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 };
 
-//CKomunikacja& getKomunikacja();
+CKomunikacja& getKomunikacja();

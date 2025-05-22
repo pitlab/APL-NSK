@@ -266,3 +266,13 @@ CProtokol& getProtokol()
 	return theApp.getProtokol();
 }
 
+
+CKomunikacja& CAPLSNApp::getKomunikacja()
+{
+	return m_cKomunikacja;
+}
+
+CKomunikacja& getKomunikacja()
+{
+	return theApp.getKomunikacja();
+}

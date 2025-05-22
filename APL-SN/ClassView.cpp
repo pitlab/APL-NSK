@@ -234,8 +234,8 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
 	m_cKonfigTelemetrii.UstawIDZmiennej(chId);
 	m_cKonfigTelemetrii.DoModal();
-	chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
-	pDrzewoTele->UstawOkres(chId, chOkres);
+	//chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
+	//pDrzewoTele->UstawOkres(chId, chOkres);
 	Invalidate();
 
 	/*CMenu menu;

@@ -530,7 +530,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
 	{
 		ASSERT(chRozmiar == chOdebrano);
 		for (uint8_t n = 0; n < chRozmiar; n++)
-			m_chOkresTelemetrii[n] = chDanePrzychodzace[n];
+			*(chOKres + n) = m_chOkresTelemetrii[n] = chDanePrzychodzace[n];
 	}
 	return chErr;
 }
@@ -558,3 +558,5 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint8_t *chOKres, uint8_t chRozmiar)
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, chRozmiar, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
+
+

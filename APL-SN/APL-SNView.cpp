@@ -510,6 +510,14 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
 	m_nSzerokoscOkna = cx;
+	
+	CAPLSNDoc* pDoc = GetDocument();
+	if (pDoc)
+	{
+		if (pDoc->m_vLog.size())
+			m_nIloscDanychWykresu = pDoc->m_vLog[9].vfWartosci.size();
+	}
+
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
 	UstawScrollOdWidoku();
 }
@@ -765,4 +773,6 @@ void CAPLSNView::UstawScrollOdWidoku()
 	scrollInfo.nPage = m_nSzerokoscOkna;
 	VERIFY(SetScrollInfo(SB_HORZ, &scrollInfo));
 	TRACE("BieżScroll=%d, MaxScroll=%d, Okno=%d, zoom%.1f\n", m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo, m_nSzerokoscOkna, m_fZoomPoziomo);
+
+	
 }

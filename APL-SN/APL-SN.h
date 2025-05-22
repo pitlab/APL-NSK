@@ -29,6 +29,7 @@ public:
 	virtual int ExitInstance();
 	CPortSzeregowy& getPortSzeregowy();
 	CProtokol& getProtokol();
+	CKomunikacja& getKomunikacja();
 
 // Implementacja
 	BOOL  m_bHiColorIcons;
@@ -45,6 +46,7 @@ public:
 	CPortSzeregowy	m_cPortSzeregowy;
 	CProtokol m_cProtokol;
 	CKomunikacja m_cKomunikacja;
+	
 
 };
 

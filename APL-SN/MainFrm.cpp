@@ -7,6 +7,7 @@
 #include "APL-SN.h"
 #include "MainFrm.h"
 #include "UstawieniaKameryDlg.h"
+#include "CKonfigTelemetrii.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +30,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_WM_SETTINGCHANGE()
 
 	ON_COMMAND(ID_USTAW_PARKAMERY, &CMainFrame::OnUstawParkamery)
+	ON_COMMAND(ID_BUT_KONF_TELEMETRII, &CMainFrame::OnButKonfTelemetrii)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -341,5 +343,13 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 void CMainFrame::OnUstawParkamery()
 {
 	CUstawieniaKameryDlg dlg;
+	dlg.DoModal();
+}
+
+
+void CMainFrame::OnButKonfTelemetrii()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	CKonfigTelemetrii dlg;
 	dlg.DoModal();
 }

@@ -64,6 +64,8 @@ public:
 
 private:
 	CObslugaRejestru m_cObslugaRejestru;
+public:
+	afx_msg void OnButKonfTelemetrii();
 };
 
 

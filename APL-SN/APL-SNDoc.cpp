@@ -97,8 +97,7 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 			} while (nOdczytano);
 			ar.Close();
 			m_bOdczytanoLog = TRUE;
-			//this->Invalidate(TRUE);
-			this->UpdateAllViews(NULL);
+			UpdateAllViews(NULL);
 		}
 	}
 }
@@ -173,4 +172,5 @@ void CAPLSNDoc::Dump(CDumpContext& dc) const
 
 
 // Polecenia CAPLSNDoc
+
 

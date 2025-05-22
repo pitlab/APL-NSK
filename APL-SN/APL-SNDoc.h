@@ -53,4 +53,5 @@ protected:
 	// Funkcja pomocnicza, która ustawia zawartość wyszukiwania dla procedury obsługi wyszukiwania
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
 };

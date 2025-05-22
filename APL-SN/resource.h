@@ -100,6 +100,7 @@
 #define IDC_BUTTON1                     1026
 #define IDC_LIST2                       1031
 #define IDC_OKRES_TELEMETRII            1031
+#define IDC_LIST_ZMIENNE_TELE           1041
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -108,14 +109,15 @@
 #define ID_KONFIG_PORT                  2006
 #define ID_USTAW_PARKAMERY              2007
 #define ID_ZAPISZ_PAMIEC                32790
+#define ID_BUT_KONF_TELEMETRII          32792
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        320
-#define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_COMMAND_VALUE         32793
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
