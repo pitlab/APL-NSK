@@ -49,6 +49,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_WM_KEYDOWN()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
+	ON_COMMAND(ID_OLE_INSERT_NEW, &CAPLSNView::OnOleInsertNew)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -775,4 +776,10 @@ void CAPLSNView::UstawScrollOdWidoku()
 	TRACE("BieżScroll=%d, MaxScroll=%d, Okno=%d, zoom%.1f\n", m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo, m_nSzerokoscOkna, m_fZoomPoziomo);
 
 	
+}
+
+
+void CAPLSNView::OnOleInsertNew()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
 }

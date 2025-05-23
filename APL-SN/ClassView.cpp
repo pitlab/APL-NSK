@@ -127,8 +127,14 @@ void CClassView::OnSize(UINT nType, int cx, int cy)
 
 void CClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("Telemetria"), 0, 0);
-	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+
+	HTREEITEM hWron = m_wndClassView.InsertItem(_T("Wron"), 0, 0);
+	m_wndClassView.SetItemState(hWron, TVIS_BOLD, TVIS_BOLD);
+	m_wndClassView.Expand(hWron, TVE_EXPAND);
+
+
+	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("Telemetria"), 0, 0, hWron);
+	//m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 	m_wndClassView.Expand(hRoot, TVE_EXPAND);
 
 	HTREEITEM hClass = m_wndClassView.InsertItem(_T("Akcelerometr"), 2, 2, hRoot);
@@ -138,7 +144,7 @@ void CClassView::FillClassView()
 	m_wndClassView.WstawZmiennaTelemetrii(0x04, 255, _T("Oś X2"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x05, 255, _T("Oś Y2"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x06, 255, _T("Oś Z2"), 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("Żyroskop"), 2, 2, hRoot);
 	m_wndClassView.WstawZmiennaTelemetrii(0x07, 0, _T("Predk. kąt. P1"), 3, hClass);
@@ -147,7 +153,7 @@ void CClassView::FillClassView()
 	m_wndClassView.WstawZmiennaTelemetrii(0x0A, 3, _T("Predk. kąt. P2"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x0B, 4, _T("Predk. kąt. Q2"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x0C, 5, _T("Predk. kąt. R2"), 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 	
 	hClass = m_wndClassView.InsertItem(_T("Magnetometr"), 2, 2, hRoot);
 	m_wndClassView.WstawZmiennaTelemetrii(0x0D, 6, _T("Pole magn. X1"), 3, hClass);
@@ -159,7 +165,7 @@ void CClassView::FillClassView()
 	m_wndClassView.WstawZmiennaTelemetrii(0x13, 12, _T("Pole magn. X3"), 3, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x14, 13, _T("Pole magn. Y3"), 3, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x15, 14, _T("Pole magn. Z3"), 3, hClass); 
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hRoot);
 	m_wndClassView.WstawZmiennaTelemetrii(0x16, 255, _T("Trygono. Phi"), 3, hClass);
@@ -174,7 +180,7 @@ void CClassView::FillClassView()
 	m_wndClassView.WstawZmiennaTelemetrii(0x1F, 255, _T("Żyro. Phi"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x20, 255, _T("Żyro. Theta"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x21, 255, _T("Żyro. Psi"), 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 
 	hClass = m_wndClassView.InsertItem(_T("Barometryczne"), 2, 2, hRoot);
 	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. bzwzgl. 1"), 3, hClass);
@@ -185,8 +191,9 @@ void CClassView::FillClassView()
 	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. różn. 2"), 3, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 1"), 5, hClass);
 	m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 2"), 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 
+	hRoot = m_wndClassView.InsertItem(_T("Zmiene Logu"), 0, 0, hWron);
 
 	//hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
 	//m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
@@ -440,3 +447,5 @@ uint8_t CDrzewoTelemetrii::PobierzId(CString strNazwa)
 	}
 	return 0;
 }
+
+//CDrzewoTelemetrii::GetOleControlSite()

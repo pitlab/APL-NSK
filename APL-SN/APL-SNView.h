@@ -112,6 +112,7 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnOleInsertNew();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp
