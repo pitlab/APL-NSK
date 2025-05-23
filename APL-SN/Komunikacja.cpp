@@ -32,12 +32,21 @@ CKomunikacja::CKomunikacja()
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
 	, m_chAdresAutopilota(0)
-	, m_chIndeksWrona(0)
-	//, m_chOkresTelemetrii[](0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
+
+	//przed po³¹czeniem chcê miec pewnoœæ ¿e lista jest pusta
+	/*for (int n = 0; n < m_cRoj.vWron.size(); n++)
+	{
+		m_cRoj.vWron[n].m_chAdres = 0;
+		m_cRoj.vWron[n].m_chNazwa[0] = 0;
+		m_cRoj.vWron[n].m_strNazwa = "";
+		for (int x = 0; x < 4; x++)
+			m_cRoj.vWron[n].m_chAdresIP[x] = 0;
+	}*/
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +78,9 @@ void CKomunikacja::UstawRodzica(CView* pWnd)
 uint8_t CKomunikacja::Polacz(CView* pWnd)
 {
 	uint8_t chErr = ERR_NOT_CONNECTED;
+	CWron cWron;
+	uint8_t chNazwa[DLUGOSC_NAZWY];
+
 	switch (m_chTypPolaczenia)
 	{
 	case UART:	
@@ -76,12 +88,32 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		if (chErr == ERR_OK)
 		{
 			//wyœlij na adres rozg³oszeniowy poecenie pobrania adresów i nazwy BSP
-			chErr = PobierzBSP(&m_stWron[m_chIndeksWrona].chAdres, &m_stWron[m_chIndeksWrona].strNazwa[0], &m_stWron[m_chIndeksWrona].chAdresIP[0]);
+			chErr = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
 			if (chErr == ERR_OK)
-			{
-				m_bPolaczonoUart = TRUE;
-				chErr = CzytajOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);				
+			{				
+				//sprawdŸ czy w roju jest ju¿ ten wron
+				int nIndeks = 0;
+				for (int n = 0; n < m_cRoj.vWron.size(); n++)
+				{
+					if (m_cRoj.vWron[n].m_chAdres == cWron.m_chAdres)
+					{
+						nIndeks = n;
+						break;
+					}
+				}
+
+				//je¿eli nie ma go w roju to wstaw
+				if (nIndeks == 0)
+				{
+					m_cRoj.vWron.push_back(cWron);	
+					nIndeks = (int)m_cRoj.vWron.size() - 1;
+				}
+				
+				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
+				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
+				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 			}
+			
 		}
 		break;
 

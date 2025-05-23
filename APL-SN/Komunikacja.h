@@ -2,7 +2,10 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
-#define WIELKOSC_ROJU	4
+#include "CRoj.h"
+#include "CWron.h"
+
+//#define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
 
 class CKomunikacja
@@ -45,14 +48,11 @@ public:
 	uint8_t ZapiszOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 
 	//struktura zbieraj¹ca parametry BSP
-	struct _sWron
-	{
-		uint8_t chAdres;
-		uint8_t strNazwa[DLUGOSC_NAZWY];
-		uint8_t chAdresIP[4];
-	} m_stWron[WIELKOSC_ROJU];
 
-	uint8_t m_chIndeksWrona;
+	CRoj m_cRoj;
+	CWron m_cWron;
+
+
 
 	union _un8_16
 	{
