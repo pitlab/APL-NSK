@@ -17,7 +17,7 @@ IMPLEMENT_DYNAMIC(CDaneFlash, CDialogEx)
 CDaneFlash::CDaneFlash(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ZAPISZ_FLASH, pParent)
 {
-	cKomunikacja.m_chAdresAutopilota = 2;
+	getKomunikacja().m_chAdresAutopilota = 2;
 }
 
 CDaneFlash::~CDaneFlash()
@@ -183,8 +183,8 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			if ((chBuforPliku[0] == 'd') && (chBuforPliku[1] == 'a') && (chBuforPliku[2] == 't') && (chBuforPliku[3] == 'a'))
 			{
 				for (int n = 0; n < 4; n++)
-					cKomunikacja.m_unia8_32.dane8[n] = chBuforPliku[n + 4];
-				nRozmiarSampla = cKomunikacja.m_unia8_32.dane32;	//to jest poprawny rozmiar sampla w bajtach
+					getKomunikacja().m_unia8_32.dane8[n] = chBuforPliku[n + 4];
+				nRozmiarSampla = getKomunikacja().m_unia8_32.dane32;	//to jest poprawny rozmiar sampla w bajtach
 			}
 
 			//odczytaj resztę pliku i przepisz do wektora
@@ -196,12 +196,12 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			fclose(pPlikSampla);
 			
 			//dodaj adres i długość sampla do spisu komunikatów
-			cKomunikacja.m_unia8_32.dane32 = nAdresPoczatkuSampla;
-			m_vPamiecKomunikatow[nr_sampla * 4 + 0] = cKomunikacja.m_unia8_32.dane16[0];
-			m_vPamiecKomunikatow[nr_sampla * 4 + 1] = cKomunikacja.m_unia8_32.dane16[1];
-			cKomunikacja.m_unia8_32.dane32 = nRozmiarSampla;
-			m_vPamiecKomunikatow[nr_sampla * 4 + 2] = cKomunikacja.m_unia8_32.dane16[0];
-			m_vPamiecKomunikatow[nr_sampla * 4 + 3] = cKomunikacja.m_unia8_32.dane16[1];
+			getKomunikacja().m_unia8_32.dane32 = nAdresPoczatkuSampla;
+			m_vPamiecKomunikatow[nr_sampla * 4 + 0] = getKomunikacja().m_unia8_32.dane16[0];
+			m_vPamiecKomunikatow[nr_sampla * 4 + 1] = getKomunikacja().m_unia8_32.dane16[1];
+			getKomunikacja().m_unia8_32.dane32 = nRozmiarSampla;
+			m_vPamiecKomunikatow[nr_sampla * 4 + 2] = getKomunikacja().m_unia8_32.dane16[0];
+			m_vPamiecKomunikatow[nr_sampla * 4 + 3] = getKomunikacja().m_unia8_32.dane16[1];
 
 			//dodaj wpis do listy komunikatów
 			swprintf_s(chNumerIndeksu, _T("%.2d"), nr_sampla);
@@ -259,12 +259,12 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 		//przepisz słowa z wektora na bajty do wysłania ramką
 		for (uint8_t n = 0; n < chRozmarWysylanychDanych/2; n++)
 		{
-			cKomunikacja.m_unia8_16.dane16 = m_vPamiecKomunikatow[n + nIloscWyslanychSlow];
-			chPaczka[2 * n + 0] = cKomunikacja.m_unia8_16.dane8[0];
-			chPaczka[2 * n + 1] = cKomunikacja.m_unia8_16.dane8[1];
+			getKomunikacja().m_unia8_16.dane16 = m_vPamiecKomunikatow[n + nIloscWyslanychSlow];
+			chPaczka[2 * n + 0] = getKomunikacja().m_unia8_16.dane8[0];
+			chPaczka[2 * n + 1] = getKomunikacja().m_unia8_16.dane8[1];
 		}
 
-		chErr = cKomunikacja.ZapiszBuforFlash(sAdresBufora, chPaczka, chRozmarWysylanychDanych);
+		chErr = getKomunikacja().ZapiszBuforFlash(sAdresBufora, chPaczka, chRozmarWysylanychDanych);
 		if (chErr != ERR_OK)		
 		{
 			strNapis.Format(L"Wystąpił błąd wysyłania polecenia nr %d", chErr);
@@ -280,7 +280,7 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 		//jezeli pełen bufor lub koniec danych to zapisz bufor do flash
 		if ((sAdresBufora == ROZMIAR_BUFORA_FLASH) || (nIloscWyslanychSlow == nIloscSlowDoWyslania))
 		{
-			chErr = cKomunikacja.ZapiszFlash(nAdresFlash);	//Adresem jest początek obszaru
+			chErr = getKomunikacja().ZapiszFlash(nAdresFlash);	//Adresem jest początek obszaru
 			if (chErr != ERR_OK)
 			{
 				strNapis.Format(L"Wystąpił błąd  nr %d zapisu sektora flash", chErr);
@@ -310,7 +310,7 @@ void CDaneFlash::OnBnClickedButKasujFlash()
 	m_ctlPasekPostepu.SetRange(0, LICZBA_SEKTOROW_KOMUNIKATOW-1);
 	for (uint8_t n = 0; n < LICZBA_SEKTOROW_KOMUNIKATOW; n++)
 	{
-		chErr = cKomunikacja.SkasujSektorFlash(ADRES_POCZATKU_KOMUNIKATOW + n * ROZMIAR_SEKTORA_FLASH);
+		chErr = getKomunikacja().SkasujSektorFlash(ADRES_POCZATKU_KOMUNIKATOW + n * ROZMIAR_SEKTORA_FLASH);
 		if (chErr == ERR_OK)
 		{			
 			m_ctlPasekPostepu.SetPos(n+1);
@@ -347,7 +347,7 @@ void CDaneFlash::OnBnClickedButCzytajFlash()
 		m_ctlPasekPostepu.SetRange(0, (ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT) - 1);
 		for (uint32_t n = 0; n < ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT; n++)
 		{
-			chErr = cKomunikacja.CzytajFlash(ADRES_POCZATKU_KOMUNIKATOW + (n * ROZMIAR_BUF_SEKT), sBufor, ROZMIAR_BUF_SEKT);
+			chErr = getKomunikacja().CzytajFlash(ADRES_POCZATKU_KOMUNIKATOW + (n * ROZMIAR_BUF_SEKT), sBufor, ROZMIAR_BUF_SEKT);
 			if (chErr == ERR_OK)
 			{
 				fwrite(sBufor, sizeof(uint16_t), ROZMIAR_BUF_SEKT, pPlikSektora);

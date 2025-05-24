@@ -43,7 +43,7 @@ public:
 
 
 	private:	
-	CPortSzeregowy	m_cPortSzeregowy;
+	CPortSzeregowy m_cPortSzeregowy;
 	CProtokol m_cProtokol;
 	CKomunikacja m_cKomunikacja;
 	

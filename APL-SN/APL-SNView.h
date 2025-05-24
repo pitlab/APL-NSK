@@ -47,7 +47,7 @@ public:
 #endif
 
 protected:
-	CKomunikacja m_cKomunikacja;
+	//CKomunikacja m_cKomunikacja;
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
 	CProtokol m_cProtokol;

@@ -9,6 +9,7 @@
 #include "definicje_telemetrii.h"
 #include "Komunikacja.h"
 #include "Errors.h"
+#include "Protokol.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {
@@ -65,8 +66,8 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 	ON_COMMAND(ID_NEW_FOLDER, OnNewFolder)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
+	//ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
+	//ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -133,26 +134,28 @@ void CClassView::FillClassView()
 {
 	HTREEITEM hWron;
 	HTREEITEM hZasob;
-	CString strNazwa;
+	HTREEITEM hZmienna;
+	uint8_t chOkresTele;
 
 	//Używam tej funkcji do przerysowania okna, więc zanim wstawi nowe drzewo to usuń wszystkie istniejące wcześniej
 	m_wndClassView.DeleteAllItems();
 
 	HTREEITEM hRoj = m_wndClassView.InsertItem(_T("Rój"), 0, 0);
-	
 
+	//wstaw jednego wirtualnego wrona aby był nawet bez połączenia z rzeczywistym
 	CWron cWron;
 	cWron.m_chAdres = 5;
+	cWron.m_strNazwa = " Wron wirtualny";
 	getKomunikacja().m_cRoj.vWron.push_back(cWron);
-
 	size_t LiczbaWronow = getKomunikacja().m_cRoj.vWron.size();
+
 	//wstaw do drzewa wszystkie wrony
-	for (int n = 0; n < getKomunikacja().m_cRoj.vWron.size(); n++)
+	for (int w = 0; w < LiczbaWronow; w++)
 	{
 		m_wndClassView.SetItemState(hRoj, TVIS_BOLD, TVIS_BOLD);	//pogrub rój jeżeli są w nim wrony
 
-		hWron = m_wndClassView.InsertItem(strNazwa, 0, 0, hRoj);
-		if (getKomunikacja().m_cRoj.vWron[n].m_chPolaczony)
+		hWron = m_wndClassView.InsertItem(getKomunikacja().m_cRoj.vWron[w].m_strNazwa, 0, 0, hRoj);
+		if (getKomunikacja().m_cRoj.vWron[w].m_chPolaczony)
 			m_wndClassView.SetItemState(hWron, TVIS_BOLD, TVIS_BOLD);	//pogrubiony
 		else
 			m_wndClassView.SetItemState(hWron, TVIS_DROPHILITED, TVIS_DROPHILITED);	//cieniowany
@@ -160,60 +163,30 @@ void CClassView::FillClassView()
 
 		hZasob = m_wndClassView.InsertItem(_T("Telemetria"), 0, 0, hWron);
 			
-		HTREEITEM hZmienna = m_wndClassView.InsertItem(_T("Akcelerometr"), 2, 2, hZasob);
-		m_wndClassView.WstawZmiennaTelemetrii(0x00, 19, _T("Oś X1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x02, 19, _T("Oś Y1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x03, 19, _T("Oś Z1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x04, 255, _T("Oś X2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x05, 255, _T("Oś Y2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x06, 255, _T("Oś Z2"), 5, hZmienna);
-		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
-
-		hZmienna = m_wndClassView.InsertItem(_T("Żyroskop"), 2, 2, hZasob);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 0, _T("Predk. kąt. P1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x08, 1, _T("Predk. kąt. Q1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x09, 2, _T("Predk. kąt. R1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0A, 3, _T("Predk. kąt. P2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0B, 4, _T("Predk. kąt. Q2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0C, 5, _T("Predk. kąt. R2"), 5, hZmienna);
-		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
-
-		hZmienna = m_wndClassView.InsertItem(_T("Magnetometr"), 2, 2, hZasob);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0D, 6, _T("Pole magn. X1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0E, 7, _T("Pole magn. Y1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x0F, 8, _T("Pole magn. Z1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x10, 9, _T("Pole magn. X2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x11, 10, _T("Pole magn. Y2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x12, 11, _T("Pole magn. Z2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x13, 12, _T("Pole magn. X3"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x14, 13, _T("Pole magn. Y3"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x15, 14, _T("Pole magn. Z3"), 3, hZmienna);
-		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
+		//wstaw do gałezi IMU wszystkie zmienne telemetryczne od akcelerometrów do końca magnetometrów
+		hZmienna = m_wndClassView.InsertItem(_T("IMU"), 2, 2, hZasob);
+		for (uint8_t n = TELEID_AKCEL1X; n <= TELEID_MAGNE3Z; n++)
+		{
+			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
+			if (chOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hZasob);
-		m_wndClassView.WstawZmiennaTelemetrii(0x16, 255, _T("Trygono. Phi"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x17, 255, _T("Trygono. Theta"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x18, 255, _T("Trygono. Psi"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x19, 255, _T("Kwatern. Phi"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1A, 255, _T("Kwatern. Theta"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1B, 255, _T("Kwatern. Psi"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1C, 255, _T("Akcel. Phi"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1D, 255, _T("Akcel. Theta"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1E, 255, _T("Akcel. Psi"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x1F, 255, _T("Żyro. Phi"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x20, 255, _T("Żyro. Theta"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x21, 255, _T("Żyro. Psi"), 5, hZmienna);
-		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
+		for (uint8_t n = TELEID_KAT_IMU1X; n <= TELEID_KAT_ZYRO1Z; n++)
+		{
+			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
+			if (chOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("Barometryczne"), 2, 2, hZasob);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. bzwzgl. 1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. bzwzgl. 2"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Wysokosć AGL 1"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Wysokosć AGL 2"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. różn. 1"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Cisn. różn. 2"), 3, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 1"), 5, hZmienna);
-		m_wndClassView.WstawZmiennaTelemetrii(0x07, 255, _T("Prędkość IAS 2"), 5, hZmienna);
+		for (uint8_t n = TELEID_CISBEZW1; n <= TELEID_TEMPCISR2; n++)
+		{
+			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
+			if (chOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+		}		
 		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
 
 		hZasob = m_wndClassView.InsertItem(_T("Zmiene Logu"), 0, 0, hWron);
@@ -308,30 +281,6 @@ void CClassView::AdjustLayout()
 BOOL CClassView::PreTranslateMessage(MSG* pMsg)
 {
 	return CDockablePane::PreTranslateMessage(pMsg);
-}
-
-void CClassView::OnSort(UINT id)
-{
-	if (m_nCurrSort == id)
-	{
-		return;
-	}
-
-	m_nCurrSort = id;
-
-	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
-
-	if (pButton != nullptr)
-	{
-		pButton->SetImage(GetCmdMgr()->GetCmdImage(id));
-		m_wndToolBar.Invalidate();
-		m_wndToolBar.UpdateWindow();
-	}
-}
-
-void CClassView::OnUpdateSort(CCmdUI* pCmdUI)
-{
-	pCmdUI->SetCheck(pCmdUI->m_nID == m_nCurrSort);
 }
 
 void CClassView::OnClassAddMemberFunction()

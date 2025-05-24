@@ -2,6 +2,7 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
+#include "definicje_telemetrii.h"
 #include "CRoj.h"
 #include "CWron.h"
 
@@ -15,7 +16,7 @@ public:
 	virtual ~CKomunikacja();
 	static HANDLE m_hZdarzeniePaczkaDanych;
 	static HANDLE m_hZdarzenieZmianaPolaczeniaWrona;
-
+	static int m_LicznikInstancji;
 	void UstawTypPolaczenia(uint8_t chTyp) { m_chTypPolaczenia = chTyp; }
 	uint8_t Polacz(CView* pWnd);
 	uint8_t Rozlacz();
@@ -63,6 +64,7 @@ public:
 		uint16_t dane16[2];
 		uint8_t dane8[4];
 	} m_unia8_32;
+	CString m_strNazwyZmiennychTele[LICZBA_ZMIENNYCH_TELE];
 
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);

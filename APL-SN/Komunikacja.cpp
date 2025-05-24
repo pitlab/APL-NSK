@@ -16,6 +16,7 @@ uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
 HANDLE CKomunikacja::m_hZdarzenieZmianaPolaczeniaWrona = NULL;
 //HANDLE CKomunikacja::m_hZdarzeniePaczkaTelemetrii = NULL;
+int	CKomunikacja::m_LicznikInstancji = 0;
 
 
 
@@ -35,16 +36,56 @@ CKomunikacja::CKomunikacja()
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
 	m_hZdarzenieZmianaPolaczeniaWrona = CreateEvent(NULL, false, false, _T("ZmianaPo³¹czenia")); // auto-reset event, non-signalled state	;
+	m_LicznikInstancji++;
 
-	//przed po³¹czeniem chcê miec pewnoœæ ¿e lista jest pusta
-	/*for (int n = 0; n < m_cRoj.vWron.size(); n++)
-	{
-		m_cRoj.vWron[n].m_chAdres = 0;
-		m_cRoj.vWron[n].m_chNazwa[0] = 0;
-		m_cRoj.vWron[n].m_strNazwa = "";
-		for (int x = 0; x < 4; x++)
-			m_cRoj.vWron[n].m_chAdresIP[x] = 0;
-	}*/
+	//D³ugoœæ nazwy nie powinna przekraczaæ sta³ej DLUGOSC_NAZWY
+	m_strNazwyZmiennychTele[TELEID_AKCEL1X] = "Akcelerometr1 X";
+	m_strNazwyZmiennychTele[TELEID_AKCEL1Y] = "Akcelerometr1 Y";
+	m_strNazwyZmiennychTele[TELEID_AKCEL1Z] = "Akcelerometr1 Z";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2X] = "Akcelerometr2 X";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2Y] = "Akcelerometr2 Y";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2Z] = "Akcelerometr2 Z";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1P] = "¯yroskop1 P";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1Q] = "¯yroskop1 Q";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1R] = "¯yroskop1 R";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2P] = "¯yroskop2 P";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2Q] = "¯yroskop2 Q";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2R] = "¯yroskop2 R";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1X] = "Magnetometr 1 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1Y] = "Magnetometr 1 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1Z] = "Magnetometr 1 Z";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2X] = "Magnetometr 2 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2Y] = "Magnetometr 2 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2Z] = "Magnetometr 2 Z";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3X] = "Magnetometr 3 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3Y] = "Magnetometr 3 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3Z] = "Magnetometr 3 Z";
+	m_strNazwyZmiennychTele[TELEID_TEMPIMU1] = "Temperatura IMU1";
+	m_strNazwyZmiennychTele[TELEID_TEMPIMU2] = "Temperatura IMU2";
+
+	//zmienna AHRS
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1X] = "Trygono. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Y] = "Trygono. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Z] = "Trygono. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2X] = "Kwatern. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Y] = "Kwatern. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Z] = "Kwatern. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X] = "¯yro. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Y] = "¯yro. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Z] = "¯yro. Psi";
+	//m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X] = "Akcel. Phi";
+
+	//zmienne barametryczne
+	m_strNazwyZmiennychTele[TELEID_CISBEZW1] = "Ciœn.Bzwzgl.1";
+	m_strNazwyZmiennychTele[TELEID_CISBEZW2] = "Ciœn.Bzwzgl.2";
+	m_strNazwyZmiennychTele[TELEID_WYSOKOSC1] = "Wysokoœæ AGL1";
+	m_strNazwyZmiennychTele[TELEID_WYSOKOSC2] = "Wysokoœæ AGL2";
+	m_strNazwyZmiennychTele[TELEID_CISROZN1] = "Ciœn.Ró¿n.1";
+	m_strNazwyZmiennychTele[TELEID_CISROZN2] = "Ciœn.Ró¿n.2";
+	m_strNazwyZmiennychTele[TELEID_PREDIAS1] = "Prêdkoœæ IAS1";
+	m_strNazwyZmiennychTele[TELEID_PREDIAS2] = "Prêdkoœæ IAS2";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISR1] = "Temp.Ciœn.Ró¿n1";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISR2] = "Temp.Ciœn.Ró¿n2";
 }
 
 

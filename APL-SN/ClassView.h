@@ -77,8 +77,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg LRESULT OnChangeActiveTab(WPARAM, LPARAM);
-	afx_msg void OnSort(UINT id);
-	afx_msg void OnUpdateSort(CCmdUI* pCmdUI);
 
 	DECLARE_MESSAGE_MAP()
 };

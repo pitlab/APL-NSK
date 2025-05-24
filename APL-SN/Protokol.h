@@ -5,7 +5,6 @@
 #include "KomunikatySieci.h"
 #include "polecenia_komunikacyjne.h"
 
-
 #define PK_UST_ROZD_KAMERY	5
 
 //polecenia typu broadcast, bez odpowiedzi

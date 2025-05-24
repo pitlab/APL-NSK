@@ -54,7 +54,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
-	CKomunikacja cKomunikacja;
+	//CKomunikacja cKomunikacja;
 	std::vector <uint16_t> m_vPamiecKomunikatow;	//przechowuje zawartosć jaka ma być wgrana do Flash
 	DECLARE_MESSAGE_MAP()
 public:

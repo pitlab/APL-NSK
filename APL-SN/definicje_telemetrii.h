@@ -2,6 +2,7 @@
 #pragma once
 
 //definicje zmiennych telemetrycznych
+//zmienne IMU
 #define TELEID_AKCEL1X		0
 #define TELEID_AKCEL1Y		1
 #define TELEID_AKCEL1Z		2
@@ -23,6 +24,7 @@
 #define TELEID_MAGNE3X		18
 #define TELEID_MAGNE3Y		19
 #define TELEID_MAGNE3Z		20
+//zmienne AHRS
 #define TELEID_KAT_IMU1X	21
 #define TELEID_KAT_IMU1Y	22
 #define TELEID_KAT_IMU1Z	23
@@ -32,6 +34,7 @@
 #define TELEID_KAT_ZYRO1X	27
 #define TELEID_KAT_ZYRO1Y	28
 #define TELEID_KAT_ZYRO1Z	29
+//zmienne barametryczne
 #define TELEID_CISBEZW1		30
 #define TELEID_CISBEZW2		31
 #define TELEID_WYSOKOSC1	32

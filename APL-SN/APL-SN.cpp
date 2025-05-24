@@ -50,7 +50,7 @@ CAPLSNApp::CAPLSNApp() noexcept
 
 	// TODO: Zastąp ciąg identyfikatora aplikacji poniżej za pomocą unikatowego ciągu identyfikatora; zalecane
 	// format ciągu to CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("PitLab.APLSN2.v1_0"));
+	SetAppID(_T("PitLab.APL3_NSK.v1_0"));
 
 	// TODO: W tym miejscu dodaj kod konstruktora,
 	// Umieść wszystkie znaczące inicjacje w InitInstance
@@ -256,7 +256,6 @@ CPortSzeregowy& getPortSzeregowy()
 {
 	return theApp.getPortSzeregowy();
 }
-
 
 
 CProtokol& CAPLSNApp::getProtokol()

@@ -69,8 +69,7 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nMaxScrollPoziomo(0)
 , m_nBiezacyScrollPoziomo(0)
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-	m_cKomunikacja.m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
+	getKomunikacja().m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 	// Enable D2D support for this window:
 	EnableD2DSupport();
 
@@ -100,7 +99,7 @@ CAPLSNView::~CAPLSNView()
 	if (m_bPolaczono)
 	{
 		//CKomunikacja m_cKomunikacja = getKomunikacja();
-		m_cKomunikacja.Rozlacz();
+		getKomunikacja().Rozlacz();
 	}
 }
 
@@ -117,14 +116,14 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 	m_cObslugaRejestru.CzytajRejestrInt(L"PortETH", &m_nNumerPortuEth);
 	m_cObslugaRejestru.CzytajRejestrInt(L"TypPortu", &m_nTypPolaczenia);
 
-	m_cKomunikacja.UstawRodzica(this);
-	m_cKomunikacja.UstawAdresPortuETH(L"127.0.0.1");
-	m_cKomunikacja.UstawNumerPortuETH(m_nNumerPortuEth);
-	m_cKomunikacja.UstawTypPolaczenia((uint8_t)m_nTypPolaczenia);
-	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
-	m_cKomunikacja.UstawNumerPortuUART(m_nNumerPortuCom);
+	getKomunikacja().UstawRodzica(this);
+	getKomunikacja().UstawAdresPortuETH(L"127.0.0.1");
+	getKomunikacja().UstawNumerPortuETH(m_nNumerPortuEth);
+	getKomunikacja().UstawTypPolaczenia((uint8_t)m_nTypPolaczenia);
+	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
+	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
 
-	uint8_t chErr = m_cKomunikacja.Polacz(this);
+	uint8_t chErr = getKomunikacja().Polacz(this);
 	if (chErr == ERR_OK)
 	{
 		m_bPolaczono = TRUE;		
@@ -281,7 +280,7 @@ void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 	//iRozmiar = sizeof(chBufor);
 	switch (nInputcode)
 	{
-	case ON_ACCEPT:		m_cKomunikacja.AkceptujPolaczenieETH();
+	case ON_ACCEPT:		getKomunikacja().AkceptujPolaczenieETH();
 		pDoc->SetTitle(L"Ustanowiono połączenie ETH");
 		break;
 
@@ -336,17 +335,17 @@ void CAPLSNView::OnPolaczCom()
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
-	m_cKomunikacja.UstawTypPolaczenia(UART + m_nTypPolaczenia);
-	m_cKomunikacja.UstawNumerPortuUART(m_nNumerPortuCom);
-	m_cKomunikacja.UstawPredkoscPortuUART(m_nPredkoscPortuCom);
-	if (m_cKomunikacja.CzyPolaczonoUart())
+	getKomunikacja().UstawTypPolaczenia(UART + m_nTypPolaczenia);
+	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
+	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
+	if (getKomunikacja().CzyPolaczonoUart())
 	{
 		m_bKoniecWatkuOdswiezaniaTelemtrii = TRUE;
-		m_cKomunikacja.Rozlacz();
+		getKomunikacja().Rozlacz();
 	}
 	else
 	{
-		m_cKomunikacja.Polacz(this);
+		getKomunikacja().Polacz(this);
 		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
 		{
 			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
@@ -364,7 +363,7 @@ void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
-	pCmdUI->Enable(!m_cKomunikacja.CzyPolaczonoUart());
+	pCmdUI->Enable(!getKomunikacja().CzyPolaczonoUart());
 }
 
 
@@ -389,7 +388,7 @@ void CAPLSNView::OnZrobZdjecie()
 	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
 	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
-	chErr = m_cKomunikacja.ZrobZdjecie(pDoc->m_sZdjecie);
+	chErr = getKomunikacja().ZrobZdjecie(pDoc->m_sZdjecie);
 	if (chErr == ERR_OK)
 	{
 		pDoc->m_bZdjecieGotowe = TRUE;
@@ -408,7 +407,7 @@ void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
-	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
+	pCmdUI->Enable(getKomunikacja().CzyPolaczonoUart());
 }
 
 
@@ -435,7 +434,7 @@ uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 
 	while (!m_bKoniecWatkuPaskaPostepu)
 	{
-		nErr = WaitForSingleObject(m_cKomunikacja.m_hZdarzeniePaczkaDanych, 200);
+		nErr = WaitForSingleObject(getKomunikacja().m_hZdarzeniePaczkaDanych, 200);
 		if (nErr != WAIT_TIMEOUT)
 		{
 			m_sBiezacyStanPaskaPostepu++;
@@ -499,7 +498,7 @@ void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 {
 	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
-	pCmdUI->Enable(m_cKomunikacja.CzyPolaczonoUart());
+	pCmdUI->Enable(getKomunikacja().CzyPolaczonoUart());
 }
 
 
