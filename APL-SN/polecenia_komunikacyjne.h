@@ -5,6 +5,7 @@
 #define ETHS	2	//ethernet jako serwer
 #define ETHK	3	//ethernet jako klient
 #define USB		4
+#define LICZBA_TYPOW_PORTOW	4
 
 //#define ROZM_DANYCH_WE_UART	128
 //#define ROZM_DANYCH_WY_UART	128

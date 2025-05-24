@@ -8,6 +8,7 @@
 #include "CkonfigTelemetrii.h"
 #include "definicje_telemetrii.h"
 #include "Komunikacja.h"
+#include "Errors.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {
@@ -41,13 +42,16 @@ IMPLEMENT_SERIAL(CClassViewMenuButton, CMFCToolBarMenuButton, 1)
 //////////////////////////////////////////////////////////////////////
 
 CClassView::CClassView() noexcept
+: m_bKoniecWatkuCzekaniaNaZmianePolaczenia(FALSE)
 {
-	m_nCurrSort = ID_SORTING_GROUPBYTYPE;
-	
+	m_nCurrSort = ID_SORTING_GROUPBYTYPE;	
+	pWskWatkuCzekaniaNaPolaczenie = AfxBeginThread((AFX_THREADPROC)WatekCzekajNaZmianePolaczenia, this, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 }
 
 CClassView::~CClassView()
 {
+	m_bKoniecWatkuCzekaniaNaZmianePolaczenia = TRUE;
+	WaitForSingleObject(pWskWatkuCzekaniaNaPolaczenie, INFINITE);
 }
 
 BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
@@ -115,8 +119,7 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	// Wprowadź dane statycznego widoku drzewa (fikcyjny kod, nic szczególnego)
-	FillClassView();
-
+	//FillClassView();	
 	return 0;
 }
 
@@ -132,25 +135,28 @@ void CClassView::FillClassView()
 	HTREEITEM hZasob;
 	CString strNazwa;
 
+	//Używam tej funkcji do przerysowania okna, więc zanim wstawi nowe drzewo to usuń wszystkie istniejące wcześniej
+	m_wndClassView.DeleteAllItems();
+
 	HTREEITEM hRoj = m_wndClassView.InsertItem(_T("Rój"), 0, 0);
-	m_wndClassView.SetItemState(hRoj, TVIS_BOLD, TVIS_BOLD);	
+	
 
 	CWron cWron;
 	cWron.m_chAdres = 5;
+	getKomunikacja().m_cRoj.vWron.push_back(cWron);
 
-	getKomunikacja().m_cRoj.vWron.push_back(cWron);
-	cWron.m_chAdres = 6;
-	getKomunikacja().m_cRoj.vWron.push_back(cWron);
-	cWron.m_chAdres = 7;
-	getKomunikacja().m_cRoj.vWron.push_back(cWron);
-	
+	size_t LiczbaWronow = getKomunikacja().m_cRoj.vWron.size();
 	//wstaw do drzewa wszystkie wrony
 	for (int n = 0; n < getKomunikacja().m_cRoj.vWron.size(); n++)
 	{
-		
+		m_wndClassView.SetItemState(hRoj, TVIS_BOLD, TVIS_BOLD);	//pogrub rój jeżeli są w nim wrony
 
 		hWron = m_wndClassView.InsertItem(strNazwa, 0, 0, hRoj);
-		m_wndClassView.SetItemState(hWron, TVIS_BOLD, TVIS_BOLD);			
+		if (getKomunikacja().m_cRoj.vWron[n].m_chPolaczony)
+			m_wndClassView.SetItemState(hWron, TVIS_BOLD, TVIS_BOLD);	//pogrubiony
+		else
+			m_wndClassView.SetItemState(hWron, TVIS_DROPHILITED, TVIS_DROPHILITED);	//cieniowany
+		
 
 		hZasob = m_wndClassView.InsertItem(_T("Telemetria"), 0, 0, hWron);
 			
@@ -470,3 +476,38 @@ uint8_t CDrzewoTelemetrii::PobierzId(CString strNazwa)
 }
 
 //CDrzewoTelemetrii::GetOleControlSite()
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wywołuje wątek czekający na połączenie
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+UINT CClassView::WatekCzekajNaZmianePolaczenia(LPVOID pParam)
+{
+	
+	return reinterpret_cast<CClassView*>(pParam)->WlasciwyWatekCzekajNaZmianePolaczenia();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wątek uruchamiający odświezanie wykresu po przyjściu telemetrii
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CClassView::WlasciwyWatekCzekajNaZmianePolaczenia()
+{
+	while (!m_bKoniecWatkuCzekaniaNaZmianePolaczenia)
+	{
+		if (this)
+		{
+			uint32_t nErr = WaitForSingleObject(getKomunikacja().m_hZdarzenieZmianaPolaczeniaWrona, INFINITE);
+			if (nErr != WAIT_TIMEOUT)
+			{
+				FillClassView();
+				Invalidate();
+			}
+		}
+	}
+	return ERR_OK;
+}
+
+

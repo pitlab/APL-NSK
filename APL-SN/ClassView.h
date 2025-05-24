@@ -55,6 +55,12 @@ protected:
 
 	void FillClassView();
 
+private:
+	static UINT WatekCzekajNaZmianePolaczenia(LPVOID pParam);
+	uint8_t WlasciwyWatekCzekajNaZmianePolaczenia();
+	BOOL m_bKoniecWatkuCzekaniaNaZmianePolaczenia;
+	CWinThread* pWskWatkuCzekaniaNaPolaczenie;
+
 // Przesłania
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);

@@ -12,9 +12,9 @@ pakuje dane w ramki i przesy³a przy u¿yciu podrzêdnej klasy CProtokol
 */
 
 BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
-//std::vector <CKomunikacja::_sWron> CKomunikacja::m_vRoj;
 uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
+HANDLE CKomunikacja::m_hZdarzenieZmianaPolaczeniaWrona = NULL;
 //HANDLE CKomunikacja::m_hZdarzeniePaczkaTelemetrii = NULL;
 
 
@@ -28,13 +28,13 @@ CKomunikacja::CKomunikacja()
 	, m_bPolaczonoEth(FALSE)
 	, m_iNumerPortuETH(0)
 	, m_strAdresPortuETH("")
-	, m_strNazwa("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
 	, m_chAdresAutopilota(0)
 {
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
+	m_hZdarzenieZmianaPolaczeniaWrona = CreateEvent(NULL, false, false, _T("ZmianaPo³¹czenia")); // auto-reset event, non-signalled state	;
 
 	//przed po³¹czeniem chcê miec pewnoœæ ¿e lista jest pusta
 	/*for (int n = 0; n < m_cRoj.vWron.size(); n++)
@@ -61,6 +61,12 @@ CKomunikacja::~CKomunikacja()
 	{
 		CloseHandle(m_hZdarzeniePaczkaDanych);
 		m_hZdarzeniePaczkaDanych = NULL;
+	}
+
+	if (m_hZdarzenieZmianaPolaczeniaWrona)
+	{
+		CloseHandle(m_hZdarzenieZmianaPolaczeniaWrona);
+		m_hZdarzenieZmianaPolaczeniaWrona = NULL;
 	}
 }
 
@@ -112,6 +118,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
 				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia
 			}
 			
 		}
@@ -226,7 +233,6 @@ uint8_t CKomunikacja::PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP)
 {
-	uint8_t chOdebrano;
 	uint8_t chDaneWych[25];
 
 	chDaneWych[0] = chId;
@@ -598,7 +604,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
 	{
 		ASSERT(chRozmiar == chOdebrano);
 		for (uint8_t n = 0; n < chRozmiar; n++)
-			*(chOKres + n) = m_chOkresTelemetrii[n] = chDanePrzychodzace[n];
+			*(chOKres + n) = chDanePrzychodzace[n];
 	}
 	return chErr;
 }

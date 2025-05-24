@@ -62,6 +62,11 @@ CProtokol::CProtokol()
 
 CProtokol::~CProtokol()
 {
+	//roz³acz wszystko co jest po³¹czone
+	for (int n = 0; n < LICZBA_TYPOW_PORTOW; n++)
+		ZamknijPort(UART + n);
+
+
 	m_wskaznikInstancji = --m_wskaznikInstancji;
 	if (m_hZdarzenieRamkaPolecenGotowa)
 	{

@@ -14,6 +14,7 @@ public:
 	CKomunikacja();	
 	virtual ~CKomunikacja();
 	static HANDLE m_hZdarzeniePaczkaDanych;
+	static HANDLE m_hZdarzenieZmianaPolaczeniaWrona;
 
 	void UstawTypPolaczenia(uint8_t chTyp) { m_chTypPolaczenia = chTyp; }
 	uint8_t Polacz(CView* pWnd);
@@ -47,12 +48,8 @@ public:
 	uint8_t CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 	uint8_t ZapiszOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 
-	//struktura zbieraj¹ca parametry BSP
-
 	CRoj m_cRoj;
 	CWron m_cWron;
-
-
 
 	union _un8_16
 	{
@@ -85,9 +82,7 @@ private:
 
 	//pola publiczne z odbieranymi danymi
 public:
-	CString m_strNazwa;
 	uint8_t m_chAdresAutopilota;	
-	uint8_t m_chOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 };
 
 CKomunikacja& getKomunikacja();
