@@ -6,7 +6,6 @@
 #include "Resource.h"
 #include "APL-SN.h"
 #include "CkonfigTelemetrii.h"
-#include "definicje_telemetrii.h"
 #include "Komunikacja.h"
 #include "Errors.h"
 #include "Protokol.h"
@@ -68,6 +67,10 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 	ON_WM_SETFOCUS()
 	//ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
 	//ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
+//	ON_WM_SETCURSOR()
+//ON_WM_RBUTTONDBLCLK()
+//ON_WM_LBUTTONDBLCLK()
+//ON_WM_USERCHANGED()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -237,13 +240,16 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	pDrzewoTele->SetFocus();
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 
-	m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
-	m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
-	m_cKonfigTelemetrii.UstawIDZmiennej(chId);
-	m_cKonfigTelemetrii.DoModal();
-	//chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
-	//pDrzewoTele->UstawOkres(chId, chOkres);
-	Invalidate();
+	//m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
+	//m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
+	//m_cKonfigTelemetrii.UstawIDZmiennej(chId);
+
+
+	m_nIndeksWrona = 0;	//trzeba wymyśleć jak to ustawić
+	m_cKonfigTelemetrii.UstawIndeksDronaWRoju(m_nIndeksWrona);
+	INT_PTR nKodBledu = m_cKonfigTelemetrii.DoModal();
+	if (nKodBledu == IDOK)
+		FillClassView();
 
 	/*CMenu menu;
 	menu.LoadMenu(IDR_POPUP_SORT);
@@ -321,6 +327,8 @@ void CClassView::OnPaint()
 	dc.Draw3dRect(rectTree, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
 }
 
+
+//Aktywacja paska narzędziowego w widoku roju
 void CClassView::OnSetFocus(CWnd* pOldWnd)
 {
 	CDockablePane::OnSetFocus(pOldWnd);
@@ -358,6 +366,19 @@ void CClassView::OnChangeVisualStyle()
 	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* Zablokowano */);
 }
 
+/****************************************************************************************************************************************/
+//Konstruktor
+CDrzewoTelemetrii::CDrzewoTelemetrii() noexcept
+	: m_nIndeksWrona(0)
+{
+
+}
+
+//destruktor
+CDrzewoTelemetrii::~CDrzewoTelemetrii()
+{
+
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>
@@ -460,3 +481,18 @@ uint8_t CClassView::WlasciwyWatekCzekajNaZmianePolaczenia()
 }
 
 
+//void CClassView::OnUserChanged()
+//{
+//	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+//
+//	CDockablePane::OnUserChanged();
+//}
+BEGIN_MESSAGE_MAP(CDrzewoTelemetrii, CViewTree)
+	ON_WM_CONTEXTMENU()
+END_MESSAGE_MAP()
+
+
+void CDrzewoTelemetrii::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
+}

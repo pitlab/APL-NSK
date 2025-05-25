@@ -2,7 +2,6 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
-#include "definicje_telemetrii.h"
 #include "CRoj.h"
 #include "CWron.h"
 
@@ -64,7 +63,7 @@ public:
 		uint16_t dane16[2];
 		uint8_t dane8[4];
 	} m_unia8_32;
-	CString m_strNazwyZmiennychTele[LICZBA_ZMIENNYCH_TELE];
+	CString m_strNazwyZmiennychTele[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);

@@ -127,7 +127,8 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	nErrCnt = 0;
 	while (!feof(pPlikKomunikatow))
 	{
-		n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla, _countof(chNazwaSampla));
+		//n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla, _countof(chNazwaSampla));
+		n = fscanf_s(pPlikKomunikatow, "%s", chNazwaSampla, _countof(chNazwaSampla));
 		//n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla);
 		if (n > 0)
 		{

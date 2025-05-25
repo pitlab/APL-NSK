@@ -13,6 +13,7 @@ public:
 	void UstawIDZmiennej(uint8_t chID) { m_chIdZmiennej = chID; };
 	void UstawNazweZmiennej(CString nazwa) { m_strNazwaZmiennej = nazwa; };
 	void UstawOkresTelem(uint8_t chOkres) { m_nOkres = chOkres; };
+	void UstawIndeksDronaWRoju(int nIndeks) { m_nIndeksDronaWRoju = nIndeks; };
 
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -30,15 +31,18 @@ protected:
 	BOOL m_bZmieniono;
 	int m_nIndeksZmiennej;
 	int m_nIndeksOkresu;
+	int m_nIndeksDronaWRoju;
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CListBox m_ctlOkresTelemetrii;
+	CListBox m_ctlListaCzestotliwosciTelemetrii; 
+	CListCtrl m_ctlOkresTelemetrii;
 	afx_msg void OnBnClickedOk();
-	CListCtrl m_ctlListaTele;
+	
 	virtual BOOL OnInitDialog();
 	afx_msg void OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLbnSelchangeOkresTelemetrii();
+	afx_msg void OnLbnSelchangeListaCzestotliwosci();
 };
 
 

@@ -101,6 +101,7 @@
 #define IDC_LIST2                       1031
 #define IDC_OKRES_TELEMETRII            1031
 #define IDC_LIST_ZMIENNE_TELE           1041
+#define IDC_LISTA_CZESTOTLIWOSCI        1042
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -117,7 +118,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32793
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

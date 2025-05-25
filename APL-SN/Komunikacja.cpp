@@ -73,7 +73,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X] = "¯yro. Phi";
 	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Y] = "¯yro. Theta";
 	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Z] = "¯yro. Psi";
-	//m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X] = "Akcel. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELX] = "Akcel. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELY] = "Akcel. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELZ] = "Akcel. Psi";
 
 	//zmienne barametryczne
 	m_strNazwyZmiennychTele[TELEID_CISBEZW1] = "Ciœn.Bzwzgl.1";
@@ -84,6 +86,8 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_CISROZN2] = "Ciœn.Ró¿n.2";
 	m_strNazwyZmiennychTele[TELEID_PREDIAS1] = "Prêdkoœæ IAS1";
 	m_strNazwyZmiennychTele[TELEID_PREDIAS2] = "Prêdkoœæ IAS2";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISB1] = "Temp.Ciœn.Bzwz1";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISB2] = "Temp.Ciœn.Bzwz2";
 	m_strNazwyZmiennychTele[TELEID_TEMPCISR1] = "Temp.Ciœn.Ró¿n1";
 	m_strNazwyZmiennychTele[TELEID_TEMPCISR2] = "Temp.Ciœn.Ró¿n2";
 }
@@ -137,7 +141,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 			//wyœlij na adres rozg³oszeniowy poecenie pobrania adresów i nazwy BSP
 			chErr = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
 			if (chErr == ERR_OK)
-			{				
+			{
 				//sprawdŸ czy w roju jest ju¿ ten wron
 				int nIndeks = 0;
 				for (int n = 0; n < m_cRoj.vWron.size(); n++)
@@ -152,17 +156,20 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 				//je¿eli nie ma go w roju to wstaw
 				if (nIndeks == 0)
 				{
-					m_cRoj.vWron.push_back(cWron);	
+					m_cRoj.vWron.push_back(cWron);
 					nIndeks = (int)m_cRoj.vWron.size() - 1;
 				}
-				
+
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
 				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia
 			}
-			
+
 		}
+		else
+			if (chErr == ERR_CANT_CONNECT)
+				MessageBoxExW(pWnd->m_hWnd, _T("Nie mogê po³¹czyæ siê z portem. \nSprawdŸ czy nie jest ju¿ po³¹czony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
 		break;
 
 	case ETHS:	

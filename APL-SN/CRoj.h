@@ -8,7 +8,7 @@ class CRoj :CWron
 
 public:
 	std::vector <CWron> vWron;
-
+	int m_nIndeksWrona;
 
 };
 

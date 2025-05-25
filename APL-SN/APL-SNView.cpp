@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_COMMAND(ID_OLE_INSERT_NEW, &CAPLSNView::OnOleInsertNew)
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -781,4 +782,12 @@ void CAPLSNView::UstawScrollOdWidoku()
 void CAPLSNView::OnOleInsertNew()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+}
+
+
+void CAPLSNView::OnDropFiles(HDROP hDropInfo)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+
+	CView::OnDropFiles(hDropInfo);
 }

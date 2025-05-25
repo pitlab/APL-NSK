@@ -6,6 +6,7 @@
 #define ON_SEND		4
 #define ON_CLOSE	5
 #include <queue>
+#include "polecenia_komunikacyjne.h"
 
 struct BinaryFrame
 {
@@ -34,6 +35,6 @@ struct _Telemetria
 {
 	uint8_t chZnakCzasu = 0;
 	uint8_t chAdrNadawcy = 0;
-	uint8_t chBityDanych[5];
+	uint8_t chBityDanych[LICZBA_BAJTOW_ID_TELEMETRII];
 	std::vector <float> dane;
 };
