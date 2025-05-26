@@ -39,6 +39,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLbnSelchangeOkresTelemetrii();
+	afx_msg void OnKonfigRejestrator();
 };
 
 

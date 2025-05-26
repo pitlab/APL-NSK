@@ -113,6 +113,7 @@ public:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnOleInsertNew();
+	afx_msg void OnKonfigRejestratora();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

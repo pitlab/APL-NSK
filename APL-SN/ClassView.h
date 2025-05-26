@@ -81,5 +81,11 @@ protected:
 	afx_msg void OnUpdateSort(CCmdUI* pCmdUI);
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnKonfigTelemetrii();
+	afx_msg void OnKonfigWykres();
+	afx_msg void OnKonfigRejestr();
+	afx_msg void OnKonfigRejestratora();
+	afx_msg void OnKonfigWykresow();
 };
 

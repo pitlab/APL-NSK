@@ -196,6 +196,7 @@
     <ClInclude Include="CRegistry.h" />
     <ClInclude Include="CRoj.h" />
     <ClInclude Include="CWron.h" />
+    <ClInclude Include="DrzewoWykresow.h" />
     <ClInclude Include="Errors.h" />
     <ClInclude Include="GniazdoSieci.h" />
     <ClInclude Include="ChildFrm.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="FileView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Komunikacja.h" />
+    <ClInclude Include="KonfiguracjaWyresow.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="multithreading.h" />
     <ClInclude Include="KonfigPolacz.h" />
@@ -229,10 +231,12 @@
     <ClCompile Include="CRoj.cpp" />
     <ClCompile Include="CWron.cpp" />
     <ClCompile Include="DEkoderTelemetrii.cpp" />
+    <ClCompile Include="DrzewoWykresow.cpp" />
     <ClCompile Include="GniazdoSieci.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="Komunikacja.cpp" />
+    <ClCompile Include="KonfiguracjaWyresow.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="KonfigPolacz.cpp" />
     <ClCompile Include="OutputWnd.cpp" />

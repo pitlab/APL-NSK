@@ -301,3 +301,5 @@ void CKonfigTelemetrii::OnLbnSelchangeOkresTelemetrii()
 	m_bZmieniono = TRUE;
 	UpdateData(FALSE);
 }
+
+
