@@ -86,9 +86,10 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-//	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-//	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
-//	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-//	afx_msg void OnUserChanged();
+	afx_msg void OnKonfigTelemetrii();
+	afx_msg void OnKonfigWykres();
+	afx_msg void OnKonfigRejestr();
+	afx_msg void OnKonfigRejestratora();
+	afx_msg void OnKonfigWykresow();
 };
 

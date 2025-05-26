@@ -6,6 +6,8 @@
 #include "Resource.h"
 #include "APL-SN.h"
 #include "CkonfigTelemetrii.h"
+#include "KonfiguracjaWyresow.h"
+#include "definicje_telemetrii.h"
 #include "Komunikacja.h"
 #include "Errors.h"
 #include "Protokol.h"
@@ -65,12 +67,11 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 	ON_COMMAND(ID_NEW_FOLDER, OnNewFolder)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-	//ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
-	//ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
-//	ON_WM_SETCURSOR()
-//ON_WM_RBUTTONDBLCLK()
-//ON_WM_LBUTTONDBLCLK()
-//ON_WM_USERCHANGED()
+	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
+	ON_COMMAND(ID_KONFIG_TELEMETRII, &CClassView::OnKonfigTelemetrii)
+	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CClassView::OnKonfigRejestratora)
+	ON_COMMAND(ID_KONFIG_WYKRESOW, &CClassView::OnKonfigWykresow)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -204,10 +205,10 @@ void CClassView::FillClassView()
 
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	CString strNazwaZmiennej;
+	CString strNazwaZmiennej = _T("");
 	//int nIdZmiennej;
-	uint8_t chId;
-	uint8_t chOkres;
+	uint8_t chId = 0;
+	uint8_t chOkres = 0;
 	//CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
 	CDrzewoTelemetrii* pDrzewoTele = (CDrzewoTelemetrii*)&m_wndClassView;
 	ASSERT_VALID(pDrzewoTele);
@@ -236,23 +237,20 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 			chOkres = pDrzewoTele->PobierzOkres(chId);
 		}
 	}
-
-	pDrzewoTele->SetFocus();
+	//tymcasowo wyłączone do celów rozbudowy menu kontekstowego
+	/*pDrzewoTele->SetFocus();
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 
-	//m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
-	//m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
-	//m_cKonfigTelemetrii.UstawIDZmiennej(chId);
+	m_cKonfigTelemetrii.UstawNazweZmiennej(strNazwaZmiennej);
+	m_cKonfigTelemetrii.UstawOkresTelem(chOkres);
+	m_cKonfigTelemetrii.UstawIDZmiennej(chId);
+	m_cKonfigTelemetrii.DoModal();
+	//chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
+	//pDrzewoTele->UstawOkres(chId, chOkres);
+	Invalidate();
 
-
-	m_nIndeksWrona = 0;	//trzeba wymyśleć jak to ustawić
-	m_cKonfigTelemetrii.UstawIndeksDronaWRoju(m_nIndeksWrona);
-	INT_PTR nKodBledu = m_cKonfigTelemetrii.DoModal();
-	if (nKodBledu == IDOK)
-		FillClassView();
-
-	/*CMenu menu;
-	menu.LoadMenu(IDR_POPUP_SORT);
+	CMenu menu;
+	menu.LoadMenu(IDR_POPUP_LISTA_ROJU);
 
 	CMenu* pSumMenu = menu.GetSubMenu(0);
 
@@ -265,7 +263,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
 		UpdateDialogControls(this, FALSE);
-	}*/
+	}
 }
 
 void CClassView::AdjustLayout()
@@ -481,18 +479,3 @@ uint8_t CClassView::WlasciwyWatekCzekajNaZmianePolaczenia()
 }
 
 
-//void CClassView::OnUserChanged()
-//{
-//	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
-//
-//	CDockablePane::OnUserChanged();
-//}
-BEGIN_MESSAGE_MAP(CDrzewoTelemetrii, CViewTree)
-	ON_WM_CONTEXTMENU()
-END_MESSAGE_MAP()
-
-
-void CDrzewoTelemetrii::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
-{
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
-}

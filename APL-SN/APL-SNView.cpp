@@ -57,11 +57,12 @@ END_MESSAGE_MAP()
 
 CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
+, m_chAdresAutopilota(2)
+, m_nTypPolaczenia(UART)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
 , m_bRysujLog(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
-, m_chAdresAutopilota(2)
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
 , m_nVscroll(0)
@@ -783,6 +784,7 @@ void CAPLSNView::OnOleInsertNew()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
 }
+
 
 
 void CAPLSNView::OnDropFiles(HDROP hDropInfo)

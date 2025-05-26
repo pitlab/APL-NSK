@@ -255,3 +255,5 @@ void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 	m_bZmieniono = TRUE;
 	UpdateData(FALSE);
 }
+
+
