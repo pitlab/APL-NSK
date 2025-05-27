@@ -15,6 +15,16 @@ CAnalizatorLogu::~CAnalizatorLogu()
 	
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Analizuje otwarty log, wyciaga z niego dane i pakuje do struktury stZmiennaLogu_t
+// Parametry:
+//  *chBufor - wskaŸnik na tablicê snaków logu
+//  nRozmiar - rozmiar logu do analizy
+//  vLogu - wektor logu, do którego wpisywane s¹ zdekodowane wartosi
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<stZmiennaLogu_t> &vLogu)
 {
 	uint8_t chErr = ERR_OK;
@@ -34,8 +44,8 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			}
 			else
 			{
-				stZmiennaLogu.chIndeks = m_chIndeksZmiennejLogu;
-				stZmiennaLogu.chNazwa[m_chIndeksNazwy++] = chBufor[n];
+				stZmiennaLogu.chIndeksZmiennej = m_chIndeksZmiennejLogu;
+				stZmiennaLogu.chNazwaZmiennej[m_chIndeksNazwy++] = chBufor[n];
 			}
 
 			if (chBufor[n] == 0x0A)	//LF - koniec wiersza nag³ówka

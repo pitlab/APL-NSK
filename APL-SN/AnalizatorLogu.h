@@ -1,7 +1,7 @@
 #include <vector>
-
+#include "polecenia_komunikacyjne.h"
 #pragma once
-#define MAX_ROZMIAR_WPISU_LOGU	20
+
 
 
 class CAnalizatorLogu
@@ -12,8 +12,10 @@ public:
 
 	struct stZmiennaLogu_t 
 	{
-		uint8_t chNazwa[MAX_ROZMIAR_WPISU_LOGU];
-		uint8_t chIndeks;
+		uint8_t chNazwaZmiennej[DLUGOSC_NAZWY];
+		uint8_t chIndeksZmiennej;
+		uint8_t chAdresWrona;	//identyfikator urz¹dzenia z którego pochodzi log
+		uint8_t chNazwaWrona[DLUGOSC_NAZWY];
 		std::vector <float> vfWartosci;
 	} ;
 
@@ -23,7 +25,7 @@ public:
 private:
 	BOOL m_bAnalizaNaglowka;
 	uint8_t m_chIndeksZmiennejLogu;
-	uint8_t m_chZmienna[MAX_ROZMIAR_WPISU_LOGU];
+	uint8_t m_chZmienna[DLUGOSC_NAZWY];
 	uint8_t m_chIndeksNazwy = 0;
 	uint8_t m_chIndeksZmiennej = 0;
 };

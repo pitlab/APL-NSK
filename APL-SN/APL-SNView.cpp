@@ -61,7 +61,6 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nTypPolaczenia(UART)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
-, m_bRysujLog(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
@@ -492,6 +491,7 @@ void CAPLSNView::OnZapiszPamiec()
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Aktualizuje stan przycisku Zapisz Pamięć Flash w pasku narzędzi
 // zwraca: nic
@@ -505,7 +505,10 @@ void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmiane rozmiaru okna. Ustawia zmianną m_nSzerokoscOkna porzebną do aktualizacji stanu pasków przewijania
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
@@ -526,6 +529,13 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Główna funkcja rysujaca dokument wykorzystujaca Direct 2D
+// Parametry: 
+//  wParam - ?
+//  lParam - wskaźnik na CHwndRenderTarget
+// zwraca: komunkat systemowy
+///////////////////////////////////////////////////////////////////////////////////////////////////
 afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 {
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
@@ -536,6 +546,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	m_bOknoGotowe = TRUE;
 
 	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
+	float fSkalaX = m_fZoomPoziomo;
+	float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie)
@@ -546,10 +558,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		_Telemetria stDaneTele;
 		int32_t nIndexRamki;
 		long lErr;
-
-		//fSkalaX = (float)okno.right / lLiczbaRamek;
-		float fSkalaX = m_fZoomPoziomo;
-		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 
 		//wykresy akcelerometru
 		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 0, pRenderTarget, m_pBrushWykresuR);
@@ -562,17 +570,25 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
 	}
 
-	if (m_bRysujLog)
-	{
-		float fSkalaX = m_fZoomPoziomo;
-		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-
-		RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
-	}
+	//rysuj wykres logu jeżeli jest coś wczytane
+	RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
 	return TRUE;
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje wykres logu pobrany z dokumentu
+// Parametry:
+//  okno - obszar rysowania
+//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
+//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
+//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
+//  nIndeksZmiennej - indeks zmiennej w logu
+//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
+//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
@@ -594,11 +610,23 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float 
 			pktfPoczatek = pktfKoniec;
 		}
 	}
-	
 }
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje wykres logu pobrany z telemetrii
+// Parametry:
+//  okno - obszar rysowania
+//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
+//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
+//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
+//  vRamkaTele - wektor zmiennych telemetrycznych z którego trzeba wyłuskać potrzebna dane
+//  nIndeksZmiennej - indeks zmiennej do wyświetlenia
+//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
+//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	float fZmienna;
@@ -683,6 +711,15 @@ void CAPLSNView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na przewijanie w pionie. Modyfikuje zmienną m_nVscroll dla różnych sposobów zmiany położenia paska przewijania
+// Parametry:
+//  nSBCode - komunikat okreslający sposobów zmiany położenia paska przewijania
+//  nPos - liczbowa wartość paska przewijania gdy był przeciagany w konkretne miejsce
+//  pScrollBar* - wskaxnik na nasek przewijania
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
@@ -713,6 +750,15 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na przewijanie w poziomie. Modyfikuje zmienną m_nVscroll dla różnych sposobów zmiany położenia paska przewijania
+// Parametry:
+//  nSBCode - komunikat okreslający sposobów zmiany położenia paska przewijania
+//  nPos - liczbowa wartość paska przewijania gdy był przeciagany w konkretne miejsce
+//  pScrollBar* - wskaxnik na nasek przewijania
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
@@ -740,7 +786,11 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Funkcja uaktualnia połoeżenie obu pasków przewijania. Uruchamiane po zmianie stanu okna gdy np przyjdą nowe dane telemetryczne albo zostanie wczytany nowy log
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::UstawScrollOdWidoku()
 {
 	SCROLLINFO scrollInfo;
