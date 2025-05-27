@@ -56,6 +56,7 @@
 #define IDR_SORT                        171
 #define IDB_SORT_24                     172
 #define IDR_POPUP_SORT                  173
+#define IDR_POPUP_LISTA_ROJU            173
 #define IDR_POPUP_EXPLORER              174
 #define IDB_FILE_VIEW                   175
 #define IDB_FILE_VIEW_24                176
@@ -76,6 +77,10 @@
 #define IDD_USTAWIENIA_KAMERY           311
 #define IDD_ZAPISZ_FLASH                316
 #define IDD_TELEMETRIA                  318
+#define IDD_KONFIG_WYKRESOW             320
+#define IDR_MENU1                       322
+#define IDR_MENU_WYKRESOW               322
+#define IDD_KONFIG_REJESTRATORA         323
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -100,8 +105,10 @@
 #define IDC_BUTTON1                     1026
 #define IDC_LIST2                       1031
 #define IDC_OKRES_TELEMETRII            1031
+#define IDC_LISTA_CZESTOTLIWOSCI        1031
 #define IDC_LIST_ZMIENNE_TELE           1041
-#define IDC_LISTA_CZESTOTLIWOSCI        1042
+#define IDC_TREE_WYKRESOW               1043
+#define IDC_LISTA_DANYCH                1044
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -111,14 +118,28 @@
 #define ID_USTAW_PARKAMERY              2007
 #define ID_ZAPISZ_PAMIEC                32790
 #define ID_BUT_KONF_TELEMETRII          32792
+#define ID_                             32793
+#define ID_KONFIG_TELEMETRII            32794
+#define ID_KONFIG_WYKRES                32795
+#define ID_KONFIG_LOGERA                32796
+#define ID_KONFIG_REJESTR               32797
+#define ID_KONFIG_REJESTRATOR           32798
+#define ID_KONFIG_REJESTRATORA          32799
+#define ID_KONFIG_WYKRESOW              32800
+#define ID_DODAJWYKRESWSP32801          32801
+#define ID_DODAJ_WSPOLNY                32802
+#define ID_OBS32803                     32803
+#define ID_OBS32804                     32804
+#define ID_DODAJ_OSOBNY                 32805
+#define ID_USUN_WYKRES                  32806
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        320
-#define _APS_NEXT_COMMAND_VALUE         32793
-#define _APS_NEXT_CONTROL_VALUE         1043
+#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_COMMAND_VALUE         32807
+#define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

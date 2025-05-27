@@ -129,7 +129,7 @@ void CKomunikacja::UstawRodzica(CView* pWnd)
 uint8_t CKomunikacja::Polacz(CView* pWnd)
 {
 	uint8_t chErr = ERR_NOT_CONNECTED;
-	CWron cWron;
+	Wron cWron;
 	uint8_t chNazwa[DLUGOSC_NAZWY];
 
 	switch (m_chTypPolaczenia)

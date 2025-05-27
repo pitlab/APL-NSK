@@ -7,7 +7,7 @@
 #include "APL-SN.h"
 #include "CkonfigTelemetrii.h"
 #include "KonfiguracjaWyresow.h"
-#include "definicje_telemetrii.h"
+#include "KonfigRejestratora.h"
 #include "Komunikacja.h"
 #include "Errors.h"
 #include "Protokol.h"
@@ -67,8 +67,6 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 	ON_COMMAND(ID_NEW_FOLDER, OnNewFolder)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
 	ON_COMMAND(ID_KONFIG_TELEMETRII, &CClassView::OnKonfigTelemetrii)
 	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CClassView::OnKonfigRejestratora)
 	ON_COMMAND(ID_KONFIG_WYKRESOW, &CClassView::OnKonfigWykresow)
@@ -147,7 +145,7 @@ void CClassView::FillClassView()
 	HTREEITEM hRoj = m_wndClassView.InsertItem(_T("Rój"), 0, 0);
 
 	//wstaw jednego wirtualnego wrona aby był nawet bez połączenia z rzeczywistym
-	CWron cWron;
+	Wron cWron;
 	cWron.m_chAdres = 5;
 	cWron.m_strNazwa = " Wron wirtualny";
 	getKomunikacja().m_cRoj.vWron.push_back(cWron);
@@ -247,7 +245,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	m_cKonfigTelemetrii.DoModal();
 	//chOkres = m_cKonfigTelemetrii.PobierzOkresTelem();	//pobierz nową wartość okresu
 	//pDrzewoTele->UstawOkres(chId, chOkres);
-	Invalidate();
+	Invalidate();*/
 
 	CMenu menu;
 	menu.LoadMenu(IDR_POPUP_LISTA_ROJU);
@@ -391,7 +389,7 @@ void CDrzewoTelemetrii::WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCT
 	if (Okres == TEMETETRIA_WYLACZONA)
 		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - wyłącz."), lpszItem);
 	else
-		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, MAX_CZESTOTLIWOSC_TELEMETRII / (Okres + 1));
+		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, MAX_CZESTOTLIWOSC_TELEMETRII / Okres);
 	InsertItem(stZmienne[chId].tchNazwa, nObrazek, nObrazek+1, hParent);
 	stZmienne[chId].m_chOkresTelemetrii = Okres;
 }
@@ -421,7 +419,7 @@ void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint8_t chOkres)
 	if (chOkres == TEMETETRIA_WYLACZONA)
 		nDlugosc = swprintf(tchNazwa, 10, _T(" wyłącz."));
 	else
-		nDlugosc = swprintf(tchNazwa, 10, _T(" %.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / (chOkres + 1));
+		nDlugosc = swprintf(tchNazwa, 10, _T(" %.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / chOkres);
 
 	//wstaw nowy napis do starego
 	for (m=0; m < nDlugosc; m++)
@@ -479,3 +477,39 @@ uint8_t CClassView::WlasciwyWatekCzekajNaZmianePolaczenia()
 }
 
 
+
+/// <summary>
+/// Uruchamia okno konfiguracji telemetrii
+/// </summary>
+void CClassView::OnKonfigTelemetrii()
+{
+	CKonfigTelemetrii cKonfigTelemetrii;
+
+	cKonfigTelemetrii.DoModal();
+}
+
+
+
+/// <summary>
+/// Uruchamia okno konfiguracji rejestratora
+/// </summary>
+void CClassView::OnKonfigRejestratora()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	KonfigRejestratora cKonfigRejestratora;
+
+	cKonfigRejestratora.DoModal();
+}
+
+
+
+/// <summary>
+/// Uruchamia okno konfiguracji wykresów
+/// </summary>
+void CClassView::OnKonfigWykresow()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	KonfiguracjaWyresow cKonfiguracjaWykresow;
+
+	cKonfiguracjaWykresow.DoModal();
+}

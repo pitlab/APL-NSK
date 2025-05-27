@@ -2,8 +2,8 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
-#include "CRoj.h"
-#include "CWron.h"
+#include "Roj.h"
+#include "Wron.h"
 
 //#define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
@@ -48,8 +48,8 @@ public:
 	uint8_t CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 	uint8_t ZapiszOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
 
-	CRoj m_cRoj;
-	CWron m_cWron;
+	Roj m_cRoj;
+	Wron m_cWron;
 
 	union _un8_16
 	{

@@ -18,7 +18,7 @@ long CDekoderTelemetrii::PobierzZmienna(_Telemetria *wejscie, uint16_t sNumerZmi
 	{
 		//sprawdŸ na liscie bitów czy sygna³ jest dostêpny
 		uint8_t chBajtBituZmiennej = sNumerZmiennej / 8;	//w tym bajcie bêdzie bit obecnosci zmiennej w ramce
-		uint8_t chBitZmiennej = (1 << (sNumerZmiennej - sNumerZmiennej / 8)); //numer bitu obecnosci zmiennej w bajcie dolcelowym bajcie
+		uint8_t chBitZmiennej = (1 << (sNumerZmiennej - chBajtBituZmiennej * 8)); //numer bitu obecnosci zmiennej w bajcie docelowym bajcie
 		uint8_t chBity = (uint8_t)wejscie->chBityDanych[chBajtBituZmiennej];
 
 		if ((chBity & chBitZmiennej) != chBitZmiennej)
@@ -28,35 +28,35 @@ long CDekoderTelemetrii::PobierzZmienna(_Telemetria *wejscie, uint16_t sNumerZmi
 		}
  
 		uint16_t sLicznikBitów = 0;
-		uint8_t chListaBitow;
+		
 
 		//policz ile jest bitów, w bajtach poprzedzajacych, czyli jaka jest pozycja zmiennej
 		for (int n = 0; n < chBajtBituZmiennej; n++)
 		{
-			chListaBitow = (uint8_t)wejscie->chBityDanych[n];
-			if (chListaBitow)
+			chBity = (uint8_t)wejscie->chBityDanych[n];
+			if (chBity)
 			{
 				for (int m = 0; m < 8; m++)
 				{
-					if (chListaBitow & 0x01)
+					if (chBity & 0x01)
 						sLicznikBitów++;
-					chListaBitow >>= 1;
-					if (chListaBitow == 0)
+					chBity >>= 1;
+					if (chBity == 0)
 						break;
 				}
 			}
 		}
-		//teraz zsumuj to z m³odszymi bitami w bajcie w któym jest szukany bit
-		chListaBitow = (uint8_t)wejscie->chBityDanych[chBajtBituZmiennej];
-		for (int m = 0; m < (sNumerZmiennej - sNumerZmiennej / 8); m++)
+		//teraz zsumuj to z m³odszymi bitami w bajcie w którym jest szukany bit
+		chBity = (uint8_t)wejscie->chBityDanych[chBajtBituZmiennej];
+		uint8_t chLiczbaBitow = sNumerZmiennej - chBajtBituZmiennej * 8;
+		for (int m = 0; m < chLiczbaBitow; m++)
 		{
-			if (chListaBitow & 0x01)
+			if (chBity & 0x01)
 				sLicznikBitów++;
-			chListaBitow >>= 1;
-			if (chListaBitow == 0)
+			chBity >>= 1;
+			if (chBity == 0)
 				break;
 		}
-
 		*fZmienna = wejscie->dane[sLicznikBitów];
 	}
 	return ERR_OK;

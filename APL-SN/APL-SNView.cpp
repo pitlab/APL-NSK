@@ -517,7 +517,7 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 	if (pDoc)
 	{
 		if (pDoc->m_vLog.size())
-			m_nIloscDanychWykresu = pDoc->m_vLog[9].vfWartosci.size();
+			m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
 	}
 
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
@@ -539,22 +539,20 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie)
-	{	
+	{
 		m_bRysujTelemetrie = FALSE;
 		float fZmienna;
 		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
 		int32_t nIndexRamki;
 		long lErr;
-		
+
 
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
 		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 
-		//wykres X
-		std::vector< CPoint > vPunktyWykresuX;
-		//vPunktyWykresuX.reserve(okno.right);
+		/*/wykres X
 		nIndexRamki = lLiczbaRamek - 1;
 		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo;
 		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
@@ -568,17 +566,15 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				if (lErr == ERR_OK)
 				{
 					pktfKoniec.x += fSkalaX;
-					pktfKoniec.y = (float)(okno.bottom / 2  + m_nVscroll) - (fZmienna * fSkalaY);
+					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
 					pktfPoczatek = pktfKoniec;
 				}
-					//vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+				//vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
 		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
 
 		//wykres Y
-		std::vector< CPoint > vPunktyWykresuY;
-		//vPunktyWykresuY.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
 		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
 		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
@@ -596,13 +592,11 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuG);
 					pktfPoczatek = pktfKoniec;
 				}
-					//vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+				//vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
 		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
 
 		//wykres Z
-		std::vector< CPoint > vPunktyWykresuZ;
-		//vPunktyWykresuZ.reserve(okno.right);
 		nIndexRamki = lLiczbaRamek - 1;
 		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
 		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
@@ -620,15 +614,25 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 					pktfPoczatek = pktfKoniec;
 				}
-					//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
+				//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
 			}
-		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
+		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0)); */
+
+		//wykresy akcelerometru
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 0, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 1, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 2, pRenderTarget, m_pBrushWykresuB);
+
+		//wykresy AHRS
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
 	}
 
 	CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
-		m_nIloscDanychWykresu = pDoc->m_vLog[9].vfWartosci.size();
+		m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
 		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
 		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
@@ -644,6 +648,41 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	}
 	return TRUE;
 }
+
+
+
+void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	float fZmienna;
+	long lLiczbaRamek = (long)vRamkaTele.size();
+	_Telemetria stDaneTele;
+	int32_t nIndexRamki;
+	CD2DPointF pktfPoczatek, pktfKoniec;
+
+	long lErr;
+	nIndexRamki = lLiczbaRamek - 1;
+	pktfPoczatek.x = fHscroll;
+	pktfKoniec.x = (1.0f + fHscroll) * fSkalaX;
+	pktfPoczatek.y = fVpos;
+
+	do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
+	{
+		stDaneTele = vRamkaTele[nIndexRamki--];
+		if (!stDaneTele.dane.empty())
+		{
+			lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, nIndeksZmiennej, &fZmienna);
+			if (lErr == ERR_OK)
+			{
+				pktfKoniec.x += fSkalaX;
+				pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
+				pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+				pktfPoczatek = pktfKoniec;
+			}
+		}
+	} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
+}
+
+
 
 /// <summary>
 /// Reakcja na przekręcenie kółka myszy. Steruje powiększeniem wykresu w poziomie lub pionie

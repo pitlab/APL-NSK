@@ -26,8 +26,6 @@ public:
 	uint8_t PobierzOkres(uint8_t chId);
 	void UstawOkres(uint8_t chId, uint8_t chOkres);
 	uint8_t PobierzId(CString strNazwa);
-	DECLARE_MESSAGE_MAP()
-	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 };
 
 
@@ -82,13 +80,10 @@ protected:
 	afx_msg void OnNewFolder();
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	//afx_msg LRESULT OnChangeActiveTab(WPARAM, LPARAM);
 
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnKonfigTelemetrii();
-	afx_msg void OnKonfigWykres();
-	afx_msg void OnKonfigRejestr();
 	afx_msg void OnKonfigRejestratora();
 	afx_msg void OnKonfigWykresow();
 };

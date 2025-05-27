@@ -29,7 +29,6 @@ void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LISTA_DANYCH, m_cListaDanych);
 	DDX_Control(pDX, IDC_TREE_WYKRESOW, m_cDrzewoWykresow);
-	DDX_Control(pDX, IDC_LISTA_DANYCH, m_cListaDanych);
 }
 
 
@@ -38,7 +37,7 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(LVN_BEGINDRAG, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnBegindragListaDanych)
 	ON_BN_CLICKED(IDOK, &KonfiguracjaWyresow::OnBnClickedOk)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnNMRClickTreeWykresow)
-	ON_WM_CONTEXTMENU()
+	//ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -77,7 +76,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	CString strNapis;
 	HTREEITEM hGrupa;
-	HTREEITEM hWykres;
+	//HTREEITEM hWykres;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 180);

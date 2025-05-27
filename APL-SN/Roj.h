@@ -1,13 +1,13 @@
 #pragma once
 #include <vector>
-#include "CWron.h"
+#include "Wron.h"
 #include "polecenia_komunikacyjne.h"
 
-class CRoj :CWron
+class Roj :Wron
 {
 
 public:
-	std::vector <CWron> vWron;
+	std::vector <Wron> vWron;
 	int m_nIndeksWrona;
 
 };

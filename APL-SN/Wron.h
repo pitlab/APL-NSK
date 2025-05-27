@@ -1,7 +1,7 @@
 #pragma once
 #include "polecenia_komunikacyjne.h"
 
-class CWron
+class Wron
 {
 public:
 	uint8_t m_chAdres;
