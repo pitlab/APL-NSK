@@ -198,6 +198,7 @@ public:
 
 protected:
 //	afx_msg LRESULT OnAfxPolaczonoWrona(WPARAM wParam, LPARAM lParam);
+public:
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -211,9 +212,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 
-
-	ON_WM_KEYDOWN()
-//	ON_MESSAGE(AFX_POLACZONO_WRONA, &CAboutDlg::OnAfxPolaczonoWrona)
 END_MESSAGE_MAP()
 
 // Polecenie aplikacji uruchamiające okno dialogowe
@@ -278,3 +276,5 @@ CKomunikacja& getKomunikacja()
 {
 	return theApp.getKomunikacja();
 }
+
+

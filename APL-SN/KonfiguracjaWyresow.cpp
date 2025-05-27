@@ -36,8 +36,7 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(TVN_BEGINDRAG, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnBegindragTreeWykresow)
 	ON_NOTIFY(LVN_BEGINDRAG, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnBegindragListaDanych)
 	ON_BN_CLICKED(IDOK, &KonfiguracjaWyresow::OnBnClickedOk)
-	ON_NOTIFY(NM_RCLICK, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnNMRClickTreeWykresow)
-	//ON_WM_CONTEXTMENU()
+	ON_NOTIFY(BCN_DROPDOWN, IDOK, &KonfiguracjaWyresow::OnDropdownIdok)
 END_MESSAGE_MAP()
 
 
@@ -52,6 +51,11 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 {
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
+
+	CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
+
+	delete pImageList;
 	*pResult = 0;
 }
 
@@ -69,8 +73,10 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 }
 
 
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Inicjalizacja zawartości okna dialogowego
+// Zwraca: TRUE
+///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL KonfiguracjaWyresow::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -88,20 +94,24 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		strNapis.Format(_T("%d"), n*100);
 		m_cListaDanych.SetItemText(n, 1, strNapis);
 	}
-
-	HTREEITEM hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykres"), 1, 1);
-	//m_cDrzewoWykresow.SetItemState(hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
-	m_cDrzewoWykresow.Expand(hGlownyWezel, TVE_EXPAND);
 	
-
-	hGrupa = m_cDrzewoWykresow.InsertItem(_T("Wspólny"), 2, 2, hGlownyWezel);
-	m_cDrzewoWykresow.Expand(hGrupa, TVE_EXPAND);
+	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
+	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
 	
+	//wstaw dwie pierwsze gałęzie wykresów
+	m_cDrzewoWykresow.DodajWspolny();
+	m_cDrzewoWykresow.DodajOsobny();
+	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
+
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zamknięcie okna przyciskiem OK
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfiguracjaWyresow::OnBnClickedOk()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
@@ -109,16 +119,15 @@ void KonfiguracjaWyresow::OnBnClickedOk()
 }
 
 
-/// <summary>
-/// Kliknięcie prawym klawiszem myszy na drzewie uruchamia menu kontekstowe
-/// </summary>
-/// <param name="pNMHDR"></param>
-/// <param name="pResult"></param>
-void KonfiguracjaWyresow::OnNMRClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na upuszczenie w obrębie okna
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult)
 {
+	LPNMBCDROPDOWN pDropDown = reinterpret_cast<LPNMBCDROPDOWN>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-
-
 	*pResult = 0;
 }
 
