@@ -547,76 +547,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		int32_t nIndexRamki;
 		long lErr;
 
-
 		//fSkalaX = (float)okno.right / lLiczbaRamek;
 		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-
-		/*/wykres X
-		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo;
-		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
-		do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (!stDaneTele.dane.empty())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 0, &fZmienna);
-				if (lErr == ERR_OK)
-				{
-					pktfKoniec.x += fSkalaX;
-					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
-					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuR);
-					pktfPoczatek = pktfKoniec;
-				}
-				//vPunktyWykresuX.insert(vPunktyWykresuX.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
-
-		//wykres Y
-		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
-		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
-		do
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (stDaneTele.dane.size())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 1, &fZmienna);
-				if (lErr == ERR_OK)
-				{
-					pktfKoniec.x += fSkalaX;
-					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
-					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuG);
-					pktfPoczatek = pktfKoniec;
-				}
-				//vPunktyWykresuY.insert(vPunktyWykresuY.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));
-
-		//wykres Z
-		nIndexRamki = lLiczbaRamek - 1;
-		pktfPoczatek.x = (float)m_nBiezacyScrollPoziomo * fSkalaX;
-		pktfKoniec.x = (1.0f + (float)m_nBiezacyScrollPoziomo) * fSkalaX;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll);
-		do
-		{
-			stDaneTele = getProtokol().m_vRamkaTelemetryczna[nIndexRamki--];
-			if (stDaneTele.dane.size())
-			{
-				lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, 2, &fZmienna);
-				if (lErr == ERR_OK)
-				{
-					pktfKoniec.x += fSkalaX;
-					pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (fZmienna * fSkalaY);
-					pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
-					pktfPoczatek = pktfKoniec;
-				}
-				//vPunktyWykresuZ.insert(vPunktyWykresuZ.begin(), CPoint(x++, okno.bottom / 2 - (uint32_t)(fZmienna * fSkalaY)));
-			}
-		} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0)); */
 
 		//wykresy akcelerometru
 		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 0, pRenderTarget, m_pBrushWykresuR);
@@ -629,6 +562,21 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
 	}
 
+	if (m_bRysujLog)
+	{
+		float fSkalaX = m_fZoomPoziomo;
+		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+
+		RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
+	}
+	return TRUE;
+}
+
+
+void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	CD2DPointF pktfPoczatek, pktfKoniec;
+
 	CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
@@ -637,16 +585,16 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
 		pktfPoczatek.x = 0.0f;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[9].vfWartosci[0] * fSkalaY );
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY );
 		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
 			pktfKoniec.x = (float)(n - m_nBiezacyScrollPoziomo) * fSkalaX;	
-			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[9].vfWartosci[n] * fSkalaY);
+			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
 			pktfPoczatek = pktfKoniec;
 		}
 	}
-	return TRUE;
+	
 }
 
 

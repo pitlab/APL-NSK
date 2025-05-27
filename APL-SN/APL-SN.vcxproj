@@ -201,7 +201,6 @@
     <ClInclude Include="GniazdoSieci.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ClassView.h" />
-    <ClInclude Include="FileView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Komunikacja.h" />
     <ClInclude Include="KonfigRejestratora.h" />

@@ -39,9 +39,6 @@
     <ClInclude Include="Resource.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="FileView.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="ClassView.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
