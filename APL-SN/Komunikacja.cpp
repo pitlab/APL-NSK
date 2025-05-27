@@ -138,6 +138,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		chErr = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);		
 		if (chErr == ERR_OK)
 		{
+			m_bPolaczonoUart = TRUE;
 			//wyœlij na adres rozg³oszeniowy poecenie pobrania adresów i nazwy BSP
 			chErr = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
 			if (chErr == ERR_OK)
@@ -165,17 +166,21 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia
 			}
-
 		}
 		else
+		{
+			m_bPolaczonoUart = FALSE;
 			if (chErr == ERR_CANT_CONNECT)
 				MessageBoxExW(pWnd->m_hWnd, _T("Nie mogê po³¹czyæ siê z portem. \nSprawdŸ czy nie jest ju¿ po³¹czony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
+		}
 		break;
 
 	case ETHS:	
 		chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);
 		if (chErr == ERR_OK)
 			m_bPolaczonoEth = TRUE;
+		else
+			m_bPolaczonoEth = FALSE;
 		break;
 
 	case USB:	break;
@@ -184,6 +189,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	}
 	return chErr;
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

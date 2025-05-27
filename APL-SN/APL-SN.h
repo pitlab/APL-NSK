@@ -46,8 +46,10 @@ public:
 	CPortSzeregowy m_cPortSzeregowy;
 	CProtokol m_cProtokol;
 	CKomunikacja m_cKomunikacja;
-	
 
+public:
+	afx_msg void OnUstawieniaRegulatoryPid();
+	afx_msg void OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

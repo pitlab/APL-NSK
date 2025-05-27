@@ -1,11 +1,11 @@
 ﻿// KonfiguracjaWyresow.cpp: plik implementacji
-//
+// Fajny przykład drag&drop jest tutaj: https://www.codeproject.com/Articles/886711/Drag-Drop-Images-and-Drop-Descriptions-for-MFC-App
 
 #include "pch.h"
 #include "APL-SN.h"
+
 #include "KonfiguracjaWyresow.h"
 #include "afxdialogex.h"
-
 
 // Okno dialogowe KonfiguracjaWyresow
 
@@ -81,17 +81,27 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	CString strNapis;
-	HTREEITEM hGrupa;
-	//HTREEITEM hWykres;
+	int nLiczbaZmienych = 5;
+
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
+	//CAPLSNDoc* pDoc = CAPLSNView::GetDocument();
+	//nLiczbaZmienych = (int)pDoc->m_vLog.size();
+	//CAPLSNView*  pView;
+	//pView->GetDocument()->m_vLog.size();
+	
 	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 180);
 	m_cListaDanych.InsertColumn(1, _T("Liczba pomiarów"), LVCFMT_CENTER, 90);
-	for (int n = 0; n < 5; n++)
+	
+	for (int n = 0; n < nLiczbaZmienych; n++)
 	{
+		//for (int x = 0; x < DLUGOSC_NAZWY; x++)
+			//strNapis.Insert(x, (wchar_t)pView->GetDocument()->m_vLog[n].chNazwaZmiennej[x]);
 		strNapis.Format(_T("Dane %d"), n);
 		m_cListaDanych.InsertItem(n, strNapis);
-		strNapis.Format(_T("%d"), n*100);
+
+		//strNapis.Format(_T("%d"), pView->GetDocument()->m_vLog[n].vfWartosci.size());
+		strNapis.Format(_T("%d"), n * 100);
 		m_cListaDanych.SetItemText(n, 1, strNapis);
 	}
 	
@@ -102,6 +112,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	m_cDrzewoWykresow.DodajWspolny();
 	m_cDrzewoWykresow.DodajOsobny();
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
+
+	m_DropTarget.Register(this);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }

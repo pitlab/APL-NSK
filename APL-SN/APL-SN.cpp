@@ -8,7 +8,7 @@
 #include "afxdialogex.h"
 #include "APL-SN.h"
 #include "MainFrm.h"
-
+#include "KonfigPID.h"
 #include "ChildFrm.h"
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
@@ -29,6 +29,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	// Standardowe polecenie konfiguracji wydruku
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
 
+	ON_COMMAND(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUstawieniaRegulatoryPid)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUpdateUstawieniaRegulatoryPid)
 END_MESSAGE_MAP()
 
 
@@ -278,3 +280,19 @@ CKomunikacja& getKomunikacja()
 }
 
 
+void CAPLSNApp::OnUstawieniaRegulatoryPid()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	KonfigPID cKonfigPID;
+	cKonfigPID.DoModal();
+}
+
+
+void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}

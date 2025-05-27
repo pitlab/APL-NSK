@@ -81,6 +81,7 @@
 #define IDR_MENU1                       322
 #define IDR_MENU_WYKRESOW               322
 #define IDD_KONFIG_REJESTRATORA         323
+#define IDD_KONFIG_PID                  325
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -132,13 +133,15 @@
 #define ID_OBS32804                     32804
 #define ID_DODAJ_OSOBNY                 32805
 #define ID_USUN_WYKRES                  32806
+#define ID_USTAWIENIA_USTAWIENIAPID     32807
+#define ID_USTAWIENIA_REGULATORY_PID    32808
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        325
-#define _APS_NEXT_COMMAND_VALUE         32807
+#define _APS_NEXT_RESOURCE_VALUE        327
+#define _APS_NEXT_COMMAND_VALUE         32809
 #define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

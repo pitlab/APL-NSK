@@ -10,6 +10,7 @@ public:
 	std::vector<uint8_t> vIdZmiennych;
 	};
 
+
 	std::vector<stGrupaWykresow_t> vGrupaWykresow;
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
@@ -21,5 +22,6 @@ public:
 public:
 	int DodajWspolny();
 	int DodajOsobny();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 };
 

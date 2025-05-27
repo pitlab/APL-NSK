@@ -7,6 +7,7 @@ BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 	ON_COMMAND(ID_DODAJ_OSOBNY, &DrzewoWykresow::OnDodajOsobny)
 	ON_COMMAND(ID_USUN_WYKRES, &DrzewoWykresow::OnUsunWykres)
 	ON_UPDATE_COMMAND_UI(ID_USUN_WYKRES, &DrzewoWykresow::OnUpdateUsunWykres)
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 
@@ -90,4 +91,12 @@ int DrzewoWykresow::DodajOsobny()
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
 	vGrupaWykresow.push_back(stWykresow);
 	return 0;
+}
+
+
+void DrzewoWykresow::OnDropFiles(HDROP hDropInfo)
+{
+	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
+
+	CTreeCtrl::OnDropFiles(hDropInfo);
 }

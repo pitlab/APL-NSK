@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "DrzewoWykresow.h"
+#include "APL-SNDoc.h"
+#include "APL-SNView.h"
 
 // Okno dialogowe KonfiguracjaWyresow
 
@@ -20,12 +22,17 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 
 	DECLARE_MESSAGE_MAP()
-public:
-	CListCtrl m_cListaDanych;
-	DrzewoWykresow m_cDrzewoWykresow;
 	afx_msg void OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult);
+
+	//CAPLSNDoc* CAPLSNView::GetDocument() const;
+
+
+public:
+	CListCtrl m_cListaDanych;
+	DrzewoWykresow m_cDrzewoWykresow;
+	COleDropTarget m_DropTarget;
 };

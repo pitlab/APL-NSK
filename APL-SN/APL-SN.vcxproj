@@ -194,6 +194,7 @@
     <ClInclude Include="CDaneFlash.h" />
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
+    <ClInclude Include="KonfigPID.h" />
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
     <ClInclude Include="DrzewoWykresow.h" />
@@ -228,9 +229,10 @@
     <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />
+    <ClCompile Include="KonfigPID.cpp" />
     <ClCompile Include="Roj.cpp" />
     <ClCompile Include="Wron.cpp" />
-    <ClCompile Include="DEkoderTelemetrii.cpp" />
+    <ClCompile Include="DekoderTelemetrii.cpp" />
     <ClCompile Include="DrzewoWykresow.cpp" />
     <ClCompile Include="GniazdoSieci.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
