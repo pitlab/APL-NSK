@@ -12,7 +12,7 @@ TIMESTAMP - licznik setnych czêœci sekundy po to aby mo¿na by³o posk³adaæ we w³a
 POLECENIE - kod polecenia do wykonania. 
 ROZMIAR - liczba bajtów danych ramki
 DANE - opcjonalne dane
-CRC16 - suma kontrolna ramki od nag³ówka do CRC16. Starszy przodem
+CRC16 - suma kontrolna ramki od nag³ówka do CRC16. M³odszy przodem
 
 
 Ramki wystêpuj¹ w dwu typach identyfikowanych najstarszym bitem pola POLECENIE: 
@@ -449,8 +449,8 @@ uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t ch
 	for (n=1; n< chRozmiar + ROZM_CIALA_RAMKI-2; n++)	//zacznij liczyæ od adresu odbiorcy (1) do CRC (-2)
 		sCRC = LiczCRC16(*(chKopiaDane+n), sCRC);
 
-	*wskRamka++ = sCRC >> 8;
-	*wskRamka++ = sCRC & 0xFF;
+	*wskRamka++ = sCRC & 0xFF;	//m³odszy przodem
+	*wskRamka++ = sCRC >> 8;	
 	return ERR_OK;
 }
 
@@ -721,13 +721,13 @@ uint8_t CProtokol::AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu,  ui
 		break;
 
 	case PR_CRC16_1:
-		*sCRC16 = chDaneWe * 0x100;
+		*sCRC16 = chDaneWe;	//m³odszy przodem
 		(*chWskOdbDanej)++;
 		*chStanProtokolu = PR_CRC16_2;
 		break;
 
 	case PR_CRC16_2:
-		*sCRC16 += chDaneWe;
+		*sCRC16 += chDaneWe * 0x100;
 		*chStanProtokolu = PR_ODBIOR_NAGL;
 		*chWskOdbDanej = 0;			
 		if (*sCRC16 != m_sCRC16)

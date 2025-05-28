@@ -159,6 +159,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 				{
 					m_cRoj.vWron.push_back(cWron);
 					nIndeks = (int)m_cRoj.vWron.size() - 1;
+					m_cRoj.m_nIndeksWrona = nIndeks;
 				}
 
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
@@ -658,7 +659,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 	{
 		ASSERT(2*chRozmiar == chOdebrano);
 		for (uint8_t n = 0; n < chRozmiar/2; n++)
-			*(sOKres + n) = chDanePrzychodzace[2*n+0] * 0x100 + chDanePrzychodzace[2 * n + 1];
+			*(sOKres + n) = chDanePrzychodzace[2*n+0] + chDanePrzychodzace[2 * n + 1] * 0x100;
 	}
 	return chErr;
 }
@@ -666,7 +667,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Zapiosuje do APL listê okresów dla wszystkich zmiennych telemetrycznych
+// Zapiosuje do APL listê okresów dla wszystkich zmiennych telemetrycznych w formacie m³odszy przodem
 // parametry:
 // [i] chOKres - wskaŸnik na tablicê z okresem
 // [i] chRozmiar - rozmiar tablicy
@@ -675,7 +676,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	uint8_t chDaneWychodzace[2*LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	uint8_t chDanePrzychodzace[3];
 	uint16_t sTemp;
 
@@ -685,8 +686,8 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 	for (uint8_t n = 0; n < chRozmiar; n++)
 	{
 		sTemp = *(sOKres + n);
-		chDaneWychodzace[2 * n + 0] = (uint8_t)((sTemp & 0xFF00) >> 8);
-		chDaneWychodzace[2 * n + 1] = (uint8_t)(sTemp & 0x00FF);
+		chDaneWychodzace[2 * n + 0] = (uint8_t)(sTemp & 0x00FF);
+		chDaneWychodzace[2 * n + 1] = (uint8_t)((sTemp & 0xFF00) >> 8);		
 	}
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2*chRozmiar, chDanePrzychodzace, &chOdebrano);
