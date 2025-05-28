@@ -163,7 +163,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
 				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
-				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia
 			}
 		}
@@ -644,7 +644,7 @@ uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8
 // [i] chRozmiar - rozmiar tablicy
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
+uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[1];
@@ -656,9 +656,9 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
-		ASSERT(chRozmiar == chOdebrano);
-		for (uint8_t n = 0; n < chRozmiar; n++)
-			*(chOKres + n) = chDanePrzychodzace[n];
+		ASSERT(2*chRozmiar == chOdebrano);
+		for (uint8_t n = 0; n < chRozmiar/2; n++)
+			*(sOKres + n) = chDanePrzychodzace[2*n+0] * 0x100 + chDanePrzychodzace[2 * n + 1];
 	}
 	return chErr;
 }
@@ -672,18 +672,24 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar)
 // [i] chRozmiar - rozmiar tablicy
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint8_t *chOKres, uint8_t chRozmiar)
+uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	uint8_t chDanePrzychodzace[3];
+	uint16_t sTemp;
+
 
 	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 
 	for (uint8_t n = 0; n < chRozmiar; n++)
-		chDaneWychodzace[n] = *(chOKres + n);
+	{
+		sTemp = *(sOKres + n);
+		chDaneWychodzace[2 * n + 0] = (uint8_t)((sTemp & 0xFF00) >> 8);
+		chDaneWychodzace[2 * n + 1] = (uint8_t)(sTemp & 0x00FF);
+	}
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, chRozmiar, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2*chRozmiar, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
 

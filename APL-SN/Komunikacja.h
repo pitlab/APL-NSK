@@ -45,8 +45,8 @@ public:
 	//uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint16_t* sDane, uint8_t chRozmiar);
 	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);
 	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
-	uint8_t CzytajOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
-	uint8_t ZapiszOkresTelemetrii(uint8_t* chOKres, uint8_t chRozmiar);
+	uint8_t CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
+	uint8_t ZapiszOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
 
 	Roj m_cRoj;
 	Wron m_cWron;

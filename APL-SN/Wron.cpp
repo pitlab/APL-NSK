@@ -22,8 +22,8 @@ void Wron::UstawNazwe(uint8_t* chNazwa)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 float Wron::PobierzCzestotliwoscTelemetrii(uint8_t chIndeksZmiennej)
 {
-	if ((m_chOkresTelemetrii[chIndeksZmiennej] == TEMETETRIA_WYLACZONA) || (m_chOkresTelemetrii[chIndeksZmiennej] == 0))
+	if ((m_sOkresTelemetrii[chIndeksZmiennej] == TEMETETRIA_WYLACZONA) || (m_sOkresTelemetrii[chIndeksZmiennej] == 0))
 		return 0.0f;
 	else
-		return MAX_CZESTOTLIWOSC_TELEMETRII / (m_chOkresTelemetrii[chIndeksZmiennej]); 
+		return MAX_CZESTOTLIWOSC_TELEMETRII / (m_sOkresTelemetrii[chIndeksZmiennej]); 
 }

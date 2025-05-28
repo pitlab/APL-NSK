@@ -137,7 +137,7 @@ void CClassView::FillClassView()
 	HTREEITEM hWron;
 	HTREEITEM hZasob;
 	HTREEITEM hZmienna;
-	uint8_t chOkresTele;
+	uint16_t sOkresTele;
 
 	//Używam tej funkcji do przerysowania okna, więc zanim wstawi nowe drzewo to usuń wszystkie istniejące wcześniej
 	m_wndClassView.DeleteAllItems();
@@ -169,25 +169,25 @@ void CClassView::FillClassView()
 		hZmienna = m_wndClassView.InsertItem(_T("IMU"), 2, 2, hZasob);
 		for (uint8_t n = TELEID_AKCEL1X; n <= TELEID_MAGNE3Z; n++)
 		{
-			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
-			if (chOkresTele)
-				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
+			if (sOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, sOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
 		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hZasob);
 		for (uint8_t n = TELEID_KAT_IMU1X; n <= TELEID_KAT_ZYRO1Z; n++)
 		{
-			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
-			if (chOkresTele)
-				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
+			if (sOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, sOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
 		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("Barometryczne"), 2, 2, hZasob);
 		for (uint8_t n = TELEID_CISBEZW1; n <= TELEID_TEMPCISR2; n++)
 		{
-			chOkresTele = getKomunikacja().m_cRoj.vWron[w].m_chOkresTelemetrii[n];
-			if (chOkresTele)
-				m_wndClassView.WstawZmiennaTelemetrii(n, chOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
+			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
+			if (sOkresTele)
+				m_wndClassView.WstawZmiennaTelemetrii(n, sOkresTele, getKomunikacja().m_strNazwyZmiennychTele[n], 3, hZmienna);
 		}		
 		//m_wndClassView.Expand(hZmienna, TVE_EXPAND);
 
@@ -206,7 +206,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	CString strNazwaZmiennej = _T("");
 	//int nIdZmiennej;
 	uint8_t chId = 0;
-	uint8_t chOkres = 0;
+	uint16_t sOkres = 0;
 	//CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
 	CDrzewoTelemetrii* pDrzewoTele = (CDrzewoTelemetrii*)&m_wndClassView;
 	ASSERT_VALID(pDrzewoTele);
@@ -232,7 +232,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 			pDrzewoTele->SelectItem(hTreeItem);
 			strNazwaZmiennej = pDrzewoTele->GetItemText(hTreeItem);
 			chId = pDrzewoTele->PobierzId(strNazwaZmiennej);
-			chOkres = pDrzewoTele->PobierzOkres(chId);
+			sOkres = pDrzewoTele->PobierzOkres(chId);
 		}
 	}
 	//tymcasowo wyłączone do celów rozbudowy menu kontekstowego
@@ -384,25 +384,25 @@ CDrzewoTelemetrii::~CDrzewoTelemetrii()
 /// <param name="lpszItem"></param> - podstawowa nazwa zmiennej
 /// <param name="hParent"></param> - rodzic tej gałęzi drzewa
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CDrzewoTelemetrii::WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent)
+void CDrzewoTelemetrii::WstawZmiennaTelemetrii(uint8_t chId, uint16_t sOkres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent)
 {
-	if (Okres == TEMETETRIA_WYLACZONA)
+	if (sOkres == TEMETETRIA_WYLACZONA)
 		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - wyłącz."), lpszItem);
 	else
-		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, MAX_CZESTOTLIWOSC_TELEMETRII / Okres);
+		swprintf(stZmienne[chId].tchNazwa, DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII, _T("%s - %.1f Hz"), lpszItem, MAX_CZESTOTLIWOSC_TELEMETRII / sOkres);
 	InsertItem(stZmienne[chId].tchNazwa, nObrazek, nObrazek+1, hParent);
-	stZmienne[chId].m_chOkresTelemetrii = Okres;
+	stZmienne[chId].m_sOkresTelemetrii = sOkres;
 }
 
 
 
-uint8_t CDrzewoTelemetrii::PobierzOkres(uint8_t chId)
+uint16_t CDrzewoTelemetrii::PobierzOkres(uint8_t chId)
 {
-	return  stZmienne[chId].m_chOkresTelemetrii;
+	return  stZmienne[chId].m_sOkresTelemetrii;
 }
 
 
-void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint8_t chOkres)
+void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint16_t sOkres)
 {
 	TCHAR tchNazwa[10];
 	int m, n, nDlugosc;
@@ -416,10 +416,10 @@ void CDrzewoTelemetrii::UstawOkres(uint8_t chId, uint8_t chOkres)
 	}
 
 	//wygeneruj napis nowej częstotliwości
-	if (chOkres == TEMETETRIA_WYLACZONA)
+	if (sOkres == TEMETETRIA_WYLACZONA)
 		nDlugosc = swprintf(tchNazwa, 10, _T(" wyłącz."));
 	else
-		nDlugosc = swprintf(tchNazwa, 10, _T(" %.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / chOkres);
+		nDlugosc = swprintf(tchNazwa, 10, _T(" %.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / sOkres);
 
 	//wstaw nowy napis do starego
 	for (m=0; m < nDlugosc; m++)

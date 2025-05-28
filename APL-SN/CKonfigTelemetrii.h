@@ -23,11 +23,11 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	int PozycjaDlaOkresu(uint8_t chOkres, uint8_t* chZaokraglonyOkres);
-	uint8_t OkresDlaPozycji(int nPozycja);
+	uint16_t OkresDlaPozycji(int nPozycja);
 	uint8_t m_chIdZmiennej;
 	int m_nOkres;
 	CString m_strNazwaZmiennej;
-	uint8_t m_chOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	uint16_t m_sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	BOOL m_bZmieniono;
 	int m_nIndeksZmiennej;
 	int m_nIndeksOkresu;

@@ -15,16 +15,16 @@ public:
 	int m_nIndeksWrona;	//indeks w roju zaznaczonego wrona 
 	struct DrzewoZmiennychTelemetrii
 	{
-		uint8_t m_chOkresTelemetrii;
+		uint16_t m_sOkresTelemetrii;
 		TCHAR tchNazwa[DLUGOSC_NAZWY];
 		uint8_t chIkona;
 	} stZmienne[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 public:
 
 	
-	void WstawZmiennaTelemetrii(uint8_t chId, uint8_t Okres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent);
-	uint8_t PobierzOkres(uint8_t chId);
-	void UstawOkres(uint8_t chId, uint8_t chOkres);
+	void WstawZmiennaTelemetrii(uint8_t chId, uint16_t sOkres, LPCTSTR lpszItem, int nObrazek, HTREEITEM hParent);
+	uint16_t PobierzOkres(uint8_t chId);
+	void UstawOkres(uint8_t chId, uint16_t sOkres);
 	uint8_t PobierzId(CString strNazwa);
 };
 

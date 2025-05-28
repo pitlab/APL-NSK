@@ -50,9 +50,9 @@ void CKonfigTelemetrii::OnBnClickedOk()
 	{
 		//zapisz do roju oraz wyślij ramkę do wrona
 		for (int n=0; n< LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
-			getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_chOkresTelemetrii[n] = m_chOkresTelemetrii[n];
+			getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n] = m_sOkresTelemetrii[n];
 
-		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(m_chOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 		if (chErr)
 		{
 			CString strKomunikat;
@@ -132,26 +132,26 @@ int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres, uint8_t *chZaokraglonyO
 /// </summary>
 /// <param name="nPozycja"></param>
 /// <returns></returns>
-uint8_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
+uint16_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 {
-	uint8_t chOkres;
+	uint16_t sOkres;
 	switch (nPozycja)
 	{
-	case 0: chOkres = 1;	break;
-	case 1: chOkres = 2;	break;
-	case 2: chOkres = 3;	break;
-	case 3: chOkres = 4;	break;
-	case 4: chOkres = 5;	break;
-	case 5: chOkres = 7;	break;
-	case 6: chOkres = 10;	break;
-	case 7: chOkres = 20;	break;
-	case 8: chOkres = 50;	break;
-	case 9: chOkres = 100;	break;
-	case 10: chOkres = 200;	break;
-	case 11: chOkres = 250;	break;
-	case 12: chOkres = 255;	break;
+	case 0: sOkres = 1;	break;
+	case 1: sOkres = 2;	break;
+	case 2: sOkres = 3;	break;
+	case 3: sOkres = 4;	break;
+	case 4: sOkres = 5;	break;
+	case 5: sOkres = 7;	break;
+	case 6: sOkres = 10;	break;
+	case 7: sOkres = 20;	break;
+	case 8: sOkres = 50;	break;
+	case 9: sOkres = 100;	break;
+	case 10: sOkres = 200;	break;
+	case 11: sOkres = 250;	break;
+	case 12: sOkres = 255;	break;
 	}
-	return chOkres;
+	return sOkres;
 }
 
 
@@ -202,7 +202,7 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	//Odczytaj z roju liste telemetrii
 	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 	{
-		m_chOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_chOkresTelemetrii[n];
+		m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];
 		m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
 		fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
 		if (fCzestotliwosc)
@@ -229,7 +229,7 @@ void CKonfigTelemetrii::OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* 
 	
 	m_nIndeksZmiennej = pNMLV->iItem;	//zapamiętaj indeks modyfikowanej zmiennej
 
-	chPozycjaCzestotliwosci = PozycjaDlaOkresu(m_chOkresTelemetrii[m_nIndeksZmiennej], &chZaokraglonyokres);
+	chPozycjaCzestotliwosci = PozycjaDlaOkresu(m_sOkresTelemetrii[m_nIndeksZmiennej], &chZaokraglonyokres);
 	m_ctlListaCzestotliwosciTelemetrii.SetCurSel(chPozycjaCzestotliwosci);
 	UpdateData(FALSE);	
 	*pResult = 0;
@@ -246,11 +246,11 @@ void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 	CString strNapis;
 
 	m_nIndeksOkresu = m_ctlListaCzestotliwosciTelemetrii.GetCurSel();
-	m_chOkresTelemetrii[m_nIndeksZmiennej] = OkresDlaPozycji(m_nIndeksOkresu);
-	if (m_chOkresTelemetrii[m_nIndeksZmiennej] == TEMETETRIA_WYLACZONA)
+	m_sOkresTelemetrii[m_nIndeksZmiennej] = OkresDlaPozycji(m_nIndeksOkresu);
+	if (m_sOkresTelemetrii[m_nIndeksZmiennej] == TEMETETRIA_WYLACZONA)
 		strNapis.Format(_T("Wyłączone"));
 	else
-		strNapis.Format(_T("%.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / m_chOkresTelemetrii[m_nIndeksZmiennej]);
+		strNapis.Format(_T("%.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / m_sOkresTelemetrii[m_nIndeksZmiennej]);
 	m_ctlOkresTelemetrii.SetItemText(m_nIndeksZmiennej, 1, strNapis);
 	m_bZmieniono = TRUE;
 	UpdateData(FALSE);
