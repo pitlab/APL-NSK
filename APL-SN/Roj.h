@@ -3,7 +3,7 @@
 #include "Wron.h"
 #include "polecenia_komunikacyjne.h"
 
-class Roj :Wron
+class Roj //:Wron
 {
 
 public:

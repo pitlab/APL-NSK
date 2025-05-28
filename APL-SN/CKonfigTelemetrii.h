@@ -17,12 +17,12 @@ public:
 
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_TELEMETRIA };
+	enum { IDD = IDD_KONFIG_TELEMETRII };
 #endif
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
-	int PozycjaDlaOkresu(uint8_t chOkres, uint8_t* chZaokraglonyOkres);
+	int PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres);
 	uint16_t OkresDlaPozycji(int nPozycja);
 	uint8_t m_chIdZmiennej;
 	int m_nOkres;

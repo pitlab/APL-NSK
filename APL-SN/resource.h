@@ -77,6 +77,7 @@
 #define IDD_USTAWIENIA_KAMERY           311
 #define IDD_ZAPISZ_FLASH                316
 #define IDD_TELEMETRIA                  318
+#define IDD_KONFIG_TELEMETRII           318
 #define IDD_KONFIG_WYKRESOW             320
 #define IDR_MENU1                       322
 #define IDR_MENU_WYKRESOW               322

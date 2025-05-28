@@ -13,7 +13,7 @@
 IMPLEMENT_DYNAMIC(CKonfigTelemetrii, CDialogEx)
 
 CKonfigTelemetrii::CKonfigTelemetrii(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_TELEMETRIA, pParent)
+	: CDialogEx(IDD_KONFIG_TELEMETRII, pParent)
 	, m_bZmieniono(FALSE)
 	, m_chIdZmiennej(0)
 	, m_nOkres(0)
@@ -49,7 +49,13 @@ void CKonfigTelemetrii::OnBnClickedOk()
 	if (m_bZmieniono)
 	{
 		//zapisz do roju oraz wyślij ramkę do wrona
-		for (int n=0; n< LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+		if (getKomunikacja().m_cRoj.vWron.size() == 0)
+		{
+			CDialogEx::OnCancel();
+			return;
+		}
+		
+		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 			getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n] = m_sOkresTelemetrii[n];
 
 		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
@@ -59,6 +65,7 @@ void CKonfigTelemetrii::OnBnClickedOk()
 			strKomunikat.Format(_T("Nie można zapisać danych do APL3! \nKod błędu: %d"), chErr);
 			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
 			CDialogEx::OnCancel();
+			return;
 		}
 	}
 	CDialogEx::OnOK();
@@ -71,57 +78,72 @@ void CKonfigTelemetrii::OnBnClickedOk()
 /// </summary>
 /// <param name="chOkres"></param>
 /// <returns>Obliczony numer pozycji na liście</returns>
-int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres, uint8_t *chZaokraglonyOkres)
+int CKonfigTelemetrii::PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres)
 {
-	if (chOkres == 0)
+	if (nOkres == 0)
 	{
-		*chZaokraglonyOkres = TEMETETRIA_WYLACZONA;
+		*sZaokraglonyOkres = TEMETETRIA_WYLACZONA;
 		return 12;
 	}
-	if (chOkres <= 5)
+	if (nOkres <= 5)
 	{
-		*chZaokraglonyOkres = chOkres;
-		return chOkres - 1;
+		*sZaokraglonyOkres = (uint16_t)nOkres;
+		return nOkres - 1;
 	}
-	if (chOkres <= 7)	//14,2Hz
+	if (nOkres <= 7)	//14,2Hz
 	{
-		*chZaokraglonyOkres = 7;
+		*sZaokraglonyOkres = 7;
 		return 5;	
 	}
-	if (chOkres <= 10)	//10Hz
+	if (nOkres <= 10)	//10Hz
 	{
-		*chZaokraglonyOkres = 10;
+		*sZaokraglonyOkres = 10;
 		return 6;	
 	}
-	if (chOkres <= 20)	//5Hz
+	if (nOkres <= 20)	//5Hz
 	{
-		*chZaokraglonyOkres = 20;
+		*sZaokraglonyOkres = 20;
 		return 7;	
 	}
-	if (chOkres <= 50)	//2Hz
+	if (nOkres <= 50)	//2Hz
 	{
-		*chZaokraglonyOkres = 50;	
+		*sZaokraglonyOkres = 50;
 		return 8;	
 	}
-	if (chOkres <= 100)	//1Hz
+	if (nOkres <= 100)	//1Hz
 	{
-		*chZaokraglonyOkres = 100;
+		*sZaokraglonyOkres = 100;
 		return 9;	
 	}
-	if (chOkres <= 200)	//0,5Hz
+	if (nOkres <= 200)	//0,5Hz -> 1/2
 	{
-		*chZaokraglonyOkres = 200;
+		*sZaokraglonyOkres = 200;
 		return 10;	
 	}
-	if (chOkres < 255)	//0,4Hz
+	if (nOkres <= 500)	//0,2Hz -> 1/5
 	{
-		*chZaokraglonyOkres = 250;
+		*sZaokraglonyOkres = 500;
 		return 11;	
+	}
+	if (nOkres <= 1000)	//0,1Hz -> 1/10
+	{
+		*sZaokraglonyOkres = 1000;
+		return 12;
+	}
+	if (nOkres <= 2000)	//0,05Hz -> 1/20
+	{
+		*sZaokraglonyOkres = 2000;
+		return 13;
+	}
+	if (nOkres <= 5000)	//0,02Hz -> 1/50
+	{
+		*sZaokraglonyOkres = 5000;
+		return 14;
 	}
 	else               //wyłączone
 	{
-		*chZaokraglonyOkres = TEMETETRIA_WYLACZONA;
-		return 12;
+		*sZaokraglonyOkres = TEMETETRIA_WYLACZONA;
+		return 15;
 	}
 }
 
@@ -134,7 +156,7 @@ int CKonfigTelemetrii::PozycjaDlaOkresu(uint8_t chOkres, uint8_t *chZaokraglonyO
 /// <returns></returns>
 uint16_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 {
-	uint16_t sOkres;
+	uint16_t sOkres = TEMETETRIA_WYLACZONA;
 	switch (nPozycja)
 	{
 	case 0: sOkres = 1;	break;
@@ -146,10 +168,14 @@ uint16_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 	case 6: sOkres = 10;	break;
 	case 7: sOkres = 20;	break;
 	case 8: sOkres = 50;	break;
-	case 9: sOkres = 100;	break;
-	case 10: sOkres = 200;	break;
-	case 11: sOkres = 250;	break;
-	case 12: sOkres = 255;	break;
+	case 9: sOkres = 100;	break;	//1s
+	case 10: sOkres = 200;	break;	//2s
+	case 11: sOkres = 500;	break;	//5s
+	case 12: sOkres = 1000;	break;	//10s
+	case 13: sOkres = 2000;	break;	//20s
+	case 14: sOkres = 5000;	break;	//50s
+	case 15: 
+	default: sOkres = TEMETETRIA_WYLACZONA;	break;
 	}
 	return sOkres;
 }
@@ -167,7 +193,7 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	int nPozycja, nPoprzedniaPoz = -1;
 	int nMiejsceNaLiscie = 0;
-	uint8_t chOkres;
+	uint16_t sOkres;
 	uint8_t chErr = 1;
 	CString strNapis;
 	float fCzestotliwosc;
@@ -180,13 +206,13 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	if (nPozycja == 0)
 	{
 		//jeżeli nie ma pozycji to je wstaw
-		for (int n = 1; n < 256; n++)
+		for (int n = 1; n < 5002; n++)
 		{
-			nPozycja = PozycjaDlaOkresu(n, &chOkres);
+			nPozycja = PozycjaDlaOkresu(n, &sOkres);
 			if (nPoprzedniaPoz != nPozycja)
 			{
-				if (chOkres < TEMETETRIA_WYLACZONA)
-					strNapis.Format(_T("%.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / chOkres);
+				if (sOkres < TEMETETRIA_WYLACZONA)
+					strNapis.Format(_T("%.2f Hz (%.2f s)"), MAX_CZESTOTLIWOSC_TELEMETRII / sOkres, (float)sOkres / MAX_CZESTOTLIWOSC_TELEMETRII);
 				else
 					strNapis.Format(_T("Wyłączone"));
 				m_ctlListaCzestotliwosciTelemetrii.InsertString(nPozycja, strNapis);
@@ -202,11 +228,20 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	//Odczytaj z roju liste telemetrii
 	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 	{
-		m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];
+		if (getKomunikacja().m_cRoj.vWron.size())
+		{
+			m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];		
+			fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
+		}
+		else
+		{
+			m_sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
+			fCzestotliwosc = 0;
+		}
+
 		m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
-		fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
 		if (fCzestotliwosc)
-			strNapis.Format(_T("%.1f Hz"), fCzestotliwosc);
+			strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
 		else
 			strNapis.Format(_T("Wyłączone"));
 		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);
@@ -224,12 +259,12 @@ void CKonfigTelemetrii::OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* 
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-	uint8_t chZaokraglonyokres;
+	uint16_t sZaokraglonyokres;
 	uint8_t chPozycjaCzestotliwosci;
 	
 	m_nIndeksZmiennej = pNMLV->iItem;	//zapamiętaj indeks modyfikowanej zmiennej
 
-	chPozycjaCzestotliwosci = PozycjaDlaOkresu(m_sOkresTelemetrii[m_nIndeksZmiennej], &chZaokraglonyokres);
+	chPozycjaCzestotliwosci = PozycjaDlaOkresu(m_sOkresTelemetrii[m_nIndeksZmiennej], &sZaokraglonyokres);
 	m_ctlListaCzestotliwosciTelemetrii.SetCurSel(chPozycjaCzestotliwosci);
 	UpdateData(FALSE);	
 	*pResult = 0;
@@ -250,7 +285,7 @@ void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 	if (m_sOkresTelemetrii[m_nIndeksZmiennej] == TEMETETRIA_WYLACZONA)
 		strNapis.Format(_T("Wyłączone"));
 	else
-		strNapis.Format(_T("%.1f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / m_sOkresTelemetrii[m_nIndeksZmiennej]);
+		strNapis.Format(_T("%.2f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / m_sOkresTelemetrii[m_nIndeksZmiennej]);
 	m_ctlOkresTelemetrii.SetItemText(m_nIndeksZmiennej, 1, strNapis);
 	m_bZmieniono = TRUE;
 	UpdateData(FALSE);
