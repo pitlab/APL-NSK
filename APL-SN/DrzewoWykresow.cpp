@@ -2,12 +2,12 @@
 #include "APL-SN.h"
 #include "DrzewoWykresow.h"
 BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
-	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_DODAJ_WSPOLNY, &DrzewoWykresow::OnDodajWspolny)
 	ON_COMMAND(ID_DODAJ_OSOBNY, &DrzewoWykresow::OnDodajOsobny)
 	ON_COMMAND(ID_USUN_WYKRES, &DrzewoWykresow::OnUsunWykres)
 	ON_UPDATE_COMMAND_UI(ID_USUN_WYKRES, &DrzewoWykresow::OnUpdateUsunWykres)
 	ON_WM_DROPFILES()
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -97,6 +97,17 @@ int DrzewoWykresow::DodajOsobny()
 void DrzewoWykresow::OnDropFiles(HDROP hDropInfo)
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
-
+		// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
+	CString    sFile;
+	DWORD      nBuffer = 0;
+	UINT nPrzeciaganyhcPlikow = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+	if (nPrzeciaganyhcPlikow > 0)
+	{
+		for (int i = 0; i <= WM_DROPFILES; i++)
+			ChangeWindowMessageFilter(i, MSGFLT_ADD);
+		nBuffer = DragQueryFile(hDropInfo, 0, sFile.GetBuffer(nBuffer + 1), nBuffer + 1);
+		sFile.ReleaseBuffer();
+	}
+	DragFinish(hDropInfo);	//zwolnij pamiêæ
 	CTreeCtrl::OnDropFiles(hDropInfo);
 }

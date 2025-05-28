@@ -195,6 +195,7 @@
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
     <ClInclude Include="KonfigPID.h" />
+    <ClInclude Include="PIDtabCtrl.h" />
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
     <ClInclude Include="DrzewoWykresow.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />
     <ClCompile Include="KonfigPID.cpp" />
+    <ClCompile Include="PIDtabCtrl.cpp" />
     <ClCompile Include="Roj.cpp" />
     <ClCompile Include="Wron.cpp" />
     <ClCompile Include="DekoderTelemetrii.cpp" />

@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "PIDtabCtrl.h"
 
 // Okno dialogowe KonfigPID
 
@@ -23,4 +23,6 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
+	CTabCtrl m_ctrlKanalPID;
+	//PIDtabCtrl m_ctrlKanalPID;
 };

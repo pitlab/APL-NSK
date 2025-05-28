@@ -37,6 +37,8 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(LVN_BEGINDRAG, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnBegindragListaDanych)
 	ON_BN_CLICKED(IDOK, &KonfiguracjaWyresow::OnBnClickedOk)
 	ON_NOTIFY(BCN_DROPDOWN, IDOK, &KonfiguracjaWyresow::OnDropdownIdok)
+//obsługa komunikatu
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 
@@ -114,6 +116,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
 
 	m_DropTarget.Register(this);
+	m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }

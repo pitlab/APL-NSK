@@ -293,6 +293,6 @@ void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
-	else
-		pCmdUI->Enable(FALSE);
+	//else
+		//pCmdUI->Enable(FALSE);
 }

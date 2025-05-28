@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(CKonfigTelemetrii, CDialogEx)
 END_MESSAGE_MAP()
 
 
+
 // Procedury obsługi komunikatów CKonfigTelemetrii
 
 

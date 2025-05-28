@@ -111,6 +111,13 @@
 #define IDC_LIST_ZMIENNE_TELE           1041
 #define IDC_TREE_WYKRESOW               1043
 #define IDC_LISTA_DANYCH                1044
+#define IDC_TAB1                        1046
+#define IDC_TAB_KANAL_PID               1046
+#define IDC_EDIT_KP                     1067
+#define IDC_EDIT_TI                     1068
+#define IDC_EDIT_TD                     1069
+#define IDC_EDIT_LIMIT_CALKI            1070
+#define IDC_EDIT_FILTRD                 1071
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -141,9 +148,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        327
+#define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

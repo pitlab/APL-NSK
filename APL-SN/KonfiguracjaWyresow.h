@@ -35,4 +35,5 @@ public:
 	CListCtrl m_cListaDanych;
 	DrzewoWykresow m_cDrzewoWykresow;
 	COleDropTarget m_DropTarget;
+//	afx_msg void OnDropFiles(HDROP hDropInfo);
 };
