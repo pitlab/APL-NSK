@@ -25,4 +25,15 @@ public:
 	afx_msg void OnBnClickedOk();
 	CTabCtrl m_ctrlKanalPID;
 	//PIDtabCtrl m_ctrlKanalPID;
+	afx_msg void OnPaint();
+	CString m_strTI2;
+	CString m_strTI1;
+	CString m_strKP1;
+	CString m_strKP2;
+	CString m_strFiltrD1;
+	CString m_strFiltrD2;
+	CString m_strTD1;
+	CString m_strTD2;
+	CString m_strLimitCalki1;
+	CString m_strLimitCalki2;
 };

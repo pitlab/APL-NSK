@@ -553,7 +553,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	if (m_bRysujTelemetrie)
 	{
 		m_bRysujTelemetrie = FALSE;
-		float fZmienna;
 		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
 		_Telemetria stDaneTele;
 

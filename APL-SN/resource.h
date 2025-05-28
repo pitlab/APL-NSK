@@ -114,10 +114,26 @@
 #define IDC_TAB1                        1046
 #define IDC_TAB_KANAL_PID               1046
 #define IDC_EDIT_KP                     1067
+#define IDC_EDIT_KP1                    1067
 #define IDC_EDIT_TI                     1068
+#define IDC_EDIT_TI1                    1068
 #define IDC_EDIT_TD                     1069
+#define IDC_EDIT_TD1                    1069
 #define IDC_EDIT_LIMIT_CALKI            1070
+#define IDC_EDIT_LIMIT_CALKI1           1070
 #define IDC_EDIT_FILTRD                 1071
+#define IDC_EDIT_FILTRD1                1071
+#define IDC_STATIC_WEJSCIE1             1077
+#define IDC_STATIC_WEJSCIE2             1078
+#define IDC_STATIC_KP1                  1079
+#define IDC_STATIC_KP2                  1080
+#define IDC_STATIC_                     1081
+#define IDC_EDIT_TI2                    1082
+#define IDC_EDIT2                       1083
+#define IDC_EDIT_LIMIT_CALKI2           1083
+#define IDC_EDIT_KP2                    1084
+#define IDC_EDIT_FILTRD2                1085
+#define IDC_EDIT_TD2                    1086
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -150,7 +166,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1072
+#define _APS_NEXT_CONTROL_VALUE         1084
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
