@@ -9,9 +9,9 @@
 
 #include "resource.h"       // główne symbole
 #include "KonfigPolacz.h"
-#include "PortSzeregowy.h"
-#include "Protokol.h"
-#include "Komunikacja.h"
+#include "komunikacja/PortSzeregowy.h"
+#include "komunikacja/Protokol.h"
+#include "komunikacja/Komunikacja.h"
 
 // CAPLSNApp:
 // Aby uzyskać implementację klasy, zobacz APL-SN.cpp

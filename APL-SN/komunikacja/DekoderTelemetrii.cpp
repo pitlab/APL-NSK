@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "DekoderTelemetrii.h"
-#include "Errors.h"
+#include "../Errors.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Pobiera zmienn¹ o podanym numerze z telemetrii

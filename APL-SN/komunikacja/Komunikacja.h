@@ -2,8 +2,8 @@
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"
-#include "Roj.h"
-#include "Wron.h"
+#include "../Roj.h"
+#include "../Wron.h"
 
 //#define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
@@ -47,6 +47,9 @@ public:
 	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
 	uint8_t CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
 	uint8_t ZapiszOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
+	uint8_t ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
+	uint8_t InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres);
+	uint8_t CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar);
 
 	Roj m_cRoj;
 	Wron m_cWron;
@@ -59,6 +62,7 @@ public:
 
 	union _un8_32
 	{
+		float daneFloat;
 		uint32_t dane32;
 		uint16_t dane16[2];
 		uint8_t dane8[4];

@@ -8,7 +8,7 @@
 #include <setupapi.h>
 #include <devguid.h>
 #include <cfgmgr32.h>   //CM_Get_Parent
-#include "polecenia_komunikacyjne.h"
+#include "komunikacja/polecenia_komunikacyjne.h"
 
 
 // Okno dialogowe OknoPolacz

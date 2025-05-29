@@ -1,5 +1,5 @@
 #pragma once
-#include "polecenia_komunikacyjne.h"
+#include "komunikacja\polecenia_komunikacyjne.h"
 
 class Wron
 {

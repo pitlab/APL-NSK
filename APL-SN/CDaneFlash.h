@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Komunikacja.h"
+#include "komunikacja/Komunikacja.h"
 
 // Okno dialogowe CDaneFlash
 

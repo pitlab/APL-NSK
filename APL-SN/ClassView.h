@@ -2,7 +2,7 @@
 #pragma once
 
 #include "ViewTree.h"
-#include "polecenia_komunikacyjne.h"
+#include "komunikacja/polecenia_komunikacyjne.h"
 
 //#define DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII	20
 

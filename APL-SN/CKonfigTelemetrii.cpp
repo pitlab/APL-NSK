@@ -6,7 +6,7 @@
 #include "CKonfigTelemetrii.h"
 #include "afxdialogex.h"
 #include "APL-SNDoc.h"
-#include "Komunikacja.h"
+#include "komunikacja/Komunikacja.h"
 
 // Okno dialogowe CKonfigTelemetrii
 

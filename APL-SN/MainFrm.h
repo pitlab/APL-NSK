@@ -8,7 +8,7 @@
 //#include "FileView.h"
 #include "OutputWnd.h"
 #include "PropertiesWnd.h"
-#include "GniazdoSieci.h"
+#include "komunikacja/GniazdoSieci.h"
 #include "Rejestr.h"
 
 class CMainFrame : public CMDIFrameWndEx

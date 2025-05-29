@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "Komunikacja.h"
-#include "Errors.h"
+#include "../Errors.h"
 #include "KomunikatySieci.h"
 #include "Protokol.h"
-#include "APL-SNDoc.h"
+#include "../APL-SNDoc.h"
 /*
 Klasa komunikacyjna poœrednicz¹ca miêdzy aplikacj¹ a protoko³em komunikacyjnym. 
 Aplikacja przesy³a polecenia wymiany danych a klasa nawi¹zuje po³¹czenie po znanym sobie interfejsie
@@ -548,7 +548,7 @@ uint8_t CKomunikacja::ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, u
 {
 	uint8_t chOdebrano = 0;
 	uint8_t chDaneWychodzace[255-3];
-	uint8_t chDanePrzychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	if (chRozmiar > 252)
 		return ERR_INVALID_DATA_SIZE;
@@ -595,7 +595,7 @@ uint8_t CKomunikacja::ZapiszFlash(uint32_t nAdresPamieci)
 {
 	uint8_t chOdebrano = 0;
 	uint8_t chDaneWychodzace[4];
-	uint8_t chDanePrzychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	m_unia8_32.dane32 = nAdresPamieci;
 	for (uint8_t n = 0; n < 4; n++)
@@ -616,7 +616,7 @@ uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[5];
-	uint8_t chDanePrzychodzace[256];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	m_unia8_32.dane32 = nAdresPamieci;
 	for (uint8_t n = 0; n < 4; n++)
@@ -649,7 +649,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[1];
-	uint8_t chDanePrzychodzace[256];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 	chDaneWychodzace[0] = chRozmiar;
@@ -667,7 +667,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Zapiosuje do APL listê okresów dla wszystkich zmiennych telemetrycznych w formacie m³odszy przodem
+// Zapisuje do APL listê okresów dla wszystkich zmiennych telemetrycznych w formacie m³odszy przodem
 // parametry:
 // [i] chOKres - wskaŸnik na tablicê z okresem
 // [i] chRozmiar - rozmiar tablicy
@@ -677,7 +677,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[2*LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
-	uint8_t chDanePrzychodzace[3];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint16_t sTemp;
 
 
@@ -695,3 +695,77 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zapisuje do FRAM w APL liczbt float (max ROZMIAR_ROZNE)
+// parametry:
+// [i] fDane - wskaŸnik na tablicê z danymi do zapisu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3+ 4 * ROZMIAR_ROZNE];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chRozmiar;
+	m_unia8_32.dane16[0] = sAdres;
+	chDaneWychodzace[1] = m_unia8_32.dane8[0];
+	chDaneWychodzace[2] = m_unia8_32.dane8[1];
+	for (uint8_t n = 0; n < chRozmiar; n++)
+	{
+		m_unia8_32.daneFloat = *(fDane + n);
+		for (int i = 0; i < 4; i++)
+			chDaneWychodzace[3 + 4 * n + i] = m_unia8_32.dane8[i];
+	}
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FRAM_FLOAT, chDaneWychodzace, 4 * chRozmiar + 3, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Inicjuje odczyt z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
+// parametry:
+// [i] fDane - wskaŸnik na tablicê z danymi do odczytu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu: ERR_OK lub ERR_ZLA_ILOSC_DANYCH
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chRozmiar;
+	m_unia8_32.dane16[0] = sAdres;
+	chDaneWychodzace[1] = m_unia8_32.dane8[0];
+	chDaneWychodzace[2] = m_unia8_32.dane8[1];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_FRAM_FLOAT, chDaneWychodzace, 3 , chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
+// parametry:
+// [i] fDane - wskaŸnik na tablicê z danymi do odczytu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu: ERR_OK lub ERR_HAL_BUSY je¿eli nie s¹ jeszcze gotowe
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace;
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace = chRozmiar;
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WYSLIJ_ODCZYT_FRAM, &chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}

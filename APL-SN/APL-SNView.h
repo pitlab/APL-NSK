@@ -3,11 +3,11 @@
 //
 
 #pragma once
-#include "Protokol.h"
-#include "Komunikacja.h"
+#include "komunikacja/Protokol.h"
+#include "komunikacja/Komunikacja.h"
 #include "CDaneFlash.h"
 #include "Rejestr.h"
-#include "DekoderTelemetrii.h"
+#include "komunikacja/DekoderTelemetrii.h"
 #include <vector>
 
 class CAPLSNView : public CView

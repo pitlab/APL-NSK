@@ -12,7 +12,7 @@
 
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
-#include "KomunikatySieci.h"
+#include "komunikacja/KomunikatySieci.h"
 #include "Errors.h"
 #include <stdio.h>
 #include <string.h>

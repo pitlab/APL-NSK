@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Protokol.h"
-#include "..\..\APL-SN\APL-SN\Errors.h"
-#include "multithreading.h"
+#include "../Errors.h"
+#include "../multithreading.h"
 
 
 /*Struktura ramki komunikacyjnej
@@ -390,14 +390,13 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				sTelemetria.dane.clear();							//po wstawieniu struktury do wektora ramki, czyœæ wektor struktury
 				LeaveCriticalSection(&m_SekcjaKrytycznaTelemetrii);
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
-				TRACE("SetEvent: Telemetria\n");				
+				//TRACE("SetEvent: Telemetria\n");				
 			}
 			else
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaPolecen);
 				if (!m_chIloscDanychRamki)	//wykrzacza siê na zerowych ramkach typu OK, wiêc zrób niezerowy rozmiar danych
 					m_chIloscDanychRamki = 1;
-				//m_inputAnswerData.push_back(BinaryFrame(m_iLecznikWejRamekZwyklych++, m_chPolecenie, m_chZnakCzasu, m_chDaneWy, m_chIloscDanychRamki));
 				//zbierz dane ramki do struktury
 				sRamka.chPolecenie = m_chPolecenie;
 				sRamka.chZnakCzasu = m_chZnakCzasu;
@@ -411,7 +410,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();
 				SetEvent(m_hZdarzenieRamkaPolecenGotowa);	
-				TRACE("SetEvent: Polecenia\n");
+				//TRACE("SetEvent: Polecenia\n");
 			}
 		}
 	}

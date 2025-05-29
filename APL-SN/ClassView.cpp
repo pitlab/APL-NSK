@@ -8,9 +8,9 @@
 #include "CkonfigTelemetrii.h"
 #include "KonfiguracjaWyresow.h"
 #include "KonfigRejestratora.h"
-#include "Komunikacja.h"
+#include "komunikacja/Komunikacja.h"
 #include "Errors.h"
-#include "Protokol.h"
+#include "komunikacja/Protokol.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {

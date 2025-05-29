@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Wron.h"
-#include "polecenia_komunikacyjne.h"
+#include "komunikacja/polecenia_komunikacyjne.h"
 
 class Roj //:Wron
 {

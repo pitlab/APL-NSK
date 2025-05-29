@@ -6,8 +6,8 @@
 #include "UstawieniaKameryDlg.h"
 #include "afxdialogex.h"
 #include "Errors.h"
-#include "Komunikacja.h"
-#include "polecenia_komunikacyjne.h"
+#include "komunikacja/Komunikacja.h"
+#include "komunikacja/polecenia_komunikacyjne.h"
 
 // Okno dialogowe UstawieniaKameryDlg
 

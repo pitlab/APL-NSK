@@ -6,6 +6,7 @@
 #include "KonfigPID.h"
 #include "afxdialogex.h"
 #include <math.h>
+#include "Errors.h"
 
 // Okno dialogowe KonfigPID
 
@@ -64,12 +65,50 @@ END_MESSAGE_MAP()
 BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
+	uint8_t chErr, chLicznikProb;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));
 	m_ctrlKanalPID.InsertItem(1, _T("Pochylenie"));
 	m_ctrlKanalPID.InsertItem(2, _T("Odchylenie"));
 	m_ctrlKanalPID.InsertItem(3, _T("Wysokość"));
+
+	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
+	{
+		getKomunikacja().InicjujOdczytFloatFRAM(6, FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+		chLicznikProb = 5;
+		do {
+			chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+			chLicznikProb--;
+		} while ((chErr == 2) && chLicznikProb);	//kod błędu ERR_HAL_BUSY mówiący że dane jeszcze nie są gotowe
+		m_stPID[n].fKp = fDane[0];			// FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
+		m_stPID[n].fTi = fDane[1];			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
+		m_stPID[n].fTd = fDane[2];			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
+		m_stPID[n].fLimitCalki = fDane[3];	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
+	}
+
+	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
+
+	//ustaw kontrolki
+	m_strKP1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fKp);
+	m_strKP2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID/2].fKp);
+	
+	m_strTI1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fTi);
+	m_strTI2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID/2].fTi);
+
+	m_strTD1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fTd);
+	m_strTD2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fTd);
+
+	m_strLimitCalki1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fLimitCalki);
+	m_strLimitCalki2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fLimitCalki);
+
+	//m_strFiltrD1;
+	//m_strFiltrD2;
+
+	UpdateData(FALSE);
+
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
