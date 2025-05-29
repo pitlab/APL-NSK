@@ -83,6 +83,8 @@
 #define IDR_MENU_WYKRESOW               322
 #define IDD_KONFIG_REJESTRATORA         323
 #define IDD_KONFIG_PID                  325
+#define IDB_BITMAP_PID_WZMACNIACZ       328
+#define IDB_BITMAP_PID_WEZEL            329
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -164,7 +166,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        328
+#define _APS_NEXT_RESOURCE_VALUE        330
 #define _APS_NEXT_COMMAND_VALUE         32809
 #define _APS_NEXT_CONTROL_VALUE         1084
 #define _APS_NEXT_SYMED_VALUE           310

@@ -294,5 +294,14 @@
     <Image Include="res\Toolbar256.bmp">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\bitmap_PID_wzmacniacz.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\bitmap_PID_wezel.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
 </Project>

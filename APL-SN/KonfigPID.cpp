@@ -101,3 +101,4 @@ void KonfigPID::OnPaint()
 
 	
 }
+
