@@ -46,7 +46,7 @@ private:
 	int m_nBiezacyRegulator;
 	CTabCtrl m_ctrlKanalPID;
 	//PIDtabCtrl m_ctrlKanalPID;
-	afx_msg void OnPaint();
+	//afx_msg void OnPaint();
 	CString m_strTI2;
 	CString m_strTI1;
 	CString m_strKP1;
@@ -57,4 +57,6 @@ private:
 	CString m_strTD2;
 	CString m_strLimitCalki1;
 	CString m_strLimitCalki2;
+public:
+
 };

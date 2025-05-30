@@ -51,7 +51,7 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDOK, &KonfigPID::OnBnClickedOk)
-	ON_WM_PAINT()
+	//ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -161,7 +161,7 @@ void KonfigPID::OnBnClickedOk()
 }
 
 
-
+/*
 
 void KonfigPID::OnPaint()
 {
@@ -173,5 +173,5 @@ void KonfigPID::OnPaint()
 	dc.LineTo(40, 40);
 
 	
-}
+} */
 

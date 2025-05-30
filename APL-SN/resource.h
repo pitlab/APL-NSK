@@ -136,6 +136,10 @@
 #define IDC_EDIT_KP2                    1084
 #define IDC_EDIT_FILTRD2                1085
 #define IDC_EDIT_TD2                    1086
+#define IDC_RADIO1                      1087
+#define IDC_RADIO2                      1088
+#define IDC_RADIO3                      1089
+#define IDC_RADIO4                      1090
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -168,7 +172,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        330
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1084
+#define _APS_NEXT_CONTROL_VALUE         1091
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
