@@ -201,6 +201,7 @@ public:
 protected:
 //	afx_msg LRESULT OnAfxPolaczonoWrona(WPARAM wParam, LPARAM lParam);
 public:
+
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -296,3 +297,5 @@ void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 	//else
 		//pCmdUI->Enable(FALSE);
 }
+
+

@@ -125,6 +125,10 @@
 #define IDC_EDIT_LIMIT_CALKI1           1070
 #define IDC_EDIT_FILTRD                 1071
 #define IDC_EDIT_FILTRD1                1071
+#define IDC_EDIT_MIN_WY1                1072
+#define IDC_EDIT_MAX_WY1                1073
+#define IDC_EDIT_MIN_WY2                1074
+#define IDC_EDIT_MAX_WY2                1075
 #define IDC_STATIC_WEJSCIE1             1077
 #define IDC_STATIC_WEJSCIE2             1078
 #define IDC_STATIC_KP1                  1079
@@ -140,6 +144,8 @@
 #define IDC_RADIO2                      1088
 #define IDC_RADIO3                      1089
 #define IDC_RADIO4                      1090
+#define IDC_CHECK_KATOWY1               1092
+#define IDC_CHECK_KATOWY2               1094
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -172,7 +178,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        330
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1091
+#define _APS_NEXT_CONTROL_VALUE         1093
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

@@ -23,11 +23,15 @@ public:
 	const int nPidWysokosci = 7;
 	struct pid_t
 	{
-		float fKp;
+		float fKp;		
 		float fTi;
 		float fTd;
-		float fLimitCalki;
-		uint8_t chRozmiarFiltraD;
+		float fOgrCalki;	//ograniczenie członu całkujacego
+		float fMinWyj;		//minimalna wartość wyjścia
+		float fMaxWyj;		//maksymalna wartość wyjścia
+		uint8_t chPodstFiltraD;	//podstawa filtra IIR
+		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
+		BOOL bZmieniony;	//zmieniono nastawy regulatora
 	} m_stPID[LICZBA_REGULATOROW_PID];
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -36,6 +40,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
+	void UstawKontrolki();
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -55,8 +60,27 @@ private:
 	CString m_strFiltrD2;
 	CString m_strTD1;
 	CString m_strTD2;
-	CString m_strLimitCalki1;
-	CString m_strLimitCalki2;
+	CString m_strOgrCalki1;
+	CString m_strOgrCalki2;
+	CString m_strMinWyj1;
+	CString m_strMaxWyj1;
+	CString m_strMinWyj2;
+	CString m_strMaxWyj2;
+	BOOL m_bKatowy1;
+	BOOL m_bKatowy2;
 public:
+
+	CString m_strTest;
+	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnEnChangeEditKp1();
+	afx_msg void OnEnChangeEditKp2();
+	afx_msg void OnEnChangeEditTi1();
+	afx_msg void OnEnChangeEditTi2();
+	afx_msg void OnEnChangeEditTd1();
+	afx_msg void OnEnChangeEditTd2();
+	afx_msg void OnEnChangeEditMinWy1();
+	afx_msg void OnEnChangeEditMaxWy1();
+	afx_msg void OnEnChangeEditMinWy2();
+	afx_msg void OnEnChangeEditMaxWy2();
 
 };

@@ -78,7 +78,7 @@
 #define FAU_PID_I0          FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
 #define FAU_PID_D0          FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
 #define FAU_PID_ILIM0       FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
-#define LICZBA_ZMIENNYCH_FLOAT_REG_PID		4
+#define LICZBA_ZMIENNYCH_FLOAT_REG_PID		6
 #define LICZBA_REGULATOROW_PID		8
 //do adresu 0x3C0 jest miejsce na łącznie 12 regulatorów.
 
