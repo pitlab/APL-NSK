@@ -76,7 +76,7 @@ BOOL KonfigPID::OnInitDialog()
 
 	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
 	{
-		getKomunikacja().InicjujOdczytFloatFRAM(6, FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+		chErr = getKomunikacja().InicjujOdczytFloatFRAM(LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
 		chLicznikProb = 5;
 		do {
 			chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
@@ -122,7 +122,41 @@ BOOL KonfigPID::OnInitDialog()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedOk()
 {
+	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
+	uint8_t chErr, chLicznikProb;
+	CString strLiczba;
+
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
+	{
+		fDane[0] = m_stPID[n].fKp;			// FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
+		fDane[1] = m_stPID[n].fTi;			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
+		fDane[2] = m_stPID[n].fTd;			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
+		fDane[3] = m_stPID[n].fLimitCalki;	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
+
+		chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+	}
+
+	strLiczba = m_strKP1.GetString();
+	_ttof(strLiczba);
+		
+
+	
+
+
+	m_strKP1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fKp);
+	m_strKP2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fKp);
+
+	m_strTI1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fTi);
+	m_strTI2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fTi);
+
+	m_strTD1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fTd);
+	m_strTD2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fTd);
+
+	m_strLimitCalki1.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator].fLimitCalki);
+	m_strLimitCalki2.Format(_T("%.4f"), m_stPID[m_nBiezacyRegulator + LICZBA_REGULATOROW_PID / 2].fLimitCalki);
+
+
 	CDialogEx::OnOK();
 }
 

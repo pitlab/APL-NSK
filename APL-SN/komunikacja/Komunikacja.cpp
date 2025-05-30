@@ -767,5 +767,19 @@ uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
 
 	chDaneWychodzace = chRozmiar;
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WYSLIJ_ODCZYT_FRAM, &chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
+	if (chErr == ERR_OK)
+	{
+		for (uint8_t n = 0; n < chRozmiar; n++)
+		{
+			m_unia8_32.daneFloat = *(fDane + n);
+			for (int i = 0; i < 4; i++)
+				m_unia8_32.dane8[i] = chDanePrzychodzace[4 * n + i];
+			*(fDane + n) = m_unia8_32.daneFloat;
+		}
+	}
+	else
+	{
+		fDane = NULL;
+	}
 	return chErr;
 }
