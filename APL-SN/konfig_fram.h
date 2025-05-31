@@ -82,7 +82,7 @@
 #define LICZBA_REGULATOROW_PID		8
 //do adresu 0x3C0 jest miejsce na łącznie 12 regulatorów.
 
-#define FAU_D_FILTER        0x3C0           //12*1U Stała czasowa filtru członu różniczkującego
+#define FAU_FILD_REGKAT_TYP 0x3C0           //12*1U Stała czasowa filtru członu różniczkującego (bity 0..4). Typ regulatora (bity 5..6) Regulator kątowy (bit 7)
 #define FAU_REG_MODE        0x3CC           //4*1U okresla tryb pracy regulatorów PID: 0=wyłączony, 1=ręczny, 2=akrobacyjny  3=stabilny, 4=prędkości GPS, 5=pozycji GPS
 
 //8 wolnych bajtów

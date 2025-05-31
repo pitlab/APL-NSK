@@ -553,9 +553,9 @@ uint8_t CKomunikacja::ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, u
 	if (chRozmiar > 252)
 		return ERR_INVALID_DATA_SIZE;
 
-	m_unia8_16.dane16 = sAdresBufora/2;		//w APL bufor jest 16-bitowy
-	chDaneWychodzace[0] = m_unia8_16.dane8[0];
-	chDaneWychodzace[1] = m_unia8_16.dane8[1];
+	m_unia8_32.dane16[0] = sAdresBufora/2;		//w APL bufor jest 16-bitowy
+	chDaneWychodzace[0] = m_unia8_32.dane8[0];
+	chDaneWychodzace[1] = m_unia8_32.dane8[1];
 	chDaneWychodzace[2] = chRozmiar/2;		//liczba s³ów 16-bitowych do zapisu
 
 	for (uint8_t n = 0; n < chRozmiar; n++)
@@ -727,6 +727,27 @@ uint8_t CKomunikacja::ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint1
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odsy³a potwierdzenie zaspisania danych lub jego brak
+// parametry:
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu: ERROK lub ERR_PROCES_TRWA
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::PotwierdzZapisDanych(uint16_t sAdres)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	m_unia8_32.dane16[0] = sAdres;
+	chDaneWychodzace[0] = m_unia8_32.dane8[0];
+	chDaneWychodzace[1] = m_unia8_32.dane8[1];
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WYSLIJ_POTW_ZAPISU, chDaneWychodzace, 2, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Inicjuje odczyt z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
 // parametry:
 // [i] fDane - wskaŸnik na tablicê z danymi do odczytu
@@ -769,6 +790,9 @@ uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WYSLIJ_ODCZYT_FRAM, &chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
+		if ((chOdebrano == 2) && (chDanePrzychodzace[0] == ERR_PROCES_TRWA))
+			return ERR_PROCES_TRWA;
+
 		for (uint8_t n = 0; n < chRozmiar; n++)
 		{
 			m_unia8_32.daneFloat = *(fDane + n);
@@ -782,4 +806,55 @@ uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
 		fDane = NULL;
 	}
 	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Pakuje danne uint8 do float i w takiej postaci jest to wysy³ane do zapisania we FRMA ze wzgledu na uniwersalnoœæ
+// parametry:
+// [i] *chDane - wskaŸnik na tablicê z danymi do spakowania
+// [i] chRozmiar - rozmiar tablicy liczb uint8_t
+// [o] *fData - wskaŸnik na tablicê danych float
+// zwraca: rozmiar tablicy liczb float
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::SpakujU8doFloat(uint8_t* chDane, uint8_t chRozmiarU8, float* fData)
+{
+	uint8_t chRozmiarFloat = chRozmiarU8 / 4;
+	if (chRozmiarFloat * 4 < chRozmiarU8)
+		chRozmiarFloat++;
+
+	for (uint8_t n = 0; n < chRozmiarFloat; n++)
+	{
+		for (uint8_t i = 0; i < 4; i++)
+			m_unia8_32.dane8[i] = *(chDane + i + n * 4);
+		*(fData+n) = m_unia8_32.daneFloat;
+	}
+	return chRozmiarFloat;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rozpakowuje danne przesy³ana jako float do uint8_t
+// parametry:
+// [i] *fData - wskaŸnik na tablicê danych float
+// [i] chRozmiar - rozmiar tablicy liczb uint8_t
+// [o] *chDane - wskaŸnik na tablicê z danymi do spakowania
+// zwraca: rozmiar tablicy liczb float
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8_t* chDane)
+{
+	uint8_t chRozmiarFloat = chRozmiarU8 / 4;
+	if (chRozmiarFloat * 4 < chRozmiarU8)
+		chRozmiarFloat++;
+
+	for (uint8_t n = 0; n < chRozmiarFloat; n++)
+	{
+		m_unia8_32.daneFloat = *(fData + n);
+		for (uint8_t i = 0; i < 4; i++)
+			*(chDane + i + n * 4) = m_unia8_32.dane8[i];
+		
+	}
+	return chRozmiarFloat;
 }

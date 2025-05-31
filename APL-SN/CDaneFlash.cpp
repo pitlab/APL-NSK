@@ -260,9 +260,9 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 		//przepisz słowa z wektora na bajty do wysłania ramką
 		for (uint8_t n = 0; n < chRozmarWysylanychDanych/2; n++)
 		{
-			getKomunikacja().m_unia8_16.dane16 = m_vPamiecKomunikatow[n + nIloscWyslanychSlow];
-			chPaczka[2 * n + 0] = getKomunikacja().m_unia8_16.dane8[0];
-			chPaczka[2 * n + 1] = getKomunikacja().m_unia8_16.dane8[1];
+			getKomunikacja().m_unia8_32.dane16[0] = m_vPamiecKomunikatow[n + nIloscWyslanychSlow];
+			chPaczka[2 * n + 0] = getKomunikacja().m_unia8_32.dane8[0];
+			chPaczka[2 * n + 1] = getKomunikacja().m_unia8_32.dane8[1];
 		}
 
 		chErr = getKomunikacja().ZapiszBuforFlash(sAdresBufora, chPaczka, chRozmarWysylanychDanych);

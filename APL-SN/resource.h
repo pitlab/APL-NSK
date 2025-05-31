@@ -87,9 +87,10 @@
 #define IDB_BITMAP_PID_WEZEL            329
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
+#define IDC_SLIDER_FILTR_D1             1002
+#define IDC_SLIDER_FILTR_D2             1003
 #define IDC_EDIT_ADRES                  1005
 #define IDC_EDIT_PORT_ETH               1006
-#define IDC_SLIDER1                     1007
 #define IDC_SLID_SZER_ZDJECIA           1007
 #define IDC_SLID_WYS_ZDJECIA            1008
 #define IDC_SLID_ZOOM_ZDJECIA2          1009
@@ -145,7 +146,11 @@
 #define IDC_RADIO3                      1089
 #define IDC_RADIO4                      1090
 #define IDC_CHECK_KATOWY1               1092
+#define IDC_STATIC_FILTR_D1             1093
 #define IDC_CHECK_KATOWY2               1094
+#define IDC_STATIC_FILTR_D2             1095
+#define IDC_CHECK_WYLACZ1               1096
+#define IDC_CHECK_WYLACZ2               1097
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -178,7 +183,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        330
 #define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1093
+#define _APS_NEXT_CONTROL_VALUE         1096
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

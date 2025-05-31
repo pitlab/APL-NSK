@@ -8,10 +8,9 @@ const uint8_t ERR_SEND_DATA			= 5;	//b³¹d wysy³ania danych
 const uint8_t ERR_RECEIVE_FILE		= 6;	//problem z odbiorem danych
 const uint8_t ERR_ZLY_NAGLOWEK		= 7;	//zdekodowano z³y nag³ówek ramki
 const uint8_t ERR_ZLY_ADRESAT		= 8;	//ramka jest przeznaczona dla kogoœ innego
-const uint8_t ERR_ZLE_POLECENIE		= 9;	//zdekodowano z³e polecenie
+const uint8_t ERR_PROCES_TRWA		= 9;
 const uint8_t ERR_CRC16				= 10;	//zdekodowano z³¹ sumê kontroln¹
 const uint8_t ERR_ZLY_STAN_PROT		= 11;	//wykryto z³y stan protoko³u
-
 const uint8_t ERR_NO_FILE			= 12;	//nie znaleziono takiego pliku
 const uint8_t ERR_FILE_READ			= 13;	//problem z odczytem pliku
 const uint8_t ERR_SEEK_FILE			= 14;	//problem z ustawieniem pozycji w pliku
@@ -29,3 +28,4 @@ const uint8_t ERR_KASUJ_FLASH_CPU	= 25;	//b³¹d kasowania pamiêci flash kontroler
 const uint8_t ERR_PROGR_FLASH_CPU	= 26;	//b³¹d programowania pamiêci flash kontrolera
 const uint8_t ERR_ZLY_TYP_PORTU		= 27;	//niew³aœciwy lub niezdefiniowany typ portu komunikacyjnego
 const uint8_t ERR_BLAD_KAMERY		= 28;	//kamera zwróci³a b³¹d
+const uint8_t ERR_ZLE_POLECENIE = 9;	//zdekodowano z³e polecenie

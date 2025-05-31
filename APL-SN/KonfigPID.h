@@ -31,6 +31,7 @@ public:
 		float fMaxWyj;		//maksymalna wartość wyjścia
 		uint8_t chPodstFiltraD;	//podstawa filtra IIR
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
+		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
 	} m_stPID[LICZBA_REGULATOROW_PID];
 // Dane okna dialogowego
@@ -68,6 +69,14 @@ private:
 	CString m_strMaxWyj2;
 	BOOL m_bKatowy1;
 	BOOL m_bKatowy2;
+	BOOL m_bWylaczony1;
+	BOOL m_bWylaczony2;
+	int m_PodstFiltraD1;
+	int m_PodstFiltraD2;
+	CString m_strPodstFiltraD1;
+	CString m_strPodstFiltraD2;
+	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD1;
+	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD2;
 public:
 
 	CString m_strTest;
@@ -82,5 +91,15 @@ public:
 	afx_msg void OnEnChangeEditMaxWy1();
 	afx_msg void OnEnChangeEditMinWy2();
 	afx_msg void OnEnChangeEditMaxWy2();
+	afx_msg void OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
+	
+
+	afx_msg void OnEnChangeEditLimitCalki2();
+	afx_msg void OnEnChangeEditLimitCalki1();
+	afx_msg void OnBnClickedCheckKatowy1();
+	afx_msg void OnBnClickedCheckWylacz1();
+	afx_msg void OnBnClickedCheckKatowy2();
+	afx_msg void OnBnClickedCheckWylacz2();
 
 };
