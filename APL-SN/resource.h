@@ -83,6 +83,7 @@
 #define IDR_MENU_WYKRESOW               322
 #define IDD_KONFIG_REJESTRATORA         323
 #define IDD_KONFIG_PID                  325
+#define IDD_DIALOG_DEFINICJE_WRONA      330
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -136,6 +137,7 @@
 #define IDC_EDIT_TI2                    1082
 #define IDC_EDIT2                       1083
 #define IDC_EDIT_LIMIT_CALKI2           1083
+#define IDC_EDIT_NAZWA                  1083
 #define IDC_EDIT_KP2                    1084
 #define IDC_EDIT_FILTRD2                1085
 #define IDC_EDIT_TD2                    1086
@@ -151,6 +153,8 @@
 #define IDC_STATIC_ZAJETOSC             1096
 #define IDC_CHECK_WYLACZ2               1097
 #define IDC_PROGRESS_ZAJETOSC           1097
+#define IDC_EDIT_NUMER                  1098
+#define IDC_IPADDRESS_DEFINICJE         1099
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -160,7 +164,7 @@
 #define ID_USTAW_PARKAMERY              2007
 #define ID_ZAPISZ_PAMIEC                32790
 #define ID_BUT_KONF_TELEMETRII          32792
-#define ID_                             32793
+#define ID_INDICATOR_POLACZ             32793
 #define ID_KONFIG_TELEMETRII            32794
 #define ID_KONFIG_WYKRES                32795
 #define ID_KONFIG_LOGERA                32796
@@ -176,14 +180,15 @@
 #define ID_USUN_WYKRES                  32806
 #define ID_USTAWIENIA_USTAWIENIAPID     32807
 #define ID_USTAWIENIA_REGULATORY_PID    32808
+#define ID_USTAWIENIA_DEFINICJEWRONA    32809
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        330
-#define _APS_NEXT_COMMAND_VALUE         32809
-#define _APS_NEXT_CONTROL_VALUE         1098
+#define _APS_NEXT_RESOURCE_VALUE        332
+#define _APS_NEXT_COMMAND_VALUE         32810
+#define _APS_NEXT_CONTROL_VALUE         1100
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

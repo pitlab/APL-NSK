@@ -194,7 +194,7 @@
     <ClInclude Include="CDaneFlash.h" />
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
-    <ClInclude Include="FileView.h" />
+    <ClInclude Include="DefinicjeWrona.h" />
     <ClInclude Include="komunikacja\DekoderTelemetrii.h" />
     <ClInclude Include="komunikacja\GniazdoSieci.h" />
     <ClInclude Include="komunikacja\Komunikacja.h" />
@@ -233,6 +233,7 @@
     <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />
+    <ClCompile Include="DefinicjeWrona.cpp" />
     <ClCompile Include="komunikacja\DekoderTelemetrii.cpp" />
     <ClCompile Include="komunikacja\GniazdoSieci.cpp" />
     <ClCompile Include="komunikacja\Komunikacja.cpp" />

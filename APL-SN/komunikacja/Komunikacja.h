@@ -34,6 +34,7 @@ public:
 	uint32_t PobierzPredkoscPortuUART() { return m_iPredkoscUART; }
 	BOOL CzyPolaczonoUart() { return m_bPolaczonoUart; }
 	BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
+	void UstawAdresWrona(uint8_t chAdres) { m_chAdresAutopilota = chAdres;  }
 	uint8_t PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t WyslijOK();

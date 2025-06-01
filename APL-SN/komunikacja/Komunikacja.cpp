@@ -164,6 +164,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
 				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
+				UstawAdresWrona(cWron.m_chAdres);	//ustaw adres na potrzeby klasy komunikacji
 
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia			
@@ -290,6 +291,8 @@ uint8_t CKomunikacja::PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP)
 uint8_t CKomunikacja::UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP)
 {
 	uint8_t chDaneWych[25];
+	uint8_t chOdebrano;
+	uint8_t chDanePrzych[ROZM_DANYCH_UART];
 
 	chDaneWych[0] = chId;
 	for (int n = 0; n < DLUGOSC_NAZWY; n++)
@@ -297,7 +300,7 @@ uint8_t CKomunikacja::UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP)
 	for (int n = 0; n < 4; n++)
 		chDaneWych[n + 21] = *(chIP + n);
 
-	return getProtokol().WyslijOdbierzRamke(ADRES_BROADCAST, ADRES_STACJI, PK_POBIERZ_BSP, chDaneWych, 25, NULL, NULL);
+	return getProtokol().WyslijOdbierzRamke(ADRES_BROADCAST, ADRES_STACJI, PK_USTAW_BSP, chDaneWych, 25, chDanePrzych, &chOdebrano);
 }
 
 

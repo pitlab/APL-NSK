@@ -42,7 +42,6 @@ protected:  // osadzone elementy członkowskie paska sterowania
 	CMFCStatusBar     m_wndStatusBar;
 	CMFCToolBarImages m_UserImages;
 	CClassView        m_wndClassView;
-	//CFileView		  m_wndFileView;
 	COutputWnd        m_wndOutput;
 	CPropertiesWnd    m_wndProperties;
 

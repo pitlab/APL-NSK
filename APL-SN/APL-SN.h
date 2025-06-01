@@ -50,6 +50,9 @@ public:
 public:
 	afx_msg void OnUstawieniaRegulatoryPid();
 	afx_msg void OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateIndicatorPolacz(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaDefinicjewrona();
+	afx_msg void OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

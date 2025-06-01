@@ -12,6 +12,7 @@
 #include "ChildFrm.h"
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
+#include "DefinicjeWrona.h"
 
 
 #ifdef _DEBUG
@@ -31,6 +32,9 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 
 	ON_COMMAND(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUstawieniaRegulatoryPid)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUpdateUstawieniaRegulatoryPid)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_POLACZ, &CAPLSNApp::OnUpdateIndicatorPolacz)
+	ON_COMMAND(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUstawieniaDefinicjewrona)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUpdateUstawieniaDefinicjewrona)
 END_MESSAGE_MAP()
 
 
@@ -281,6 +285,10 @@ CKomunikacja& getKomunikacja()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia polecenie menu Konfiguracja -> PID...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaRegulatoryPid()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
@@ -288,17 +296,54 @@ void CAPLSNApp::OnUstawieniaRegulatoryPid()
 	cKonfigPID.DoModal();
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> PID...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
-	//else
-		//pCmdUI->Enable(FALSE);
+	else
+		pCmdUI->Enable(FALSE);
 }
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje stan identyfikatora Połaczenie w pasku statusu
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateIndicatorPolacz(CCmdUI* pCmdUI)
+{
+	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia polecenie menu Konfiguracja -> Definicje Wrona...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaDefinicjewrona()
+{
+	DefinicjeWrona cDefinicjeWrona;
+	cDefinicjeWrona.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Definicje Wrona...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI)
+{
+	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}

@@ -120,10 +120,10 @@
     <ClInclude Include="komunikacja\Protokol.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="FileView.h">
+    <ClInclude Include="komunikacja\DekoderTelemetrii.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="komunikacja\DekoderTelemetrii.h">
+    <ClInclude Include="DefinicjeWrona.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -213,6 +213,9 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="komunikacja\DekoderTelemetrii.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="DefinicjeWrona.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>

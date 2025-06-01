@@ -36,9 +36,10 @@ END_MESSAGE_MAP()
 static UINT indicators[] =
 {
 	ID_SEPARATOR,           // wskaźnik stanu wiersza
+	//ID_INDICATOR_POLACZ,
 	ID_INDICATOR_CAPS,
-	ID_INDICATOR_NUM,
-	ID_INDICATOR_SCRL,
+	//ID_INDICATOR_NUM,
+	//ID_INDICATOR_SCRL,	
 };
 
 // Tworzenie/niszczenie obiektu CMainFrame
@@ -129,11 +130,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	//m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
-	//DockPane(&m_wndFileView);
 	DockPane(&m_wndClassView);
-	CDockablePane* pTabbedBar = nullptr;
+	//CDockablePane* pTabbedBar = nullptr;
 	//m_wndClassView.AttachToTabWnd(&m_wndFileView, DM_SHOW, TRUE, &pTabbedBar);
 	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndOutput);
@@ -196,16 +195,6 @@ BOOL CMainFrame::CreateDockingWindows()
 		TRACE0("Nie można utworzyć okna widoku klasy\n");
 		return FALSE; // utworzenie nie powiodło się
 	}
-
-	/*/ Utwórz widok pliku
-	CString strFileView;
-	bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
-	ASSERT(bNameValid);
-	if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT| CBRS_FLOAT_MULTI))
-	{
-		TRACE0("Nie można utworzyć okna widoku pliku\n");
-		return FALSE; // utworzenie nie powiodło się
-	}*/
 
 	// Utwórz okno danych wyjściowych
 	CString strOutputWnd;
