@@ -17,6 +17,7 @@ CKonfigTelemetrii::CKonfigTelemetrii(CWnd* pParent /*=nullptr*/)
 	, m_bZmieniono(FALSE)
 	, m_chIdZmiennej(0)
 	, m_nOkres(0)
+	, m_strZajetosc(_T(""))
 {
 
 }
@@ -30,6 +31,8 @@ void CKonfigTelemetrii::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LISTA_CZESTOTLIWOSCI, m_ctlListaCzestotliwosciTelemetrii);
 	DDX_Control(pDX, IDC_LIST_ZMIENNE_TELE, m_ctlOkresTelemetrii);
+	DDX_Text(pDX, IDC_STATIC_ZAJETOSC, m_strZajetosc);
+	DDX_Control(pDX, IDC_PROGRESS_ZAJETOSC, m_ctrlZajetosc);
 }
 
 
@@ -245,11 +248,17 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 			strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
 		else
 			strNapis.Format(_T("Wyłączone"));
-		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);
+		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);	
 	}
+
+	m_ctrlZajetosc.SetRange(0, 100);
+	AktualizujZajetoscLacza();
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
+
+
 
 /// <summary>
 /// Klikięto na listę zmiennych. Pobierz bieżący okres i podświetl na liście częstotliwości
@@ -289,7 +298,53 @@ void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 		strNapis.Format(_T("%.2f Hz"), MAX_CZESTOTLIWOSC_TELEMETRII / m_sOkresTelemetrii[m_nIndeksZmiennej]);
 	m_ctlOkresTelemetrii.SetItemText(m_nIndeksZmiennej, 1, strNapis);
 	m_bZmieniono = TRUE;
+	AktualizujZajetoscLacza();
+	
 	UpdateData(FALSE);
 }
 
 
+void CKonfigTelemetrii::AktualizujZajetoscLacza()
+{
+	struct
+	{
+		int nLiczbaZmiennych;
+		int nOkres;
+	} stOkresy[ILOSC_OKRESOW];
+	uint16_t sOkresZaokr;
+	int nOkres, nIndeks;
+	int nLiczbaBitowNaSek;
+	int nLiczbaBitow;
+
+	for (int n = 0; n < ILOSC_OKRESOW; n++)
+		stOkresy[n].nLiczbaZmiennych = 0;
+
+
+	//zbierz liczbę zmienych wysyłanych we wszystkich okresach
+	for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+	{
+		nOkres = m_sOkresTelemetrii[n];
+		nIndeks = PozycjaDlaOkresu(nOkres, &sOkresZaokr);
+		if (nIndeks < ILOSC_OKRESOW)
+		{
+			stOkresy[nIndeks].nLiczbaZmiennych++;
+			stOkresy[nIndeks].nOkres = nOkres;
+		}
+	}
+
+	//policz ile bitów ma być wysyłane na sekundę
+	nLiczbaBitowNaSek = 0;
+	for (int n = 0; n < ILOSC_OKRESOW; n++)
+	{
+		if ((stOkresy[n].nLiczbaZmiennych) && (stOkresy[n].nOkres))
+		{
+			nLiczbaBitow = 10 * (ROZM_CIALA_RAMKI + LICZBA_BAJTOW_ID_TELEMETRII + 2 * stOkresy[n].nLiczbaZmiennych);
+			nLiczbaBitowNaSek += nLiczbaBitow / (KWANT_CZASU_TELEMETRII * stOkresy[n].nOkres);
+		}
+	}
+
+	m_strZajetosc.Format(_T("Zajętość: %.1f Kb/s"), nLiczbaBitowNaSek/1024.f);
+	float fPos = nLiczbaBitowNaSek / 115200.0f;
+	m_ctrlZajetosc.SetPos((int)(fPos* 100));
+	UpdateData(FALSE);
+}

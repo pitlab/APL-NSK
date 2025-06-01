@@ -22,6 +22,7 @@ KonfiguracjaWyresow::KonfiguracjaWyresow(CWnd* pParent /*=nullptr*/)
 
 KonfiguracjaWyresow::~KonfiguracjaWyresow()
 {
+	m_cDrzewoWykresow.DeleteAllItems();
 }
 
 void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
@@ -55,9 +56,9 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
 
-	CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
+	//CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
 
-	delete pImageList;
+	//delete pImageList;
 	*pResult = 0;
 }
 

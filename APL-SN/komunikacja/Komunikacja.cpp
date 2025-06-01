@@ -131,6 +131,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	uint8_t chErr = ERR_NOT_CONNECTED;
 	Wron cWron;
 	uint8_t chNazwa[DLUGOSC_NAZWY];
+	int nIndeks = 0;
 
 	switch (m_chTypPolaczenia)
 	{
@@ -139,12 +140,11 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		if (chErr == ERR_OK)
 		{
 			m_bPolaczonoUart = TRUE;
-			//wyœlij na adres rozg³oszeniowy poecenie pobrania adresów i nazwy BSP
+			//wyœlij na adres rozg³oszeniowy polecenie pobrania adresów i nazwy BSP
 			chErr = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
 			if (chErr == ERR_OK)
 			{
-				//sprawdŸ czy w roju jest ju¿ ten wron
-				int nIndeks = 0;
+				//sprawdŸ czy w roju jest ju¿ ten wron					
 				for (int n = 0; n < m_cRoj.vWron.size(); n++)
 				{
 					if (m_cRoj.vWron[n].m_chAdres == cWron.m_chAdres)
@@ -164,9 +164,10 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 
 				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
 				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
+
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
-				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia
-			}
+				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia			
+			}				
 		}
 		else
 		{
@@ -261,12 +262,12 @@ void CKomunikacja::WyslanoDaneETH()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP)
 {
-	uint8_t chErr = ERR_OK;
+	uint8_t chErr;
 	uint8_t chOdebrano;
 	uint8_t chDanePrzych[32];
 
 	chErr = getProtokol().WyslijOdbierzRamke(ADRES_BROADCAST, ADRES_STACJI, PK_POBIERZ_BSP, NULL, 0, chDanePrzych, &chOdebrano);
-	if (!chErr)
+	if (chErr == ERR_OK)
 	{
 		*chId = chDanePrzych[0];
 		for (int n = 0; n < DLUGOSC_NAZWY; n++)
@@ -657,8 +658,8 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
 	if (chErr == ERR_OK)
 	{
-		ASSERT(2*chRozmiar == chOdebrano);
-		for (uint8_t n = 0; n < chRozmiar/2; n++)
+		ASSERT(chOdebrano/2 == chRozmiar);
+		for (uint8_t n = 0; n < chRozmiar; n++)
 			*(sOKres + n) = chDanePrzychodzace[2*n+0] + chDanePrzychodzace[2 * n + 1] * 0x100;
 	}
 	return chErr;

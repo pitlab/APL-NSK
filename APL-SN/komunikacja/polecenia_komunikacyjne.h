@@ -15,8 +15,8 @@
 
 #define ROZM_DANYCH_ETH		1024
 #define ROZM_CIALA_RAMKI	8
-#define TR_TIMEOUT			250		//timeout ramki w ms
-#define TR_PROB_WYSLANIA	1
+#define TR_TIMEOUT			100		//timeout ramki w ms
+#define TR_PROB_WYSLANIA	5
 
 #define ROZMIAR_RAMKI_UART	254
 #define ROZM_DANYCH_UART	(ROZMIAR_RAMKI_UART - ROZM_CIALA_RAMKI)

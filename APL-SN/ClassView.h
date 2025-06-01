@@ -4,8 +4,6 @@
 #include "ViewTree.h"
 #include "komunikacja/polecenia_komunikacyjne.h"
 
-//#define DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII	20
-
 
 class CDrzewoTelemetrii : public CViewTree
 {
@@ -52,7 +50,6 @@ public:
 	
 protected:
 	CClassToolBar m_wndToolBar;
-	//CViewTree m_wndClassView;
 	CDrzewoTelemetrii m_wndClassView;
 	CImageList m_ClassViewImages;
 	UINT m_nCurrSort;

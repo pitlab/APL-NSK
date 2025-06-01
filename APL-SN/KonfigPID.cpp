@@ -112,7 +112,7 @@ BOOL KonfigPID::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
 	uint8_t chDane[LICZBA_REGULATOROW_PID];
-	uint8_t chErr, chLicznikProbInicjacji, chLicznikProbOdczytu;
+	uint8_t chErr;//, chLicznikProbInicjacji, chLicznikProbOdczytu;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));
@@ -121,20 +121,20 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctrlKanalPID.InsertItem(3, _T("Wysokość"));
 	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
 
-	chLicznikProbInicjacji = 5;
+	//chLicznikProbInicjacji = 5;
 	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
 	{
-		do
-		{
+		//do
+		//{
 			chErr = getKomunikacja().InicjujOdczytFloatFRAM(LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-			chLicznikProbInicjacji--;
+			//chLicznikProbInicjacji--;
 			if (chErr == ERR_OK)
 			{
-				chLicznikProbOdczytu = 5;
-				do {
+				//chLicznikProbOdczytu = 5;
+				//do {
 					chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-					chLicznikProbOdczytu--;
-				} while ((chErr != ERR_OK) && chLicznikProbOdczytu);	//kod błędu ERR_PROCES_TRWA mówiący że dane jeszcze nie są gotowe
+					//chLicznikProbOdczytu--;
+				//} while ((chErr != ERR_OK) && chLicznikProbOdczytu);	//kod błędu ERR_PROCES_TRWA mówiący że dane jeszcze nie są gotowe
 				m_stPID[n].fKp = fDane[0];			//FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
 				m_stPID[n].fTi = fDane[1];			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
 				m_stPID[n].fTd = fDane[2];			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
@@ -143,32 +143,32 @@ BOOL KonfigPID::OnInitDialog()
 				m_stPID[n].fMaxWyj = fDane[5];		//FA_USER_PID+20  //4U 
 				m_stPID[n].bZmieniony = FALSE;
 			}
-		} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
+		//} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
 	}
 
 	uint8_t chLiczbaFloat = LICZBA_REGULATOROW_PID / 4;
 	if (chLiczbaFloat * 4 < LICZBA_REGULATOROW_PID)
 		chLiczbaFloat++;
 
-	chLicznikProbInicjacji = 5;
-	do
-	{
-		chLicznikProbInicjacji--;
+	//chLicznikProbInicjacji = 5;
+	//do
+	//{
+		//chLicznikProbInicjacji--;
 		chErr = getKomunikacja().InicjujOdczytFloatFRAM(chLiczbaFloat, FAU_FILD_REGKAT_TYP);
 		if (chErr == ERR_OK)
 		{
-			chLicznikProbInicjacji = 5;
-			chLicznikProbOdczytu = 5;
-			do 
-			{
-				chLicznikProbOdczytu--;
+			//chLicznikProbInicjacji = 5;
+			//chLicznikProbOdczytu = 5;
+			//do 
+			//{
+				//chLicznikProbOdczytu--;
 				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, chLiczbaFloat);
-				if (chErr == ERR_OK)
-					chLicznikProbOdczytu = 5;
+				//if (chErr == ERR_OK)
+					//chLicznikProbOdczytu = 5;
 				
-			} while ((chErr != ERR_OK) && chLicznikProbOdczytu);
+			//} while ((chErr != ERR_OK) && chLicznikProbOdczytu);
 		}
-	} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
+	//} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
 
 	if (chErr == ERR_OK)
 	{
@@ -257,25 +257,25 @@ void KonfigPID::OnBnClickedOk()
 			fDane[3] = m_stPID[n].fOgrCalki;	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
 			fDane[4] = m_stPID[n].fMinWyj;
 			fDane[5] = m_stPID[n].fMaxWyj;
-			chLicznikProbZapisu = 5;
-			do
-			{
-				chLicznikProbZapisu--;
+			//chLicznikProbZapisu = 5;
+			//do
+			//{
+				//chLicznikProbZapisu--;
 				chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);				
 				if (chErr == ERR_OK)
 				{
-					chLicznikProbZapisu = 5;	//po udanym zapisie resetuj liczbę prób
-					chLicznikProbPotwierdzenia = 5;
-					do 
-					{
-						chLicznikProbPotwierdzenia--;
+					//chLicznikProbZapisu = 5;	//po udanym zapisie resetuj liczbę prób
+					//chLicznikProbPotwierdzenia = 5;
+					//do 
+					//{
+						//chLicznikProbPotwierdzenia--;
 						chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-						if (chErr == ERR_OK)
-							chLicznikProbPotwierdzenia = 5;
+						//if (chErr == ERR_OK)
+							//chLicznikProbPotwierdzenia = 5;
 						
-					} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
+					//} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
 				}
-			} while ((chErr!= ERR_OK) && chLicznikProbZapisu);
+			//} while ((chErr!= ERR_OK) && chLicznikProbZapisu);
 		}
 	}
 
@@ -290,25 +290,25 @@ void KonfigPID::OnBnClickedOk()
 	if (bZapiszCalkowita)
 	{
 		uint8_t chLiczbaFloat = getKomunikacja().SpakujU8doFloat(chDane, LICZBA_REGULATOROW_PID, fDane);
-		chLicznikProbZapisu = 5;
-		do
-		{
-			chLicznikProbZapisu--;
+		//chLicznikProbZapisu = 5;
+		//do
+		//{
+			//chLicznikProbZapisu--;
 			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, chLiczbaFloat, FAU_FILD_REGKAT_TYP);
 			if (chErr == ERR_OK)
 			{
-				chLicznikProbZapisu = 5;
-				chLicznikProbPotwierdzenia = 5;
-				do 
-				{
-					chLicznikProbPotwierdzenia--;
+				//chLicznikProbZapisu = 5;
+				//chLicznikProbPotwierdzenia = 5;
+				//do 
+				//{
+					//chLicznikProbPotwierdzenia--;
 					chErr = getKomunikacja().PotwierdzZapisDanych(FAU_FILD_REGKAT_TYP + chLiczbaFloat);
-					if (chErr == ERR_OK)
-						chLicznikProbPotwierdzenia = 5;
+					//if (chErr == ERR_OK)
+						//chLicznikProbPotwierdzenia = 5;
 					
-				} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
+				//} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
 			}
-		} while ((chErr != ERR_OK) && chLicznikProbZapisu);
+		//} while ((chErr != ERR_OK) && chLicznikProbZapisu);
 	}
 	CDialogEx::OnOK();
 }

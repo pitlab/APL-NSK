@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #define DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII	30
+#define ILOSC_OKRESOW	15
+
 // Okno dialogowe CKonfigTelemetrii
 
 class CKonfigTelemetrii : public CDialogEx
@@ -24,6 +26,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	int PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres);
 	uint16_t OkresDlaPozycji(int nPozycja);
+	void AktualizujZajetoscLacza();
 	uint8_t m_chIdZmiennej;
 	int m_nOkres;
 	CString m_strNazwaZmiennej;
@@ -32,6 +35,8 @@ protected:
 	int m_nIndeksZmiennej;
 	int m_nIndeksOkresu;
 	int m_nIndeksDronaWRoju;
+	CString m_strZajetosc;
+	CProgressCtrl m_ctrlZajetosc;
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -43,6 +48,7 @@ public:
 	afx_msg void OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLbnSelchangeOkresTelemetrii();
 	afx_msg void OnLbnSelchangeListaCzestotliwosci();
+
 };
 
 

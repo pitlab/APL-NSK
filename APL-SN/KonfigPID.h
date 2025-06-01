@@ -51,7 +51,6 @@ public:
 private:
 	int m_nBiezacyRegulator;
 	CTabCtrl m_ctrlKanalPID;
-	//PIDtabCtrl m_ctrlKanalPID;
 	//afx_msg void OnPaint();
 	CString m_strTI2;
 	CString m_strTI1;

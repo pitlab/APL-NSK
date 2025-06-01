@@ -52,6 +52,7 @@ CClassView::CClassView() noexcept
 
 CClassView::~CClassView()
 {
+	m_ClassViewImages.DeleteImageList();
 	m_bKoniecWatkuCzekaniaNaZmianePolaczenia = TRUE;
 	WaitForSingleObject(pWskWatkuCzekaniaNaPolaczenie, INFINITE);
 }
@@ -120,9 +121,6 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		pButton->SetImage(GetCmdMgr()->GetCmdImage(m_nCurrSort));
 		pButton->SetMessageWnd(this);
 	}
-
-	// Wprowadź dane statycznego widoku drzewa (fikcyjny kod, nic szczególnego)
-	//FillClassView();	
 	return 0;
 }
 
@@ -144,11 +142,11 @@ void CClassView::FillClassView()
 
 	HTREEITEM hRoj = m_wndClassView.InsertItem(_T("Rój"), 0, 0);
 
-	//wstaw jednego wirtualnego wrona aby był nawet bez połączenia z rzeczywistym
+	/*/wstaw jednego wirtualnego wrona aby był nawet bez połączenia z rzeczywistym
 	Wron cWron;
 	cWron.m_chAdres = 5;
 	cWron.m_strNazwa = " Wron wirtualny";
-	getKomunikacja().m_cRoj.vWron.push_back(cWron);
+	getKomunikacja().m_cRoj.vWron.push_back(cWron);*/
 	size_t LiczbaWronow = getKomunikacja().m_cRoj.vWron.size();
 
 	//wstaw do drzewa wszystkie wrony

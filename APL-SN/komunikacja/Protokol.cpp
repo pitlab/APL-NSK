@@ -438,8 +438,8 @@ uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t ch
 	*wskRamka++ = NAGLOWEK;
 	*wskRamka++ = chAdrOdb;
 	*wskRamka++ = chAdrNad;
-	//*wskRamka++ = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
-	*wskRamka++ = 0x12;
+	*wskRamka++ = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
+	//*wskRamka++ = 0x12;
 	*wskRamka++ = chPolecenie;
 	*wskRamka++ = chRozmiar;
 	for (n = 0; n < chRozmiar; n++)
