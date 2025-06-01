@@ -102,4 +102,6 @@ public:
 	afx_msg void OnBnClickedCheckKatowy2();
 	afx_msg void OnBnClickedCheckWylacz2();
 
+	afx_msg void OnTRBNThumbPosChangingSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTRBNThumbPosChangingSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
 };

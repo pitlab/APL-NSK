@@ -299,3 +299,6 @@ void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 }
 
 
+
+
+

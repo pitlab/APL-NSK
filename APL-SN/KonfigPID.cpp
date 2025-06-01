@@ -95,6 +95,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ1, &KonfigPID::OnBnClickedCheckWylacz1)
 	ON_BN_CLICKED(IDC_CHECK_KATOWY2, &KonfigPID::OnBnClickedCheckKatowy2)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ2, &KonfigPID::OnBnClickedCheckWylacz2)
+	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D1, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD1)
+	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D2, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2)
 END_MESSAGE_MAP()
 
 
@@ -151,14 +153,19 @@ BOOL KonfigPID::OnInitDialog()
 	chLicznikProbInicjacji = 5;
 	do
 	{
-		chErr = getKomunikacja().InicjujOdczytFloatFRAM(chLiczbaFloat, FAU_FILD_REGKAT_TYP);
 		chLicznikProbInicjacji--;
+		chErr = getKomunikacja().InicjujOdczytFloatFRAM(chLiczbaFloat, FAU_FILD_REGKAT_TYP);
 		if (chErr == ERR_OK)
 		{
+			chLicznikProbInicjacji = 5;
 			chLicznikProbOdczytu = 5;
-			do {
-				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, chLiczbaFloat);
+			do 
+			{
 				chLicznikProbOdczytu--;
+				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, chLiczbaFloat);
+				if (chErr == ERR_OK)
+					chLicznikProbOdczytu = 5;
+				
 			} while ((chErr != ERR_OK) && chLicznikProbOdczytu);
 		}
 	} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
@@ -236,7 +243,7 @@ void KonfigPID::OnBnClickedOk()
 {
 	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
 	uint8_t chDane[LICZBA_REGULATOROW_PID];
-	uint8_t chErr, chLicznikProb;
+	uint8_t chErr, chLicznikProbZapisu, chLicznikProbPotwierdzenia;
 	CString strLiczba;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
@@ -250,15 +257,25 @@ void KonfigPID::OnBnClickedOk()
 			fDane[3] = m_stPID[n].fOgrCalki;	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
 			fDane[4] = m_stPID[n].fMinWyj;
 			fDane[5] = m_stPID[n].fMaxWyj;
-			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-			if (chErr == ERR_OK)
+			chLicznikProbZapisu = 5;
+			do
 			{
-				chLicznikProb = 5;
-				do {
-					chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-					chLicznikProb--;
-				} while ((chErr == ERR_PROCES_TRWA) && chLicznikProb);
-			}
+				chLicznikProbZapisu--;
+				chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);				
+				if (chErr == ERR_OK)
+				{
+					chLicznikProbZapisu = 5;	//po udanym zapisie resetuj liczbę prób
+					chLicznikProbPotwierdzenia = 5;
+					do 
+					{
+						chLicznikProbPotwierdzenia--;
+						chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+						if (chErr == ERR_OK)
+							chLicznikProbPotwierdzenia = 5;
+						
+					} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
+				}
+			} while ((chErr!= ERR_OK) && chLicznikProbZapisu);
 		}
 	}
 
@@ -273,15 +290,25 @@ void KonfigPID::OnBnClickedOk()
 	if (bZapiszCalkowita)
 	{
 		uint8_t chLiczbaFloat = getKomunikacja().SpakujU8doFloat(chDane, LICZBA_REGULATOROW_PID, fDane);
-		chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, chLiczbaFloat, FAU_FILD_REGKAT_TYP);
-		if (chErr == ERR_OK)
+		chLicznikProbZapisu = 5;
+		do
 		{
-			chLicznikProb = 5;
-			do {
-				chErr = getKomunikacja().PotwierdzZapisDanych(FAU_FILD_REGKAT_TYP + chLiczbaFloat);
-				chLicznikProb--;
-			} while ((chErr == ERR_PROCES_TRWA) && chLicznikProb);
-		}
+			chLicznikProbZapisu--;
+			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, chLiczbaFloat, FAU_FILD_REGKAT_TYP);
+			if (chErr == ERR_OK)
+			{
+				chLicznikProbZapisu = 5;
+				chLicznikProbPotwierdzenia = 5;
+				do 
+				{
+					chLicznikProbPotwierdzenia--;
+					chErr = getKomunikacja().PotwierdzZapisDanych(FAU_FILD_REGKAT_TYP + chLiczbaFloat);
+					if (chErr == ERR_OK)
+						chLicznikProbPotwierdzenia = 5;
+					
+				} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
+			}
+		} while ((chErr != ERR_OK) && chLicznikProbZapisu);
 	}
 	CDialogEx::OnOK();
 }
@@ -499,7 +526,7 @@ void KonfigPID::OnEnChangeEditLimitCalki2()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na zmianę położenia suwaka filtra D
+// Reakcja na potrzebę przerywowania suwaka filtra D
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
@@ -513,16 +540,31 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 	else
 		fCzas = 0.0f;
 	m_strPodstFiltraD1.Format(_T("Filtr D: %d (%.0f ms)"), m_PodstFiltraD1, fCzas);
+	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka filtra D
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnTRBNThumbPosChangingSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	// Ta funkcja wymaga systemu Windows Vista lub nowszego.
+	// Symbol _WIN32_WINNT musi być >= 0x0600.
+	NMTRBTHUMBPOSCHANGING* pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING*>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
 	m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD = m_PodstFiltraD1;
 	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
-	UpdateData(FALSE);
 	*pResult = 0;
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na zmianę położenia suwaka filtra D
+// Reakcja na potrzebę przerysowania suwaka filtra D
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
@@ -535,14 +577,28 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 		fCzas = m_PodstFiltraD2 / 200.f * 1000;
 	else
 		fCzas = 0.0f;
-	m_strPodstFiltraD2.Format(_T("Filtr D: %d (%.0f ms)"), m_PodstFiltraD2, fCzas);
-	m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD = m_PodstFiltraD2;
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_strPodstFiltraD2.Format(_T("Filtr D: %d (%.0f ms)"), m_PodstFiltraD2, fCzas);	
 	UpdateData(FALSE);
 	*pResult = 0;
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka filtra D
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	// Ta funkcja wymaga systemu Windows Vista lub nowszego.
+	// Symbol _WIN32_WINNT musi być >= 0x0600.
+	NMTRBTHUMBPOSCHANGING* pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING*>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
+	m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD = m_PodstFiltraD2;
+	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	*pResult = 0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Reakcja na zmianę stanu checkboxa właczajcego regulator kąta
@@ -593,3 +649,6 @@ void KonfigPID::OnBnClickedCheckWylacz2()
 	m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony = m_bWylaczony2;
 	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
 }
+
+
+
