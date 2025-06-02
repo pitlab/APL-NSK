@@ -15,7 +15,6 @@ BOOL CKomunikacja::m_bKoniecWatkuDekoderaPolecen = FALSE;
 uint8_t CKomunikacja::m_chTypPolaczenia = ETHS;
 HANDLE CKomunikacja::m_hZdarzeniePaczkaDanych = NULL;
 HANDLE CKomunikacja::m_hZdarzenieZmianaPolaczeniaWrona = NULL;
-//HANDLE CKomunikacja::m_hZdarzeniePaczkaTelemetrii = NULL;
 int	CKomunikacja::m_LicznikInstancji = 0;
 
 

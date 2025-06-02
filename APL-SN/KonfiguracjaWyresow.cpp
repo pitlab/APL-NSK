@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_SETCURSOR()
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnItemchangedListaDanych)
 END_MESSAGE_MAP()
 
 
@@ -62,7 +63,7 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
 
 	//CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
-	m_bKursorPrzeciaganie = TRUE;
+	//m_bKursorPrzeciaganie = TRUE;
 	//delete pImageList;
 	*pResult = 0;
 }
@@ -82,6 +83,7 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Inicjalizacja zawartości okna dialogowego
 // Zwraca: TRUE
@@ -90,28 +92,36 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	CString strNapis;
-	int nLiczbaZmienych = 5;
-
-
-	// TODO:  Dodaj tutaj dodatkową inicjację
-	//CAPLSNDoc* pDoc = CAPLSNView::GetDocument();
-	//nLiczbaZmienych = (int)pDoc->m_vLog.size();
-	//CAPLSNView*  pView;
-	//pView->GetDocument()->m_vLog.size();
+	int nRozmiarZmiennej;
+	int nLiczbaDanychTele;
+	int nLicznikZmiennych = 0;
 	
 	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 180);
 	m_cListaDanych.InsertColumn(1, _T("Liczba pomiarów"), LVCFMT_CENTER, 90);
 	
-	for (int n = 0; n < nLiczbaZmienych; n++)
+	//czy są jakieś dane?
+	nLiczbaDanychTele = (int)getProtokol().m_vDaneTelemetryczne.size();
+	if (nLiczbaDanychTele)
 	{
-		//for (int x = 0; x < DLUGOSC_NAZWY; x++)
-			//strNapis.Insert(x, (wchar_t)pView->GetDocument()->m_vLog[n].chNazwaZmiennej[x]);
-		strNapis.Format(_T("Dane %d"), n);
-		m_cListaDanych.InsertItem(n, strNapis);
-
-		//strNapis.Format(_T("%d"), pView->GetDocument()->m_vLog[n].vfWartosci.size());
-		strNapis.Format(_T("%d"), n * 100);
-		m_cListaDanych.SetItemText(n, 1, strNapis);
+		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+		{
+			//policz niezerowe dane dla tej zmiennej
+			nRozmiarZmiennej = 0;
+			for (int x = 0; x < nLiczbaDanychTele; x++)
+			{
+				if (getProtokol().m_vDaneTelemetryczne[x].dane[n])
+					nRozmiarZmiennej++;
+			}
+			
+			//na listę wstaw tylko istniejace dane
+			if (nRozmiarZmiennej)
+			{
+				m_cListaDanych.InsertItem(nLicznikZmiennych, getKomunikacja().m_strNazwyZmiennychTele[n]);
+				strNapis.Format(_T("%d"), nRozmiarZmiennej);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
+				nLicznikZmiennych++;
+			}
+		}
 	}
 	
 	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
@@ -123,7 +133,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
 
 	m_DropTarget.Register(this);
-	m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
+	//m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -168,21 +178,23 @@ void KonfiguracjaWyresow::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
+
 void KonfiguracjaWyresow::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	m_bPrzeciaganieMysza = TRUE;
-	SetCapture();
+	//SetCapture();
 
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
+
 
 
 void KonfiguracjaWyresow::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	m_bPrzeciaganieMysza = FALSE;
-	ReleaseCapture();
+	//ReleaseCapture();
 	m_bKursorPrzeciaganie = FALSE;
 	CDialogEx::OnLButtonUp(nFlags, point);
 }
@@ -195,7 +207,7 @@ BOOL KonfiguracjaWyresow::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	if (m_bKursorPrzeciaganie)
 	{
-		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND));
+		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
 		return TRUE;
 	}
 	else
@@ -206,4 +218,13 @@ BOOL KonfiguracjaWyresow::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 
 	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
+}
+
+
+
+void KonfiguracjaWyresow::OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	*pResult = 0;
 }

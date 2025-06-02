@@ -15,9 +15,7 @@ class CProtokol //: public CAsyncSocket
 public:
 	CProtokol();	//noexcept;
 	virtual ~CProtokol();
-	//std::vector< BinaryFrame > m_inputTelemetryData;	//Kolejka danych telemetrycznych przychodz¹cych z urz¹dzenia.
-	//std::vector< BinaryFrame > m_inputAnswerData;		//Kolejka danych bêd¹cych odpowiedziami na polecenia 
-	static std::vector <_Telemetria> m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
+	static std::vector <_TelemetriaUporzadkowana> m_vDaneTelemetryczne;	//posortowane dane telemetryczne
 	static std::vector <_Ramka> m_vRamkaPolecenia;
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;

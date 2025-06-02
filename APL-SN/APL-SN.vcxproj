@@ -195,7 +195,6 @@
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
     <ClInclude Include="DefinicjeWrona.h" />
-    <ClInclude Include="komunikacja\DekoderTelemetrii.h" />
     <ClInclude Include="komunikacja\GniazdoSieci.h" />
     <ClInclude Include="komunikacja\Komunikacja.h" />
     <ClInclude Include="komunikacja\KomunikatySieci.h" />
@@ -234,7 +233,6 @@
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />
     <ClCompile Include="DefinicjeWrona.cpp" />
-    <ClCompile Include="komunikacja\DekoderTelemetrii.cpp" />
     <ClCompile Include="komunikacja\GniazdoSieci.cpp" />
     <ClCompile Include="komunikacja\Komunikacja.cpp" />
     <ClCompile Include="komunikacja\PortSzeregowy.cpp" />

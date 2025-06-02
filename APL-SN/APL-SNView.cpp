@@ -540,7 +540,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 {
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
 	ASSERT_VALID(pRenderTarget);
-	CD2DPointF pktfPoczatek, pktfKoniec;
+	//CD2DPointF pktfPoczatek, pktfKoniec;
 	CRect okno;
 	GetClientRect(okno);
 	m_bOknoGotowe = TRUE;
@@ -553,18 +553,17 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	if (m_bRysujTelemetrie)
 	{
 		m_bRysujTelemetrie = FALSE;
-		long lLiczbaRamek = (long)getProtokol().m_vRamkaTelemetryczna.size();
-		_Telemetria stDaneTele;
 
 		//wykresy akcelerometru
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 0, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 1, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, 2, pRenderTarget, m_pBrushWykresuB);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 0, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 1, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 2, pRenderTarget, m_pBrushWykresuB);
 
 		//wykresy AHRS
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetrii(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vRamkaTelemetryczna, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
+		
 	}
 
 	//rysuj wykres logu jeżeli jest coś wczytane
@@ -624,37 +623,30 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float 
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	float fZmienna;
-	long lLiczbaRamek = (long)vRamkaTele.size();
-	_Telemetria stDaneTele;
-	int32_t nIndexRamki;
+	long lLiczbaRamek = (long)vDaneTele.size();
+	_TelemetriaUporzadkowana stDaneTele;
+	int32_t nIndexRamki = lLiczbaRamek - 1;
 	CD2DPointF pktfPoczatek, pktfKoniec;
 
-	long lErr;
-	nIndexRamki = lLiczbaRamek - 1;
 	pktfPoczatek.x = fHscroll;
 	pktfKoniec.x = (1.0f + fHscroll) * fSkalaX;
 	pktfPoczatek.y = fVpos;
 
-	do    //sprawdzaj wektor ramki od końca aż napełni się wektor punktów wykresu
+	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
-		stDaneTele = vRamkaTele[nIndexRamki--];
-		if (!stDaneTele.dane.empty())
+		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+		if (fZmienna)
 		{
-			lErr = m_cDekoderTelemetrii.PobierzZmienna(&stDaneTele, nIndeksZmiennej, &fZmienna);
-			if (lErr == ERR_OK)
-			{
-				pktfKoniec.x += fSkalaX;
-				pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
-				pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
-				pktfPoczatek = pktfKoniec;
-			}
+			pktfKoniec.x += fSkalaX;
+			pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+			pktfPoczatek = pktfKoniec;
 		}
 	} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
 }
-
 
 
 /// <summary>
@@ -767,9 +759,9 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 	case SB_LEFT:	m_nBiezacyScrollPoziomo = 0;	break;	// Scroll to far left.
 	case SB_ENDSCROLL:	break;	//End scroll.
-	case SB_LINELEFT:	if (m_nBiezacyScrollPoziomo > nKrok)	m_nBiezacyScrollPoziomo -= nKrok;	break;// Scroll left.
+	case SB_LINELEFT:	if (m_nBiezacyScrollPoziomo > (int)nKrok)	m_nBiezacyScrollPoziomo -= nKrok;	break;// Scroll left.
 	case SB_LINERIGHT:	m_nBiezacyScrollPoziomo += nKrok;	break;	//Scroll right.
-	case SB_PAGELEFT:	if (m_nBiezacyScrollPoziomo > nStrona)	m_nBiezacyScrollPoziomo -= nStrona;	break;	//Scroll one page left.
+	case SB_PAGELEFT:	if (m_nBiezacyScrollPoziomo > (int)nStrona)	m_nBiezacyScrollPoziomo -= nStrona;	break;	//Scroll one page left.
 	case SB_PAGERIGHT:	m_nBiezacyScrollPoziomo += nStrona;	break;	//Scroll one page right.
 	case SB_RIGHT:	//Scroll to far right.
 	case SB_THUMBPOSITION:	m_nBiezacyScrollPoziomo = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.

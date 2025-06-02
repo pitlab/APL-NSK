@@ -7,7 +7,7 @@
 #include "komunikacja/Komunikacja.h"
 #include "CDaneFlash.h"
 #include "Rejestr.h"
-#include "komunikacja/DekoderTelemetrii.h"
+//#include "komunikacja/DekoderTelemetrii.h"
 #include <vector>
 
 class CAPLSNView : public CView
@@ -52,7 +52,7 @@ protected:
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
 	CProtokol m_cProtokol;
-	CDekoderTelemetrii m_cDekoderTelemetrii;
+	//CDekoderTelemetrii m_cDekoderTelemetrii;
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
@@ -107,7 +107,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 protected:
 	afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
-	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);

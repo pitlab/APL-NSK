@@ -31,10 +31,9 @@ struct _Ramka
 	std::vector <uint8_t> dane;
 };
 
-struct _Telemetria
+
+struct _TelemetriaUporzadkowana
 {
 	uint8_t chZnakCzasu = 0;
-	uint8_t chAdrNadawcy = 0;
-	uint8_t chBityDanych[LICZBA_BAJTOW_ID_TELEMETRII];
-	std::vector <float> dane;
+	float dane[MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 };

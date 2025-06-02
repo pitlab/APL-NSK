@@ -206,6 +206,7 @@ protected:
 //	afx_msg LRESULT OnAfxPolaczonoWrona(WPARAM wParam, LPARAM lParam);
 public:
 
+	afx_msg void OnHdnEnddragListaDanych(NMHDR* pNMHDR, LRESULT* pResult);
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -219,6 +220,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 
+	ON_NOTIFY(HDN_ENDDRAG, 0, &CAboutDlg::OnHdnEnddragListaDanych)
 END_MESSAGE_MAP()
 
 // Polecenie aplikacji uruchamiające okno dialogowe
@@ -346,4 +348,12 @@ void CAPLSNApp::OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI)
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
+}
+
+
+void CAboutDlg::OnHdnEnddragListaDanych(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	*pResult = 0;
 }

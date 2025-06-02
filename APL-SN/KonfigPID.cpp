@@ -243,7 +243,7 @@ void KonfigPID::OnBnClickedOk()
 {
 	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
 	uint8_t chDane[LICZBA_REGULATOROW_PID];
-	uint8_t chErr, chLicznikProbZapisu, chLicznikProbPotwierdzenia;
+	uint8_t chErr, chLicznikProbPotwierdzenia;
 	CString strLiczba;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki

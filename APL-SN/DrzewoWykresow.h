@@ -3,11 +3,16 @@ class DrzewoWykresow :  public CTreeCtrl
 {
 public:
 	HTREEITEM m_hGlownyWezel;	//g³ówny pieñ drzewa
+	struct stZmienna_t
+	{
+		HTREEITEM hZmiennej;
+		uint8_t chIdZmiennej;
+	};
 
 	struct stGrupaWykresow_t	
 	{
-	HTREEITEM hGalazWykresow;
-	std::vector<uint8_t> vIdZmiennych;
+		HTREEITEM hGalazWykresow = 0;
+		std::vector<stZmienna_t> vZmienne;
 	};
 
 
@@ -22,9 +27,8 @@ public:
 public:
 	int DodajWspolny();
 	int DodajOsobny();
-	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
-	afx_msg void OnNcMouseHover(UINT nFlags, CPoint point);
+
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 

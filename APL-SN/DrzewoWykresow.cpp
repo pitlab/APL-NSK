@@ -6,11 +6,9 @@ BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 	ON_COMMAND(ID_DODAJ_OSOBNY, &DrzewoWykresow::OnDodajOsobny)
 	ON_COMMAND(ID_USUN_WYKRES, &DrzewoWykresow::OnUsunWykres)
 	ON_UPDATE_COMMAND_UI(ID_USUN_WYKRES, &DrzewoWykresow::OnUpdateUsunWykres)
-	ON_WM_DROPFILES()
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(TVN_BEGINDRAG, &DrzewoWykresow::OnTvnBegindrag)
-	ON_WM_MOUSEHOVER()
-	ON_WM_NCMOUSEHOVER()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -71,12 +69,11 @@ void DrzewoWykresow::OnUpdateUsunWykres(CCmdUI* pCmdUI)
 
 int DrzewoWykresow::DodajWspolny()
 {
-	// TODO: Dodaj kod implementacji w tym miejscu.
 	stGrupaWykresow_t stWykresow;
 
 	int n = 1 + (int)vGrupaWykresow.size();
 	CString strNazwaWykresu;
-	strNazwaWykresu.Format(_T("Wykres wspolny %d"), n);
+	strNazwaWykresu.Format(_T("Wspólna skala %d"), n);
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
 	vGrupaWykresow.push_back(stWykresow);
 	return 0;
@@ -85,37 +82,17 @@ int DrzewoWykresow::DodajWspolny()
 
 int DrzewoWykresow::DodajOsobny()
 {
-	// TODO: Dodaj kod implementacji w tym miejscu.
 	stGrupaWykresow_t stWykresow;
 
 	int n = 1 + (int)vGrupaWykresow.size();
 	CString strNazwaWykresu;
-	strNazwaWykresu.Format(_T("Wykres ososbny %d"), n);
+	strNazwaWykresu.Format(_T("Osobne skale %d"), n);
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
 	vGrupaWykresow.push_back(stWykresow);
 	return 0;
 }
 
 
-void DrzewoWykresow::OnDropFiles(HDROP hDropInfo)
-{
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
-		// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
-	CString    sFile;
-	DWORD      nBuffer = 0;
-	UINT nPrzeciaganyhcPlikow = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
-	if (nPrzeciaganyhcPlikow > 0)
-	{
-		for (int i = 0; i <= WM_DROPFILES; i++)
-			ChangeWindowMessageFilter(i, MSGFLT_ADD);
-		nBuffer = DragQueryFile(hDropInfo, 0, sFile.GetBuffer(nBuffer + 1), nBuffer + 1);
-		sFile.ReleaseBuffer();
-	}
-	DragFinish(hDropInfo);	//zwolnij pamiêæ
-
-
-	CTreeCtrl::OnDropFiles(hDropInfo);
-}
 
 
 void DrzewoWykresow::OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult)
@@ -129,19 +106,25 @@ void DrzewoWykresow::OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult)
 
 
 
-void DrzewoWykresow::OnMouseHover(UINT nFlags, CPoint point)
+
+void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
+	HTREEITEM item = HitTest(point);
+	stZmienna_t stZmienna;
+	CString strNazwaZmiennej = _T("abc");
 
-	CTreeCtrl::OnMouseHover(nFlags, point);
-}
-
-
-void DrzewoWykresow::OnNcMouseHover(UINT nFlags, CPoint point)
-{
-	// Ta funkcja wymaga systemu Windows 2000 lub nowszego.
-	// Symbole _WIN32_WINNT oraz WINVER musz¹ byæ >= 0x0500.
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
-
-	CTreeCtrl::OnNcMouseHover(nFlags, point);
+	int nRozmiar = (int)vGrupaWykresow.size();
+	for (int n = 0; n < nRozmiar; n++)
+	{
+		if (vGrupaWykresow[n].hGalazWykresow == item)
+		{
+			stZmienna.hZmiennej = InsertItem(strNazwaZmiennej, 2, 2, item);
+			vGrupaWykresow[n].vZmienne.push_back(stZmienna);			
+			Expand(vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
+			Invalidate();
+			UpdateWindow();
+		}
+	}
+	CTreeCtrl::OnLButtonUp(nFlags, point);
 }
