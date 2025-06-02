@@ -8,6 +8,9 @@ BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 	ON_UPDATE_COMMAND_UI(ID_USUN_WYKRES, &DrzewoWykresow::OnUpdateUsunWykres)
 	ON_WM_DROPFILES()
 	ON_WM_CONTEXTMENU()
+	ON_NOTIFY_REFLECT(TVN_BEGINDRAG, &DrzewoWykresow::OnTvnBegindrag)
+	ON_WM_MOUSEHOVER()
+	ON_WM_NCMOUSEHOVER()
 END_MESSAGE_MAP()
 
 
@@ -109,5 +112,36 @@ void DrzewoWykresow::OnDropFiles(HDROP hDropInfo)
 		sFile.ReleaseBuffer();
 	}
 	DragFinish(hDropInfo);	//zwolnij pamiêæ
+
+
 	CTreeCtrl::OnDropFiles(hDropInfo);
+}
+
+
+void DrzewoWykresow::OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obs³ugi powiadamiania kontrolki
+	*pResult = 0;
+}
+
+
+
+
+
+void DrzewoWykresow::OnMouseHover(UINT nFlags, CPoint point)
+{
+	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
+
+	CTreeCtrl::OnMouseHover(nFlags, point);
+}
+
+
+void DrzewoWykresow::OnNcMouseHover(UINT nFlags, CPoint point)
+{
+	// Ta funkcja wymaga systemu Windows 2000 lub nowszego.
+	// Symbole _WIN32_WINNT oraz WINVER musz¹ byæ >= 0x0500.
+	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
+
+	CTreeCtrl::OnNcMouseHover(nFlags, point);
 }

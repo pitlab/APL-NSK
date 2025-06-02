@@ -23,5 +23,8 @@ public:
 	int DodajWspolny();
 	int DodajOsobny();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
+	afx_msg void OnNcMouseHover(UINT nFlags, CPoint point);
 };
 

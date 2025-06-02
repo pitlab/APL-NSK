@@ -22,7 +22,8 @@ KonfiguracjaWyresow::KonfiguracjaWyresow(CWnd* pParent /*=nullptr*/)
 
 KonfiguracjaWyresow::~KonfiguracjaWyresow()
 {
-	m_cDrzewoWykresow.DeleteAllItems();
+	if (m_cDrzewoWykresow)
+		m_cDrzewoWykresow.DeleteAllItems();
 }
 
 void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
@@ -40,6 +41,10 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(BCN_DROPDOWN, IDOK, &KonfiguracjaWyresow::OnDropdownIdok)
 //obsługa komunikatu
 	ON_WM_DROPFILES()
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
 
@@ -57,7 +62,7 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
 
 	//CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
-
+	m_bKursorPrzeciaganie = TRUE;
 	//delete pImageList;
 	*pResult = 0;
 }
@@ -72,6 +77,7 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	m_bKursorPrzeciaganie = TRUE;
 	*pResult = 0;
 }
 
@@ -147,3 +153,57 @@ void KonfiguracjaWyresow::OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+
+
+void KonfiguracjaWyresow::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	if (m_bPrzeciaganieMysza)
+	{
+		m_cpPozycjaMyszy = point;
+		Invalidate();
+		UpdateWindow();
+	}
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void KonfiguracjaWyresow::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	m_bPrzeciaganieMysza = TRUE;
+	SetCapture();
+
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void KonfiguracjaWyresow::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	m_bPrzeciaganieMysza = FALSE;
+	ReleaseCapture();
+	m_bKursorPrzeciaganie = FALSE;
+	CDialogEx::OnLButtonUp(nFlags, point);
+}
+
+
+
+//przesłania zmianę kursora
+BOOL KonfiguracjaWyresow::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	if (m_bKursorPrzeciaganie)
+	{
+		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND));
+		return TRUE;
+	}
+	else
+	{
+		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+		return TRUE;
+	}
+
+
+	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
+}

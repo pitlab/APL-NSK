@@ -27,7 +27,9 @@ protected:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult);
-
+	BOOL m_bPrzeciaganieMysza{FALSE};
+	BOOL m_bKursorPrzeciaganie{ FALSE };
+	CPoint m_cpPozycjaMyszy;
 	//CAPLSNDoc* CAPLSNView::GetDocument() const;
 
 
@@ -36,4 +38,8 @@ public:
 	DrzewoWykresow m_cDrzewoWykresow;
 	COleDropTarget m_DropTarget;
 //	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 };
