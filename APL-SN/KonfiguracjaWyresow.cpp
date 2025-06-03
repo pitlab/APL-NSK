@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include "APL-SN.h"
-
 #include "KonfiguracjaWyresow.h"
 #include "afxdialogex.h"
 
@@ -99,21 +98,21 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	CString strNapis;
 	int nRozmiarZmiennej;
-	int nLiczbaDanychTele;
+	int nLiczbaDanych;
 	int nLicznikZmiennych = 0;
 	
 	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 180);
 	m_cListaDanych.InsertColumn(1, _T("Liczba pomiarów"), LVCFMT_CENTER, 90);
 	
 	//czy są jakieś dane?
-	nLiczbaDanychTele = (int)getProtokol().m_vDaneTelemetryczne.size();
-	if (nLiczbaDanychTele)
+	nLiczbaDanych = (int)getProtokol().m_vDaneTelemetryczne.size();
+	if (nLiczbaDanych)
 	{
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
 			//policz niezerowe dane dla tej zmiennej
 			nRozmiarZmiennej = 0;
-			for (int x = 0; x < nLiczbaDanychTele; x++)
+			for (int x = 0; x < nLiczbaDanych; x++)
 			{
 				if (getProtokol().m_vDaneTelemetryczne[x].dane[n])
 					nRozmiarZmiennej++;
@@ -129,6 +128,29 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 			}
 		}
 	}
+	/*
+	//do listy dodaj zmiene z logu
+	//AfxGetApp()->GetFirstDocTemplatePosition();
+	//(CAPLSNDoc*) pDoc = CAPLSNDoc::CDocument::GetFirstDocPosition();
+	POSITION Pos = AfxGetApp()->GetFirstDocTemplatePosition();
+	CDocTemplate* pDocTmpl = AfxGetApp()->GetNextDocTemplate(Pos);
+	POSITION PosDoc = pDocTmpl->GetFirstDocPosition();
+	//https://www.codeproject.com/Tips/5349107/Activate-Document-Window-in-MDI-Application
+	if (PosDoc != NULL)
+	{
+		CAPLSNDoc* pDoc = pDocTmpl->GetNextDoc(PosDoc);
+		// CDocument* pDoc = pDocTmpl->GetNextDoc(PosDoc);
+		//nLiczbaDanych = (int)GetDocument()->m_vLog.size();
+		nLiczbaDanych = (int)pDoc->m_vLog.size();
+
+		for (int n = 0; n < nLiczbaDanych; n++)
+		{
+			m_cListaDanych.InsertItem(n, pDoc->m_vLog[n].strNazwaZmiennej);
+			nRozmiarZmiennej = pDoc->m_vLog[n].vfWartosci.size();
+			strNapis.Format(_T("%d"), nRozmiarZmiennej);
+			m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
+		}
+	}*/
 	
 	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 

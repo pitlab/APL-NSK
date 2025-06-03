@@ -7,8 +7,14 @@
 #include "komunikacja/Komunikacja.h"
 #include "CDaneFlash.h"
 #include "Rejestr.h"
-//#include "komunikacja/DekoderTelemetrii.h"
+#include "CkonfigTelemetrii.h"
+#include "KonfiguracjaWyresow.h"
+#include "KonfigRejestratora.h"
 #include <vector>
+
+#define MIEJSCE_MIEDZY_WYKRESAMI	5
+#define MIEJSCE_PRZED_WYKRESEM		30
+
 
 class CAPLSNView : public CView
 
@@ -52,7 +58,10 @@ protected:
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
 	CProtokol m_cProtokol;
-	//CDekoderTelemetrii m_cDekoderTelemetrii;
+	KonfiguracjaWyresow m_cKonfiguracjaWykresow;
+	CKonfigTelemetrii m_cKonfigTelemetrii;
+	KonfigRejestratora m_cKonfigRejestratora;
+
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
@@ -68,6 +77,7 @@ protected:
 	CD2DSolidColorBrush* m_pBrushWykresuR;
 	CD2DSolidColorBrush* m_pBrushWykresuG;
 	CD2DSolidColorBrush* m_pBrushWykresuB;
+	CD2DSolidColorBrush* m_pBrushOsiWykresu;
 	CD2DLinearGradientBrush* m_pLinearGradientBrush;
 	float m_fZoomPoziomo;
 	float m_fZoomPionowo;
@@ -80,12 +90,17 @@ protected:
 	int m_nMaxScrollPoziomo;
 	int m_nBiezacyScrollPoziomo;
 
+
 public:
 	uint32_t m_nNumerPortuCom;
 	uint32_t m_nTypPolaczenia;	//0=UART, 1=ETH
-	uint8_t m_chNumerIP[4];	
+	uint8_t m_chNumerIP[4] = {0,0,0,0};
 	uint32_t m_nPredkoscPortuCom;
 	uint32_t m_nNumerPortuEth;
+
+	void RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujOsieGrupyWykresow(CRect okno, int nVPosStart, int nVPosEnd, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
@@ -107,8 +122,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 protected:
 	afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
-	void RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	
 public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -116,6 +130,12 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnOleInsertNew();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnKonfigWykresow();
+	afx_msg void OnUpdateKonfigWykresow(CCmdUI* pCmdUI);
+	afx_msg void OnKonfigTelemetrii();
+	afx_msg void OnUpdateKonfigTelemetrii(CCmdUI* pCmdUI);
+	afx_msg void OnKonfigRejestratora();
+	afx_msg void OnUpdateKonfigRejestratora(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

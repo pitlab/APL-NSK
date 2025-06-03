@@ -51,6 +51,12 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_WM_HSCROLL()
 	ON_COMMAND(ID_OLE_INSERT_NEW, &CAPLSNView::OnOleInsertNew)
 	ON_WM_DROPFILES()
+	ON_COMMAND(ID_KONFIG_WYKRESOW, &CAPLSNView::OnKonfigWykresow)
+	ON_UPDATE_COMMAND_UI(ID_KONFIG_WYKRESOW, &CAPLSNView::OnUpdateKonfigWykresow)
+	ON_COMMAND(ID_KONFIG_TELEMETRII, &CAPLSNView::OnKonfigTelemetrii)
+	ON_UPDATE_COMMAND_UI(ID_KONFIG_TELEMETRII, &CAPLSNView::OnUpdateKonfigTelemetrii)
+	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnKonfigRejestratora)
+	ON_UPDATE_COMMAND_UI(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnUpdateKonfigRejestratora)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -59,9 +65,13 @@ CAPLSNView::CAPLSNView() noexcept
 : m_bPolaczono(FALSE)
 , m_chAdresAutopilota(2)
 , m_nTypPolaczenia(UART)
+, m_nPredkoscPortuCom(0)
+, m_nNumerPortuCom(0)
+, m_nNumerPortuEth(0)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
+, m_bKoniecWatkuPaskaPostepu(FALSE)
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
 , m_nVscroll(0)
@@ -69,6 +79,12 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nIloscDanychWykresu(0)
 , m_nMaxScrollPoziomo(0)
 , m_nBiezacyScrollPoziomo(0)
+, m_sLiczbaFragmentowPaskaPostepu(0)
+, m_sBiezacyStanPaskaPostepu(0)
+, m_nSzerokoscOkna(0)
+//, m_chNumerIP(0)
+, pWskWatkuPaskaPostepu(0)
+, pWskWatkuOdswiezaniaTelemetrii(0)
 {
 	getKomunikacja().m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 	// Enable D2D support for this window:
@@ -79,7 +95,8 @@ CAPLSNView::CAPLSNView() noexcept
 	m_pBrushWykresuR = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Red));
 	m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
 	m_pBrushWykresuB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
-	//m_pBrushWykresuR
+	m_pBrushOsiWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
+	
 	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 12);
 
 	m_pTextFormat->Get()->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -95,20 +112,19 @@ CAPLSNView::CAPLSNView() noexcept
 }
 
 
+
 CAPLSNView::~CAPLSNView()
 {
 	if (m_bPolaczono)
 	{
-		//CKomunikacja m_cKomunikacja = getKomunikacja();
 		getKomunikacja().Rozlacz();
 	}
 }
 
 
+
 BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
 	//  styl kaskadowy CREATESTRUCT
 	m_cObslugaRejestru.CzytajRejestrIP(L"AdresIP", m_chNumerIP);
@@ -142,8 +158,7 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-// Rysowanie obiektu CAPLSNView
-
+// Rysowanie obiektu CAPLSNView - docelowo do usunięcia
 void CAPLSNView::OnDraw(CDC* pDC)
 {
 	int32_t x, y;
@@ -175,7 +190,6 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		pDoc->m_bZdjecieGotowe = FALSE;
 	}
 
-
 	//rysuj pasek postepu
 	if (m_bRysujPasekPostepu)
 	{
@@ -186,8 +200,188 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		prost.right = (uint32_t)(m_sBiezacyStanPaskaPostepu * fPrzyrost);
 		pDC->Rectangle(&prost);
 	}
+}
 
-	
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Główna funkcja rysujaca dokument wykorzystujaca Direct 2D
+// Parametry: 
+//  wParam - ?
+//  lParam - wskaźnik na CHwndRenderTarget
+// zwraca: komunkat systemowy
+///////////////////////////////////////////////////////////////////////////////////////////////////
+afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
+{
+	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
+	ASSERT_VALID(pRenderTarget);
+	int nGora, nDol;
+	int nLiczbaWykresow;
+	int nIdZmiennej;
+	float fMinWykresu = 0.0f, fMaxWykresu = 0.0f;
+	CRect okno;
+	GetClientRect(okno);
+	m_bOknoGotowe = TRUE;
+
+	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
+	float fSkalaX = m_fZoomPoziomo;
+	float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+
+	//rysowanie wykresów telemetrii
+	if (m_bRysujTelemetrie)
+	{
+		m_bRysujTelemetrie = FALSE;
+
+		//rysuj okna grup wykresów
+		int nLiczbaGrupWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow.size();
+		nGora = MIEJSCE_MIEDZY_WYKRESAMI;
+		for (int n = 0; n < nLiczbaGrupWykresow; n++)
+		{
+			nDol = (n + 1) * okno.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;
+
+			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+			{
+				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
+				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
+				for (int m = 0; m < nLiczbaWykresow; m++)
+				{
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin < fMinWykresu)
+						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
+						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
+				}
+
+				for (int m = 0; m < nLiczbaWykresow; m++)
+				{
+					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
+					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora)/2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+				}
+			}			
+			RysujOsieGrupyWykresow(okno, nGora, nDol, pRenderTarget, m_pBrushOsiWykresu);
+			nGora = nDol + MIEJSCE_MIEDZY_WYKRESAMI;
+		}
+
+		/*/wykresy akcelerometru
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 0, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 1, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 2, pRenderTarget, m_pBrushWykresuB);
+
+		//wykresy AHRS
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
+		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB); */
+	}
+
+	//rysuj wykres logu jeżeli jest coś wczytane
+	RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
+	return TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje wykres logu pobrany z dokumentu
+// Parametry:
+//  okno - obszar rysowania
+//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
+//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
+//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
+//  nIndeksZmiennej - indeks zmiennej w logu
+//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
+//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	CD2DPointF pktfPoczatek, pktfKoniec;
+
+	CAPLSNDoc* pDoc = GetDocument();
+	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
+	{
+		m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
+		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
+		float fSkalaX = m_fZoomPoziomo;
+		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+		pktfPoczatek.x = 0.0f;
+		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
+		for (int n = 1; n < m_nIloscDanychWykresu; n++)
+		{
+			pktfKoniec.x = (float)(n - m_nBiezacyScrollPoziomo) * fSkalaX;
+			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
+			pktfPoczatek = pktfKoniec;
+		}
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje wykres logu pobrany z telemetrii
+// Parametry:
+//  okno - obszar rysowania
+//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
+//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
+//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
+//  vRamkaTele - wektor zmiennych telemetrycznych z którego trzeba wyłuskać potrzebna dane
+//  nIndeksZmiennej - indeks zmiennej do wyświetlenia
+//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
+//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	float fZmienna;
+	long lLiczbaRamek = (long)vDaneTele.size();
+	if (!lLiczbaRamek)
+		return;
+	_TelemetriaUporzadkowana stDaneTele;
+	int32_t nIndexRamki = lLiczbaRamek - 1;
+	CD2DPointF pktfPoczatek, pktfKoniec;
+
+	pktfPoczatek.x = fHscroll;
+	pktfKoniec.x = (1.0f + fHscroll) * fSkalaX;
+	pktfPoczatek.y = fVpos;
+
+	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
+	{
+		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+		if (fZmienna)
+		{
+			pktfKoniec.x += fSkalaX;
+			pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
+			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+			pktfPoczatek = pktfKoniec;
+		}
+	} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje oś układu wspórzędnych dla grupy wykresów
+// Parametry: 
+//  okno - współrzedne okna wszystkich grup wykresów
+//  nGora, nDol - współrzedne Y góry i dołu grupy wykresów
+//  pRenderTarget - narzędzie rysujące
+//  pBrush - parametry pędzla rysujacego osie
+// zwraca: komunkat systemowy
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::RysujOsieGrupyWykresow(CRect okno, int nGora, int nDol, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	CD2DPointF pktfPoczatek, pktfKoniec;
+	pktfPoczatek.x = pktfKoniec.x = MIEJSCE_PRZED_WYKRESEM;
+	pktfPoczatek.y = (float)nGora;
+	pktfKoniec.y = (float)nDol;
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pktfPoczatek = pktfKoniec;
+	pktfKoniec.x = (float)(okno.right - MIEJSCE_PRZED_WYKRESEM);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pktfPoczatek = pktfKoniec;
+	pktfKoniec.y = (float)nGora;
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pktfPoczatek = pktfKoniec;
+	pktfKoniec.x = (float)MIEJSCE_PRZED_WYKRESEM;
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
 }
 
 
@@ -223,12 +417,24 @@ void CAPLSNView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 }
 
 
-//darzenie aktywacji menu kontekstowego w oknie dokumentu
+//zdarzenie aktywacji menu kontekstowego w oknie dokumentu
 void CAPLSNView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
-#ifndef SHARED_HANDLERS
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
-#endif
+	CMenu menu;
+	menu.LoadMenu(IDR_POPUP_WIDOKU);
+
+	CMenu* pSumMenu = menu.GetSubMenu(0);
+
+	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
+	{
+		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
+
+		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE, TRUE))
+			return;
+
+		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
+		UpdateDialogControls(this, FALSE);
+	}
 }
 
 
@@ -529,126 +735,6 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Główna funkcja rysujaca dokument wykorzystujaca Direct 2D
-// Parametry: 
-//  wParam - ?
-//  lParam - wskaźnik na CHwndRenderTarget
-// zwraca: komunkat systemowy
-///////////////////////////////////////////////////////////////////////////////////////////////////
-afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
-{
-	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
-	ASSERT_VALID(pRenderTarget);
-	//CD2DPointF pktfPoczatek, pktfKoniec;
-	CRect okno;
-	GetClientRect(okno);
-	m_bOknoGotowe = TRUE;
-
-	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
-	float fSkalaX = m_fZoomPoziomo;
-	float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-
-	//rysowanie wykresów telemetrii
-	if (m_bRysujTelemetrie)
-	{
-		m_bRysujTelemetrie = FALSE;
-
-		//wykresy akcelerometru
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 0, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 1, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 2, pRenderTarget, m_pBrushWykresuB);
-
-		//wykresy AHRS
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB);
-		
-	}
-
-	//rysuj wykres logu jeżeli jest coś wczytane
-	RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
-	return TRUE;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Rysuje wykres logu pobrany z dokumentu
-// Parametry:
-//  okno - obszar rysowania
-//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
-//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
-//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
-//  nIndeksZmiennej - indeks zmiennej w logu
-//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
-//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
-{
-	CD2DPointF pktfPoczatek, pktfKoniec;
-
-	CAPLSNDoc* pDoc = GetDocument();
-	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
-	{
-		m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
-		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
-		float fSkalaX = m_fZoomPoziomo;
-		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		pktfPoczatek.x = 0.0f;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll)  - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY );
-		for (int n = 1; n < m_nIloscDanychWykresu; n++)
-		{
-			pktfKoniec.x = (float)(n - m_nBiezacyScrollPoziomo) * fSkalaX;	
-			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
-			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresuB);
-			pktfPoczatek = pktfKoniec;
-		}
-	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Rysuje wykres logu pobrany z telemetrii
-// Parametry:
-//  okno - obszar rysowania
-//  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
-//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
-//  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
-//  vRamkaTele - wektor zmiennych telemetrycznych z którego trzeba wyłuskać potrzebna dane
-//  nIndeksZmiennej - indeks zmiennej do wyświetlenia
-//  pRenderTarget - wskaźnik na narzędzie renderujące cały wykres
-//  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
-{
-	float fZmienna;
-	long lLiczbaRamek = (long)vDaneTele.size();
-	_TelemetriaUporzadkowana stDaneTele;
-	int32_t nIndexRamki = lLiczbaRamek - 1;
-	CD2DPointF pktfPoczatek, pktfKoniec;
-
-	pktfPoczatek.x = fHscroll;
-	pktfKoniec.x = (1.0f + fHscroll) * fSkalaX;
-	pktfPoczatek.y = fVpos;
-
-	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
-	{
-		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
-		if (fZmienna)
-		{
-			pktfKoniec.x += fSkalaX;
-			pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
-			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
-			pktfPoczatek = pktfKoniec;
-		}
-	} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
-}
-
-
 /// <summary>
 /// Reakcja na przekręcenie kółka myszy. Steruje powiększeniem wykresu w poziomie lub pionie
 /// </summary>
@@ -776,7 +862,7 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Funkcja uaktualnia połoeżenie obu pasków przewijania. Uruchamiane po zmianie stanu okna gdy np przyjdą nowe dane telemetryczne albo zostanie wczytany nowy log
+// Funkcja uaktualnia położenie obu pasków przewijania. Uruchamiane po zmianie stanu okna gdy np przyjdą nowe dane telemetryczne albo zostanie wczytany nowy log
 // Parametry: brak
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -818,4 +904,65 @@ void CAPLSNView::OnDropFiles(HDROP hDropInfo)
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 
 	CView::OnDropFiles(hDropInfo);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia konfigurację wykresów z menu kontekstowego
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnKonfigWykresow()
+{
+	m_cKonfiguracjaWykresow.DoModal();
+}
+
+
+// aktualizacja dostepnosci polecenia w zależności od stanu połączenia
+void CAPLSNView::OnUpdateKonfigWykresow(CCmdUI* pCmdUI)
+{
+	if (m_bPolaczono || GetDocument()->m_bOdczytanoLog)
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia konfigurację telemetrii z menu kontekstowego
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnKonfigTelemetrii()
+{
+	m_cKonfigTelemetrii.DoModal();
+}
+
+
+// aktualizacja dostepnosci polecenia w zależności od stanu połączenia
+void CAPLSNView::OnUpdateKonfigTelemetrii(CCmdUI* pCmdUI)
+{
+	if (m_bPolaczono)
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia konfigurację rejestratora z menu kontekstowego
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnKonfigRejestratora()
+{
+	m_cKonfigRejestratora.DoModal();
+}
+
+
+void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
+{
+	
 }

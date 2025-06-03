@@ -1,10 +1,8 @@
 ﻿#pragma once
 #include "DrzewoWykresow.h"
 #include "APL-SNDoc.h"
-#include "APL-SNView.h"
 
 // Okno dialogowe KonfiguracjaWyresow
-
 class KonfiguracjaWyresow : public CDialogEx
 {
 	DECLARE_DYNAMIC(KonfiguracjaWyresow)
@@ -12,6 +10,7 @@ class KonfiguracjaWyresow : public CDialogEx
 public:
 	KonfiguracjaWyresow(CWnd* pParent = nullptr);   // konstruktor standardowy
 	virtual ~KonfiguracjaWyresow();
+	//CAPLSNDoc* GetDocument() const;
 
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -30,14 +29,11 @@ protected:
 	BOOL m_bPrzeciaganieMysza{FALSE};
 	BOOL m_bKursorPrzeciaganie{ FALSE };
 	CPoint m_cpPozycjaMyszy;
-	//CAPLSNDoc* CAPLSNView::GetDocument() const;
-
 
 public:
 	CListCtrl m_cListaDanych;
 	DrzewoWykresow m_cDrzewoWykresow;
 	COleDropTarget m_DropTarget;
-//	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

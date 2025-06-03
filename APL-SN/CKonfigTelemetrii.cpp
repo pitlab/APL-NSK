@@ -18,6 +18,9 @@ CKonfigTelemetrii::CKonfigTelemetrii(CWnd* pParent /*=nullptr*/)
 	, m_chIdZmiennej(0)
 	, m_nOkres(0)
 	, m_strZajetosc(_T(""))
+	, m_nIndeksZmiennej(0)
+	, m_nIndeksOkresu(0)
+	, m_nIndeksDronaWRoju(0)
 {
 
 }

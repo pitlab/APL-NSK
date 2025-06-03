@@ -246,7 +246,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 	Invalidate();*/
 
 	CMenu menu;
-	menu.LoadMenu(IDR_POPUP_LISTA_ROJU);
+	menu.LoadMenu(IDR_POPUP_WIDOKU);
 
 	CMenu* pSumMenu = menu.GetSubMenu(0);
 

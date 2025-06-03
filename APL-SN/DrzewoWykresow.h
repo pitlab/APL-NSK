@@ -1,4 +1,7 @@
 #pragma once
+#define WYKRES_WSPOLNA_SKALA	1
+#define WYKRES_OSOBNA_SKALA		2
+
 class DrzewoWykresow :  public CTreeCtrl
 {
 public:
@@ -7,16 +10,20 @@ public:
 	{
 		HTREEITEM hZmiennej;
 		uint8_t chIdZmiennej;
+		float fMin;
+		float fMax;
 	};
 
 	struct stGrupaWykresow_t	
 	{
 		HTREEITEM hGalazWykresow = 0;
 		std::vector<stZmienna_t> vZmienne;
+		uint8_t chTypWykresu;
 	};
 
-private:
 	std::vector<stGrupaWykresow_t> vGrupaWykresow;
+
+private:	
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnDodajWspolny();

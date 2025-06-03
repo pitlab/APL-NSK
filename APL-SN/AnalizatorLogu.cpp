@@ -46,6 +46,7 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			{
 				stZmiennaLogu.chIndeksZmiennej = m_chIndeksZmiennejLogu;
 				stZmiennaLogu.chNazwaZmiennej[m_chIndeksNazwy++] = chBufor[n];
+				stZmiennaLogu.strNazwaZmiennej.Insert(m_chIndeksNazwy, chBufor[n]);
 			}
 
 			if (chBufor[n] == 0x0A)	//LF - koniec wiersza nag³ówka

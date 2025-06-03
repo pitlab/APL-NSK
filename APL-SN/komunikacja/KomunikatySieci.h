@@ -35,5 +35,5 @@ struct _Ramka
 struct _TelemetriaUporzadkowana
 {
 	uint8_t chZnakCzasu = 0;
-	float dane[MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	float dane[MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH] = {0,0,0,0,0};
 };

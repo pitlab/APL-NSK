@@ -67,8 +67,6 @@ void DrzewoWykresow::OnDodajOsobny()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnUsunWykres()
 {
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
-	//trzeba znaleŸæ sposób aby okresliæ który element jest wskazany i ma byæ usuniêty. Na razie zak³adam ¿e pierwszy
 	HTREEITEM hGalaz = GetSelectedItem();
 	int nLiczbaWykresow = (int)vGrupaWykresow.size();
 	for (int n = 0; n < nLiczbaWykresow; n++)
@@ -77,11 +75,9 @@ void DrzewoWykresow::OnUsunWykres()
 		{
 			DeleteItem(vGrupaWykresow[n].hGalazWykresow);
 			vGrupaWykresow.erase(vGrupaWykresow.begin()+n);
-			break;
+			break;	//wyjdŸ i nie indeksuj dalej zmiennej bo zmniejszy³ siê jej rozmiar i ostatni element nie jest dostêpny
 		}
 	}
-	
-	
 }
 
 
@@ -104,6 +100,7 @@ int DrzewoWykresow::DodajWspolny()
 	CString strNazwaWykresu;
 	strNazwaWykresu.Format(_T("Wspólna skala %d"), n);
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
+	stWykresow.chTypWykresu = WYKRES_WSPOLNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
 	return 0;
 }
@@ -117,10 +114,10 @@ int DrzewoWykresow::DodajOsobny()
 	CString strNazwaWykresu;
 	strNazwaWykresu.Format(_T("Osobne skale %d"), n);
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
+	stWykresow.chTypWykresu = WYKRES_OSOBNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
 	return 0;
 }
-
 
 
 
@@ -130,9 +127,6 @@ void DrzewoWykresow::OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult)
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi powiadamiania kontrolki
 	*pResult = 0;
 }
-
-
-
 
 
 

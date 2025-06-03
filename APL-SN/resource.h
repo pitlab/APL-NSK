@@ -5,7 +5,6 @@
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
 #define IDP_SOCKETS_INIT_FAILED         104
-#define IDR_POPUP_EDIT                  119
 #define ID_STATUSBAR_PANE1              120
 #define ID_STATUSBAR_PANE2              121
 #define IDS_STATUS_PANE1                122
@@ -57,6 +56,7 @@
 #define IDB_SORT_24                     172
 #define IDR_POPUP_SORT                  173
 #define IDR_POPUP_LISTA_ROJU            173
+#define IDR_POPUP_WIDOKU                173
 #define IDR_POPUP_EXPLORER              174
 #define IDB_FILE_VIEW                   175
 #define IDB_FILE_VIEW_24                176
