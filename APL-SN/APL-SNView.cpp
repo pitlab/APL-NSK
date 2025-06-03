@@ -229,6 +229,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	if (m_bRysujTelemetrie)
 	{
 		m_bRysujTelemetrie = FALSE;
+		okno.left = MIEJSCE_PRZED_WYKRESEM;
+		okno.right -= MIEJSCE_PRZED_WYKRESEM;
 
 		//rysuj okna grup wykresów
 		int nLiczbaGrupWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow.size();
@@ -253,9 +255,27 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				{
 					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
+					fSkalaY = 1;
 					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora)/2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
 				}
-			}			
+			}	
+			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_OSOBNA_SKALA)
+			{
+				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
+				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
+				for (int m = 0; m < nLiczbaWykresow; m++)
+				{
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin < fMinWykresu)
+						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
+						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
+				
+					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
+					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora) / 2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+				}
+			}
+
 			RysujOsieGrupyWykresow(okno, nGora, nDol, pRenderTarget, m_pBrushOsiWykresu);
 			nGora = nDol + MIEJSCE_MIEDZY_WYKRESAMI;
 		}
@@ -301,7 +321,8 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float 
 		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
 		float fSkalaX = m_fZoomPoziomo;
 		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		pktfPoczatek.x = 0.0f;
+		//pktfPoczatek.x = (float)okno.left;
+		pktfPoczatek.x = (float)okno.left + fHscroll;
 		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
 		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
@@ -338,8 +359,8 @@ void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fV
 	int32_t nIndexRamki = lLiczbaRamek - 1;
 	CD2DPointF pktfPoczatek, pktfKoniec;
 
-	pktfPoczatek.x = fHscroll;
-	pktfKoniec.x = (1.0f + fHscroll) * fSkalaX;
+	pktfPoczatek.x = (float)okno.left + fHscroll;
+	pktfKoniec.x = (1.0f + okno.left + fHscroll) * fSkalaX;
 	pktfPoczatek.y = fVpos;
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
@@ -369,19 +390,19 @@ void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fV
 void CAPLSNView::RysujOsieGrupyWykresow(CRect okno, int nGora, int nDol, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
-	pktfPoczatek.x = pktfKoniec.x = MIEJSCE_PRZED_WYKRESEM;
+	pktfPoczatek.x = pktfKoniec.x = (float)(okno.left);
 	pktfPoczatek.y = (float)nGora;
 	pktfKoniec.y = (float)nDol;
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
 	pktfPoczatek = pktfKoniec;
-	pktfKoniec.x = (float)(okno.right - MIEJSCE_PRZED_WYKRESEM);
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pktfKoniec.x = (float)(okno.right);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
 	pktfPoczatek = pktfKoniec;
 	pktfKoniec.y = (float)nGora;
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
 	pktfPoczatek = pktfKoniec;
-	pktfKoniec.x = (float)MIEJSCE_PRZED_WYKRESEM;
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
+	pktfKoniec.x = (float)(okno.left);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
 }
 
 

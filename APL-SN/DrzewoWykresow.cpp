@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "APL-SN.h"
 #include "DrzewoWykresow.h"
+
+
+std::vector<DrzewoWykresow::stGrupaWykresow_t> DrzewoWykresow::vGrupaWykresow;
+
+
+
 BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 	ON_COMMAND(ID_DODAJ_WSPOLNY, &DrzewoWykresow::OnDodajWspolny)
 	ON_COMMAND(ID_DODAJ_OSOBNY, &DrzewoWykresow::OnDodajOsobny)
@@ -102,6 +108,8 @@ int DrzewoWykresow::DodajWspolny()
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
 	stWykresow.chTypWykresu = WYKRES_WSPOLNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
+	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
+	//Invalidate();
 	return 0;
 }
 
@@ -116,6 +124,8 @@ int DrzewoWykresow::DodajOsobny()
 	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
 	stWykresow.chTypWykresu = WYKRES_OSOBNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
+	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
+	Invalidate();
 	return 0;
 }
 
@@ -141,7 +151,8 @@ void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if (vGrupaWykresow[n].hGalazWykresow == item)
 		{
-			stZmienna.hZmiennej = InsertItem(m_sNazwaNowegoWykresu, 2, 2, item);
+			stZmienna.hZmiennej = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, item);
+			stZmienna.chIdZmiennej = m_stZmiennaNowegoWykresu.chIdZmiennej;
 			vGrupaWykresow[n].vZmienne.push_back(stZmienna);			
 			Expand(vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
 			Invalidate();

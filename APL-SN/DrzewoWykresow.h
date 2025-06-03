@@ -10,8 +10,9 @@ public:
 	{
 		HTREEITEM hZmiennej;
 		uint8_t chIdZmiennej;
+		CString strNazwa;
 		float fMin;
-		float fMax;
+		float fMax;		
 	};
 
 	struct stGrupaWykresow_t	
@@ -21,7 +22,7 @@ public:
 		uint8_t chTypWykresu;
 	};
 
-	std::vector<stGrupaWykresow_t> vGrupaWykresow;
+	static std::vector<stGrupaWykresow_t> vGrupaWykresow;
 
 private:	
 	DECLARE_MESSAGE_MAP()
@@ -36,7 +37,9 @@ private:
 public:
 	int DodajWspolny();
 	int DodajOsobny();
-	CString m_sNazwaNowegoWykresu;
-	void UstawNazweNowegoWykresu(CString strNazwa) { m_sNazwaNowegoWykresu = strNazwa; }
+	//CString m_sNazwaNowegoWykresu;
+	stZmienna_t m_stZmiennaNowegoWykresu;
+	//void UstawNazweNowegoWykresu(CString strNazwa) { m_sNazwaNowegoWykresu = strNazwa; }
+	void UstawDaneNowegoWykresu(stZmienna_t stZmienna) { m_stZmiennaNowegoWykresu = stZmienna; }
 };
 

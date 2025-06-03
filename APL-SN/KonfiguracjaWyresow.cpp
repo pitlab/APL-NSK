@@ -76,13 +76,14 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	DrzewoWykresow::stZmienna_t stZmienna;
+
 	int nIndeksZmiennej = m_cListaDanych.GetSelectionMark();
-	if (nIndeksZmiennej > 0)
-	{
-		CString strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
-		m_cDrzewoWykresow.UstawNazweNowegoWykresu(strNazwa);
-	}
+	stZmienna.strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
+	stZmienna.chIdZmiennej = _ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
+	stZmienna.fMin = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 3));
+	stZmienna.fMax = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 4));
+	m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
 	m_bKursorPrzeciaganie = TRUE;
 	*pResult = 0;
 }
@@ -100,10 +101,13 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	int nRozmiarZmiennej;
 	int nLiczbaDanych;
 	int nLicznikZmiennych = 0;
+	float fZmienna, fMin, fMax;
 	
-	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 180);
-	m_cListaDanych.InsertColumn(1, _T("Liczba pomiarów"), LVCFMT_CENTER, 90);
-	
+	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 120);
+	m_cListaDanych.InsertColumn(1, _T("ID"), LVCFMT_CENTER, 30);
+	m_cListaDanych.InsertColumn(2, _T("Pomiarów"), LVCFMT_CENTER, 60);
+	m_cListaDanych.InsertColumn(3, _T("Min"), LVCFMT_CENTER, 50);
+	m_cListaDanych.InsertColumn(4, _T("Max"), LVCFMT_CENTER, 50);
 	//czy są jakieś dane?
 	nLiczbaDanych = (int)getProtokol().m_vDaneTelemetryczne.size();
 	if (nLiczbaDanych)
@@ -112,18 +116,32 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		{
 			//policz niezerowe dane dla tej zmiennej
 			nRozmiarZmiennej = 0;
+			fMin = fMax = 0.0f;
 			for (int x = 0; x < nLiczbaDanych; x++)
 			{
-				if (getProtokol().m_vDaneTelemetryczne[x].dane[n])
+				fZmienna = getProtokol().m_vDaneTelemetryczne[x].dane[n];
+				if (fZmienna)
+				{
 					nRozmiarZmiennej++;
+					if (fZmienna < fMin)
+						fMin = fZmienna;
+					if (fZmienna > fMax)
+						fMax = fZmienna;
+				}
 			}
 			
 			//na listę wstaw tylko istniejace dane
 			if (nRozmiarZmiennej)
 			{
-				m_cListaDanych.InsertItem(nLicznikZmiennych, getKomunikacja().m_strNazwyZmiennychTele[n]);
+				m_cListaDanych.InsertItem(nLicznikZmiennych, getKomunikacja().m_strNazwyZmiennychTele[n]);	
+				strNapis.Format(_T("%d"), n);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);	//ID
 				strNapis.Format(_T("%d"), nRozmiarZmiennej);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//liczba pomiarów
+				strNapis.Format(_T("%.3f"), fMin);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//min
+				strNapis.Format(_T("%.3f"), fMax);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//max
 				nLicznikZmiennych++;
 			}
 		}
@@ -154,10 +172,27 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	
 	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
-	
+	CString strNazwaGalezi;
 	//wstaw dwie pierwsze gałęzie wykresów
-	m_cDrzewoWykresow.DodajWspolny();
-	m_cDrzewoWykresow.DodajOsobny();
+	//m_cDrzewoWykresow.DodajWspolny();
+	//m_cDrzewoWykresow.DodajOsobny();
+
+	//wstaw do kontrolki obiekty wcześniej zdefinioane w statycznym wektorze
+	int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
+	if (nLiczbaWykresow)
+	{
+		for (int n = 0; n < nLiczbaWykresow; n++)
+		{
+			if (m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+				strNazwaGalezi.Format(_T("Wspólna skala %d"), n);
+			else
+				strNazwaGalezi.Format(_T("Osobne skale %d"), n);
+
+			m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
+		}
+	}
+
+
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
 
 	m_DropTarget.Register(this);
