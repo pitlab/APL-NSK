@@ -87,7 +87,7 @@ void DefinicjeWrona::OnBnClickedOk()
 		for (n = 0; n < 4; n++)
 			chNumIP[n] = getKomunikacja().m_cRoj.vWron[nIndeksWrona].m_chAdresIP[n];
 		for (n = 0; n < nDlugosc; n++)
-			chNazwa[n] = m_strNazwa.GetAt(n);
+			chNazwa[n] = (char)m_strNazwa.GetAt(n);
 		for (; n < DLUGOSC_NAZWY; n++)		//dopełnij nazwę zerami
 			chNazwa[n] = 0;
 

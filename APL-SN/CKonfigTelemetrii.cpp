@@ -339,7 +339,7 @@ void CKonfigTelemetrii::AktualizujZajetoscLacza()
 		if ((stOkresy[n].nLiczbaZmiennych) && (stOkresy[n].nOkres))
 		{
 			nLiczbaBitow = 10 * (ROZM_CIALA_RAMKI + LICZBA_BAJTOW_ID_TELEMETRII + 2 * stOkresy[n].nLiczbaZmiennych);
-			nLiczbaBitowNaSek += nLiczbaBitow / (KWANT_CZASU_TELEMETRII * stOkresy[n].nOkres);
+			nLiczbaBitowNaSek += (int)(nLiczbaBitow / (KWANT_CZASU_TELEMETRII * stOkresy[n].nOkres));
 		}
 	}
 

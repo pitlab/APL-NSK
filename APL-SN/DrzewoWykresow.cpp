@@ -70,7 +70,7 @@ void DrzewoWykresow::OnUsunWykres()
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
 	//trzeba znaleŸæ sposób aby okresliæ który element jest wskazany i ma byæ usuniêty. Na razie zak³adam ¿e pierwszy
 	HTREEITEM hGalaz = GetSelectedItem();
-	int nLiczbaWykresow = vGrupaWykresow.size();
+	int nLiczbaWykresow = (int)vGrupaWykresow.size();
 	for (int n = 0; n < nLiczbaWykresow; n++)
 	{
 		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)

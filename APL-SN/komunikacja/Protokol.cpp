@@ -366,7 +366,6 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	_Ramka sRamka;
 	//_Telemetria sTelemetria;
 	_TelemetriaUporzadkowana sDaneTele;
-	float fTemp;
 
 	TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)

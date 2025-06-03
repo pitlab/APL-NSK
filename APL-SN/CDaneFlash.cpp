@@ -127,8 +127,8 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 	nErrCnt = 0;
 	while (!feof(pPlikKomunikatow))
 	{
-		//n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla, _countof(chNazwaSampla));
-		n = fscanf_s(pPlikKomunikatow, "%s", chNazwaSampla, _countof(chNazwaSampla));
+		n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla, (uint32_t)_countof(chNazwaSampla));
+		//n = fscanf_s(pPlikKomunikatow, "%s", chNazwaSampla, _countof(chNazwaSampla));
 		//n = fwscanf_s(pPlikKomunikatow, _T("%s"), chNazwaSampla);
 		if (n > 0)
 		{
@@ -239,7 +239,7 @@ void CDaneFlash::OnBnClickedButZapiszFlash()
 	uint8_t chErr;
 	uint8_t chRozmarWysylanychDanych;
 	uint8_t chPaczka[ROZMIAR_PACZKI];
-	uint32_t nIloscWyslanychSlow = 0;
+	int32_t nIloscWyslanychSlow = 0;
 
 	//dane wejsciowe są liczbami 16-bitowymi, więc nIloscSlowDoWyslania jest liczbą zbyt dużą więc podziel przez 256
 	m_ctlPasekPostepu.SetRange(0, (uint16_t)((nIloscSlowDoWyslania >>8) -1));
@@ -390,12 +390,13 @@ void CDaneFlash::OnBnClickedButton1()
 {
 	FILE* pPlikWav;
 	long Error;
-	char chBufor[78] = { "RIFFfk  WAVEfmt 10001010830007002010LIST4676INFOISFTe000Lavf58.29.1000data k"};
+	//char chBufor[78] = { "RIFFfk  WAVEfmt 10001010830007002010LIST4676INFOISFTe000Lavf58.29.1000data k"};
+	uint8_t chBufor[78] = { "RIFFfk  WAVEfmt 10001010830007002010LIST4676INFOISFTe000Lavf58.29.1000data k" };
 	CString strNapis;
 	uint16_t sBufor;
 
 	Error = _wfopen_s(&pPlikWav, L"test.wav.bin", L"wb");
-	if (!Error)
+	if (!Error && pPlikWav)
 	{
 		//pierwszy wiersz
 		chBufor[6] = 1;
@@ -439,17 +440,15 @@ void CDaneFlash::OnBnClickedButton1()
 
 		//5 wiersz
 		chBufor[67] = 0x00;
-
 		chBufor[76] = 0x01;
 		chBufor[77] = 0x00;
-
 
 		fwrite(chBufor, sizeof(uint8_t), 78, pPlikWav);
 
 		for (uint32_t n = 0; n < ROZMIAR_SEKTORA16_FLASH; n++)
 		{
 			sBufor = n & 0xFFFF;
-			fwrite(&sBufor, sizeof(uint16_t), 1, pPlikWav);			
+			fwrite(&sBufor, sizeof(uint16_t), 1, pPlikWav);
 		}
 		fclose(pPlikWav);
 	}
