@@ -78,6 +78,12 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	int nIndeksZmiennej = m_cListaDanych.GetSelectionMark();
+	if (nIndeksZmiennej > 0)
+	{
+		CString strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
+		m_cDrzewoWykresow.UstawNazweNowegoWykresu(strNazwa);
+	}
 	m_bKursorPrzeciaganie = TRUE;
 	*pResult = 0;
 }

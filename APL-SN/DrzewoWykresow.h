@@ -15,7 +15,7 @@ public:
 		std::vector<stZmienna_t> vZmienne;
 	};
 
-
+private:
 	std::vector<stGrupaWykresow_t> vGrupaWykresow;
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
@@ -23,12 +23,13 @@ public:
 	afx_msg void OnDodajOsobny();
 	afx_msg void OnUsunWykres();
 	afx_msg void OnUpdateUsunWykres(CCmdUI* pCmdUI);
+	afx_msg void OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
 public:
 	int DodajWspolny();
 	int DodajOsobny();
-	afx_msg void OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
-
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	CString m_sNazwaNowegoWykresu;
+	void UstawNazweNowegoWykresu(CString strNazwa) { m_sNazwaNowegoWykresu = strNazwa; }
 };
 

@@ -12,7 +12,10 @@ BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 END_MESSAGE_MAP()
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na wywo³anie meny kontekstowego
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnContextMenu(CWnd* pWnd, CPoint point)
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów
@@ -33,6 +36,11 @@ void DrzewoWykresow::OnContextMenu(CWnd* pWnd, CPoint point)
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obs³uga menu kontekstowego -> Dodaj wspólny
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnDodajWspolny()
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
@@ -40,6 +48,11 @@ void DrzewoWykresow::OnDodajWspolny()
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obs³uga menu kontekstowego -> Dodaj osobny
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnDodajOsobny()
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
@@ -47,12 +60,28 @@ void DrzewoWykresow::OnDodajOsobny()
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obs³uga menu kontekstowego -> Usuñ wykres
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnUsunWykres()
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
 	//trzeba znaleŸæ sposób aby okresliæ który element jest wskazany i ma byæ usuniêty. Na razie zak³adam ¿e pierwszy
-	DeleteItem(vGrupaWykresow[0].hGalazWykresow);
-	vGrupaWykresow.erase(vGrupaWykresow.begin());
+	HTREEITEM hGalaz = GetSelectedItem();
+	int nLiczbaWykresow = vGrupaWykresow.size();
+	for (int n = 0; n < nLiczbaWykresow; n++)
+	{
+		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)
+		{
+			DeleteItem(vGrupaWykresow[n].hGalazWykresow);
+			vGrupaWykresow.erase(vGrupaWykresow.begin()+n);
+			break;
+		}
+	}
+	
+	
 }
 
 
@@ -112,14 +141,13 @@ void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
 	HTREEITEM item = HitTest(point);
 	stZmienna_t stZmienna;
-	CString strNazwaZmiennej = _T("abc");
 
 	int nRozmiar = (int)vGrupaWykresow.size();
 	for (int n = 0; n < nRozmiar; n++)
 	{
 		if (vGrupaWykresow[n].hGalazWykresow == item)
 		{
-			stZmienna.hZmiennej = InsertItem(strNazwaZmiennej, 2, 2, item);
+			stZmienna.hZmiennej = InsertItem(m_sNazwaNowegoWykresu, 2, 2, item);
 			vGrupaWykresow[n].vZmienne.push_back(stZmienna);			
 			Expand(vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
 			Invalidate();
