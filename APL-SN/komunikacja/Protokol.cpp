@@ -366,6 +366,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	_Ramka sRamka;
 	//_Telemetria sTelemetria;
 	_TelemetriaUporzadkowana sDaneTele;
+	float fZmienna;
 
 	TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)
@@ -390,7 +391,13 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						nIndeks = y + x * 8;
 						if (chBity & (0x01 << y))
 						{
-							sDaneTele.dane[nIndeks] = Char2Float16(&m_chDaneWy[2 * nLicznik + LICZBA_BAJTOW_ID_TELEMETRII]);
+							fZmienna = Char2Float16(&m_chDaneWy[2 * nLicznik + LICZBA_BAJTOW_ID_TELEMETRII]);
+							sDaneTele.dane[nIndeks] = fZmienna;
+							//znajdŸ ekstrema potrzebne do skalowania wykresów
+							if (fZmienna > m_stEkstremaTelemetrii[nIndeks].fMax)
+								m_stEkstremaTelemetrii[nIndeks].fMax = fZmienna;
+							if (fZmienna < m_stEkstremaTelemetrii[nIndeks].fMin)
+								m_stEkstremaTelemetrii[nIndeks].fMin = fZmienna;
 							nLicznik++;
 						}
 					}

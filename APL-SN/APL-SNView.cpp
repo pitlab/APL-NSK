@@ -224,6 +224,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
 	float fSkalaX = m_fZoomPoziomo;
 	float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+	float fPoziomZera;
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie)
@@ -235,64 +236,55 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		//rysuj okna grup wykresów
 		int nLiczbaGrupWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow.size();
 		nGora = MIEJSCE_MIEDZY_WYKRESAMI;
-		for (int n = 0; n < nLiczbaGrupWykresow; n++)
+		for (int g = 0; g < nLiczbaGrupWykresow; g++)
 		{
-			nDol = (n + 1) * okno.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;
-
-			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+			nDol = (g + 1) * okno.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;
+			fMinWykresu = fMaxWykresu = 0.0f;
+			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
 			{
 				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
-				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
-				for (int m = 0; m < nLiczbaWykresow; m++)
+				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin < fMinWykresu)
-						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
-						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+					if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
+						fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
+					if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
+						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;					
 				}
 
-				for (int m = 0; m < nLiczbaWykresow; m++)
+				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
-					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
-					fSkalaY = 100;
-					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora)/2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+					fSkalaY = (nDol - nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fPoziomZera = (float)nDol - fSkalaY * (float)fabsf(fMinWykresu);
+					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
+					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
 				}
 			}	
-			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_OSOBNA_SKALA)
+			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
 			{
 				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
-				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
-				for (int m = 0; m < nLiczbaWykresow; m++)
+				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin < fMinWykresu)
-						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
-						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+					if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
+						fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
+					if (fMaxWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
+						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
 					
-					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-					fSkalaY = 100;
-					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
-					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].cKolorD2D1);
-					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora) / 2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+					fSkalaY = (nDol - nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fPoziomZera = (float)nDol - fSkalaY * (float)fabsf(fMinWykresu);
+					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
+					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
 				}
 			}
-
 			RysujOsieGrupyWykresow(okno, nGora, nDol, pRenderTarget, m_pBrushOsiWykresu);
 			nGora = nDol + MIEJSCE_MIEDZY_WYKRESAMI;
-		}
-
-		/*/wykresy akcelerometru
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 0, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 1, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 1.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, 2, pRenderTarget, m_pBrushWykresuB);
-
-		//wykresy AHRS
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2X, pRenderTarget, m_pBrushWykresuR);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Y, pRenderTarget, m_pBrushWykresuG);
-		RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, 2.0f * okno.bottom / 3, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, TELEID_KAT_IMU2Z, pRenderTarget, m_pBrushWykresuB); */
+		}		
 	}
-
 	//rysuj wykres logu jeżeli jest coś wczytane
 	RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
 	return TRUE;

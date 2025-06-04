@@ -32,6 +32,12 @@ public:
 	uint8_t OdbierzDane();
 	int m_wskaznikInstancji;
 	static int m_LicznikInstancji;
+	struct stEkstremaTelemetrii_t
+	{
+		float fMin = 0;
+		float fMax = 0;
+	} m_stEkstremaTelemetrii[MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	
 	
 
 private:
