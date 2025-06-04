@@ -83,8 +83,11 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 	stZmienna.chIdZmiennej = _ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
 	stZmienna.fMin = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 3));
 	stZmienna.fMax = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 4));
-	m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
-	m_bKursorPrzeciaganie = TRUE;
+	if ((stZmienna.strNazwa != _T("")) && (stZmienna.chIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
+	{
+		m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
+		m_bKursorPrzeciaganie = TRUE;
+	}
 	*pResult = 0;
 }
 
@@ -173,25 +176,40 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
 	CString strNazwaGalezi;
-	//wstaw dwie pierwsze gałęzie wykresów
-	//m_cDrzewoWykresow.DodajWspolny();
-	//m_cDrzewoWykresow.DodajOsobny();
+	CString strNazwaWykresu;
 
 	//wstaw do kontrolki obiekty wcześniej zdefinioane w statycznym wektorze
-	int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
-	if (nLiczbaWykresow)
+	int nLiczbaGrupWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
+	if (!nLiczbaGrupWykresow)
 	{
-		for (int n = 0; n < nLiczbaWykresow; n++)
-		{
-			if (m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
-				strNazwaGalezi.Format(_T("Wspólna skala %d"), n);
-			else
-				strNazwaGalezi.Format(_T("Osobne skale %d"), n);
-
-			m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
-		}
+		//Jezeli nie ma żadnej grupy wykresów to dodaj pierwszą
+		DrzewoWykresow::stGrupaWykresow_t stGrupa;
+		stGrupa.chTypWykresu = WYKRES_WSPOLNA_SKALA;
+		m_cDrzewoWykresow.vGrupaWykresow.push_back(stGrupa);
+		nLiczbaGrupWykresow = 1;
 	}
 
+	HTREEITEM hGalazWykr;
+	for (int n = 0; n < nLiczbaGrupWykresow; n++)
+	{
+		if (m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+			strNazwaGalezi.Format(_T("Wspólna skala %d"), n+1);
+		else
+			strNazwaGalezi.Format(_T("Osobne skale %d"), n+1);
+
+		hGalazWykr = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
+		m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow = hGalazWykr;
+
+		//teraz w gałezi wstaw wykresy jeżeli są utworzone wcześniej
+		int nLiczbaWykresow = m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
+		for (int m = 0; m < nLiczbaWykresow; m++)
+		{
+			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].strNazwa;
+			m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 2, 2, m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow);
+		}
+		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
+	}
+	
 
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
 

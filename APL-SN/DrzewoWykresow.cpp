@@ -151,8 +151,11 @@ void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if (vGrupaWykresow[n].hGalazWykresow == item)
 		{
-			stZmienna.hZmiennej = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, item);
+			//stZmienna.hZmiennej = 
+			InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, item);
 			stZmienna.chIdZmiennej = m_stZmiennaNowegoWykresu.chIdZmiennej;
+			stZmienna.strNazwa = m_stZmiennaNowegoWykresu.strNazwa;
+
 			vGrupaWykresow[n].vZmienne.push_back(stZmienna);			
 			Expand(vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
 			Invalidate();

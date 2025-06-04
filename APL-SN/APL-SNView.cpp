@@ -255,7 +255,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				{
 					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
-					fSkalaY = 1;
+					fSkalaY = 100;
 					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora)/2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
 				}
 			}	
@@ -269,7 +269,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
 						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
-				
+					fSkalaY = 100;
 					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
 					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora) / 2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);

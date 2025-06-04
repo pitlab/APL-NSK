@@ -8,7 +8,6 @@ public:
 	HTREEITEM m_hGlownyWezel;	//g³ówny pieñ drzewa
 	struct stZmienna_t
 	{
-		HTREEITEM hZmiennej;
 		uint8_t chIdZmiennej;
 		CString strNazwa;
 		float fMin;
