@@ -5,13 +5,17 @@
 class DrzewoWykresow :  public CTreeCtrl
 {
 public:
+	DrzewoWykresow();
+	~DrzewoWykresow();
 	HTREEITEM m_hGlownyWezel;	//g³ówny pieñ drzewa
 	struct stZmienna_t
 	{
-		uint8_t chIdZmiennej;
-		CString strNazwa;
-		float fMin;
-		float fMax;		
+		uint8_t chIdZmiennej = 0;
+		CString strNazwa = _T("");
+		float fMin = 0.0f;;
+		float fMax = 0.0f;	
+		D2D1::ColorF cKolorD2D1 = D2D1::ColorF::Blue;
+		HTREEITEM hWykres = 0;
 	};
 
 	struct stGrupaWykresow_t	
@@ -34,11 +38,16 @@ private:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
 public:
-	int DodajWspolny();
-	int DodajOsobny();
-	//CString m_sNazwaNowegoWykresu;
 	stZmienna_t m_stZmiennaNowegoWykresu;
-	//void UstawNazweNowegoWykresu(CString strNazwa) { m_sNazwaNowegoWykresu = strNazwa; }
+	void DodajWspolny();
+	void DodajOsobny();	
 	void UstawDaneNowegoWykresu(stZmienna_t stZmienna) { m_stZmiennaNowegoWykresu = stZmienna; }
+	void UstawKolorWykresu(COLORREF cKolor);
+	D2D1::ColorF KonwertujKolor(COLORREF cKolor);
+	BOOL ZnajdzWykres(HTREEITEM hWykres, int* nGrupa, int* nWykres);
+
+private:
+	D2D1::ColorF m_cKolorD2D1;
+	//stZmienna_t m_stZmienna;
 };
 

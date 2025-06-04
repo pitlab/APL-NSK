@@ -31,8 +31,7 @@ void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LISTA_DANYCH, m_cListaDanych);
 	DDX_Control(pDX, IDC_TREE_WYKRESOW, m_cDrzewoWykresow);
-	DDX_Control(pDX, IDC_BUT_KOLOR, m_ctrlKolor);
-	DDX_Control(pDX, IDC_BUTTON2, m_ctrlBut);
+	DDX_Control(pDX, IDC_MFCCOLOR, m_ctrlKolor);
 }
 
 
@@ -48,6 +47,8 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_WM_LBUTTONUP()
 	ON_WM_SETCURSOR()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnItemchangedListaDanych)
+	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_MFCCOLOR, &KonfiguracjaWyresow::OnBnClickedMfccolor)
 END_MESSAGE_MAP()
 
 
@@ -83,9 +84,12 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 
 	int nIndeksZmiennej = m_cListaDanych.GetSelectionMark();
 	stZmienna.strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
-	stZmienna.chIdZmiennej = _ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
-	stZmienna.fMin = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 3));
-	stZmienna.fMax = _ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 4));
+	stZmienna.chIdZmiennej = (uint8_t)_ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
+	stZmienna.fMin = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 3));
+	stZmienna.fMax = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 4));
+	COLORREF cKolor = m_ctrlKolor.GetColor();
+	stZmienna.cKolorD2D1 = (D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f));
+	
 	if ((stZmienna.strNazwa != _T("")) && (stZmienna.chIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
 	{
 		m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
@@ -176,7 +180,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		}
 	}*/
 	
-	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Okno wykresów"), 1, 1, TVI_ROOT, TVI_FIRST);
+	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykresy"), 1, 1, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
 	CString strNazwaGalezi;
 	CString strNazwaWykresu;
@@ -204,7 +208,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow = hGalazWykr;
 
 		//teraz w gałezi wstaw wykresy jeżeli są utworzone wcześniej
-		int nLiczbaWykresow = m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
+		int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
 		for (int m = 0; m < nLiczbaWykresow; m++)
 		{
 			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].strNazwa;
@@ -221,11 +225,13 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	//CMFCColorPickerCtrl();
 
 
-	m_ctrlKolor.SetType(CMFCColorPickerCtrl::COLORTYPE::HEX_GREYSCALE);	// LUMINANCE, PICKER, HEX and HEX_GREYSCALE.
-	CPalette paleta;
+	//m_ctrlKolor.SetType(CMFCColorPickerCtrl::COLORTYPE::HEX_GREYSCALE);	// LUMINANCE, PICKER, HEX and HEX_GREYSCALE.
+	//CPalette paleta;
+	//paleta.CreateHalftonePalette(this->GetDC());
+	/*LOGPALETTE logpalete;
+	paleta.CreatePalette(&logpalete);
 	m_ctrlKolor.SetPalette(&paleta);
-	m_ctrlKolor.SetColor(0x000000FF);
-
+	m_ctrlKolor.SetColor(0x000000FF);*/
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -273,10 +279,7 @@ void KonfiguracjaWyresow::OnMouseMove(UINT nFlags, CPoint point)
 
 void KonfiguracjaWyresow::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	m_bPrzeciaganieMysza = TRUE;
-	//SetCapture();
-
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
@@ -284,9 +287,7 @@ void KonfiguracjaWyresow::OnLButtonDown(UINT nFlags, CPoint point)
 
 void KonfiguracjaWyresow::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	m_bPrzeciaganieMysza = FALSE;
-	//ReleaseCapture();
 	m_bKursorPrzeciaganie = FALSE;
 	CDialogEx::OnLButtonUp(nFlags, point);
 }
@@ -319,4 +320,26 @@ void KonfiguracjaWyresow::OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pR
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę koloru: ustawia kolor w klasie drzewa skąd umieszczany jest w wektorze konfiguracji wykresów
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnBnClickedMfccolor()
+{
+	int nGrupa = 0;
+	int nWykres = 0;
+	COLORREF cKolor = m_ctrlKolor.GetColor();
+
+	m_cDrzewoWykresow.UstawKolorWykresu(cKolor);
+	
+
+	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
+	if (m_cDrzewoWykresow.ZnajdzWykres(hWykres, &nGrupa, &nWykres))
+	{
+		m_cDrzewoWykresow.vGrupaWykresow[nGrupa].vZmienne[nWykres].cKolorD2D1 = m_cDrzewoWykresow.KonwertujKolor(cKolor);
+	}
 }

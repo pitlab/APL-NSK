@@ -11,7 +11,6 @@ class KonfiguracjaWyresow : public CDialogEx
 public:
 	KonfiguracjaWyresow(CWnd* pParent = nullptr);   // konstruktor standardowy
 	virtual ~KonfiguracjaWyresow();
-	//CAPLSNDoc* GetDocument() const;
 
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -36,12 +35,11 @@ public:
 	CListCtrl m_cListaDanych;
 	DrzewoWykresow m_cDrzewoWykresow;
 	COleDropTarget m_DropTarget;
+	CMFCColorButton m_ctrlKolor;
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);
-	CMFCColorPickerCtrl m_ctrlKolor;
-	//CButton m_ctrlKolor;
-	CButton m_ctrlBut;
+	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);	
+	afx_msg void OnBnClickedMfccolor();
 };

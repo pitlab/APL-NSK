@@ -18,6 +18,18 @@ BEGIN_MESSAGE_MAP(DrzewoWykresow, CTreeCtrl)
 END_MESSAGE_MAP()
 
 
+DrzewoWykresow::DrzewoWykresow()
+: m_cKolorD2D1(D2D1::ColorF::Blue)
+{
+
+}
+
+DrzewoWykresow::~DrzewoWykresow()
+{
+
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Reakcja na wywo³anie meny kontekstowego
 // Zwraca: nic
@@ -49,7 +61,6 @@ void DrzewoWykresow::OnContextMenu(CWnd* pWnd, CPoint point)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnDodajWspolny()
 {
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
 	DodajWspolny();
 }
 
@@ -61,7 +72,6 @@ void DrzewoWykresow::OnDodajWspolny()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnDodajOsobny()
 {
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia
 	DodajOsobny();
 }
 
@@ -87,7 +97,11 @@ void DrzewoWykresow::OnUsunWykres()
 }
 
 
-//Gdy nie ma ju¿ wykresów w drzewie to wy³¹cz polecenie
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Gdy nie ma ju¿ wykresów w drzewie to wy³¹cz polecenie w menu kontekstowym
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnUpdateUsunWykres(CCmdUI* pCmdUI)
 {
 	// TODO: Dodaj tutaj swój kod procedury obs³ugi polecenia uaktualnienia UI
@@ -98,7 +112,13 @@ void DrzewoWykresow::OnUpdateUsunWykres(CCmdUI* pCmdUI)
 }
 
 
-int DrzewoWykresow::DodajWspolny()
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Dodaje do drzewa ga³¹Ÿ wykresu o espólnej skali dla ka¿dego wykresu
+// Parametry: 
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void DrzewoWykresow::DodajWspolny()
 {
 	stGrupaWykresow_t stWykresow;
 
@@ -109,12 +129,16 @@ int DrzewoWykresow::DodajWspolny()
 	stWykresow.chTypWykresu = WYKRES_WSPOLNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
 	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
-	//Invalidate();
-	return 0;
-}
+}	
 
 
-int DrzewoWykresow::DodajOsobny()
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Dodaje do drzewa ga³¹Ÿ wykresu o osobnej skali dla ka¿dego wykresu
+// Parametry: 
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void DrzewoWykresow::DodajOsobny()
 {
 	stGrupaWykresow_t stWykresow;
 
@@ -126,7 +150,6 @@ int DrzewoWykresow::DodajOsobny()
 	vGrupaWykresow.push_back(stWykresow);
 	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
 	Invalidate();
-	return 0;
 }
 
 
@@ -140,27 +163,89 @@ void DrzewoWykresow::OnTvnBegindrag(NMHDR* pNMHDR, LRESULT* pResult)
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Upuszczenie przeciaganej zmiennej do ga³êzi drzewa
+// Parametry:  point - punkt nad którym znajduje siê mysz
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	// TODO: Dodaj tutaj swój kod procedury obs³ugi komunikatów i/lub wywo³aj domyœlny
-	HTREEITEM item = HitTest(point);
+	HTREEITEM hGalaz = HitTest(point);
+	HTREEITEM hWykres;
 	stZmienna_t stZmienna;
 
 	int nRozmiar = (int)vGrupaWykresow.size();
 	for (int n = 0; n < nRozmiar; n++)
 	{
-		if (vGrupaWykresow[n].hGalazWykresow == item)
+		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)
 		{
-			//stZmienna.hZmiennej = 
-			InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, item);
+			hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, hGalaz);
+			stZmienna.hWykres = hWykres;
 			stZmienna.chIdZmiennej = m_stZmiennaNowegoWykresu.chIdZmiennej;
 			stZmienna.strNazwa = m_stZmiennaNowegoWykresu.strNazwa;
-
-			vGrupaWykresow[n].vZmienne.push_back(stZmienna);			
+			stZmienna.cKolorD2D1 = m_cKolorD2D1;
+			
+			vGrupaWykresow[n].vZmienne.push_back(stZmienna);
 			Expand(vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
 			Invalidate();
 			UpdateWindow();
 		}
 	}
 	CTreeCtrl::OnLButtonUp(nFlags, point);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Na podstawie identyfikatora ga³êzi identyfikuje grupê wykresów i numer wykresu
+// Parametry:  
+// [we] hWykres - identyfikator elementu drzewa
+// [wy] *nGrupa - wskaŸnik na znalezion¹ grupê wykresów
+// [wy] *nWykres - wskaŸnika na znaleziony wykres
+// zwraca: TRUE: znaleziono, FALSE: nie znaleziono
+///////////////////////////////////////////////////////////////////////////////////////////////////
+BOOL DrzewoWykresow::ZnajdzWykres(HTREEITEM hWykres, int* nGrupa, int* nWykres)
+{
+	//wyglada na to ¿e drzewo zbudowane poprzednim razem ma inne identyfikatory ga³êzi
+	//wiêc to co jest zapisane w statycznym wektorze jest nieaktualne dla nowej instancji okna
+
+	int nLiczbaGrupWykresow = (int)vGrupaWykresow.size();
+	for (int g = 0; g < nLiczbaGrupWykresow; g++)
+	{
+		int nLiczbaWykresow = (int)vGrupaWykresow[g].vZmienne.size();
+		for (int w = 0; w < nLiczbaWykresow; w++)
+		{
+			if (hWykres == vGrupaWykresow[g].vZmienne[w].hWykres)
+			{
+				*nGrupa = g;
+				*nWykres = w;
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Ustawia wewnêtrzn¹ zmienn¹ koloru wykresu. 
+// Parametry:  cKolor - kolor wejœciowy
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void DrzewoWykresow::UstawKolorWykresu(COLORREF cKolor)
+{
+	m_cKolorD2D1 = KonwertujKolor(cKolor);		
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Robi konwersje z COLORREF na D2D1::ColorF
+// Parametry:  cKolor - kolor wejœciowy COLORREF
+// zwraca: kolor wejœciowy D2D1::ColorF
+///////////////////////////////////////////////////////////////////////////////////////////////////
+D2D1::ColorF DrzewoWykresow::KonwertujKolor(COLORREF cKolor)
+{
+	return D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f);
 }

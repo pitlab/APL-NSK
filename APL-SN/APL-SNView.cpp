@@ -269,9 +269,11 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						fMinWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMin;
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax > fMaxWykresu)
 						fMaxWykresu = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].fMax;
-					fSkalaY = 100;
+					
 					fSkalaY = (nDol + nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fSkalaY = 100;
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].chIdZmiennej;
+					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].cKolorD2D1);
 					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, (float)(nDol + nGora) / 2, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
 				}
 			}
