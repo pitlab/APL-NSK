@@ -6,6 +6,7 @@
 #include "KonfiguracjaWyresow.h"
 #include "afxdialogex.h"
 
+
 // Okno dialogowe KonfiguracjaWyresow
 
 IMPLEMENT_DYNAMIC(KonfiguracjaWyresow, CDialogEx)
@@ -30,6 +31,8 @@ void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LISTA_DANYCH, m_cListaDanych);
 	DDX_Control(pDX, IDC_TREE_WYKRESOW, m_cDrzewoWykresow);
+	DDX_Control(pDX, IDC_BUT_KOLOR, m_ctrlKolor);
+	DDX_Control(pDX, IDC_BUTTON2, m_ctrlBut);
 }
 
 
@@ -215,6 +218,14 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 
 	m_DropTarget.Register(this);
 	//m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
+	//CMFCColorPickerCtrl();
+
+
+	m_ctrlKolor.SetType(CMFCColorPickerCtrl::COLORTYPE::HEX_GREYSCALE);	// LUMINANCE, PICKER, HEX and HEX_GREYSCALE.
+	CPalette paleta;
+	m_ctrlKolor.SetPalette(&paleta);
+	m_ctrlKolor.SetColor(0x000000FF);
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "DrzewoWykresow.h"
 #include "APL-SNDoc.h"
+#include "afxcolorpickerctrl.h"
 
 // Okno dialogowe KonfiguracjaWyresow
 class KonfiguracjaWyresow : public CDialogEx
@@ -29,6 +30,7 @@ protected:
 	BOOL m_bPrzeciaganieMysza{FALSE};
 	BOOL m_bKursorPrzeciaganie{ FALSE };
 	CPoint m_cpPozycjaMyszy;
+	
 
 public:
 	CListCtrl m_cListaDanych;
@@ -39,4 +41,7 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);
+	CMFCColorPickerCtrl m_ctrlKolor;
+	//CButton m_ctrlKolor;
+	CButton m_ctrlBut;
 };

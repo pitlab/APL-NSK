@@ -155,6 +155,8 @@
 #define IDC_PROGRESS_ZAJETOSC           1097
 #define IDC_EDIT_NUMER                  1098
 #define IDC_IPADDRESS_DEFINICJE         1099
+#define IDC_BUT_KOLOR                   1102
+#define IDC_BUTTON2                     1103
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -186,9 +188,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        332
+#define _APS_NEXT_RESOURCE_VALUE        333
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1100
+#define _APS_NEXT_CONTROL_VALUE         1104
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
