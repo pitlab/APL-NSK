@@ -213,7 +213,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		{
 			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].strNazwa;
 			hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 2, 2, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
-			m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[g].hWykres = hDrzewa;
+			m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].hWykres = hDrzewa;
 		}
 		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow, TVE_EXPAND);
 	}

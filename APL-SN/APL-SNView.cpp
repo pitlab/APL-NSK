@@ -96,8 +96,10 @@ CAPLSNView::CAPLSNView() noexcept
 	m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
 	m_pBrushWykresuB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 	m_pBrushOsiWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
+
+	//m_pBrushLegendy = new CD2DBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 	
-	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 12);
+	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 11);
 
 	m_pTextFormat->Get()->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	m_pTextFormat->Get()->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
@@ -213,37 +215,40 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 {
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
 	ASSERT_VALID(pRenderTarget);
-	int nGora, nDol;
+	//int nGora, nDol;
 	int nLiczbaWykresow;
 	int nIdZmiennej;
+	int nStartLegendy;
 	float fMinWykresu = 0.0f, fMaxWykresu = 0.0f;
-	CRect okno;
-	GetClientRect(okno);
+	CRect oknoGrupy, OknoWykresu;
+	GetClientRect(oknoGrupy);
+	OknoWykresu = oknoGrupy;
 	m_bOknoGotowe = TRUE;
 
-	pRenderTarget->FillRectangle(okno, m_pLinearGradientBrush);
+	pRenderTarget->FillRectangle(oknoGrupy, m_pLinearGradientBrush);
 	float fSkalaX = m_fZoomPoziomo;
-	float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+	float fSkalaY = (float)OknoWykresu.bottom / 40.0f * m_fZoomPionowo;
 	float fPoziomZera;
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie)
 	{
 		m_bRysujTelemetrie = FALSE;
-		okno.left = MIEJSCE_PRZED_WYKRESEM;
-		okno.right -= MIEJSCE_PRZED_WYKRESEM;
+		OknoWykresu.left = MIEJSCE_PRZED_WYKRESEM;
+		OknoWykresu.right -= MIEJSCE_PRZED_WYKRESEM;
 
 		//rysuj okna grup wykresów
 		int nLiczbaGrupWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow.size();
-		nGora = MIEJSCE_MIEDZY_WYKRESAMI;
+		OknoWykresu.top = MIEJSCE_MIEDZY_WYKRESAMI;
 		for (int g = 0; g < nLiczbaGrupWykresow; g++)
 		{
-			nDol = (g + 1) * okno.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;
-			fMinWykresu = fMaxWykresu = 0.0f;
+			nStartLegendy = OknoWykresu.left + 5;	//wspólrzędne x początku legendy, będą zwiększane w każdej iteracji aby opisy nie nachodziły na siebie
+			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;			
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
 			{
 				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
 				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+				fMinWykresu = fMaxWykresu = 0.0f;
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
@@ -256,10 +261,10 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
-					fSkalaY = (nDol - nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-					fPoziomZera = (float)nDol - fSkalaY * (float)fabsf(fMinWykresu);
+					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
-					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+					RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR, &nStartLegendy);
 				}
 			}	
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
@@ -269,24 +274,27 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+					fMinWykresu = fMaxWykresu = 0.0f;
 					if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
 						fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
-					if (fMaxWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
+					if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
 						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
-					
-					fSkalaY = (nDol - nGora) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-					fPoziomZera = (float)nDol - fSkalaY * (float)fabsf(fMinWykresu);
-					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chIdZmiennej;
+									
+					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 					m_pBrushWykresuR->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
-					RysujWykresTelemetriiUporz(okno, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR);
+					RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresuR, &nStartLegendy);
 				}
 			}
-			RysujOsieGrupyWykresow(okno, nGora, nDol, pRenderTarget, m_pBrushOsiWykresu);
-			nGora = nDol + MIEJSCE_MIEDZY_WYKRESAMI;
+			fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
+			RysujOsieGrupyWykresow(OknoWykresu, fPoziomZera, pRenderTarget, m_pBrushOsiWykresu);
+			OknoWykresu.top = OknoWykresu.bottom + MIEJSCE_MIEDZY_WYKRESAMI;
 		}		
 	}
+
 	//rysuj wykres logu jeżeli jest coś wczytane
-	RysujWykresLogu(okno, (float)m_nBiezacyScrollPoziomo, (float)okno.bottom / 2, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
+	fPoziomZera = (float)oknoGrupy.bottom / 2;
+	RysujWykresLogu(oknoGrupy, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, 9, pRenderTarget, m_pBrushWykresuB);
 	return TRUE;
 }
 
@@ -343,23 +351,34 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float 
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_TelemetriaUporzadkowana>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, int* nStartLegendy)
 {
 	float fZmienna;
 	long lLiczbaRamek = (long)vDaneTele.size();
 	if (!lLiczbaRamek)
 		return;
-	_TelemetriaUporzadkowana stDaneTele;
+	_Telemetria stDaneTele;
 	int32_t nIndexRamki = lLiczbaRamek - 1;
 	CD2DPointF pktfPoczatek, pktfKoniec;
+	CD2DRectF rectLegenda;
 
+	//rysuj legendę
+	CString strNazwa = getKomunikacja().m_strNazwyZmiennychTele[nIndeksZmiennej];	
+	rectLegenda.top = okno.top + 5;
+	rectLegenda.bottom = rectLegenda.top + 20;
+	rectLegenda.left = *nStartLegendy;
+	rectLegenda.right = rectLegenda.left + 120;
+	*nStartLegendy = rectLegenda.right;
+	pRenderTarget->DrawText(strNazwa, rectLegenda, pBrush, m_pTextFormat);
+
+	//rysuj wykres
 	pktfPoczatek.x = (float)okno.left + fHscroll;
 	pktfKoniec.x = 1.0f * fSkalaX + okno.left + fHscroll;
 
 	fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
 	if (!fZmienna)
 		return;
-	pktfPoczatek.y = fVpos - (fZmienna * fSkalaY);
+	pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
@@ -367,12 +386,13 @@ void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fV
 		if (fZmienna)
 		{
 			pktfKoniec.x += fSkalaX;
-			pktfKoniec.y = fVpos - (fZmienna * fSkalaY);
+			pktfKoniec.y = fVzera - (fZmienna * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
 			pktfPoczatek = pktfKoniec;
 		}
 	} while ((pktfKoniec.x < okno.right) && (nIndexRamki > 0));	//pobierz danych na szerokość okna lub tyle ile się da
 }
+
 
 
 
@@ -385,22 +405,38 @@ void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fV
 //  pBrush - parametry pędzla rysujacego osie
 // zwraca: komunkat systemowy
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujOsieGrupyWykresow(CRect okno, int nGora, int nDol, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujOsieGrupyWykresow(CRect okno, int nZero, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
+	CD2DRectF rectWartosciOsi;
+	CString strNazwa;
+
 	pktfPoczatek.x = pktfKoniec.x = (float)(okno.left);
-	pktfPoczatek.y = (float)nGora;
-	pktfKoniec.y = (float)nDol;
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
+	pktfPoczatek.y = (float)okno.top;
+	pktfKoniec.y = (float)okno.bottom;
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.4f);
 	pktfPoczatek = pktfKoniec;
 	pktfKoniec.x = (float)(okno.right);
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.4f);
 	pktfPoczatek = pktfKoniec;
-	pktfKoniec.y = (float)nGora;
-	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
+	pktfKoniec.y = (float)okno.top;
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.4f);
 	pktfPoczatek = pktfKoniec;
 	pktfKoniec.x = (float)(okno.left);
+	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.4f);
+
+	//linia poziomu zera
+	pktfPoczatek.x = (float)(okno.left);;
+	pktfKoniec.x = (float)(okno.right);
+	pktfPoczatek.y = pktfKoniec.y = (float)nZero;
 	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.2f);
+
+	rectWartosciOsi.top = nZero - 10;
+	rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
+	rectWartosciOsi.left = 0;
+	rectWartosciOsi.right = MIEJSCE_PRZED_WYKRESEM;
+	strNazwa.Format(_T("0"));
+	pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 }
 
 

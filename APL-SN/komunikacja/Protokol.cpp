@@ -32,7 +32,7 @@ CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
 //std::vector <_Telemetria> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
 std::vector <_Ramka> CProtokol::m_vRamkaPolecenia;
-std::vector <_TelemetriaUporzadkowana> CProtokol::m_vDaneTelemetryczne;
+std::vector <_Telemetria> CProtokol::m_vDaneTelemetryczne;
 int				CProtokol::m_LicznikInstancji = 0;
 
 CProtokol::CProtokol() 
@@ -364,8 +364,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	uint8_t chBity,  chErr;
 	BOOL bRamkaTelemetrii;
 	_Ramka sRamka;
-	//_Telemetria sTelemetria;
-	_TelemetriaUporzadkowana sDaneTele;
+	_Telemetria sDaneTele;
 	float fZmienna;
 
 	TRACE("odczytano %d\n", iOdczytano);
