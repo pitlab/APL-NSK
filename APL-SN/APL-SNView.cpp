@@ -354,8 +354,12 @@ void CAPLSNView::RysujWykresTelemetriiUporz(CRect okno, float fHscroll, float fV
 	CD2DPointF pktfPoczatek, pktfKoniec;
 
 	pktfPoczatek.x = (float)okno.left + fHscroll;
-	pktfKoniec.x = (1.0f + okno.left + fHscroll) * fSkalaX;
-	pktfPoczatek.y = fVpos;
+	pktfKoniec.x = 1.0f * fSkalaX + okno.left + fHscroll;
+
+	fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+	if (!fZmienna)
+		return;
+	pktfPoczatek.y = fVpos - (fZmienna * fSkalaY);
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{

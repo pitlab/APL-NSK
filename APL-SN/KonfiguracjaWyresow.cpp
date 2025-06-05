@@ -196,28 +196,27 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		nLiczbaGrupWykresow = 1;
 	}
 
-	HTREEITEM hGalazWykr;
-	for (int n = 0; n < nLiczbaGrupWykresow; n++)
+	HTREEITEM hDrzewa;
+	for (int g = 0; g < nLiczbaGrupWykresow; g++)
 	{
-		if (m_cDrzewoWykresow.vGrupaWykresow[n].chTypWykresu == WYKRES_WSPOLNA_SKALA)
-			strNazwaGalezi.Format(_T("Wspólna skala %d"), n+1);
+		if (m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+			strNazwaGalezi.Format(_T("Wspólna skala %d"), g+1);
 		else
-			strNazwaGalezi.Format(_T("Osobne skale %d"), n+1);
+			strNazwaGalezi.Format(_T("Osobne skale %d"), g+1);
 
-		hGalazWykr = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
-		m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow = hGalazWykr;
+		hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
+		m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow = hDrzewa;
 
-		//teraz w gałezi wstaw wykresy jeżeli są utworzone wcześniej
-		int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne.size();
-		for (int m = 0; m < nLiczbaWykresow; m++)
+		//jeżeli istnieją wykresy utworzone wcześniej to wstaw nowe uchwyty do nich
+		int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+		for (int w = 0; w < nLiczbaWykresow; w++)
 		{
-			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[n].vZmienne[m].strNazwa;
-			m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 2, 2, m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow);
+			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].strNazwa;
+			hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 2, 2, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
+			m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[g].hWykres = hDrzewa;
 		}
-		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[n].hGalazWykresow, TVE_EXPAND);
+		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow, TVE_EXPAND);
 	}
-	
-
 	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
 
 	m_DropTarget.Register(this);

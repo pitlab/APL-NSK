@@ -83,15 +83,27 @@ void DrzewoWykresow::OnDodajOsobny()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::OnUsunWykres()
 {
-	HTREEITEM hGalaz = GetSelectedItem();
-	int nLiczbaWykresow = (int)vGrupaWykresow.size();
-	for (int n = 0; n < nLiczbaWykresow; n++)
+	HTREEITEM hDrzewa = GetSelectedItem();
+	int nLiczbaGrupWykresow = (int)vGrupaWykresow.size();
+	for (int g = 0; g < nLiczbaGrupWykresow; g++)
 	{
-		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)
+		if (vGrupaWykresow[g].hGalazWykresow == hDrzewa)
 		{
-			DeleteItem(vGrupaWykresow[n].hGalazWykresow);
-			vGrupaWykresow.erase(vGrupaWykresow.begin()+n);
+			DeleteItem(vGrupaWykresow[g].hGalazWykresow);
+			vGrupaWykresow.erase(vGrupaWykresow.begin()+g);
 			break;	//wyjdŸ i nie indeksuj dalej zmiennej bo zmniejszy³ siê jej rozmiar i ostatni element nie jest dostêpny
+		}
+
+		//usuwanie wykresów
+		int nLiczbaWykresow = (int)vGrupaWykresow[g].vZmienne.size();
+		for (int w = 0; w < nLiczbaWykresow; w++)
+		{
+			if (vGrupaWykresow[g].vZmienne[w].hWykres == hDrzewa)
+			{
+				DeleteItem(vGrupaWykresow[g].vZmienne[w].hWykres);
+				vGrupaWykresow[g].vZmienne.erase(vGrupaWykresow[g].vZmienne.begin() + w);
+				break;	//wyjdŸ i nie indeksuj dalej
+			}
 		}
 	}
 }
