@@ -29,6 +29,7 @@ protected:
 	BOOL m_bPrzeciaganieMysza{FALSE};
 	BOOL m_bKursorPrzeciaganie{ FALSE };
 	CPoint m_cpPozycjaMyszy;
+	CImageList m_ObrazkiDrzewa;
 	
 
 public:

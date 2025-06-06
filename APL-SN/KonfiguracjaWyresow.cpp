@@ -17,11 +17,12 @@ KonfiguracjaWyresow::KonfiguracjaWyresow(CWnd* pParent /*=nullptr*/)
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
 #endif
-
 }
 
 KonfiguracjaWyresow::~KonfiguracjaWyresow()
 {
+	if (m_ObrazkiDrzewa)
+		m_ObrazkiDrzewa.DeleteImageList();
 	if (m_cDrzewoWykresow)
 		m_cDrzewoWykresow.DeleteAllItems();
 }
@@ -82,7 +83,7 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	DrzewoWykresow::stZmienna_t stZmienna;
-
+	UpdateData(TRUE);
 	int nIndeksZmiennej = m_cListaDanych.GetSelectionMark();
 	stZmienna.strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
 	stZmienna.chIdZmiennej = (uint8_t)_ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
@@ -181,7 +182,13 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		}
 	}*/
 	
-	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykresy"), 1, 1, TVI_ROOT, TVI_FIRST);
+	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+
+	//m_cDrzewoWykresow.Create(dwViewStyle, rectDummy, this, 2);
+	m_cDrzewoWykresow.SetExtendedStyle(dwViewStyle, dwViewStyle);
+
+
+	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykresy"), 0, 0, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
 	CString strNazwaGalezi;
 	CString strNazwaWykresu;
@@ -205,7 +212,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		else
 			strNazwaGalezi.Format(_T("Osobne skale %d"), g+1);
 
-		hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 2, 2, m_cDrzewoWykresow.m_hGlownyWezel);
+		hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 1, 1, m_cDrzewoWykresow.m_hGlownyWezel);
 		m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow = hDrzewa;
 
 		//jeżeli istnieją wykresy utworzone wcześniej to wstaw nowe uchwyty do nich
@@ -213,7 +220,10 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		for (int w = 0; w < nLiczbaWykresow; w++)
 		{
 			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].strNazwa;
-			hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 2, 2, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
+			if (m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
+				hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 3, 4, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
+			else
+				hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 5, 6, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
 			m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].hWykres = hDrzewa;
 		}
 		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow, TVE_EXPAND);
@@ -232,6 +242,32 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	paleta.CreatePalette(&logpalete);
 	m_ctrlKolor.SetPalette(&paleta);
 	m_ctrlKolor.SetColor(0x000000FF);*/
+
+
+
+
+	//obsługa obrazków w drzewie
+	UINT uiBmpId = theApp.m_bHiColorIcons ? IDB_CLASS_VIEW_24 : IDB_CLASS_VIEW;
+	CBitmap bmp;
+	if (!bmp.LoadBitmap(uiBmpId))
+	{
+		TRACE(_T("Nie można załadować mapy bitowej: %x\n"), uiBmpId);
+		ASSERT(FALSE);
+		return FALSE;
+	}
+	
+	m_ObrazkiDrzewa.DeleteImageList();
+	BITMAP bmpObj;
+	bmp.GetBitmap(&bmpObj);
+
+	UINT nFlags = ILC_MASK;
+
+	nFlags |= (theApp.m_bHiColorIcons) ? ILC_COLOR24 : ILC_COLOR4;
+
+	m_ObrazkiDrzewa.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
+	m_ObrazkiDrzewa.Add(&bmp, RGB(255, 0, 0));
+
+	m_cDrzewoWykresow.SetImageList(&m_ObrazkiDrzewa, TVSIL_NORMAL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -343,3 +379,4 @@ void KonfiguracjaWyresow::OnBnClickedMfccolor()
 		m_cDrzewoWykresow.vGrupaWykresow[nGrupa].vZmienne[nWykres].cKolorD2D1 = m_cDrzewoWykresow.KonwertujKolor(cKolor);
 	}
 }
+

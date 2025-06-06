@@ -52,7 +52,8 @@ CClassView::CClassView() noexcept
 
 CClassView::~CClassView()
 {
-	m_ClassViewImages.DeleteImageList();
+	if (m_ClassViewImages)
+		m_ClassViewImages.DeleteImageList();
 	m_bKoniecWatkuCzekaniaNaZmianePolaczenia = TRUE;
 	WaitForSingleObject(pWskWatkuCzekaniaNaPolaczenie, INFINITE);
 }

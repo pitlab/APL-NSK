@@ -137,7 +137,7 @@ void DrzewoWykresow::DodajWspolny()
 	int n = 1 + (int)vGrupaWykresow.size();
 	CString strNazwaWykresu;
 	strNazwaWykresu.Format(_T("Wspólna skala %d"), n);
-	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
+	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 1, 1, m_hGlownyWezel);
 	stWykresow.chTypWykresu = WYKRES_WSPOLNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
 	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
@@ -157,7 +157,7 @@ void DrzewoWykresow::DodajOsobny()
 	int n = 1 + (int)vGrupaWykresow.size();
 	CString strNazwaWykresu;
 	strNazwaWykresu.Format(_T("Osobne skale %d"), n);
-	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 2, 2, m_hGlownyWezel);
+	stWykresow.hGalazWykresow = InsertItem(strNazwaWykresu, 1, 1, m_hGlownyWezel);
 	stWykresow.chTypWykresu = WYKRES_OSOBNA_SKALA;
 	vGrupaWykresow.push_back(stWykresow);
 	Expand(m_hGlownyWezel, TVE_EXPAND);		//rozwiñ ga³êzie w g³ównym wêŸle drzewa
@@ -191,7 +191,10 @@ void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)
 		{
-			hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 2, 2, hGalaz);
+			if (vGrupaWykresow[n].chTypWykresu == WYKRES_OSOBNA_SKALA)
+				hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 3, 4, hGalaz);
+			else
+				hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 5, 6, hGalaz);
 			stZmienna.hWykres = hWykres;
 			stZmienna.chIdZmiennej = m_stZmiennaNowegoWykresu.chIdZmiennej;
 			stZmienna.strNazwa = m_stZmiennaNowegoWykresu.strNazwa;
