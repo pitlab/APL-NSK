@@ -72,6 +72,7 @@ void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pRe
 }
 
 
+
 /// <summary>
 /// Rozpocząto przeciaganie zmiennej z listy dostepnych danych
 /// </summary>
@@ -90,7 +91,7 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 	COLORREF cKolor = m_ctrlKolor.GetColor();
 	stZmienna.cKolorD2D1 = (D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f));
 	
-	if ((stZmienna.strNazwa != _T("")) && (stZmienna.chIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
+	if ((stZmienna.strNazwa) && (stZmienna.chIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
 	{
 		m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
 		m_bKursorPrzeciaganie = TRUE;
@@ -223,7 +224,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	//m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
 	//CMFCColorPickerCtrl();
 
-
+	m_ctrlKolor.SetColor(RGB(0, 0, 255));	//ustaw niebieski, bo taki kolor domyślnie mają wykresy
 	//m_ctrlKolor.SetType(CMFCColorPickerCtrl::COLORTYPE::HEX_GREYSCALE);	// LUMINANCE, PICKER, HEX and HEX_GREYSCALE.
 	//CPalette paleta;
 	//paleta.CreateHalftonePalette(this->GetDC());

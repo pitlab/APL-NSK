@@ -73,24 +73,18 @@ protected:
 	uint8_t m_chAdresAutopilota;
 	CObslugaRejestru m_cObslugaRejestru;
 	CD2DTextFormat* m_pTextFormat;
-	//CD2DBrush* m_pBrushLegendy;
-	CD2DSolidColorBrush* m_pBrushBlack;
-	CD2DSolidColorBrush* m_pBrushWykresuR;
-	CD2DSolidColorBrush* m_pBrushWykresuG;
-	CD2DSolidColorBrush* m_pBrushWykresuB;
+	CD2DSolidColorBrush* m_pBrushWykresu;
 	CD2DSolidColorBrush* m_pBrushOsiWykresu;
 	CD2DLinearGradientBrush* m_pLinearGradientBrush;
 	float m_fZoomPoziomo;
 	float m_fZoomPionowo;
 	UINT m_nVscroll;
-	//UINT m_nHScroll;
 	void UstawScrollOdWidoku();
 	static const int SCROLL_UNIT = 1 << 24;
 	int m_nIloscDanychWykresu;
 	int m_nSzerokoscOkna;
 	int m_nMaxScrollPoziomo;
 	int m_nBiezacyScrollPoziomo;
-
 
 public:
 	uint32_t m_nNumerPortuCom;
@@ -99,9 +93,9 @@ public:
 	uint32_t m_nPredkoscPortuCom;
 	uint32_t m_nNumerPortuEth;
 
-	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, int* nStartLegendy);
+	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, float* fStartLegendy);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujOsieGrupyWykresow(CRect okno, int nZero, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujOsieGrupyWykresow(CRect okno, float fZero, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
