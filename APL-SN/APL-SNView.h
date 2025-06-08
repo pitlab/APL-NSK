@@ -12,9 +12,9 @@
 #include "KonfigRejestratora.h"
 #include <vector>
 
-#define MIEJSCE_MIEDZY_WYKRESAMI	5
+#define MIEJSCE_MIEDZY_WYKRESAMI	8
 #define MIEJSCE_PRZED_WYKRESEM		30
-
+#define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 40
 
 class CAPLSNView : public CView
 
@@ -95,7 +95,9 @@ public:
 
 	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, float* fStartLegendy);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujOsieGrupyWykresow(CRect okno, float fZero, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, float fMin1, float fMax1, float fMin2, float fMax2, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+private:
+	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
