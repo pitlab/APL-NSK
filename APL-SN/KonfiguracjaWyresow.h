@@ -43,4 +43,7 @@ public:
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);	
 	afx_msg void OnBnClickedMfccolor();
+	afx_msg void OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
 };

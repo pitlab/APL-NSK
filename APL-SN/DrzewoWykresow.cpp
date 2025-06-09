@@ -264,3 +264,15 @@ D2D1::ColorF DrzewoWykresow::KonwertujKolor(COLORREF cKolor)
 {
 	return D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f);
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Robi konwersje z COLORREF na D2D1::ColorF
+// Parametry:  cKolor - kolor wejœciowy COLORREF
+// zwraca: kolor wejœciowy D2D1::ColorF
+///////////////////////////////////////////////////////////////////////////////////////////////////
+COLORREF DrzewoWykresow::ZmienKolorFNaCOLORREF(D2D1::ColorF cKolor)
+{
+	return COLORREF(RGB(cKolor.r, cKolor.g, cKolor.b));
+}

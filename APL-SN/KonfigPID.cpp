@@ -30,8 +30,7 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_strMaxWyj1(_T(""))
 	, m_strMinWyj2(_T(""))
 	, m_strMaxWyj2(_T(""))
-	, m_bKatowy1(FALSE)
-	, m_bKatowy2(FALSE)
+	, m_bKatowy(FALSE)
 	, m_PodstFiltraD1(0)
 	, m_PodstFiltraD2(0)
 	, m_strPodstFiltraD1(_T(""))
@@ -62,8 +61,7 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_MAX_WY1, m_strMaxWyj1);
 	DDX_Text(pDX, IDC_EDIT_MIN_WY2, m_strMinWyj2);
 	DDX_Text(pDX, IDC_EDIT_MAX_WY2, m_strMaxWyj2);
-	DDX_Check(pDX, IDC_CHECK_KATOWY1, m_bKatowy1);
-	DDX_Check(pDX, IDC_CHECK_KATOWY2, m_bKatowy2);
+	DDX_Check(pDX, IDC_CHECK_KATOWY1, m_bKatowy);
 	DDX_Text(pDX, IDC_STATIC_FILTR_D1, m_strPodstFiltraD1);
 	DDX_Text(pDX, IDC_STATIC_FILTR_D2, m_strPodstFiltraD2);
 	DDX_Control(pDX, IDC_SLIDER_FILTR_D1, m_ctlSlidPOdstCzasuFiltraD1);
@@ -91,9 +89,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_D2, &KonfigPID::OnNMCustomdrawSliderFiltrD2)
 	ON_EN_CHANGE(IDC_EDIT_LIMIT_CALKI2, &KonfigPID::OnEnChangeEditLimitCalki2)
 	ON_EN_CHANGE(IDC_EDIT_LIMIT_CALKI1, &KonfigPID::OnEnChangeEditLimitCalki1)
-	ON_BN_CLICKED(IDC_CHECK_KATOWY1, &KonfigPID::OnBnClickedCheckKatowy1)
+	ON_BN_CLICKED(IDC_CHECK_KATOWY1, &KonfigPID::OnBnClickedCheckKatowy)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ1, &KonfigPID::OnBnClickedCheckWylacz1)
-	ON_BN_CLICKED(IDC_CHECK_KATOWY2, &KonfigPID::OnBnClickedCheckKatowy2)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ2, &KonfigPID::OnBnClickedCheckWylacz2)
 	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D1, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD1)
 	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D2, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2)
@@ -111,30 +108,32 @@ BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
-	uint8_t chDane[LICZBA_REGULATOROW_PID];
-	uint8_t chErr;//, chLicznikProbInicjacji, chLicznikProbOdczytu;
+	uint8_t chDane[4];
+	uint8_t chErr, chLicznikProbOdczytu;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));
 	m_ctrlKanalPID.InsertItem(1, _T("Pochylenie"));
 	m_ctrlKanalPID.InsertItem(2, _T("Odchylenie"));
 	m_ctrlKanalPID.InsertItem(3, _T("Wysokość"));
+	m_ctrlKanalPID.InsertItem(4, _T("Nawigacja N"));
+	m_ctrlKanalPID.InsertItem(5, _T("Nawigacja E"));
+
 	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
 
-	//chLicznikProbInicjacji = 5;
 	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
 	{
-		//do
-		//{
-			chErr = getKomunikacja().InicjujOdczytFloatFRAM(LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-			//chLicznikProbInicjacji--;
+		chErr = getKomunikacja().InicjujOdczytFloatFRAM(LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+		if (chErr == ERR_OK)
+		{
+			chLicznikProbOdczytu = 10;
+			do
+			{
+				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+				chLicznikProbOdczytu--;
+			} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));			
 			if (chErr == ERR_OK)
 			{
-				//chLicznikProbOdczytu = 5;
-				//do {
-					chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-					//chLicznikProbOdczytu--;
-				//} while ((chErr != ERR_OK) && chLicznikProbOdczytu);	//kod błędu ERR_PROCES_TRWA mówiący że dane jeszcze nie są gotowe
 				m_stPID[n].fKp = fDane[0];			//FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
 				m_stPID[n].fTi = fDane[1];			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
 				m_stPID[n].fTd = fDane[2];			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
@@ -142,44 +141,15 @@ BOOL KonfigPID::OnInitDialog()
 				m_stPID[n].fMinWyj = fDane[4];		//FA_USER_PID+16  //4U 
 				m_stPID[n].fMaxWyj = fDane[5];		//FA_USER_PID+20  //4U 
 				m_stPID[n].bZmieniony = FALSE;
+
+				getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
+				m_stPID[n].chPodstFiltraD = chDane[0] & 0x3F;
+				m_stPID[n].bWylaczony = (chDane[0] & 0x40) >> 6;
+				m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
 			}
-		//} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
-	}
-
-	uint8_t chLiczbaFloat = LICZBA_REGULATOROW_PID / 4;
-	if (chLiczbaFloat * 4 < LICZBA_REGULATOROW_PID)
-		chLiczbaFloat++;
-
-	//chLicznikProbInicjacji = 5;
-	//do
-	//{
-		//chLicznikProbInicjacji--;
-		chErr = getKomunikacja().InicjujOdczytFloatFRAM(chLiczbaFloat, FAU_FILD_REGKAT_TYP);
-		if (chErr == ERR_OK)
-		{
-			//chLicznikProbInicjacji = 5;
-			//chLicznikProbOdczytu = 5;
-			//do 
-			//{
-				//chLicznikProbOdczytu--;
-				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, chLiczbaFloat);
-				//if (chErr == ERR_OK)
-					//chLicznikProbOdczytu = 5;
-				
-			//} while ((chErr != ERR_OK) && chLicznikProbOdczytu);
-		}
-	//} while ((chErr != ERR_OK) && chLicznikProbInicjacji);
-
-	if (chErr == ERR_OK)
-	{
-		getKomunikacja().RozpakujFloatDoU8(fDane, LICZBA_REGULATOROW_PID, chDane);
-		for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
-		{
-			m_stPID[n].chPodstFiltraD = chDane[n] & 0x3F;
-			m_stPID[n].bWylaczony = (chDane[n] & 0x40) >> 6;
-			m_stPID[n].bKatowy = (chDane[n] & 0x80) >> 7;
 		}
 	}
+
 	m_ctlSlidPOdstCzasuFiltraD1.SetRange(0, 64);
 	m_ctlSlidPOdstCzasuFiltraD2.SetRange(0, 64);
 	UstawKontrolki();
@@ -225,14 +195,14 @@ void KonfigPID::UstawKontrolki()
 	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 
-	m_bKatowy1 = m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy;
-	m_bKatowy2 = m_stPID[2 * m_nBiezacyRegulator + 1].bKatowy;
+	m_bKatowy = m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy;
 	m_bWylaczony1 = m_stPID[2 * m_nBiezacyRegulator + 0].bWylaczony;
 	m_bWylaczony2 = m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony;
 
 	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD);
 	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD);
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +212,7 @@ void KonfigPID::UstawKontrolki()
 void KonfigPID::OnBnClickedOk()
 {
 	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
-	uint8_t chDane[LICZBA_REGULATOROW_PID];
+	uint8_t chDane[4];
 	uint8_t chErr;
 	CString strLiczba;
 
@@ -257,58 +227,15 @@ void KonfigPID::OnBnClickedOk()
 			fDane[3] = m_stPID[n].fOgrCalki;	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
 			fDane[4] = m_stPID[n].fMinWyj;
 			fDane[5] = m_stPID[n].fMaxWyj;
-			//chLicznikProbZapisu = 5;
-			//do
-			//{
-				//chLicznikProbZapisu--;
-				chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);				
-				if (chErr == ERR_OK)
-				{
-					//chLicznikProbZapisu = 5;	//po udanym zapisie resetuj liczbę prób
-					//chLicznikProbPotwierdzenia = 5;
-					//do 
-					//{
-						//chLicznikProbPotwierdzenia--;
-						chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-						//if (chErr == ERR_OK)
-							//chLicznikProbPotwierdzenia = 5;
-						
-					//} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
-				}
-			//} while ((chErr!= ERR_OK) && chLicznikProbZapisu);
-		}
-	}
 
-	//zapisz zmienną całkowitą
-	BOOL bZapiszCalkowita = FALSE;
-	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
-	{
-		bZapiszCalkowita |= m_stPID[n].bZmieniony;	//jeżeli którykolwiej jest zmieniony to zapisz wszystko
-		chDane[n] = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
-	}
-	
-	if (bZapiszCalkowita)
-	{
-		uint8_t chLiczbaFloat = getKomunikacja().SpakujU8doFloat(chDane, LICZBA_REGULATOROW_PID, fDane);
-		//chLicznikProbZapisu = 5;
-		//do
-		//{
-			//chLicznikProbZapisu--;
-			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, chLiczbaFloat, FAU_FILD_REGKAT_TYP);
+			chDane[0] = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
+			getKomunikacja().SpakujU8doFloat(chDane, 1, &fDane[6]);
+			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);				
 			if (chErr == ERR_OK)
 			{
-				//chLicznikProbZapisu = 5;
-				//chLicznikProbPotwierdzenia = 5;
-				//do 
-				//{
-					//chLicznikProbPotwierdzenia--;
-					chErr = getKomunikacja().PotwierdzZapisDanych(FAU_FILD_REGKAT_TYP + chLiczbaFloat);
-					//if (chErr == ERR_OK)
-						//chLicznikProbPotwierdzenia = 5;
-					
-				//} while ((chErr != ERR_OK) && chLicznikProbPotwierdzenia);
-			}
-		//} while ((chErr != ERR_OK) && chLicznikProbZapisu);
+				chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+			}			
+		}
 	}
 	CDialogEx::OnOK();
 }
@@ -604,24 +531,11 @@ void KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pRes
 // Reakcja na zmianę stanu checkboxa właczajcego regulator kąta
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnBnClickedCheckKatowy1()
+void KonfigPID::OnBnClickedCheckKatowy()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy = m_bKatowy1;
+	m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy = m_bKatowy;
 	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na zmianę stanu checkboxa właczajcego regulator kąta 
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnBnClickedCheckKatowy2()
-{
-	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bKatowy = m_bKatowy2;
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
 }
 
 

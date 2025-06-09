@@ -66,8 +66,7 @@ private:
 	CString m_strMaxWyj1;
 	CString m_strMinWyj2;
 	CString m_strMaxWyj2;
-	BOOL m_bKatowy1;
-	BOOL m_bKatowy2;
+	BOOL m_bKatowy;
 	BOOL m_bWylaczony1;
 	BOOL m_bWylaczony2;
 	int m_PodstFiltraD1;
@@ -96,9 +95,8 @@ public:
 
 	afx_msg void OnEnChangeEditLimitCalki2();
 	afx_msg void OnEnChangeEditLimitCalki1();
-	afx_msg void OnBnClickedCheckKatowy1();
+	afx_msg void OnBnClickedCheckKatowy();
 	afx_msg void OnBnClickedCheckWylacz1();
-	afx_msg void OnBnClickedCheckKatowy2();
 	afx_msg void OnBnClickedCheckWylacz2();
 
 	afx_msg void OnTRBNThumbPosChangingSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);

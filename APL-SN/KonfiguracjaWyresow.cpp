@@ -50,6 +50,9 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnItemchangedListaDanych)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_MFCCOLOR, &KonfiguracjaWyresow::OnBnClickedMfccolor)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnSelchangedTreeWykresow)
+	ON_NOTIFY(TVN_SELCHANGING, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnSelchangingTreeWykresow)
+	ON_NOTIFY(NM_CLICK, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnNMClickTreeWykresow)
 END_MESSAGE_MAP()
 
 
@@ -244,8 +247,6 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	m_ctrlKolor.SetColor(0x000000FF);*/
 
 
-
-
 	//obsługa obrazków w drzewie
 	UINT uiBmpId = theApp.m_bHiColorIcons ? IDB_CLASS_VIEW_24 : IDB_CLASS_VIEW;
 	CBitmap bmp;
@@ -370,6 +371,17 @@ void KonfiguracjaWyresow::OnBnClickedMfccolor()
 	int nWykres = 0;
 	COLORREF cKolor = m_ctrlKolor.GetColor();
 
+
+	/*CMFCColorDialog dlg(RGB(0, 0, 255), 0, this);
+
+	if (dlg.DoModal() == IDOK)
+	{
+		cKolor = m_ctrlKolor.GetColor();
+		//m_colorButton.SetColor(cKolor, cKolor);
+	}*/
+
+
+
 	m_cDrzewoWykresow.UstawKolorWykresu(cKolor);
 	
 
@@ -380,3 +392,54 @@ void KonfiguracjaWyresow::OnBnClickedMfccolor()
 	}
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę wyboru elementu w drzewie
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	//D2D1::ColorF cKolorD2D1;
+
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	//pNMTreeView->itemNew;
+
+	
+	*pResult = 0;
+}
+
+
+void KonfiguracjaWyresow::OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+
+	*pResult = 0;
+}
+
+
+void KonfiguracjaWyresow::OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	COLORREF cKolor;
+
+	HTREEITEM hDrzewa = m_cDrzewoWykresow.GetSelectedItem();
+	int nLiczbaGrupWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
+	for (int g = 0; g < nLiczbaGrupWykresow; g++)
+	{
+		int nLiczbaWykresow = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+		for (int w = 0; w < nLiczbaWykresow; w++)
+		{
+			if (m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].hWykres == hDrzewa)
+			{
+				D2D1::ColorF cKolorD2D1 = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1;
+				cKolor = m_cDrzewoWykresow.ZmienKolorFNaCOLORREF(cKolorD2D1);
+				m_ctrlKolor.SetColor(cKolor);
+			}
+		}
+	}
+	UpdateData(FALSE);
+	*pResult = 0;
+}

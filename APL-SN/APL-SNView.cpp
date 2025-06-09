@@ -245,6 +245,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		OknoWykresu.top = MIEJSCE_MIEDZY_WYKRESAMI;
 		for (int g = 0; g < nLiczbaGrupWykresow; g++)
 		{
+			fMin1 = fMax1 = fPoziomZera1 = fMin2 = fMax2 = fPoziomZera2 = 0.0f;;
 			fStartLegendy = (float)(OknoWykresu.left + 5);	//wspólrzędne x początku legendy, będą zwiększane w każdej iteracji aby opisy nie nachodziły na siebie
 			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;			
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
@@ -284,8 +285,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
 						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
 						
-					fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fPoziomZera = (float)OknoWykresu.bottom - (fSkalaY * (float)fabsf(fMinWykresu));					
 					if (w == 0)
 					{
 						fMin1 = fMinWykresu;
