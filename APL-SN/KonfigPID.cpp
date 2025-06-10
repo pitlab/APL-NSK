@@ -25,7 +25,6 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_strTD2(_T(""))
 	, m_strOgrCalki1(_T(""))
 	, m_strOgrCalki2(_T(""))
-	, m_strTest(_T(""))
 	, m_strMinWyj1(_T(""))
 	, m_strMaxWyj1(_T(""))
 	, m_strMinWyj2(_T(""))
@@ -73,7 +72,6 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDOK, &KonfigPID::OnBnClickedOk)
-	//ON_WM_PAINT()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_KANAL_PID, &KonfigPID::OnTcnSelchangeTabKanalPid)
 	ON_EN_CHANGE(IDC_EDIT_KP1, &KonfigPID::OnEnChangeEditKp1)
 	ON_EN_CHANGE(IDC_EDIT_KP2, &KonfigPID::OnEnChangeEditKp2)
@@ -92,8 +90,6 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_KATOWY1, &KonfigPID::OnBnClickedCheckKatowy)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ1, &KonfigPID::OnBnClickedCheckWylacz1)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ2, &KonfigPID::OnBnClickedCheckWylacz2)
-	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D1, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD1)
-	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_FILTR_D2, &KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2)
 END_MESSAGE_MAP()
 
 
@@ -195,12 +191,55 @@ void KonfigPID::UstawKontrolki()
 	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 
+	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD);
+	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD);
 	m_bKatowy = m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy;
 	m_bWylaczony1 = m_stPID[2 * m_nBiezacyRegulator + 0].bWylaczony;
 	m_bWylaczony2 = m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony;
 
-	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD);
-	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD);
+	if (m_bWylaczony1)
+	{
+		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(TRUE);
+	}
+	if (m_bWylaczony2)
+	{
+		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(TRUE);
+	}
+	UpdateData(FALSE);
 }
 
 
@@ -241,20 +280,6 @@ void KonfigPID::OnBnClickedOk()
 }
 
 
-/*
-
-void KonfigPID::OnPaint()
-{
-	CPaintDC dc(this); // device context for painting
-					   // TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
-					   // Nie wywołuj CDialogEx::OnPaint() do malowania komunikatów
-
-	dc.MoveTo(10, 10);
-	dc.LineTo(40, 40);
-
-	
-} */
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Kliknięto na zakłądke zmany kanału regulatorów
@@ -265,11 +290,11 @@ void KonfigPID::OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult)
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	UpdateData(TRUE);
 	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
-	m_strTest.Format(_T("Indeks kanału: %d"), m_nBiezacyRegulator);
 	UstawKontrolki();
 	UpdateData(FALSE);
 	*pResult = 0;
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -461,30 +486,16 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	float fCzas;
+	UpdateData(TRUE);
 	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
+	m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD = m_PodstFiltraD1;
+	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
 	if (m_PodstFiltraD1)
 		fCzas = m_PodstFiltraD1 / 200.f * 1000;
 	else
 		fCzas = 0.0f;
 	m_strPodstFiltraD1.Format(_T("Filtr D: %d (%.0f ms)"), m_PodstFiltraD1, fCzas);
 	UpdateData(FALSE);
-	*pResult = 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na zmianę położenia suwaka filtra D
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnTRBNThumbPosChangingSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	// Ta funkcja wymaga systemu Windows Vista lub nowszego.
-	// Symbol _WIN32_WINNT musi być >= 0x0600.
-	NMTRBTHUMBPOSCHANGING* pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING*>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
-	m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD = m_PodstFiltraD1;
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
 	*pResult = 0;
 }
 
@@ -499,7 +510,10 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	float fCzas;
+	UpdateData(TRUE);
 	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
+	m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD = m_PodstFiltraD2;
+	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
 	if (m_PodstFiltraD2)
 		fCzas = m_PodstFiltraD2 / 200.f * 1000;
 	else
@@ -510,22 +524,6 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na zmianę położenia suwaka filtra D
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnTRBNThumbPosChangingSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	// Ta funkcja wymaga systemu Windows Vista lub nowszego.
-	// Symbol _WIN32_WINNT musi być >= 0x0600.
-	NMTRBTHUMBPOSCHANGING* pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING*>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
-	m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD = m_PodstFiltraD2;
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
-	*pResult = 0;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Reakcja na zmianę stanu checkboxa właczajcego regulator kąta
@@ -549,6 +547,29 @@ void KonfigPID::OnBnClickedCheckWylacz1()
 	UpdateData(TRUE);
 	m_stPID[2 * m_nBiezacyRegulator + 0].bWylaczony = m_bWylaczony1;
 	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	if (m_bWylaczony1)
+	{
+		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(TRUE);
+		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(TRUE);
+	}
+	UpdateData(FALSE);
 }
 
 
@@ -562,6 +583,27 @@ void KonfigPID::OnBnClickedCheckWylacz2()
 	UpdateData(TRUE);
 	m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony = m_bWylaczony2;
 	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	if (m_bWylaczony2)
+	{
+		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(TRUE);
+	}
+	UpdateData(FALSE);
 }
 
 

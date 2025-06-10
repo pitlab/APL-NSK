@@ -51,7 +51,6 @@ public:
 private:
 	int m_nBiezacyRegulator;
 	CTabCtrl m_ctrlKanalPID;
-	//afx_msg void OnPaint();
 	CString m_strTI2;
 	CString m_strTI1;
 	CString m_strKP1;
@@ -76,8 +75,6 @@ private:
 	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD1;
 	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD2;
 public:
-
-	CString m_strTest;
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditKp1();
 	afx_msg void OnEnChangeEditKp2();
@@ -91,14 +88,9 @@ public:
 	afx_msg void OnEnChangeEditMaxWy2();
 	afx_msg void OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
-	
-
 	afx_msg void OnEnChangeEditLimitCalki2();
 	afx_msg void OnEnChangeEditLimitCalki1();
 	afx_msg void OnBnClickedCheckKatowy();
 	afx_msg void OnBnClickedCheckWylacz1();
 	afx_msg void OnBnClickedCheckWylacz2();
-
-	afx_msg void OnTRBNThumbPosChangingSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnTRBNThumbPosChangingSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
 };
