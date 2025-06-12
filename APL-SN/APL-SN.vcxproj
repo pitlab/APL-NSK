@@ -202,6 +202,7 @@
     <ClInclude Include="komunikacja\PortSzeregowy.h" />
     <ClInclude Include="komunikacja\Protokol.h" />
     <ClInclude Include="KonfigPID.h" />
+    <ClInclude Include="MixerDlg.h" />
     <ClInclude Include="PIDtabCtrl.h" />
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="komunikacja\PortSzeregowy.cpp" />
     <ClCompile Include="komunikacja\Protokol.cpp" />
     <ClCompile Include="KonfigPID.cpp" />
+    <ClCompile Include="MixerDlg.cpp" />
     <ClCompile Include="PIDtabCtrl.cpp" />
     <ClCompile Include="Roj.cpp" />
     <ClCompile Include="Wron.cpp" />

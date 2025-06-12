@@ -84,6 +84,7 @@
 #define IDD_KONFIG_REJESTRATORA         323
 #define IDD_KONFIG_PID                  325
 #define IDD_DIALOG_DEFINICJE_WRONA      330
+#define IDD_MIKSER                      334
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -158,6 +159,21 @@
 #define IDC_BUT_KOLOR                   1102
 #define IDC_BUTTON2                     1103
 #define IDC_MFCCOLOR                    1104
+#define IDC_EDIT1                       1105
+#define IDC_EDIT3                       1106
+#define IDC_EDIT4                       1107
+#define IDC_EDIT5                       1108
+#define IDC_EDIT6                       1109
+#define IDC_EDIT7                       1110
+#define IDC_EDIT8                       1111
+#define IDC_EDIT9                       1112
+#define IDC_EDIT10                      1113
+#define IDC_EDIT11                      1114
+#define IDC_EDIT12                      1115
+#define IDC_EDIT13                      1116
+#define IDC_EDIT14                      1117
+#define IDC_EDIT15                      1118
+#define IDC_EDIT16                      1119
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -189,9 +205,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        334
+#define _APS_NEXT_RESOURCE_VALUE        336
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1105
+#define _APS_NEXT_CONTROL_VALUE         1120
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
