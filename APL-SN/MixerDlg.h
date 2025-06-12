@@ -18,10 +18,10 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_MIKSER };
-	struct Config
+	struct Konfiguracja
 	{
-		float fAngle[KANALY_MIKSERA];
-		float fLenght[KANALY_MIKSERA];
+		float fKat[KANALY_MIKSERA];
+		float fDlug[KANALY_MIKSERA];
 
 		CString strName;
 	};
@@ -42,10 +42,6 @@ public:
 	CString m_strAngle06;
 	CString m_strAngle07;
 	CString m_strAngle08;
-	CString m_strAngle09;
-	CString m_strAngle10;
-	CString m_strAngle11;
-	CString m_strAngle12;
 	CString m_strLength01;
 	CString m_strLength02;
 	CString m_strLength03;
@@ -55,32 +51,48 @@ public:
 	CString m_strLength07;
 	CString m_strLength08;
 
-	float m_fAngle[KANALY_MIKSERA];
-	float m_fLenght[KANALY_MIKSERA];
-	Config m_stPredefConfig[4];	//4 konfiguracje
+	float m_fKatRamienia[KANALY_MIKSERA];
+	float m_fDlugoscRamienia[KANALY_MIKSERA];
+	Konfiguracja m_stPredefKonfig[4];	//4 konfiguracje
 	
 	CListCtrl m_ctlPredefList;
 	afx_msg void OnLvnHotTrackLstPredefined(NMHDR *pNMHDR, LRESULT *pResult);
 	int m_nActualSel;
-	afx_msg void OnEnChangeEdtAngle01();
-	afx_msg void OnEnChangeEdtAngle02();
-	afx_msg void OnEnChangeEdtAngle03();
-	afx_msg void OnEnChangeEdtAngle04();
-	afx_msg void OnEnChangeEdtAngle05();
-	afx_msg void OnEnChangeEdtAngle06();
-	afx_msg void OnEnChangeEdtAngle07();
-	afx_msg void OnEnChangeEdtAngle08();
-
-	afx_msg void OnEnChangeEdtLength01();
-	afx_msg void OnEnChangeEdtLength02();
-	afx_msg void OnEnChangeEdtLength03();
-	afx_msg void OnEnChangeEdtLength04();
-	afx_msg void OnEnChangeEdtLength05();
-	afx_msg void OnEnChangeEdtLength06();
-	afx_msg void OnEnChangeEdtLength07();
-	afx_msg void OnEnChangeEdtLength08();
 
 	afx_msg void OnBnClickedButSave();
 	afx_msg void OnBnClickedButRead();
 	void UpdateAngleLen();
+	afx_msg void OnEnChangeEditKat1();
+	afx_msg void OnEnChangeEditKat2();
+	afx_msg void OnEnChangeEditKat3();
+	afx_msg void OnEnChangeEditKat4();
+	afx_msg void OnEnChangeEditKat5();
+	afx_msg void OnEnChangeEditKat6();
+	afx_msg void OnEnChangeEditKat7();
+	afx_msg void OnEnChangeEditKat8();
+	afx_msg void OnEnChangeEditDlugosc1();
+	afx_msg void OnEnChangeEditDlugosc2();
+	afx_msg void OnEnChangeEditDlugosc3();
+	afx_msg void OnEnChangeEditDlugosc4();
+	afx_msg void OnEnChangeEditDlugosc5();
+	afx_msg void OnEnChangeEditDlugosc6();
+	afx_msg void OnEnChangeEditDlugosc7();
+	afx_msg void OnEnChangeEditDlugosc8();
+	CString m_strKat1;
+	CString m_strKat2;
+	CString m_strKat3;
+	CString m_strKat4;
+	CString m_strKat5;
+	CString m_strKat6;
+	CString m_strKat7;
+	CString m_strKat8;
+	CString m_strDlugosc1;
+	CString m_strDlugosc2;
+	CString m_strDlugosc3;
+	CString m_strDlugosc4;
+	CString m_strDlugosc5;
+	CString m_strDlugosc6;
+	CString m_strDlugosc7;
+	CString m_strDlugosc8;
+	CListBox m_ctlPredefiniowane;
 };

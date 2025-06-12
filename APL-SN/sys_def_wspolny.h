@@ -1,4 +1,3 @@
-#include <math.h>
 //flagi inicjalizacji sprzętu CM4
 #define INIT_WYKR_MTK			0x00000001
 #define INIT_WYKR_UBLOX			0x00000002

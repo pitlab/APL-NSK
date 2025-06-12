@@ -139,6 +139,7 @@
 #define IDC_EDIT2                       1083
 #define IDC_EDIT_LIMIT_CALKI2           1083
 #define IDC_EDIT_NAZWA                  1083
+#define IDC_EDIT_DLUGOSC1               1083
 #define IDC_EDIT_KP2                    1084
 #define IDC_EDIT_FILTRD2                1085
 #define IDC_EDIT_TD2                    1086
@@ -160,20 +161,36 @@
 #define IDC_BUTTON2                     1103
 #define IDC_MFCCOLOR                    1104
 #define IDC_EDIT1                       1105
+#define IDC_EDIT_KAT1                   1105
 #define IDC_EDIT3                       1106
+#define IDC_EDIT_KAT2                   1106
 #define IDC_EDIT4                       1107
+#define IDC_EDIT_DLUGOSC2               1107
 #define IDC_EDIT5                       1108
+#define IDC_EDIT_KAT3                   1108
 #define IDC_EDIT6                       1109
+#define IDC_EDIT_DLUGOSC3               1109
 #define IDC_EDIT7                       1110
+#define IDC_EDIT_KAT4                   1110
 #define IDC_EDIT8                       1111
+#define IDC_EDIT_DLUGOSC4               1111
 #define IDC_EDIT9                       1112
+#define IDC_EDIT_KAT5                   1112
 #define IDC_EDIT10                      1113
+#define IDC_EDIT_DLUGOSC5               1113
 #define IDC_EDIT11                      1114
+#define IDC_EDIT_KAT6                   1114
 #define IDC_EDIT12                      1115
+#define IDC_EDIT_DLUGOSC6               1115
 #define IDC_EDIT13                      1116
+#define IDC_EDIT_KAT7                   1116
 #define IDC_EDIT14                      1117
+#define IDC_EDIT_DLUGOSC7               1117
 #define IDC_EDIT15                      1118
+#define IDC_EDIT_KAT8                   1118
 #define IDC_EDIT16                      1119
+#define IDC_EDIT_DLUGOSC8               1119
+#define IDC_LIST_PREDEFINIOWANE         1120
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -200,14 +217,16 @@
 #define ID_USTAWIENIA_USTAWIENIAPID     32807
 #define ID_USTAWIENIA_REGULATORY_PID    32808
 #define ID_USTAWIENIA_DEFINICJEWRONA    32809
+#define ID_Menu                         32810
+#define ID_USTAWIENIA_MIKSER            32811
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        336
-#define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1120
+#define _APS_NEXT_COMMAND_VALUE         32812
+#define _APS_NEXT_CONTROL_VALUE         1121
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

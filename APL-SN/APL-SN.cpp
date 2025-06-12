@@ -13,7 +13,7 @@
 #include "APL-SNDoc.h"
 #include "APL-SNView.h"
 #include "DefinicjeWrona.h"
-
+#include "MixerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_POLACZ, &CAPLSNApp::OnUpdateIndicatorPolacz)
 	ON_COMMAND(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUstawieniaDefinicjewrona)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUpdateUstawieniaDefinicjewrona)
+	ON_COMMAND(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUstawieniaMikser)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUpdateUstawieniaMikser)
 END_MESSAGE_MAP()
 
 
@@ -356,4 +358,21 @@ void CAboutDlg::OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	*pResult = 0;
+}
+
+
+void CAPLSNApp::OnUstawieniaMikser()
+{
+	CMixerDlg cMixerDlg;
+	cMixerDlg.DoModal();
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+}
+
+
+void CAPLSNApp::OnUpdateUstawieniaMikser(CCmdUI* pCmdUI)
+{
+	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
 }

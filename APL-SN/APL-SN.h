@@ -53,6 +53,8 @@ public:
 	afx_msg void OnUpdateIndicatorPolacz(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaDefinicjewrona();
 	afx_msg void OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaMikser();
+	afx_msg void OnUpdateUstawieniaMikser(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

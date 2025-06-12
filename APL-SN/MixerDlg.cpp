@@ -5,6 +5,8 @@
 #include "MixerDlg.h"
 #include "konfig_fram.h"
 //#include "modemdata.h"
+#define _USE_MATH_DEFINES 
+#include < math.h >
 
 // CMixerDlg dialog
 
@@ -12,26 +14,21 @@ IMPLEMENT_DYNAMIC(CMixerDlg, CDialog)
 
 CMixerDlg::CMixerDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMixerDlg::IDD, pParent)
-	, m_strAngle01(_T(""))
-	, m_strAngle02(_T(""))
-	, m_strAngle03(_T(""))
-	, m_strAngle04(_T(""))
-	, m_strAngle05(_T(""))
-	, m_strAngle06(_T(""))
-	, m_strAngle07(_T(""))
-	, m_strAngle08(_T(""))
-	, m_strAngle09(_T(""))
-	, m_strAngle10(_T(""))
-	, m_strAngle11(_T(""))
-	, m_strAngle12(_T(""))
-	, m_strLength01(_T(""))
-	, m_strLength02(_T(""))
-	, m_strLength03(_T(""))
-	, m_strLength04(_T(""))
-	, m_strLength05(_T(""))
-	, m_strLength06(_T(""))
-	, m_strLength07(_T(""))
-	, m_strLength08(_T(""))
+	, m_strKat1(_T(""))
+	, m_strKat2(_T(""))
+	, m_strKat3(_T(""))
+	, m_strKat4(_T(""))
+	, m_strKat5(_T(""))
+	, m_strKat6(_T(""))
+	, m_strKat7(_T(""))
+	, m_strKat8(_T(""))
+	, m_strDlugosc1(_T(""))
+	, m_strDlugosc2(_T(""))
+	, m_strDlugosc3(_T(""))
+	, m_strDlugosc4(_T(""))
+	, m_strDlugosc5(_T(""))
+	, m_strDlugosc6(_T(""))
+	, m_strDlugosc8(_T(""))
 {
 
 }
@@ -43,52 +40,53 @@ CMixerDlg::~CMixerDlg()
 void CMixerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDT_ANGLE01, m_strAngle01);
-	DDX_Text(pDX, IDC_EDT_ANGLE02, m_strAngle02);
-	DDX_Text(pDX, IDC_EDT_ANGLE03, m_strAngle03);
-	DDX_Text(pDX, IDC_EDT_ANGLE04, m_strAngle04);
-	DDX_Text(pDX, IDC_EDT_ANGLE05, m_strAngle05);
-	DDX_Text(pDX, IDC_EDT_ANGLE06, m_strAngle06);
-	DDX_Text(pDX, IDC_EDT_ANGLE07, m_strAngle07);
-	DDX_Text(pDX, IDC_EDT_ANGLE08, m_strAngle08);
 
-	DDX_Text(pDX, IDC_EDT_LENGTH01, m_strLength01);
-	DDX_Text(pDX, IDC_EDT_LENGTH02, m_strLength02);
-	DDX_Text(pDX, IDC_EDT_LENGTH03, m_strLength03);
-	DDX_Text(pDX, IDC_EDT_LENGTH04, m_strLength04);
-	DDX_Text(pDX, IDC_EDT_LENGTH05, m_strLength05);
-	DDX_Text(pDX, IDC_EDT_LENGTH06, m_strLength06);
-	DDX_Text(pDX, IDC_EDT_LENGTH07, m_strLength07);
-	DDX_Text(pDX, IDC_EDT_LENGTH08, m_strLength08);
 
-	DDX_Control(pDX, IDC_LST_PREDEFINED, m_ctlPredefList);
+	//DDX_Control(pDX, IDC_LST_PREDEFINED, m_ctlPredefList);
+	DDX_Text(pDX, IDC_EDIT_KAT1, m_strKat1);
+	DDX_Text(pDX, IDC_EDIT_KAT2, m_strKat2);
+	DDX_Text(pDX, IDC_EDIT_KAT3, m_strKat3);
+	DDX_Text(pDX, IDC_EDIT_KAT4, m_strKat4);
+	DDX_Text(pDX, IDC_EDIT_KAT5, m_strKat5);
+	DDX_Text(pDX, IDC_EDIT_KAT6, m_strKat6);
+	DDX_Text(pDX, IDC_EDIT_KAT7, m_strKat7);
+	DDX_Text(pDX, IDC_EDIT_KAT8, m_strKat8);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC1, m_strDlugosc1);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC2, m_strDlugosc2);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC3, m_strDlugosc3);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC4, m_strDlugosc4);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC5, m_strDlugosc5);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC6, m_strDlugosc6);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC7, m_strDlugosc7);
+	DDX_Text(pDX, IDC_EDIT_DLUGOSC8, m_strDlugosc8);
+	DDX_Control(pDX, IDC_LIST_PREDEFINIOWANE, m_ctlPredefiniowane);
 }
 
 
 BEGIN_MESSAGE_MAP(CMixerDlg, CDialog)
 	ON_BN_CLICKED(IDOK, &CMixerDlg::OnBnClickedOk)
 	ON_WM_PAINT()
-	ON_EN_CHANGE(IDC_EDT_ANGLE01, &CMixerDlg::OnEnChangeEdtAngle01)
-	ON_NOTIFY(LVN_HOTTRACK, IDC_LST_PREDEFINED, &CMixerDlg::OnLvnHotTrackLstPredefined)
-	ON_EN_CHANGE(IDC_EDT_ANGLE02, &CMixerDlg::OnEnChangeEdtAngle02)
-	ON_EN_CHANGE(IDC_EDT_ANGLE03, &CMixerDlg::OnEnChangeEdtAngle03)
-	ON_EN_CHANGE(IDC_EDT_ANGLE04, &CMixerDlg::OnEnChangeEdtAngle04)
-	ON_EN_CHANGE(IDC_EDT_ANGLE05, &CMixerDlg::OnEnChangeEdtAngle05)
-	ON_EN_CHANGE(IDC_EDT_ANGLE06, &CMixerDlg::OnEnChangeEdtAngle06)
-	ON_EN_CHANGE(IDC_EDT_ANGLE07, &CMixerDlg::OnEnChangeEdtAngle07)
-	ON_EN_CHANGE(IDC_EDT_ANGLE08, &CMixerDlg::OnEnChangeEdtAngle08)
+	ON_NOTIFY(LVN_HOTTRACK, IDC_LIST_PREDEFINIOWANE, &CMixerDlg::OnLvnHotTrackLstPredefined)
 
-	ON_EN_CHANGE(IDC_EDT_LENGTH01, &CMixerDlg::OnEnChangeEdtLength01)
-	ON_EN_CHANGE(IDC_EDT_LENGTH02, &CMixerDlg::OnEnChangeEdtLength02)
-	ON_EN_CHANGE(IDC_EDT_LENGTH03, &CMixerDlg::OnEnChangeEdtLength03)
-	ON_EN_CHANGE(IDC_EDT_LENGTH04, &CMixerDlg::OnEnChangeEdtLength04)
-	ON_EN_CHANGE(IDC_EDT_LENGTH05, &CMixerDlg::OnEnChangeEdtLength05)
-	ON_EN_CHANGE(IDC_EDT_LENGTH06, &CMixerDlg::OnEnChangeEdtLength06)
-	ON_EN_CHANGE(IDC_EDT_LENGTH07, &CMixerDlg::OnEnChangeEdtLength07)
-	ON_EN_CHANGE(IDC_EDT_LENGTH08, &CMixerDlg::OnEnChangeEdtLength08)
 
-	ON_BN_CLICKED(IDC_BUT_SAVE, &CMixerDlg::OnBnClickedButSave)
-	ON_BN_CLICKED(IDC_BUT_READ, &CMixerDlg::OnBnClickedButRead)
+	//ON_BN_CLICKED(IDC_BUT_SAVE, &CMixerDlg::OnBnClickedButSave)
+	//ON_BN_CLICKED(IDC_BUT_READ, &CMixerDlg::OnBnClickedButRead)
+	ON_EN_CHANGE(IDC_EDIT_KAT1, &CMixerDlg::OnEnChangeEditKat1)
+	ON_EN_CHANGE(IDC_EDIT_KAT2, &CMixerDlg::OnEnChangeEditKat2)
+	ON_EN_CHANGE(IDC_EDIT_KAT3, &CMixerDlg::OnEnChangeEditKat3)
+	ON_EN_CHANGE(IDC_EDIT_KAT4, &CMixerDlg::OnEnChangeEditKat4)
+	ON_EN_CHANGE(IDC_EDIT_KAT5, &CMixerDlg::OnEnChangeEditKat5)
+	ON_EN_CHANGE(IDC_EDIT_KAT6, &CMixerDlg::OnEnChangeEditKat6)
+	ON_EN_CHANGE(IDC_EDIT_KAT7, &CMixerDlg::OnEnChangeEditKat7)
+	ON_EN_CHANGE(IDC_EDIT_KAT8, &CMixerDlg::OnEnChangeEditKat8)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC1, &CMixerDlg::OnEnChangeEditDlugosc1)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC2, &CMixerDlg::OnEnChangeEditDlugosc2)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC3, &CMixerDlg::OnEnChangeEditDlugosc3)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC4, &CMixerDlg::OnEnChangeEditDlugosc4)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC5, &CMixerDlg::OnEnChangeEditDlugosc5)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC6, &CMixerDlg::OnEnChangeEditDlugosc6)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC7, &CMixerDlg::OnEnChangeEditDlugosc7)
+	ON_EN_CHANGE(IDC_EDIT_DLUGOSC8, &CMixerDlg::OnEnChangeEditDlugosc8)
 END_MESSAGE_MAP()
 
 
@@ -106,63 +104,63 @@ BOOL CMixerDlg::OnInitDialog()
 	{
 		for (x=0; x< KANALY_MIKSERA; x++)
 		{
-			m_stPredefConfig[y].fLenght[x] = 0;
-			m_stPredefConfig[y].fAngle[x] = 0;
+			m_stPredefKonfig[y].fDlug[x] = 0;
+			m_stPredefKonfig[y].fKat[x] = 0;
 		}
 	}
 
 	//predefinionana konfiguracja dla 4X
-	m_stPredefConfig[0].fAngle[0] = 45;
-	m_stPredefConfig[0].fAngle[1] = 135;
-	m_stPredefConfig[0].fAngle[2] = -135;
-	m_stPredefConfig[0].fAngle[3] = -45;
-	m_stPredefConfig[0].strName = _T("Quadrokopter X");
+	m_stPredefKonfig[0].fKat[0] = 45;
+	m_stPredefKonfig[0].fKat[1] = 135;
+	m_stPredefKonfig[0].fKat[2] = -135;
+	m_stPredefKonfig[0].fKat[3] = -45;
+	m_stPredefKonfig[0].strName = _T("Quadrokopter X");
 	
 	//predefinionana konfiguracja dla 4+
-	m_stPredefConfig[1].fAngle[0] = 0;
-	m_stPredefConfig[1].fAngle[1] = 90;
-	m_stPredefConfig[1].fAngle[2] = 180;
-	m_stPredefConfig[1].fAngle[3] = -90;
-	m_stPredefConfig[1].strName = _T("Quadrokopter +");
+	m_stPredefKonfig[1].fKat[0] = 0;
+	m_stPredefKonfig[1].fKat[1] = 90;
+	m_stPredefKonfig[1].fKat[2] = 180;
+	m_stPredefKonfig[1].fKat[3] = -90;
+	m_stPredefKonfig[1].strName = _T("Quadrokopter +");
 	
 	for (x=0; x<4; x++)
 	{
-		m_stPredefConfig[0].fLenght[x] = 250;
-		m_stPredefConfig[1].fLenght[x] = 250;
+		m_stPredefKonfig[0].fDlug[x] = 250;
+		m_stPredefKonfig[1].fDlug[x] = 250;
 	}
 
 	//predefinionana konfiguracja dla 6X
-	m_stPredefConfig[2].fAngle[0] = 30;
-	m_stPredefConfig[2].fAngle[1] = 90;
-	m_stPredefConfig[2].fAngle[2] = 150;
-	m_stPredefConfig[2].fAngle[3] = -150;
-	m_stPredefConfig[2].fAngle[4] = -90;
-	m_stPredefConfig[2].fAngle[5] = -30;
-	m_stPredefConfig[2].strName = _T("Hexakopter X");
+	m_stPredefKonfig[2].fKat[0] = 30;
+	m_stPredefKonfig[2].fKat[1] = 90;
+	m_stPredefKonfig[2].fKat[2] = 150;
+	m_stPredefKonfig[2].fKat[3] = -150;
+	m_stPredefKonfig[2].fKat[4] = -90;
+	m_stPredefKonfig[2].fKat[5] = -30;
+	m_stPredefKonfig[2].strName = _T("Hexakopter X");
 	for (x=0; x<6; x++)
-		m_stPredefConfig[2].fLenght[x] = 300;
+		m_stPredefKonfig[2].fDlug[x] = 300;
 
 	//predefinionana konfiguracja dla 8X
-	m_stPredefConfig[3].fAngle[0] = 22.5;
-	m_stPredefConfig[3].fAngle[1] = 67.5;
-	m_stPredefConfig[3].fAngle[2] = 112.5;
-	m_stPredefConfig[3].fAngle[3] = 157.5;
-	m_stPredefConfig[3].fAngle[4] = 202.5;
-	m_stPredefConfig[3].fAngle[5] = 247.5;
-	m_stPredefConfig[3].fAngle[6] = 292.5;
-	m_stPredefConfig[3].fAngle[7] = 337.5;
-	m_stPredefConfig[3].strName = _T("Oktokopter X");
+	m_stPredefKonfig[3].fKat[0] = 22.5;
+	m_stPredefKonfig[3].fKat[1] = 67.5;
+	m_stPredefKonfig[3].fKat[2] = 112.5;
+	m_stPredefKonfig[3].fKat[3] = 157.5;
+	m_stPredefKonfig[3].fKat[4] = 202.5;
+	m_stPredefKonfig[3].fKat[5] = 247.5;
+	m_stPredefKonfig[3].fKat[6] = 292.5;
+	m_stPredefKonfig[3].fKat[7] = 337.5;
+	m_stPredefKonfig[3].strName = _T("Oktokopter X");
 	for (x=0; x<8; x++)
-		m_stPredefConfig[3].fLenght[x] = 380;
+		m_stPredefKonfig[3].fDlug[x] = 380;
 
 	//dczytaj nastawy z APL
 	OnBnClickedButRead();
 	//UpdateAngleLen();	//wstaw nastawy do okna
 
-	m_ctlPredefList.InsertColumn(0, _T("Configuration"));
+	m_ctlPredefList.InsertColumn(0, _T("Konfiguracja"));
 	m_ctlPredefList.SetColumnWidth(0, 200);
 	for (x=0; x<4; x++)
-		m_ctlPredefList.InsertItem(x, m_stPredefConfig[x].strName);	
+		m_ctlPredefList.InsertItem(x, m_stPredefKonfig[x].strName);
 
 	m_ctlPredefList.SetHoverTime(50);
 	//m_ctlPredefList.SetItemState(0, 1, 0xFF);
@@ -181,24 +179,24 @@ BOOL CMixerDlg::OnInitDialog()
 //uaktualnij pola edycyjne danymi
 void CMixerDlg::UpdateAngleLen()
 {
-	m_strAngle01.Format(_T("%.1f"), m_fAngle[0]);
-	m_strAngle02.Format(_T("%.1f"), m_fAngle[1]);
-	m_strAngle03.Format(_T("%.1f"), m_fAngle[2]);
-	m_strAngle04.Format(_T("%.1f"), m_fAngle[3]);
-	m_strAngle05.Format(_T("%.1f"), m_fAngle[4]);
-	m_strAngle06.Format(_T("%.1f"), m_fAngle[5]);
-	m_strAngle07.Format(_T("%.1f"), m_fAngle[6]);
-	m_strAngle08.Format(_T("%.1f"), m_fAngle[7]);
+	m_strKat1.Format(_T("%.1f"), m_fKatRamienia[0]);
+	m_strKat2.Format(_T("%.1f"), m_fKatRamienia[1]);
+	m_strKat3.Format(_T("%.1f"), m_fKatRamienia[2]);
+	m_strKat4.Format(_T("%.1f"), m_fKatRamienia[3]);
+	m_strKat5.Format(_T("%.1f"), m_fKatRamienia[4]);
+	m_strKat6.Format(_T("%.1f"), m_fKatRamienia[5]);
+	m_strKat7.Format(_T("%.1f"), m_fKatRamienia[6]);
+	m_strKat8.Format(_T("%.1f"), m_fKatRamienia[7]);
 
 
-	m_strLength01.Format(_T("%.1f"), m_fLenght[0]);
-	m_strLength02.Format(_T("%.1f"), m_fLenght[1]);
-	m_strLength03.Format(_T("%.1f"), m_fLenght[2]);
-	m_strLength04.Format(_T("%.1f"), m_fLenght[3]);
-	m_strLength05.Format(_T("%.1f"), m_fLenght[4]);
-	m_strLength06.Format(_T("%.1f"), m_fLenght[5]);
-	m_strLength07.Format(_T("%.1f"), m_fLenght[6]);
-	m_strLength08.Format(_T("%.1f"), m_fLenght[7]);
+	m_strDlugosc1.Format(_T("%.1f"), m_fDlugoscRamienia[0]);
+	m_strDlugosc2.Format(_T("%.1f"), m_fDlugoscRamienia[1]);
+	m_strDlugosc3.Format(_T("%.1f"), m_fDlugoscRamienia[2]);
+	m_strDlugosc4.Format(_T("%.1f"), m_fDlugoscRamienia[3]);
+	m_strDlugosc5.Format(_T("%.1f"), m_fDlugoscRamienia[4]);
+	m_strDlugosc6.Format(_T("%.1f"), m_fDlugoscRamienia[5]);
+	m_strDlugosc7.Format(_T("%.1f"), m_fDlugoscRamienia[6]);
+	m_strDlugosc8.Format(_T("%.1f"), m_fDlugoscRamienia[7]);
 
 	UpdateData(FALSE);
 }
@@ -236,11 +234,11 @@ void CMixerDlg::OnPaint()
 	
 
 	//oblicz skalê proporcji rysowania ramion
-	float fMaxLen = m_fLenght[0];
+	float fMaxLen = m_fDlugoscRamienia[0];
 	for (x=1; x< KANALY_MIKSERA; x++)
 	{
-		if (m_fLenght[x] > fMaxLen)
-			fMaxLen = m_fLenght[x];		//najd³u¿sze ramiê
+		if (m_fDlugoscRamienia[x] > fMaxLen)
+			fMaxLen = m_fDlugoscRamienia[x];		//najd³u¿sze ramiê
 	}
 	//skala w pix/mm
 	fScaleXY = (ptPD.x - ptLG.x) / (2*(fMaxLen + nEngineRadius));
@@ -253,10 +251,10 @@ void CMixerDlg::OnPaint()
 	//nArcArrowRadius = (int)(0.7*nEngineRadius);
 	for (x=0; x< KANALY_MIKSERA; x++)
 	{
-		if (m_fLenght[x])
+		if (m_fDlugoscRamienia[x])
 		{
-			ptEng.x = ptCP.x + int(sin(m_fAngle[x]* DEG2RAD)*m_fLenght[x]*fScaleXY);
-			ptEng.y = ptCP.y - int(cos(m_fAngle[x]* DEG2RAD)*m_fLenght[x]*fScaleXY);
+			ptEng.x = ptCP.x + int(sin(m_fKatRamienia[x]* DEG2RAD)* m_fDlugoscRamienia[x]*fScaleXY);
+			ptEng.y = ptCP.y - int(cos(m_fKatRamienia[x]* DEG2RAD)* m_fDlugoscRamienia[x]*fScaleXY);
 			dc.Ellipse(ptEng.x-nEngineRadius, ptEng.y-nEngineRadius, ptEng.x+nEngineRadius, ptEng.y+nEngineRadius);
 			str.Format(_T("%d"), x+1);
 			dc.TextOutW(ptEng.x-4, ptEng.y-6, str, 1);
@@ -336,8 +334,8 @@ void CMixerDlg::OnLvnHotTrackLstPredefined(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		for (x=0; x< KANALY_MIKSERA; x++)
 		{
-			m_fAngle[x] = m_stPredefConfig[nSel].fAngle[x];
-			m_fLenght[x] = m_stPredefConfig[nSel].fLenght[x];
+			m_fKatRamienia[x] = m_stPredefKonfig[nSel].fKat[x];
+			m_fDlugoscRamienia[x] = m_stPredefKonfig[nSel].fDlug[x];
 		}
 		UpdateAngleLen();
 		Invalidate();
@@ -345,121 +343,6 @@ void CMixerDlg::OnLvnHotTrackLstPredefined(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	UpdateData(FALSE);
 }
-
-
-void CMixerDlg::OnEnChangeEdtAngle01()
-{
-	UpdateData();
-	m_fAngle[0] = (float)_wtof(m_strAngle01);
-	Invalidate();
-}
-
-
-void CMixerDlg::OnEnChangeEdtAngle02()
-{
-	UpdateData();
-	m_fAngle[1] = (float)_wtof(m_strAngle02);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle03()
-{
-	UpdateData();
-	m_fAngle[2] = (float)_wtof(m_strAngle03);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle04()
-{
-	UpdateData();
-	m_fAngle[3] = (float)_wtof(m_strAngle04);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle05()
-{
-	UpdateData();
-	m_fAngle[4] = (float)_wtof(m_strAngle05);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle06()
-{
-	UpdateData();
-	m_fAngle[5] = (float)_wtof(m_strAngle06);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle07()
-{
-	UpdateData();
-	m_fAngle[6] = (float)_wtof(m_strAngle07);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtAngle08()
-{
-	UpdateData();
-	m_fAngle[7] = (float)_wtof(m_strAngle08);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength01()
-{
-	UpdateData();
-	m_fLenght[0] = (float)_wtof(m_strLength01);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength02()
-{
-	UpdateData();
-	m_fLenght[1] = (float)_wtof(m_strLength02);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength03()
-{
-	UpdateData();
-	m_fLenght[2] = (float)_wtof(m_strLength03);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength04()
-{
-	UpdateData();
-	m_fLenght[3] = (float)_wtof(m_strLength04);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength05()
-{
-	UpdateData();
-	m_fLenght[4] = (float)_wtof(m_strLength05);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength06()
-{
-	UpdateData();
-	m_fLenght[5] = (float)_wtof(m_strLength06);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength07()
-{
-	UpdateData();
-	m_fLenght[6] = (float)_wtof(m_strLength07);
-	Invalidate();
-}
-
-void CMixerDlg::OnEnChangeEdtLength08()
-{
-	UpdateData();
-	m_fLenght[7] = (float)_wtof(m_strLength08);
-	Invalidate();
-}
-
 
 
 
@@ -473,8 +356,8 @@ void CMixerDlg::OnBnClickedButSave()
 
 	for (x=0; x< KANALY_MIKSERA; x++)
 	{
-		fMixPith[x] = (float)(m_fLenght[x] * cos(m_fAngle[x]* DEG2RAD));
-		fMixRoll[x] = (float)(m_fLenght[x] * sin(m_fAngle[x]* DEG2RAD));
+		fMixPith[x] = (float)(m_fDlugoscRamienia[x] * cos(m_fKatRamienia[x]* DEG2RAD));
+		fMixRoll[x] = (float)(m_fDlugoscRamienia[x] * sin(m_fKatRamienia[x]* DEG2RAD));
 		//mamy uk³ad prawoskrêtny, wiêc silniki parzyste CCW daj¹ moment dodatni a 
 		// silniki nieparzyste CW daj¹ moment ujemny
 		if ((x/2)*2 == x)		//okreœl czy silnik jest parzysty (x=0 => silnik nr 1 - nieparzysty)
@@ -486,11 +369,11 @@ void CMixerDlg::OnBnClickedButSave()
 	//zapisz dane do FRAM
 	for (x=0; x< KANALY_MIKSERA; x++)
 	{
-		nErr = getModemData().ZapiszFloat32Val2Fram(fMixPith[x], FAU_MIX_PITCH+4*x);
-		nErr = getModemData().ZapiszFloat32Val2Fram(fMixRoll[x], FAU_MIX_ROLL+4*x);
+		//nErr = getModemData().ZapiszFloat32Val2Fram(fMixPith[x], FAU_MIX_PITCH+4*x);
+		//nErr = getModemData().ZapiszFloat32Val2Fram(fMixRoll[x], FAU_MIX_ROLL+4*x);
 	}
 	//prze³aduj konfiguracjê
-	getModemData().PrzeladujKonfigPID();
+	//getModemData().PrzeladujKonfigPID();
 }
 
 
@@ -504,23 +387,151 @@ void CMixerDlg::OnBnClickedButRead()
 	//czytaj dane z FRAM
 	for (x=0; x< KANALY_MIKSERA; x++)
 	{
-		nErr = getModemData().CzytajFram2Float32(&fMixPith[x], FAU_MIX_PITCH+4*x);
+		/*nErr = getModemData().CzytajFram2Float32(&fMixPith[x], FAU_MIX_PITCH + 4 * x);
 		if (nErr == IDABORT) return;
 		nErr = getModemData().CzytajFram2Float32(&fMixRoll[x], FAU_MIX_ROLL+4*x);
-		if (nErr == IDABORT) return;
+		if (nErr == IDABORT) return;*/
 
 		if (fMixPith[x])	//zabezpieczenie przed dzieleniem przez zero
 		{
-			m_fAngle[x] = (float)(DEG2RAD * atan2(fMixRoll[x],fMixPith[x]));
-			m_fLenght[x] = (float)sqrt(fMixRoll[x]*fMixRoll[x] + fMixPith[x]*fMixPith[x]);
+			m_fKatRamienia[x] = (float)(DEG2RAD * atan2(fMixRoll[x],fMixPith[x]));
+			m_fDlugoscRamienia[x] = (float)sqrt(fMixRoll[x]*fMixRoll[x] + fMixPith[x]*fMixPith[x]);
 		}
 		else
 		{
-			m_fAngle[x] = 0;
-			m_fLenght[x] = 0;
+			m_fKatRamienia[x] = 0;
+			m_fDlugoscRamienia[x] = 0;
 		}
 	}
 	m_nActualSel = -1;	//wskaŸnik ostatnio wybranej przedefiniowanej pozycji
 	UpdateAngleLen();
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat1()
+{
+	UpdateData();
+	m_fKatRamienia[0] = (float)_wtof(m_strKat1);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat2()
+{
+	UpdateData();
+	m_fKatRamienia[1] = (float)_wtof(m_strKat2);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat3()
+{
+	UpdateData();
+	m_fKatRamienia[2] = (float)_wtof(m_strKat3);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat4()
+{
+	UpdateData();
+	m_fKatRamienia[3] = (float)_wtof(m_strKat4);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat5()
+{
+	UpdateData();
+	m_fKatRamienia[4] = (float)_wtof(m_strKat5);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat6()
+{
+	UpdateData();
+	m_fKatRamienia[5] = (float)_wtof(m_strKat6);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat7()
+{
+	UpdateData();
+	m_fKatRamienia[6] = (float)_wtof(m_strKat7);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditKat8()
+{
+	UpdateData();
+	m_fKatRamienia[7] = (float)_wtof(m_strKat8);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc1()
+{
+	UpdateData();
+	m_fDlugoscRamienia[0] = (float)_wtof(m_strDlugosc1);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc2()
+{
+	UpdateData();
+	m_fDlugoscRamienia[1] = (float)_wtof(m_strDlugosc2);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc3()
+{
+	UpdateData();
+	m_fDlugoscRamienia[2] = (float)_wtof(m_strDlugosc3);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc4()
+{
+	UpdateData();
+	m_fDlugoscRamienia[3] = (float)_wtof(m_strDlugosc4);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc5()
+{
+	UpdateData();
+	m_fDlugoscRamienia[4] = (float)_wtof(m_strDlugosc5);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc6()
+{
+	UpdateData();
+	m_fDlugoscRamienia[5] = (float)_wtof(m_strDlugosc6);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc7()
+{
+	UpdateData();
+	m_fDlugoscRamienia[6] = (float)_wtof(m_strDlugosc7);
+	Invalidate();
+}
+
+
+void CMixerDlg::OnEnChangeEditDlugosc8()
+{
+	UpdateData();
+	m_fDlugoscRamienia[7] = (float)_wtof(m_strDlugosc8);
 	Invalidate();
 }
