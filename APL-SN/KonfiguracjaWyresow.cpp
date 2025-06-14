@@ -23,6 +23,7 @@ KonfiguracjaWyresow::~KonfiguracjaWyresow()
 {
 	if (m_ObrazkiDrzewa)
 		m_ObrazkiDrzewa.DeleteImageList();
+	
 	if (m_cDrzewoWykresow)
 		m_cDrzewoWykresow.DeleteAllItems();
 }
@@ -37,7 +38,6 @@ void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
-	ON_NOTIFY(TVN_BEGINDRAG, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnBegindragTreeWykresow)
 	ON_NOTIFY(LVN_BEGINDRAG, IDC_LISTA_DANYCH, &KonfiguracjaWyresow::OnLvnBegindragListaDanych)
 	ON_BN_CLICKED(IDOK, &KonfiguracjaWyresow::OnBnClickedOk)
 	ON_NOTIFY(BCN_DROPDOWN, IDOK, &KonfiguracjaWyresow::OnDropdownIdok)
@@ -57,25 +57,6 @@ END_MESSAGE_MAP()
 
 
 // Procedury obsługi komunikatów KonfiguracjaWyresow
-
-/// <summary>
-/// Rozpocząto przeciaganie zmiennej w obrębie drzewa konfiguracji wykresów
-/// </summary>
-/// <param name="pNMHDR"></param>
-/// <param name="pResult"></param>
-void KonfiguracjaWyresow::OnTvnBegindragTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
-
-	//CImageList* pImageList = m_cDrzewoWykresow.CreateDragImage(hWykres);
-	//m_bKursorPrzeciaganie = TRUE;
-	//delete pImageList;
-	*pResult = 0;
-}
-
-
 
 /// <summary>
 /// Rozpocząto przeciaganie zmiennej z listy dostepnych danych
@@ -185,11 +166,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		}
 	}*/
 	
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-
-	//m_cDrzewoWykresow.Create(dwViewStyle, rectDummy, this, 2);
+	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TVS_SHOWSELALWAYS;
 	m_cDrzewoWykresow.SetExtendedStyle(dwViewStyle, dwViewStyle);
-
 
 	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykresy"), 0, 0, TVI_ROOT, TVI_FIRST);
 	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
@@ -256,20 +234,16 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		ASSERT(FALSE);
 		return FALSE;
 	}
-	
-	m_ObrazkiDrzewa.DeleteImageList();
+
 	BITMAP bmpObj;
 	bmp.GetBitmap(&bmpObj);
 
 	UINT nFlags = ILC_MASK;
 
 	nFlags |= (theApp.m_bHiColorIcons) ? ILC_COLOR24 : ILC_COLOR4;
-
 	m_ObrazkiDrzewa.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
 	m_ObrazkiDrzewa.Add(&bmp, RGB(255, 0, 0));
-
 	m_cDrzewoWykresow.SetImageList(&m_ObrazkiDrzewa, TVSIL_NORMAL);
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
@@ -429,7 +403,7 @@ void KonfiguracjaWyresow::OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
 	int nLiczbaGrupWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
 	for (int g = 0; g < nLiczbaGrupWykresow; g++)
 	{
-		int nLiczbaWykresow = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
+		int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
 		for (int w = 0; w < nLiczbaWykresow; w++)
 		{
 			if (m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].hWykres == hDrzewa)

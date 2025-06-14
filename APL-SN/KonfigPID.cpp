@@ -103,7 +103,7 @@ END_MESSAGE_MAP()
 BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
+	float fDane[ROZMIAR_REG_PID / 4];
 	uint8_t chDane[4];
 	uint8_t chErr, chLicznikProbOdczytu;
 
@@ -117,32 +117,23 @@ BOOL KonfigPID::OnInitDialog()
 
 	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
 
-	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
+	for (int n = 0; n < LICZBA_PID; n++)
 	{
-		chErr = getKomunikacja().InicjujOdczytFloatFRAM(LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
+		chErr = getKomunikacja().CzytajFloatFRAM(fDane, ROZMIAR_REG_PID/4, FAU_PID_P0 + n * ROZMIAR_REG_PID);
 		if (chErr == ERR_OK)
 		{
-			chLicznikProbOdczytu = 10;
-			do
-			{
-				chErr = getKomunikacja().CzytajDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-				chLicznikProbOdczytu--;
-			} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));			
-			if (chErr == ERR_OK)
-			{
-				m_stPID[n].fKp = fDane[0];			//FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
-				m_stPID[n].fTi = fDane[1];			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
-				m_stPID[n].fTd = fDane[2];			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
-				m_stPID[n].fOgrCalki = fDane[3];	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
-				m_stPID[n].fMinWyj = fDane[4];		//FA_USER_PID+16  //4U 
-				m_stPID[n].fMaxWyj = fDane[5];		//FA_USER_PID+20  //4U 
-				m_stPID[n].bZmieniony = FALSE;
+			m_stPID[n].fKp = fDane[0];			//FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
+			m_stPID[n].fTi = fDane[1];			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
+			m_stPID[n].fTd = fDane[2];			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
+			m_stPID[n].fOgrCalki = fDane[3];	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
+			m_stPID[n].fMinWyj = fDane[4];		//FA_USER_PID+16  //4U 
+			m_stPID[n].fMaxWyj = fDane[5];		//FA_USER_PID+20  //4U 
+			m_stPID[n].bZmieniony = FALSE;
 
-				getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
-				m_stPID[n].chPodstFiltraD = chDane[0] & 0x3F;
-				m_stPID[n].bWylaczony = (chDane[0] & 0x40) >> 6;
-				m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
-			}
+			getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
+			m_stPID[n].chPodstFiltraD = chDane[0] & 0x3F;
+			m_stPID[n].bWylaczony = (chDane[0] & 0x40) >> 6;
+			m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
 		}
 	}
 
@@ -250,13 +241,13 @@ void KonfigPID::UstawKontrolki()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedOk()
 {
-	float fDane[LICZBA_ZMIENNYCH_FLOAT_REG_PID];
+	float fDane[ROZMIAR_REG_PID/4];
 	uint8_t chDane[4];
-	uint8_t chErr;
+	uint8_t chErr = ERR_OK;
 	CString strLiczba;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-	for (int n = 0; n < LICZBA_REGULATOROW_PID; n++)
+	for (int n = 0; n < LICZBA_PID; n++)
 	{
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
 		{
@@ -269,13 +260,11 @@ void KonfigPID::OnBnClickedOk()
 
 			chDane[0] = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
 			getKomunikacja().SpakujU8doFloat(chDane, 1, &fDane[6]);
-			chErr = getKomunikacja().ZapiszDaneFloatFRAM(fDane, LICZBA_ZMIENNYCH_FLOAT_REG_PID, FAU_PID_P0 + n * 4 * LICZBA_ZMIENNYCH_FLOAT_REG_PID);				
-			if (chErr == ERR_OK)
-			{
-				chErr = getKomunikacja().PotwierdzZapisDanych(FAU_PID_P0 + n * LICZBA_ZMIENNYCH_FLOAT_REG_PID);
-			}			
+			chErr |= getKomunikacja().ZapiszFloatFRAM(fDane, ROZMIAR_REG_PID/4, FAU_PID_P0 + n *ROZMIAR_REG_PID);
 		}
 	}
+	if (chErr != ERR_OK)
+		MessageBoxExW(this->m_hWnd, _T("Błąd zapisu"), _T("Ojojoj!"), MB_ICONWARNING, 0);
 	CDialogEx::OnOK();
 }
 

@@ -28,9 +28,8 @@ protected:
 	afx_msg void OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult);
 	BOOL m_bPrzeciaganieMysza{FALSE};
 	BOOL m_bKursorPrzeciaganie{ FALSE };
-	CPoint m_cpPozycjaMyszy;
+	CPoint m_cpPozycjaMyszy;	
 	CImageList m_ObrazkiDrzewa;
-	
 
 public:
 	CListCtrl m_cListaDanych;

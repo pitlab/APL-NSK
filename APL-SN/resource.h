@@ -191,6 +191,9 @@
 #define IDC_EDIT16                      1119
 #define IDC_EDIT_DLUGOSC8               1119
 #define IDC_LIST_PREDEFINIOWANE         1120
+#define IDC_EDIT_SREDNICA_SMIGLA_MM     1122
+#define IDC_EDIT18                      1123
+#define IDC_EDIT_SREDNICA_SMIGLA_CALE   1123
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -226,7 +229,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        336
 #define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1121
+#define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

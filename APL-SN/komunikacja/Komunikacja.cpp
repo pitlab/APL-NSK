@@ -751,6 +751,34 @@ uint8_t CKomunikacja::PotwierdzZapisDanych(uint16_t sAdres)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zapisuje do FRAM w APL liczbê float (max ROZMIAR_ROZNE) z potwierdzeniem zapisu
+// parametry:
+// [i] fDane - wskaŸnik na tablicê z danymi do zapisu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
+	uint8_t chErr = ZapiszDaneFloatFRAM(fDane, chRozmiar, sAdres);
+	if (chErr == ERR_OK)
+	{
+		//czekaj na potwierdzenie zanim wyœle kolejne dane do zapisu
+		do
+		{
+			chErr = PotwierdzZapisDanych(sAdres);
+			chLicznikProbPotw--;
+		} while ((chErr != ERR_OK) && chLicznikProbPotw);
+		if (!chLicznikProbPotw)
+			chErr = ERR_BRAK_POTWIERDZ;
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Inicjuje odczyt z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
 // parametry:
 // [i] fDane - wskaŸnik na tablicê z danymi do odczytu
@@ -763,6 +791,9 @@ uint8_t CKomunikacja::InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	if (chRozmiar > ROZMIAR_ROZNE)
+		return ERR_INVALID_DATA_SIZE;
 
 	chDaneWychodzace[0] = chRozmiar;
 	m_unia8_32.dane16[0] = sAdres;
@@ -807,6 +838,33 @@ uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
 	else
 	{
 		fDane = NULL;
+	}
+	return chErr;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Kompletna procedura odczytu liczb float z FRAM w APL (max ROZMIAR_ROZNE). 
+// parametry:
+// [i] fDane - wskaŸnik na tablicê z danymi do odczytu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu: ERR_OK lub ERR_HAL_BUSY je¿eli nie s¹ jeszcze gotowe
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chLicznikProbOdczytu = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
+	uint8_t chErr = InicjujOdczytFloatFRAM(chRozmiar, sAdres);
+	if (chErr == ERR_OK)
+	{
+		do
+		{
+			chErr = CzytajDaneFloatFRAM(fDane, chRozmiar);
+			chLicznikProbOdczytu--;
+		} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));
+
+		if (!chLicznikProbOdczytu)
+			chErr = ERR_BRAK_POTWIERDZ;
 	}
 	return chErr;
 }

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "PIDtabCtrl.h"
 #include "Konfig_fram.h"
-
+#include "pid_kanaly.h"
 
 // Okno dialogowe KonfigPID
 
@@ -33,7 +33,7 @@ public:
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
 		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
-	} m_stPID[LICZBA_REGULATOROW_PID];
+	} m_stPID[LICZBA_PID];
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_KONFIG_PID };

@@ -6,7 +6,6 @@
 // (c) PitLab 2024
 // http://www.pitlab.pl
 //////////////////////////////////////////////////////////////////////////////
-
 //adresy zmiennych konfiguracyjnych w zakresie 0..0x2000  (FA == Fram Address)
 //Indeksy w komentarzu oznaczaja rozmiar (liczba) i typ (litera) zmiennej
 //Typy zmiennych: 
@@ -20,61 +19,38 @@
 // CH - znak alfanumeryczny
 // F - liczba float
 
-#define FA_USER_VAR	    0x0000	    //zmienne użytkownika
+#define FA_USER_VAR	    	0x0000	    		//zmienne użytkownika
+#define FAU_RC1CH_MIN       FA_USER_VAR  		//16x2U minimalna wartość sygnału z danego kanału odbiornika 1
+#define FAU_RC2CH_MIN       FA_USER_VAR+32  	//16x2U minimalna wartość sygnału z danego kanału odbiornika 2
+#define FAU_RC1CH_MAX       FA_USER_VAR+64 		//16x2U maksymalna wartość sygnału z danego kanału odbiornika 1
+#define FAU_RC2CH_MAX       FA_USER_VAR+96 		//16x2U maksymalna wartość sygnału z danego kanału odbiornika 2
+#define FAU_CH6_MIN         FA_USER_VAR+128 	//4U minimalna wartość regulowanej zmiennej
+#define FAU_CH6_MAX         FAU_CH6_MIN+4       //4U maksymalna wartość regulowanej zmiennej
+#define FAU_CH6_FUNCT       FAU_CH6_MAX+4       //1U funkcja kanału 6: rodzaj zmiennej do regulacji
+#define FAU_CH7_MIN         FAU_CH6_FUNCT+4     //4U minimalna wartość regulowanej zmiennej
+#define FAU_CH7_MAX         FAU_CH7_MIN+4       //4U maksymalna wartość regulowanej zmiennej
+#define FAU_CH7_FUNCT       FAU_CH7_MAX+4       //1U funkcja kanału 7: rodzaj zmiennej do regulacji
 
-#define FAU_TELEMETRY_USB   FA_USER_VAR+104 //64U konfiguracja częstotliwości wysyłania ramek telemetrycznych przez USB
-#define FAU_TELEMETRY_MOD   FA_USER_VAR+168 //64U -,,- przez modem
-#define FAU_TURBO_FRAME     FA_USER_VAR+232 //2U definicja danych turbo ramki dla USB i modemu
-//zostawiam trochę miejsca na ewentualną rozbudowę
+//128+18=146=0x92
+#define FAU_PWM_MIN         0x0092           	//2U minimalne wysterowanie regulatorów w trakcie lotu [us]
+#define FAU_PWM_JALOWY      FAU_PWM_MIN+2 		//2U wysterowanie regulatorów na biegu jałowym [us]
+#define FAU_WPM_ZAWISU      FAU_PWM_JALOWY+2   	//2U wysterowanie regulatorów w zawisie [us]
+#define FAU_PWM_MAX         FAU_WPM_ZAWISU+2  	//2U maksymalne wysterowanie silników w trakcie lotu [us]
 
-#define FA_USER_VAR2	    0x0100	    //zmienne użytkownika 2
-#define FAU_RCCH_MIN        FA_USER_VAR2    //2x8 minimalna wartość sygnału z danego kanału odbiornika
-#define FAU_RCCH_MAX        FAU_RCCH_MIN+16 //2x8 maksymalna wartość sygnału z danego kanału odbiornika
-
-#define FAU_LOG_CONF1       0x0120          //4I konfiguracja logera 1
-#define FAU_LOG_CONF2       FAU_LOG_CONF1+4 //4I konfiguracja logera 2
-#define FAU_LOG_CONF3       FAU_LOG_CONF2+4 //4I konfiguracja logera 3
-#define FAU_LOG_CONF4       FAU_LOG_CONF3+4 //4I konfiguracja logera 4
-#define FAU_LOG_CONF5       FAU_LOG_CONF4+4 //4I konfiguracja logera 5
-#define FAU_LOG_CONF6       FAU_LOG_CONF5+4 //4I konfiguracja logera 6
-#define FAU_LOG_CONF7       FAU_LOG_CONF6+4 //4I konfiguracja logera 7
-#define FAU_LOG_FREQ        FAU_LOG_CONF7+4 //1CH częstotliwość logowania
-#define FAU_LOG_NAME        FAU_LOG_FREQ+1  //12CH nazwa modelu w nazwie pliku logu
-#define FAU_LANDING_SPD     FAU_LOG_NAME+13 //4F prędkość lądowania
-//zostało 182 bajty
-
-#define FA_USER_VAR3	    0x0200                //zmienne użytkownika 3 - mikser
-#define FAU_MIX_PITCH       FA_USER_VAR3          //12*4F współczynnik wpływu pochylenia na dany silnik
-#define FAU_MIX_ROLL        FAU_MIX_PITCH+48      //12*4F współczynnik wpływu przechylenia na dany silnik
-#define FAU_MIX_YAW         FAU_MIX_ROLL+48       //12*4F współczynnik wpływu odchylenia na dany silnik
-#define FAU_LOW_VOLT_WARN   FAU_MIX_YAW+48        //4F próg ostrzezenia o niskim napięciu
-#define FAU_LOW_VOLT_ALARM  FAU_LOW_VOLT_WARN+4   //4F próg alarmu niskiego napięcia
-#define FAU_VOLT_DROP_COMP  FAU_LOW_VOLT_ALARM+4  //4F współczynnik kompensacji spadku napięcia pakietu
-
-#define FAU_CH6_MIN         FAU_VOLT_DROP_COMP+4  //4U minimalna wartość regulowanej zmiennej
-#define FAU_CH6_MAX         FAU_CH6_MIN+4         //4U maksymalna wartość regulowanej zmiennej
-#define FAU_CH6_FUNCT       FAU_CH6_MAX+4         //1U funkcja kanału 6: rodzaj zmiennej do regulacji
-#define FAU_CH7_MIN         FAU_CH6_FUNCT+4       //4U minimalna wartość regulowanej zmiennej
-#define FAU_CH7_MAX         FAU_CH7_MIN+4         //4U maksymalna wartość regulowanej zmiennej
-#define FAU_CH7_FUNCT       FAU_CH7_MAX+4         //1U funkcja kanału 7: rodzaj zmiennej do regulacji
-
-#define FAU_MODE_CONF       FAU_CH7_FUNCT+1       //1UC tryb pracy automatyki kalibracji
-#define FAU_VDROP_COMP      FAU_MODE_CONF+4       //4U kompensacja spadku napięcia na  pakiecie [us/V]
-#define FAU_PNE_SEN1_GAIN   FAU_VDROP_COMP+4      //4F wzmocnienie czujnika na module pneumatycznym
-#define FAU_PNE_SEN1_OFST   FAU_PNE_SEN1_GAIN+4   //4F offset czujnika na module pneumatycznym
-#define FAU_PNE_SEN2_GAIN   FAU_PNE_SEN1_OFST+4   //4F wzmocnienie czujnika na module pneumatycznym
-#define FAU_PNE_SEN2_OFST   FAU_PNE_SEN2_GAIN+4   //4F offset czujnika na module pneumatycznym
-//zostało 58 bajtów
-
-#define FAU_TSYNC_MON       0x290           //miesiąc ostatniej synchronizacji
-#define FAU_TSYNC_DAY       FAU_TSYNC_MON+1 //dzień ostatniej synchronizacji
+#define FAU_TSYNC_MON       0x009A           	//miesiąc ostatniej synchronizacji
+#define FAU_TSYNC_DAY       FAU_TSYNC_MON+1 	//dzień ostatniej synchronizacji
 #define FAU_TSYNC_HOU       FAU_TSYNC_DAY+1
 #define FAU_TSYNC_MIN       FAU_TSYNC_HOU+1
 #define FAU_TSYNC_SEC       FAU_TSYNC_MIN+1
 #define FAU_TSYNC_DIF       FAU_TSYNC_SEC+1 //ostatnia różnica czasu synchronizacji
 
+//mikser
+#define FAU_MIX_PRZECH		0x00A0    			//8*4F współczynnik wpływu przechylenia na dany silnik
+#define FAU_MIX_POCHYL  	FAU_MIX_PRZECH+32   //8*4F współczynnik wpływu pochylenia na dany silnik
+#define FAU_MIX_ODCHYL    	FAU_MIX_POCHYL+32   //8*4F współczynnik wpływu odchylenia na dany silnik
 
-#define FA_USER_PID	    	0x0300
+//regulatory PID
+#define FA_USER_PID	    	0x0100
 #define FAU_PID_P0          FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
 #define FAU_PID_I0          FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
 #define FAU_PID_D0          FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
@@ -86,17 +62,18 @@
 #define FAU_PID2			FA_USER_PID+26	//1U nic
 #define FAU_PID3			FA_USER_PID+27	//1U nic
 #define ROZMIAR_REG_PID		28
-#define LICZBA_ZMIENNYCH_FLOAT_REG_PID		7
-#define LICZBA_REGULATOROW_PID		12
-//do adresu 0x3C0 jest miejsce na łącznie 12 regulatorów.
 
-//8 wolnych bajtów
-#define FAU_MIN_PWM         0x3D8           //2U minimalne wysterowanie regulatorów w trakcie lotu [us]
-#define FAU_HOVER_PWM       FAU_MIN_PWM+2   //2U wysterowanie regulatorów w zawisie [us]
-#define FAU_IDLE_PWM        FAU_HOVER_PWM+2 //2U wysterowanie regulatorów na biegu jałowym [us]
-#define FAU_MAX_PWM         FAU_IDLE_PWM+2  //2U maksymalne wysterowanie silników w trakcie lotu [us]
 
-//wzmocnienia drążków aparatury dla posczeg�lnych tryb�w pracy regulatorów
+//12 regulatorów zajmuje 336 bajtów - 0x150
+
+
+#define FA_USER_VAR3	    0x0300
+#define FAU_LOW_VOLT_WARN   FAU_MIX_YAW+48        //4F próg ostrzezenia o niskim napięciu
+#define FAU_LOW_VOLT_ALARM  FAU_LOW_VOLT_WARN+4   //4F próg alarmu niskiego napięcia
+#define FAU_VOLT_DROP_COMP  FAU_LOW_VOLT_ALARM+4  //4F współczynnik kompensacji spadku napięcia pakietu
+#define FAU_LANDING_SPD     FAU_VOLT_DROP_COMP+4 //4F prędkość lądowania
+
+//wzmocnienia drążków aparatury dla posczególnych trybów pracy regulatorów
 #define FAU_SP_GAIN         0x3E0
 #define FAU_SPG_ACRO        FAU_SP_GAIN+0   //16U wzmocnienie drążków dla regulatora Acro
 #define FAU_SPG_STAB        FAU_SPG_ACRO+16 //16U wzmocnienie drążków dla regulatora Stab
@@ -104,13 +81,12 @@
 #define FAU_SPG_GPOS        FAU_SPG_GSPD+8  //8U wzmocnienie drążków dla regulatora pozycji GPS
 
 
-#define FA_SYS_VAR	    0x0420	    //zmienne systemowe i dynamiczne
-#define	FAS_SESSION_NUMBER  FA_SYS_VAR+0    //1S Numer sesji
-#define	FAS_PRESSURE	    FA_SYS_VAR+4    //4D ciśnienie zerowe czujnika bezwzględnego
-#define	FAS_ENERGY1	    FA_SYS_VAR+8    //4D energia pobrana z pakietu 1
-#define	FAS_ENERGY2         FA_SYS_VAR+12   //4D energia pobrana z pakietu 2
-
-
+#define FA_SYS_VAR	    0x0400	    //zmienne systemowe i dynamiczne
+#define	FAS_NUMER_SESJI	  	FA_SYS_VAR+0		//1S Numer sesji
+#define	FAS_ENERGIA1	    FA_SYS_VAR+4    	//4D energia pobrana z pakietu 1
+#define	FAS_ENERGIA2        FA_SYS_VAR+8   		//4D energia pobrana z pakietu 2
+#define	FAS_CISN_01	    	FA_SYS_VAR+12    	//4D ciśnienie zerowe czujnika bezwzględnego 1
+#define	FAS_CISN_02	    	FA_SYS_VAR+14    	//4D ciśnienie zerowe czujnika bezwzględnego 2
 
 
 #define FA_HARD_VAR         	0x0500	    //zmienne definiujące parametry sprzętu 0x500 = 1280
@@ -208,32 +184,6 @@
 
 
 
-/*
-#define	FAH_PDVARIO         FAH_ADCIO7_GAIN+4
-#define	FAH_PDIF_OFFSET	    FAH_PDVARIO+0   //4H offset napięcia czujnika ciśnienia różnicowego
-#define	FAH_VARIO_OFFSET    FAH_PDVARIO+4   //4H offset napięcia członu różniczkującego
-#define	FAH_PDIF_GAIN	    FAH_PDVARIO+8   //4H korekcja wzmocnienia napięcia czujnika ciśnienia różnicowego
-#define	FAH_VARIO_GAIN      FAH_PDVARIO+12  //4H korekcja wzmocnienia napięcia członu różniczkującego
-
-#define	FAH_POWER           FAH_VARIO_GAIN+4
-#define	FAH_CURR1_GAIN      FAH_POWER+0     //4H korekcja wzmocnienia pomiaru prądu czujnikiem 1
-#define	FAH_CURR2_GAIN      FAH_POWER+4     //4H korekcja wzmocnienia pomiaru prądu czujnikiem 2
-#define	FAH_VOLT0_GAIN      FAH_POWER+8     //4H korekcja wzmocnienia pomiaru napięcia na płycie głównej
-#define	FAH_VOLT1_GAIN      FAH_POWER+12    //4H korekcja wzmocnienia pomiaru napięcia czujnikiem 1
-#define	FAH_VOLT2_GAIN      FAH_POWER+16    //4H korekcja wzmocnienia pomiaru napięcia czujnikiem 1
-
-#define	FAH_TEMPER          FAH_VOLT2_GAIN+4
-#define	FAH_TPNE_OFFSET	    FAH_TEMPER+4    //4H korekcja offsetu temperatury przetwornika A/C modułu pneumatycznego
-#define	FAH_ADCIO_TEMP_OFST FAH_TEMPER+8    //4H korekcja offsetu temperatury przetwornika A/C modułu ADCIO
-#define	FAH_TCOUP_REF_OFST  FAH_TEMPER+12   //4H korekcja offsetu czujnika temperatury odniesienia termopar
-#define	FAH_TALTI_AIO_OFST  FAH_TEMPER+24   //4H korekcja offsetu temperatury wysoko�ciomierza na module All-In-One
-*/
-
-
-
-
-//
-#define FAH_VARIO_OFFSET_CPL FAH_MAG_HMC+32
 
 //Waypointy. Każdy zajmuje 12 bajtów. Do końca pamięci jest miejsca na 2581 waypointów
 #define FA_USER_WAYPOINTS    0x0700
@@ -243,7 +193,7 @@
 #define FA_END      0x1FFF  //ostatni bajt pamięci konfiguracji (FM25CL64 - 64kb)
 
 //////////////////////////////////////////////////////////////////////////////
-// Definicje validator�w danych konfiguracyjnych
+// Definicje validatorów danych konfiguracyjnych
 //////////////////////////////////////////////////////////////////////////////
 /*#define VALM_OFST_UNI    (float)-0.3    //max wartość unwersalnej odchyłki ujemnej offsetu
 #define VALP_OFST_UNI    (float)0.3     //
@@ -339,28 +289,23 @@
 
 #define VMIN_PID_ILIM    (float)0.0     //limit wartości całki członu całkującego regulatora PID
 #define VMAX_PID_ILIM    (float)100     //max 100%
-#define VDEF_PID_ILIM    (float)23 /*
+#define VDEF_PID_ILIM    (float)23
 
-#define VMIN_ADIO_GAIN    (float)0.01   //limity wzmocnienia dla modułu ADCIO
-#define VMAX_ADIO_GAIN    (float)100
-#define VDEF_ADIO_GAIN    (float)1      //wartość domyślna
+#define VMIN_PID_MINWY    (float)-100.0    //minimalna wartość wyjścia
+#define VMAX_PID_MINWY    (float)100.0
+#define VDEF_PID_MINWY    (float)100.0
 
-#define VALM_ADIO_OFST    (float)-100   //limity offsetu dla modułu ADCIO
-#define VALP_ADIO_OFST    (float)100
-#define VALD_ADIO_OFST    (float)0      //wartość domyślna
+#define VMIN_PID_MAXWY    (float)-100.0    //maksymalna wartość wyjścia
+#define VMAX_PID_MAXWY    (float)100.0
+#define VDEF_PID_MAXWY    (float)100.0
 
-#define VALM_AXX_COEF     (float)80.0    //limity wartości  współczynnika A linearyzacji wysoko�ci
-#define VALP_AXX_COEF     (float)180.0 
-#define VALD_AXX_COEF     (float)84.3    //wartość domyślna
 
-#define VALM_BXX_COEF     (float)-4000.0 //limity wartości  współczynnika B linearyzacji wysoko�ci
-#define VALP_BXX_COEF     (float)0.0
-#define VALD_BXX_COEF     (float)-0.8    //wartość domyślna
+#define VMIN_MIX_PRZE    (float)-100.0    //maksymalna wartość wyjścia
+#define VMAX_MIX_PRZE    (float)100.0
+#define VDEF_MIX_PRZE    (float)100.0
 
-#define VALM_VDROP_COMP   (float)0.01   //limity wartości  współczynnika B linearyzacji wysoko�ci
-#define VALP_VDROP_COMP   (float)100.0
-#define VALD_VDROP_COMP   (float)5.8    //wartość domyślna
 
+/*
 #define VALM_SPGAIN       (float)0.0001  //limity wartości  współczynnika wzmocnienia sygnału zadanego z aparatury
 #define VALP_SPGAIN       (float)100.0
 #define VALD_SPGAIN       (float)1.0    //wartość domyślna*/
