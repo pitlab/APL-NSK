@@ -75,6 +75,7 @@
 #define IDS_EDIT_MENU                   306
 #define IDD_PORT                        310
 #define IDD_USTAWIENIA_KAMERY           311
+#define IDT_TIMER_RC                    311
 #define IDD_ZAPISZ_FLASH                316
 #define IDD_TELEMETRIA                  318
 #define IDD_KONFIG_TELEMETRII           318
@@ -86,6 +87,7 @@
 #define IDD_DIALOG_DEFINICJE_WRONA      330
 #define IDD_MIKSER                      334
 #define IDD_ODBIORNIKI_RC               336
+#define IDR_ACCELERATOR1                338
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -290,9 +292,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        338
-#define _APS_NEXT_COMMAND_VALUE         32813
+#define _APS_NEXT_RESOURCE_VALUE        339
+#define _APS_NEXT_COMMAND_VALUE         32814
 #define _APS_NEXT_CONTROL_VALUE         1125
-#define _APS_NEXT_SYMED_VALUE           310
+#define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

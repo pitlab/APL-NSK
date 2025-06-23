@@ -8,7 +8,7 @@
 #include "sys_def_wspolny.h"
 #include "konfig_fram.h"
 #include "Errors.h"
-#include "Komunikacja/Komunikacja.h"
+
 
 
 // Okno dialogowe OdbiornikiRC
@@ -22,9 +22,19 @@ OdbiornikiRC::OdbiornikiRC(CWnd* pParent /*=nullptr*/)
 
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Destruktor
+///////////////////////////////////////////////////////////////////////////////////////////////////
 OdbiornikiRC::~OdbiornikiRC()
 {
+	if (m_bZmodyfikowanoTelemetrie)
+	{
+		getKomunikacja().ZapiszOkresTelemetrii(m_sBackupOkresuTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);		//przywróć telemetrię z backupu jeżeli była zmieniana
+	}
 }
+
+
 
 void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 {
@@ -46,22 +56,6 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS14, m_ctlRC1Kan14);
 	DDX_Control(pDX, IDC_PROGRESS15, m_ctlRC1Kan15);
 	DDX_Control(pDX, IDC_PROGRESS16, m_ctlRC1Kan16);
-	DDX_Control(pDX, IDC_PROGRESS17, m_ctlRC2Kan1);
-	DDX_Control(pDX, IDC_PROGRESS18, m_ctlRC2Kan2);
-	DDX_Control(pDX, IDC_PROGRESS19, m_ctlRC2Kan3);
-	DDX_Control(pDX, IDC_PROGRESS20, m_ctlRC2Kan4);
-	DDX_Control(pDX, IDC_PROGRESS21, m_ctlRC2Kan5);
-	DDX_Control(pDX, IDC_PROGRESS22, m_ctlRC2Kan6);
-	DDX_Control(pDX, IDC_PROGRESS23, m_ctlRC2Kan7);
-	DDX_Control(pDX, IDC_PROGRESS24, m_ctlRC2Kan8);
-	DDX_Control(pDX, IDC_PROGRESS25, m_ctlRC2Kan9);
-	DDX_Control(pDX, IDC_PROGRESS26, m_ctlRC2Kan10);
-	DDX_Control(pDX, IDC_PROGRESS27, m_ctlRC2Kan11);
-	DDX_Control(pDX, IDC_PROGRESS28, m_ctlRC2Kan12);
-	DDX_Control(pDX, IDC_PROGRESS29, m_ctlRC2Kan13);
-	DDX_Control(pDX, IDC_PROGRESS30, m_ctlRC2Kan14);
-	DDX_Control(pDX, IDC_PROGRESS31, m_ctlRC2Kan15);
-	DDX_Control(pDX, IDC_PROGRESS32, m_ctlRC2Kan16);
 	DDX_Control(pDX, IDC_RADIO_PPM1, m_ctlPPM1);
 	DDX_Control(pDX, IDC_RADIO_SBUS1, m_ctlSBus1);
 	DDX_Control(pDX, IDC_RADIO_PPM2, m_ctlPPM2);
@@ -112,6 +106,8 @@ BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO8, &OdbiornikiRC::OnCbnSelchangeCombo8)
 	ON_CBN_SELCHANGE(IDC_COMBO9, &OdbiornikiRC::OnCbnSelchangeCombo9)
 	
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDCANCEL, &OdbiornikiRC::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -125,7 +121,40 @@ BOOL OdbiornikiRC::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	uint8_t chErr, chDane[4];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
+	int nIndeksDronaWRoju;
+	uint16_t sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 
+	//Odczytaj z roju liste telemetrii i zachowaj ją jako backup do odtworzenia przy wyjściu
+	if (getKomunikacja().m_cRoj.vWron.size())
+	{
+		nIndeksDronaWRoju = getKomunikacja().m_cRoj.m_nIndeksWrona;
+		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+		{
+			m_sBackupOkresuTelemetrii[n] = getKomunikacja().m_cRoj.vWron[nIndeksDronaWRoju].m_sOkresTelemetrii[n];
+		}
+
+		//ustaw telemetrię wejść i wyjść RC na CZESTOTLIWOSC_ODSWIEZANIA [Hz], resztę wyłącz
+		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+		{
+			if ((n >= TELEID_RC_KAN1) && (n <= TELEID_SERWO16))
+				sOkresTelemetrii[n] = MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA;
+			else
+				sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
+		}	
+
+		//zapisz do APL
+		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+		if (chErr)
+		{
+			CString strKomunikat;
+			strKomunikat.Format(_T("Nie można rekonfigurować telemetrii! \nKod błędu: %d"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+			CDialogEx::OnCancel();
+			return FALSE;
+		}
+		else
+			m_bZmodyfikowanoTelemetrie = TRUE;
+	}
 
 	//odczytaj konfigurację odbiorników
 	chErr = getKomunikacja().CzytajFRAM(chDane, 1, FAU_KONF_ODB_RC);
@@ -154,22 +183,6 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlRC1Kan14.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlRC1Kan15.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlRC1Kan16.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan1.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan2.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan3.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan4.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan5.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan6.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan7.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan8.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan9.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan10.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan11.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan12.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan13.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan14.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan15.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC2Kan16.SetRange(PPM_MIN, PPM_MAX);
 
 	m_ctlSerwo1.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo2.SetRange(PPM_MIN, PPM_MAX);
@@ -222,10 +235,10 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia9_16.InsertString(2, _T("ESC 9-10 200Hz"));
 	m_ctlTypWyjscia9_16.InsertString(3, _T("ESC 9 400Hz"));
 	m_ctlTypWyjscia9_16.SetCurSel(0);
+		
+	SetTimer(IDT_TIMER_RC, 100, (TIMERPROC)NULL);
 	WstawDaneKanalow();
-	
 
-	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
@@ -243,39 +256,22 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 		return ERR_NO_DATA_RECEIVED;
 	else
 		nIndeksTele -= 1;	//indeks jest liczbą danych -1
-	m_ctlRC1Kan1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN1]);
-	m_ctlRC1Kan2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN2]);
-	m_ctlRC1Kan3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN3]);
-	m_ctlRC1Kan4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN4]);
-	m_ctlRC1Kan5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN5]);
-	m_ctlRC1Kan6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN6]);
-	m_ctlRC1Kan7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN7]);
-	m_ctlRC1Kan8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN8]);
-	m_ctlRC1Kan9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN9]);
-	m_ctlRC1Kan10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN10]);
-	m_ctlRC1Kan11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN11]);
-	m_ctlRC1Kan12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN12]);
-	m_ctlRC1Kan13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN13]);
-	m_ctlRC1Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN14]);
-	m_ctlRC1Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN15]);
-	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC1_KAN16]);
-
-	m_ctlRC2Kan1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN1]);
-	m_ctlRC2Kan2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN2]);
-	m_ctlRC2Kan3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN3]);
-	m_ctlRC2Kan4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN4]);
-	m_ctlRC2Kan5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN5]);
-	m_ctlRC2Kan6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN6]);
-	m_ctlRC2Kan7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN7]);
-	m_ctlRC2Kan8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN8]);
-	m_ctlRC2Kan9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN9]);
-	m_ctlRC2Kan10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN10]);
-	m_ctlRC2Kan11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN11]);
-	m_ctlRC2Kan12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN12]);
-	m_ctlRC2Kan13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN13]);
-	m_ctlRC2Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN14]);
-	m_ctlRC2Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN15]);
-	m_ctlRC2Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC2_KAN16]);
+	m_ctlRC1Kan1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1]);
+	m_ctlRC1Kan2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN2]);
+	m_ctlRC1Kan3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN3]);
+	m_ctlRC1Kan4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN4]);
+	m_ctlRC1Kan5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN5]);
+	m_ctlRC1Kan6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN6]);
+	m_ctlRC1Kan7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN7]);
+	m_ctlRC1Kan8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN8]);
+	m_ctlRC1Kan9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN9]);
+	m_ctlRC1Kan10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN10]);
+	m_ctlRC1Kan11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN11]);
+	m_ctlRC1Kan12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN12]);
+	m_ctlRC1Kan13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN13]);
+	m_ctlRC1Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN14]);
+	m_ctlRC1Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN15]);
+	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN16]);
 
 	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1]);
 	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO2]);
@@ -293,8 +289,21 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	m_ctlSerwo14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO14]);
 	m_ctlSerwo15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO15]);
 	m_ctlSerwo16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO16]);
-
+	UpdateData(FALSE);
 	return ERR_OK;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na upływ czasu timera powodująca odświeżenia pasków kanałówRC w oknie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
+	WstawDaneKanalow();
+	CDialogEx::OnTimer(nIDEvent);
 }
 
 
@@ -377,12 +386,20 @@ void OdbiornikiRC::OnBnClickedRadioRc23()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedOk()
 {
+	KillTimer(IDT_TIMER_RC);
 	if (m_bZmienionoUstawienie)
 	{
 
 	}
 
 	CDialogEx::OnOK();
+}
+
+void OdbiornikiRC::OnBnClickedCancel()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	KillTimer(IDT_TIMER_RC);
+	CDialogEx::OnCancel();
 }
 
 
@@ -483,6 +500,11 @@ void OdbiornikiRC::OnCbnSelchangeCombo9()
 {
 	m_bZmienionoUstawienie = TRUE;
 }
+
+
+
+
+
 
 
 

@@ -89,6 +89,41 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_TEMPCISB2] = "Temp.Ciœn.Bzwz2";
 	m_strNazwyZmiennychTele[TELEID_TEMPCISR1] = "Temp.Ciœn.Ró¿n1";
 	m_strNazwyZmiennychTele[TELEID_TEMPCISR2] = "Temp.Ciœn.Ró¿n2";
+
+	//odbiorniki RC i serwa
+	m_strNazwyZmiennychTele[TELEID_RC_KAN1] = "Wejœcie RC kan.1";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN2] = "Wejœcie RC kan.2";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN3] = "Wejœcie RC kan.3";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN4] = "Wejœcie RC kan.4";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN5] = "Wejœcie RC kan.5";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN6] = "Wejœcie RC kan.6";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN7] = "Wejœcie RC kan.7";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN8] = "Wejœcie RC kan.8";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN9] = "Wejœcie RC kan.9";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN10] = "Wejœcie RC kan.10";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN11] = "Wejœcie RC kan.11";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN12] = "Wejœcie RC kan.12";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN13] = "Wejœcie RC kan.13";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN14] = "Wejœcie RC kan.14";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN15] = "Wejœcie RC kan.15";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN16] = "Wejœcie RC kan.16";
+
+	m_strNazwyZmiennychTele[TELEID_SERWO1] = "Wyjœcie Serw kan.1";
+	m_strNazwyZmiennychTele[TELEID_SERWO2] = "Wyjœcie Serw kan.2";
+	m_strNazwyZmiennychTele[TELEID_SERWO3] = "Wyjœcie Serw kan.3";
+	m_strNazwyZmiennychTele[TELEID_SERWO4] = "Wyjœcie Serw kan.4";
+	m_strNazwyZmiennychTele[TELEID_SERWO5] = "Wyjœcie Serw kan.5";
+	m_strNazwyZmiennychTele[TELEID_SERWO6] = "Wyjœcie Serw kan.6";
+	m_strNazwyZmiennychTele[TELEID_SERWO7] = "Wyjœcie Serw kan.7";
+	m_strNazwyZmiennychTele[TELEID_SERWO8] = "Wyjœcie Serw kan.8";
+	m_strNazwyZmiennychTele[TELEID_SERWO9] = "Wyjœcie Serw kan.9";
+	m_strNazwyZmiennychTele[TELEID_SERWO10] = "Wyjœcie Serw kan.10";
+	m_strNazwyZmiennychTele[TELEID_SERWO11] = "Wyjœcie Serw kan.11";
+	m_strNazwyZmiennychTele[TELEID_SERWO12] = "Wyjœcie Serw kan.12";
+	m_strNazwyZmiennychTele[TELEID_SERWO13] = "Wyjœcie Serw kan.13";
+	m_strNazwyZmiennychTele[TELEID_SERWO14] = "Wyjœcie Serw kan.14";
+	m_strNazwyZmiennychTele[TELEID_SERWO15] = "Wyjœcie Serw kan.15";
+	m_strNazwyZmiennychTele[TELEID_SERWO16] = "Wyjœcie Serw kan.16";
 }
 
 
@@ -700,7 +735,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Zapisuje do FRAM w APL liczbt float (max ROZMIAR_ROZNE)
+// Zapisuje do FRAM w APL liczbê float (max ROZMIAR_ROZNE)
 // parametry:
 // [i] fDane - wskaŸnik na tablicê z danymi do zapisu
 // [i] chRozmiar - rozmiar tablicy liczb

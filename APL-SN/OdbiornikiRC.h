@@ -1,6 +1,6 @@
 ﻿#pragma once
-
-
+#include "Komunikacja/Komunikacja.h"
+#define CZESTOTLIWOSC_ODSWIEZANIA	10	//[Hz]
 // Okno dialogowe OdbiornikiRC
 
 class OdbiornikiRC : public CDialogEx
@@ -19,6 +19,8 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	uint8_t WstawDaneKanalow();
+	uint16_t m_sBackupOkresuTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	BOOL m_bZmodyfikowanoTelemetrie;
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -44,23 +46,6 @@ public:
 	CProgressCtrl m_ctlRC1Kan14;
 	CProgressCtrl m_ctlRC1Kan15;
 	CProgressCtrl m_ctlRC1Kan16;
-
-	CProgressCtrl m_ctlRC2Kan1;
-	CProgressCtrl m_ctlRC2Kan2;
-	CProgressCtrl m_ctlRC2Kan3;
-	CProgressCtrl m_ctlRC2Kan4;
-	CProgressCtrl m_ctlRC2Kan5;
-	CProgressCtrl m_ctlRC2Kan6;
-	CProgressCtrl m_ctlRC2Kan7;
-	CProgressCtrl m_ctlRC2Kan8;
-	CProgressCtrl m_ctlRC2Kan9;
-	CProgressCtrl m_ctlRC2Kan10;
-	CProgressCtrl m_ctlRC2Kan11;
-	CProgressCtrl m_ctlRC2Kan12;
-	CProgressCtrl m_ctlRC2Kan13;
-	CProgressCtrl m_ctlRC2Kan14;
-	CProgressCtrl m_ctlRC2Kan15;
-	CProgressCtrl m_ctlRC2Kan16;
 
 	CProgressCtrl m_ctlSerwo1;
 	CProgressCtrl m_ctlSerwo2;
@@ -105,4 +90,6 @@ public:
 	afx_msg void OnCbnSelchangeCombo8();
 	afx_msg void OnCbnSelchangeCombo9();
 	afx_msg void OnBnClickedRadioRc23();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedCancel();
 };

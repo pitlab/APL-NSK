@@ -59,12 +59,14 @@
 #define PK_CZYTAJ_FLASH			13	//odczytaj zawartość Flash 
 #define PK_CZYTAJ_OKRES_TELE	14	//odczytaj okresy telemetrii
 #define PK_ZAPISZ_OKRES_TELE	15	//zapisz okresy telemetrii
-#define PK_ZAPISZ_FRAM_FLOAT	16	//Wysyła dane typu float do zapisu we FRAM w rdzeniu CM4 o podanym rozmiarze liczb float
-#define PK_WYSLIJ_POTW_ZAPISU	17	//wysyła potwierdzenie zapisania danych ERR_OK lub ERR_PROCES_TRWA
-#define PK_CZYTAJ_FRAM_FLOAT	18	//wysyła polecenie odczytu zawartości FRAM typu float
-#define PK_WYSLIJ_ODCZYT_FRAM	19	//pobiera odczytane wcześniej dane lub zwraca ERR_PROCES_TRWA
+#define PK_ZAPISZ_FRAM_U8		16	//Wysyła dane typu uint8_t do zapisu we FRAM w rdzeniu CM4 o podanym rozmiarze liczb uint8_t
+#define PK_ZAPISZ_FRAM_FLOAT	17	//Wysyła dane typu float do zapisu we FRAM w rdzeniu CM4 o podanym rozmiarze liczb float
+#define PK_WYSLIJ_POTW_ZAPISU	18	//wysyła potwierdzenie zapisania danych ERR_OK lub ERR_PROCES_TRWA
+#define PK_CZYTAJ_FRAM_U8		19	//Wysyła  polecenie odczytu zawartości FRAM typu uint8_t
+#define PK_CZYTAJ_FRAM_FLOAT	20	//wysyła polecenie odczytu zawartości FRAM typu float
+#define PK_WYSLIJ_ODCZYT_FRAM	21	//pobiera odczytane wcześniej dane lub zwraca ERR_PROCES_TRWA
 
-#define PK_ILOSC_POLECEN		20	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
+#define PK_ILOSC_POLECEN		22	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 #define PK_TELEMETRIA			99	//ramka telemetryczna
 
 
@@ -147,59 +149,43 @@
 #define TELEID_TEMPCISR1	45
 #define TELEID_TEMPCISR2	46
 
-//odbiorniki RC i serwa
-#define TELEID_RC1_KAN1		47
-#define TELEID_RC1_KAN2		48
-#define TELEID_RC1_KAN3		49
-#define TELEID_RC1_KAN4		50
-#define TELEID_RC1_KAN5		51
-#define TELEID_RC1_KAN6		52
-#define TELEID_RC1_KAN7		53
-#define TELEID_RC1_KAN8		54
-#define TELEID_RC1_KAN9		55
-#define TELEID_RC1_KAN10	56
-#define TELEID_RC1_KAN11	57
-#define TELEID_RC1_KAN12	58
-#define TELEID_RC1_KAN13	59
-#define TELEID_RC1_KAN14	60
-#define TELEID_RC1_KAN15	61
-#define TELEID_RC1_KAN16	62
+//odbiorniki RC 
+#define TELEID_RC_KAN1		47
+#define TELEID_RC_KAN2		48
+#define TELEID_RC_KAN3		49
+#define TELEID_RC_KAN4		50
+#define TELEID_RC_KAN5		51
+#define TELEID_RC_KAN6		52
+#define TELEID_RC_KAN7		53
+#define TELEID_RC_KAN8		54
+#define TELEID_RC_KAN9		55
+#define TELEID_RC_KAN10		56
+#define TELEID_RC_KAN11		57
+#define TELEID_RC_KAN12		58
+#define TELEID_RC_KAN13		59
+#define TELEID_RC_KAN14		60
+#define TELEID_RC_KAN15		61
+#define TELEID_RC_KAN16		62
 
-#define TELEID_RC2_KAN1		63
-#define TELEID_RC2_KAN2		64
-#define TELEID_RC2_KAN3		65
-#define TELEID_RC2_KAN4		66
-#define TELEID_RC2_KAN5		67
-#define TELEID_RC2_KAN6		68
-#define TELEID_RC2_KAN7		69
-#define TELEID_RC2_KAN8		70
-#define TELEID_RC2_KAN9		71
-#define TELEID_RC2_KAN10	72
-#define TELEID_RC2_KAN11	73
-#define TELEID_RC2_KAN12	74
-#define TELEID_RC2_KAN13	75
-#define TELEID_RC2_KAN14	76
-#define TELEID_RC2_KAN15	77
-#define TELEID_RC2_KAN16	78
+//serwa
+#define TELEID_SERWO1		63
+#define TELEID_SERWO2		64
+#define TELEID_SERWO3		65
+#define TELEID_SERWO4		66
+#define TELEID_SERWO5		67
+#define TELEID_SERWO6		68
+#define TELEID_SERWO7		69
+#define TELEID_SERWO8		70
+#define TELEID_SERWO9		71
+#define TELEID_SERWO10		72
+#define TELEID_SERWO11		73
+#define TELEID_SERWO12		74
+#define TELEID_SERWO13		75
+#define TELEID_SERWO14		76
+#define TELEID_SERWO15		77
+#define TELEID_SERWO16		78
 
-#define TELEID_SERWO1		79
-#define TELEID_SERWO2		80
-#define TELEID_SERWO3		81
-#define TELEID_SERWO4		82
-#define TELEID_SERWO5		83
-#define TELEID_SERWO6		84
-#define TELEID_SERWO7		85
-#define TELEID_SERWO8		86
-#define TELEID_SERWO9		87
-#define TELEID_SERWO10		88
-#define TELEID_SERWO11		89
-#define TELEID_SERWO12		90
-#define TELEID_SERWO13		91
-#define TELEID_SERWO14		92
-#define TELEID_SERWO15		93
-#define TELEID_SERWO16		94
-
-#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	47
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	79
 #define MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	112
 #define LICZBA_BAJTOW_ID_TELEMETRII			(MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH / 8)	//liczba bajtów w ramce telemetrii identyfikujaca przesyłane zmienne
 
