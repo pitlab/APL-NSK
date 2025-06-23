@@ -34,8 +34,13 @@ CMixerDlg::CMixerDlg(CWnd* pParent /*=NULL*/)
 	, m_fPromienSmigla(127)
 	, m_bBylaZmianaDlugosci(FALSE)
 	, m_bBylaZmianaKata(FALSE)
+	, m_nActualSel(0)
 {
-
+	for (uint8_t n = 0; n < KANALY_MIKSERA; n++)
+	{
+		m_fKatRamienia[n] = 0.0f;
+		m_fDlugoscRamienia[n] = 0.0f;
+	}
 }
 
 CMixerDlg::~CMixerDlg()

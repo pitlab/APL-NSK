@@ -105,7 +105,7 @@ BOOL KonfigPID::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	float fDane[ROZMIAR_REG_PID / 4];
 	uint8_t chDane[4];
-	uint8_t chErr, chLicznikProbOdczytu;
+	uint8_t chErr;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));

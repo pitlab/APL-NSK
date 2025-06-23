@@ -451,7 +451,7 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 	//lewa strona osi Y: Min1 i Max1, rysuj podziałki dla zera i powyżej
 	fSkalaY = (okno.bottom - okno.top) / (fabsf(fMin1) + fabsf(fMax1));
 	fSkokPodzialki = ZnajdzPodzialke(okno, fMin1, fMax1);
-	nPodzPowyzejZera = round(fabs(fMax1) / fSkokPodzialki);
+	nPodzPowyzejZera = (int)round(fabs(fMax1) / fSkokPodzialki);
 	for (int n = 0; n <= nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
@@ -476,7 +476,7 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 	//lewa strona, podzialki ponizej zera
-	nPodzPonizejZera = round(fabs(fMin1) / fSkokPodzialki);
+	nPodzPonizejZera = (int)round(fabs(fMin1) / fSkokPodzialki);
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
@@ -502,7 +502,7 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 	//prawa strona osi Y: Min2 i Max2, rysuj podziałki dla zera i powyżej
 	fSkalaY = (okno.bottom - okno.top) / (fabsf(fMin2) + fabsf(fMax2));
 	fSkokPodzialki = ZnajdzPodzialke(okno, fMin2, fMax2);
-	nPodzPowyzejZera = round(fabs(fMax2) / fSkokPodzialki);
+	nPodzPowyzejZera = (int)round(fabs(fMax2) / fSkokPodzialki);
 	for (int n = 0; n <= nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
@@ -527,7 +527,7 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 	//prawa strona, podzialki ponizej zera
-	nPodzPonizejZera = round(fabs(fMin2) / fSkokPodzialki);
+	nPodzPonizejZera = (int)round(fabs(fMin2) / fSkokPodzialki);
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
@@ -561,7 +561,7 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 {
 	//okno dzielę na  odcinki po n pixeli, tam może zmieścić się opis skali
 	int nProponowanaLiczbaPodzialek = (okno.bottom - okno.top) / ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI;
-	float fZakresWskazan = fabs(fMax) + fabs(fMin);
+	float fZakresWskazan = fabsf(fMax) + fabsf(fMin);
 	float fPierwotnySkokPodzialki = fZakresWskazan / nProponowanaLiczbaPodzialek;
 	float fFinalnySkokPodzialki = fPierwotnySkokPodzialki;
 	int nMnoznik = 1;
@@ -573,7 +573,7 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 			fFinalnySkokPodzialki = fPierwotnySkokPodzialki * nMnoznik;
 		}
 	}
-	fFinalnySkokPodzialki = round(fFinalnySkokPodzialki) / nMnoznik;
+	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;
 	return fFinalnySkokPodzialki;
 }
 

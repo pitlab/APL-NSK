@@ -148,19 +148,35 @@
 #define IDC_PROGRESS30                  1056
 #define IDC_PROGRESS31                  1057
 #define IDC_PROGRESS32                  1058
+#define IDC_PROGRESS33                  1059
+#define IDC_PROGRESS34                  1060
+#define IDC_PROGRESS35                  1061
+#define IDC_PROGRESS36                  1062
+#define IDC_PROGRESS37                  1063
+#define IDC_PROGRESS38                  1064
+#define IDC_PROGRESS39                  1065
+#define IDC_PROGRESS40                  1066
 #define IDC_EDIT_KP                     1067
 #define IDC_EDIT_KP1                    1067
+#define IDC_PROGRESS41                  1067
 #define IDC_EDIT_TI                     1068
 #define IDC_EDIT_TI1                    1068
+#define IDC_PROGRESS42                  1068
 #define IDC_EDIT_TD                     1069
 #define IDC_EDIT_TD1                    1069
+#define IDC_PROGRESS43                  1069
 #define IDC_EDIT_LIMIT_CALKI            1070
 #define IDC_EDIT_LIMIT_CALKI1           1070
+#define IDC_PROGRESS44                  1070
 #define IDC_EDIT_FILTRD                 1071
 #define IDC_EDIT_FILTRD1                1071
+#define IDC_PROGRESS45                  1071
 #define IDC_EDIT_MIN_WY1                1072
+#define IDC_PROGRESS46                  1072
 #define IDC_EDIT_MAX_WY1                1073
+#define IDC_PROGRESS47                  1073
 #define IDC_EDIT_MIN_WY2                1074
+#define IDC_PROGRESS48                  1074
 #define IDC_EDIT_MAX_WY2                1075
 #define IDC_STATIC_WEJSCIE1             1077
 #define IDC_STATIC_WEJSCIE2             1078
@@ -183,6 +199,8 @@
 #define IDC_RADIO_PPM2                  1089
 #define IDC_RADIO4                      1090
 #define IDC_RADIO_SBUS2                 1090
+#define IDC_RADIO_SBUS3                 1091
+#define IDC_RADIO_RC23                  1091
 #define IDC_CHECK_KATOWY1               1092
 #define IDC_STATIC_FILTR_D1             1093
 #define IDC_CHECK_KATOWY2               1094
@@ -229,6 +247,15 @@
 #define IDC_LIST_PREDEFINIOWANE         1120
 #define IDC_EDIT_SREDNICA_SMIGLA_MM     1122
 #define IDC_EDIT_SREDNICA_SMIGLA_CALE   1123
+#define IDC_COMBO1                      1124
+#define IDC_COMBO2                      1125
+#define IDC_COMBO3                      1126
+#define IDC_COMBO4                      1127
+#define IDC_COMBO5                      1128
+#define IDC_COMBO6                      1129
+#define IDC_COMBO7                      1130
+#define IDC_COMBO8                      1131
+#define IDC_COMBO9                      1132
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -265,7 +292,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1124
+#define _APS_NEXT_CONTROL_VALUE         1125
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

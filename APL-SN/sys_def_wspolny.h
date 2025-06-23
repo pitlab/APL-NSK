@@ -31,8 +31,62 @@
 #define PROMIEN_ZIEMI		6371008.77f			//promień Ziemi w metrach
 
 #define KANALY_SERW		16		//liczba sterowanych kanałów serw
-#define KANALY_ODB		16		//liczba odbieranych kanałów na każdym z dwu wejść odbiorników RC
+#define KANALY_ODB_RC	16		//liczba odbieranych kanałów na każdym z dwu wejść odbiorników RC
 #define KANALY_MIKSERA	8		//liczba kanałów wyjściowych, któe mogą wchodzić do miksera
+
+//definicje kanałów RC
+#define KANRC_POCH		0
+#define KANRC_PRZE		1
+#define KANRC_ODCH		2
+#define KANRC_GAZ		3
+
+//przelicznik liczby mikrosekund sygnału PPM na 1 procent wysterowania kanału RC
+#define PPM1PROC_UNI   8       //1% = 8us unipolarnie, 0%=1,1us 100%=1,9us
+#define PPM1PROC_BIP   4       //1% = 4us bipolarnie, -100%=1,1us 0%=1,5us +100%=1,9us
+
+//czasy impulsów PPM dla założenia że 1% to 4us
+#define PPM_MIN			1000    //wartość minimalna sygnału -125%
+#define PPM_M100    	1100    //-100%
+#define PPM_M90     	1140    //-90%
+#define PPM_JALOWY  	1200    //obroty jałowe silników
+#define PPM_M75     	1200    //-75%
+#define PPM_M50     	1300    //-50%
+#define PPM_M25     	1400    //-25%
+#define PPM_M20     	1420    //-20%
+#define PPM_NEUTR   	1500    //neutrum 1500us
+#define PPM_P20     	1580    //+20%
+#define PPM_P25     	1600    //+25%
+#define PPM_P50     	1700    //+50%
+#define PPM_P75     	1800    //+75%
+#define PPM_P90     	1860    //+90%
+#define PPM_P100    	1900    //+100%
+#define PPM_MAX			2000    //wartość maksymalna sygnału +125%
+
+#define OKRES_PWM		2500	//okres kanału PWM w mikrosekundach
+#define PRZERWA_PPM		3000	//przerwa między paczkami impulsów PPM odbiornika RC
+//#define PPM_SPACE   	20     	//odstęp między kolejnymi impulsami PPM [us]
+
+//definicje typów sygnału z odbiornika RC w konfiguracji FRAM FAU_KONF_ODB_RC
+#define ODB_RC_SBUS		1
+#define ODB_RC_PPM		2
+#define MASKA_TYPU_RC1	0x03	//te bity definiują rodzaj sygnału z odbiornika RC1
+#define MASKA_TYPU_RC2	0x30	//te bity definiują rodzaj sygnału z odbiornika RC2
+
+//definicje typów sygnału 2 pierwszych serw
+#define SERWO_IO		0	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+#define SERWO_SBUS		1	//wyjście S-Bus
+#define SERWO_PWM400	2	//wyjście PWM 400Hz
+#define SERWO_PWM50		3	//wyjście PWM 50Hz
+
+
+
+//stany 3-położeniowych przełaczników na kanałach 5, 6 i 7
+#define RC_PRZEL_MIN 0	//minus 100%
+#define RC_PRZEL_M50 1	//minus 50%
+#define RC_PRZEL_NEU 2	//neutrum kanału
+#define RC_PRZEL_P50 3	//plus 50%
+#define RC_PRZEL_PLU 4	//plus 100%
+
 
 //definicje temperatur kalibracji żyroskopów
 #define TEMP_KAL_ZIMNO		(10.f + KELVIN)
@@ -71,3 +125,17 @@
 
 
 #define WYSOKOSC10PIETER	27.0f	//wysokość w metrach 10 pięter
+
+
+//definicje trybów lotu
+#define TRLOT_BEZPIECZNY	0	//regulatory i nawigacja wyłączone
+//do wartości 9 tryby naziemne
+#define TRLOT_UZBROJONY		10	//silniki pracują na biegu jałowym
+#define TRLOT_WZNOSZENIE	11	//kopter wznosi się na nominalnej prędkości pionowej
+#define TRLOT_LOT_RECZNY	12	//lot sterowany przez pilota
+#define TRLOT_LOT_AUTO		13	//lot autonomiczny
+#define TRLOT_PODEJ_LAD		14	//podejście do lądowania
+#define TRLOT_LADOWANIE		15	//lądowanie autonomiczne
+
+//definicje flag trybu lotu dotyczących zmiennej stWymianyCM4.chFlagiLotu
+#define WL_TRWA_LOT			0x01
