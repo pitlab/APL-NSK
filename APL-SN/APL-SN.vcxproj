@@ -203,6 +203,7 @@
     <ClInclude Include="komunikacja\Protokol.h" />
     <ClInclude Include="KonfigPID.h" />
     <ClInclude Include="MixerDlg.h" />
+    <ClInclude Include="OdbiornikiRC.h" />
     <ClInclude Include="PIDtabCtrl.h" />
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="komunikacja\Protokol.cpp" />
     <ClCompile Include="KonfigPID.cpp" />
     <ClCompile Include="MixerDlg.cpp" />
+    <ClCompile Include="OdbiornikiRC.cpp" />
     <ClCompile Include="PIDtabCtrl.cpp" />
     <ClCompile Include="Roj.cpp" />
     <ClCompile Include="Wron.cpp" />

@@ -14,6 +14,7 @@
 #include "APL-SNView.h"
 #include "DefinicjeWrona.h"
 #include "MixerDlg.h"
+#include "OdbiornikiRC.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +38,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUpdateUstawieniaDefinicjewrona)
 	ON_COMMAND(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUstawieniaMikser)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUpdateUstawieniaMikser)
+	ON_COMMAND(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUstawieniaOdbiornikirc)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUpdateUstawieniaOdbiornikirc)
 END_MESSAGE_MAP()
 
 
@@ -361,6 +364,11 @@ void CAboutDlg::OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia polecenie menu Konfiguracja -> Mikser...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaMikser()
 {
 	CMixerDlg cMixerDlg;
@@ -369,10 +377,39 @@ void CAPLSNApp::OnUstawieniaMikser()
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Mikser...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaMikser(CCmdUI* pCmdUI)
 {
 	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia polecenie menu Konfiguracja -> Odbiorniki RC...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaOdbiornikirc()
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
+	OdbiornikiRC cOdbRCDlg;
+	cOdbRCDlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Odbiorniki RC...
+// zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
+{
+	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 }

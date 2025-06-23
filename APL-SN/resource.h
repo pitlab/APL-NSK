@@ -85,6 +85,7 @@
 #define IDD_KONFIG_PID                  325
 #define IDD_DIALOG_DEFINICJE_WRONA      330
 #define IDD_MIKSER                      334
+#define IDD_ODBIORNIKI_RC               336
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -107,15 +108,46 @@
 #define IDC_LISTA_KOMUNIKATOW           1023
 #define IDC_PROGRESS1                   1024
 #define IDC_BUT_CZYTAJ_FLASH            1025
+#define IDC_PROGRESS2                   1025
 #define IDC_BUTTON1                     1026
+#define IDC_PROGRESS3                   1026
+#define IDC_PROGRESS4                   1030
 #define IDC_LIST2                       1031
 #define IDC_OKRES_TELEMETRII            1031
 #define IDC_LISTA_CZESTOTLIWOSCI        1031
+#define IDC_PROGRESS5                   1031
+#define IDC_PROGRESS6                   1032
+#define IDC_PROGRESS7                   1033
+#define IDC_PROGRESS8                   1034
+#define IDC_PROGRESS9                   1035
+#define IDC_PROGRESS10                  1036
+#define IDC_PROGRESS11                  1037
+#define IDC_PROGRESS12                  1038
+#define IDC_PROGRESS13                  1039
+#define IDC_PROGRESS14                  1040
 #define IDC_LIST_ZMIENNE_TELE           1041
+#define IDC_PROGRESS15                  1041
+#define IDC_PROGRESS16                  1042
 #define IDC_TREE_WYKRESOW               1043
+#define IDC_PROGRESS17                  1043
 #define IDC_LISTA_DANYCH                1044
+#define IDC_PROGRESS18                  1044
+#define IDC_PROGRESS19                  1045
 #define IDC_TAB1                        1046
 #define IDC_TAB_KANAL_PID               1046
+#define IDC_PROGRESS20                  1046
+#define IDC_PROGRESS21                  1047
+#define IDC_PROGRESS22                  1048
+#define IDC_PROGRESS23                  1049
+#define IDC_PROGRESS24                  1050
+#define IDC_PROGRESS25                  1051
+#define IDC_PROGRESS26                  1052
+#define IDC_PROGRESS27                  1053
+#define IDC_PROGRESS28                  1054
+#define IDC_PROGRESS29                  1055
+#define IDC_PROGRESS30                  1056
+#define IDC_PROGRESS31                  1057
+#define IDC_PROGRESS32                  1058
 #define IDC_EDIT_KP                     1067
 #define IDC_EDIT_KP1                    1067
 #define IDC_EDIT_TI                     1068
@@ -144,9 +176,13 @@
 #define IDC_EDIT_FILTRD2                1085
 #define IDC_EDIT_TD2                    1086
 #define IDC_RADIO1                      1087
+#define IDC_RADIO_PPM1                  1087
 #define IDC_RADIO2                      1088
+#define IDC_RADIO_SBUS1                 1088
 #define IDC_RADIO3                      1089
+#define IDC_RADIO_PPM2                  1089
 #define IDC_RADIO4                      1090
+#define IDC_RADIO_SBUS2                 1090
 #define IDC_CHECK_KATOWY1               1092
 #define IDC_STATIC_FILTR_D1             1093
 #define IDC_CHECK_KATOWY2               1094
@@ -192,7 +228,6 @@
 #define IDC_EDIT_DLUGOSC8               1119
 #define IDC_LIST_PREDEFINIOWANE         1120
 #define IDC_EDIT_SREDNICA_SMIGLA_MM     1122
-#define IDC_EDIT18                      1123
 #define IDC_EDIT_SREDNICA_SMIGLA_CALE   1123
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
@@ -222,13 +257,14 @@
 #define ID_USTAWIENIA_DEFINICJEWRONA    32809
 #define ID_Menu                         32810
 #define ID_USTAWIENIA_MIKSER            32811
+#define ID_USTAWIENIA_ODBIORNIKIRC      32812
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        336
-#define _APS_NEXT_COMMAND_VALUE         32812
+#define _APS_NEXT_RESOURCE_VALUE        338
+#define _APS_NEXT_COMMAND_VALUE         32813
 #define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

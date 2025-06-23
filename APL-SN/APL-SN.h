@@ -55,6 +55,8 @@ public:
 	afx_msg void OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaMikser();
 	afx_msg void OnUpdateUstawieniaMikser(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaOdbiornikirc();
+	afx_msg void OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;
