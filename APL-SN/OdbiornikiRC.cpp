@@ -137,12 +137,12 @@ BOOL OdbiornikiRC::OnInitDialog()
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
 			if ((n >= TELEID_RC_KAN1) && (n <= TELEID_SERWO16))
-				sOkresTelemetrii[n] = MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA;
+				sOkresTelemetrii[n] = (uint16_t)(MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA);
 			else
 				sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
 		}	
 
-		//zapisz do APL
+		//zapisz do APL telemetrię wysyłająca kanały odbiorników i serwa
 		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 		if (chErr)
 		{
@@ -154,16 +154,6 @@ BOOL OdbiornikiRC::OnInitDialog()
 		}
 		else
 			m_bZmodyfikowanoTelemetrie = TRUE;
-	}
-
-	//odczytaj konfigurację odbiorników
-	chErr = getKomunikacja().CzytajFRAM(chDane, 1, FAU_KONF_ODB_RC);
-	if (chErr == ERR_OK)
-	{
-		m_ctlPPM1.SetCheck(chDane[0] & 0x01);
-		m_ctlSBus1.SetCheck(chDane[0] & 0x02);
-		m_ctlPPM2.SetCheck(chDane[0] & 0x10);
-		m_ctlSbus2.SetCheck(chDane[0] & 0x20);
 	}
 
 	//definiuj zakres kanalów
@@ -201,40 +191,52 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlSerwo15.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo16.SetRange(PPM_MIN, PPM_MAX);
 
-
 	m_ctlTypWyjscia1.InsertString(0, _T("ESC1 400Hz"));
 	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus1"));
-	m_ctlTypWyjscia1.SetCurSel(0);
-
 	m_ctlTypWyjscia2.InsertString(0, _T("ESC2 400Hz"));
 	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus2"));
-	m_ctlTypWyjscia2.SetCurSel(0);
-
 	m_ctlTypWyjscia3.InsertString(0, _T("ESC3 400Hz"));
-	m_ctlTypWyjscia3.SetCurSel(0);
-
 	m_ctlTypWyjscia4.InsertString(0, _T("ESC4 400Hz"));
 	m_ctlTypWyjscia4.InsertString(1, _T("ADC? "));
-	m_ctlTypWyjscia4.SetCurSel(0);
-
 	m_ctlTypWyjscia5.InsertString(0, _T("ESC5 400Hz"));
 	m_ctlTypWyjscia5.InsertString(1, _T("ADC? "));
-	m_ctlTypWyjscia5.SetCurSel(0);
-
 	m_ctlTypWyjscia6.InsertString(0, _T("ESC6 400Hz"));
-	m_ctlTypWyjscia6.SetCurSel(0);
-
 	m_ctlTypWyjscia7.InsertString(0, _T("ESC7 400Hz"));
-	m_ctlTypWyjscia7.SetCurSel(0);
-
 	m_ctlTypWyjscia8.InsertString(0, _T("ESC8 400Hz"));
-	m_ctlTypWyjscia8.SetCurSel(0);
-
 	m_ctlTypWyjscia9_16.InsertString(0, _T("Serwa 9-16 50Hz"));
 	m_ctlTypWyjscia9_16.InsertString(1, _T("ESC 9-12 100Hz"));
 	m_ctlTypWyjscia9_16.InsertString(2, _T("ESC 9-10 200Hz"));
 	m_ctlTypWyjscia9_16.InsertString(3, _T("ESC 9 400Hz"));
-	m_ctlTypWyjscia9_16.SetCurSel(0);
+
+	//odczytaj konfigurację wejść odbiorników i wyjść serw.
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
+	if (chErr == ERR_OK)
+	{
+		//konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus, 2=inne (CS QSPI dla RC2)
+		m_ctlPPM1.SetCheck(chDane[0] & 0x01);
+		m_ctlSBus1.SetCheck(chDane[0] & 0x02);
+		m_ctlPPM2.SetCheck(chDane[0] & 0x10);
+		m_ctlSbus2.SetCheck(chDane[0] & 0x20);
+
+		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 1, bity 4..7 = Wyjście 2: 0=PWM 400Hz, 1=SBus
+		m_ctlTypWyjscia1.SetCurSel(chDane[1] & 0x0F);
+		m_ctlTypWyjscia2.SetCurSel((chDane[1] & 0xF0)>>4);
+		
+		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 3, bity 4..7 = Wyjście 4: 0=PWM 400Hz, 1=ADC
+		m_ctlTypWyjscia3.SetCurSel(chDane[2] & 0x0F);
+		m_ctlTypWyjscia4.SetCurSel((chDane[2] & 0xF0) >> 4);
+
+		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 5, bity 4..7 = Wyjście 6: 0=PWM 400Hz, , 1=ADC
+		m_ctlTypWyjscia5.SetCurSel(chDane[3] & 0x0F);
+		m_ctlTypWyjscia6.SetCurSel((chDane[3] & 0xF0) >> 4);
+
+		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 7, bity 4..7 = Wyjście 8: 0=PWM 400Hz
+		m_ctlTypWyjscia7.SetCurSel(chDane[4] & 0x0F);
+		m_ctlTypWyjscia8.SetCurSel((chDane[4] & 0xF0) >> 4);
+
+		//1U konfiguracja wyjść:  0=wyjścia 9..16 PWM 50Hz, 1=wyjścia 9..12 PWM 100Hz, 2=wyjścia 9..10 PWM 200Hz, 3=wyjście 9 PWM 400Hz
+		m_ctlTypWyjscia9_16.SetCurSel(chDane[5]);
+	}
 		
 	SetTimer(IDT_TIMER_RC, 100, (TIMERPROC)NULL);
 	WstawDaneKanalow();
@@ -380,24 +382,38 @@ void OdbiornikiRC::OnBnClickedRadioRc23()
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Reakcja na naciśnięcie przycisku OK
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedOk()
 {
+	uint8_t chErr;
+	uint8_t chDane[6];
+
 	KillTimer(IDT_TIMER_RC);
 	if (m_bZmienionoUstawienie)
 	{
-
+		chDane[0] = 0x01 * m_ctlPPM1.GetCheck() | 0x02 * m_ctlSBus1.GetCheck() | 0x10 * m_ctlPPM2.GetCheck() | 0x20 * m_ctlSbus2.GetCheck();;
+		chDane[1] = m_ctlTypWyjscia1.GetCurSel() | m_ctlTypWyjscia2.GetCurSel() << 4;
+		chDane[2] = m_ctlTypWyjscia3.GetCurSel() | m_ctlTypWyjscia4.GetCurSel() << 4;
+		chDane[3] = m_ctlTypWyjscia5.GetCurSel() | m_ctlTypWyjscia6.GetCurSel() << 4;
+		chDane[4] = m_ctlTypWyjscia7.GetCurSel() | m_ctlTypWyjscia8.GetCurSel() << 4;
+		chDane[5] = m_ctlTypWyjscia9_16.GetCurSel();
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
 	}
-
 	CDialogEx::OnOK();
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku Anuluj
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedCancel()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	KillTimer(IDT_TIMER_RC);
 	CDialogEx::OnCancel();
 }

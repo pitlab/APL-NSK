@@ -47,13 +47,16 @@ public:
 	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
 	uint8_t CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
 	uint8_t ZapiszOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
+
+	uint8_t ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t PotwierdzZapisDanych(uint16_t sAdres);
+	uint8_t ZapiszU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t ZapiszFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
-	uint8_t InicjujOdczytFRAM(uint8_t chRozmiar, uint16_t sAdres);
-	uint8_t CzytajDaneFRAM(uint8_t* chDane, uint8_t chRozmiar);
-	uint8_t CzytajFRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres);
-	uint8_t CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar);
+	uint8_t InicjujOdczytU8FRAM(uint8_t chRozmiar, uint16_t sAdres);
+	uint8_t CzytajDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar);
+	uint8_t InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres);
+	uint8_t CzytajU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t SpakujU8doFloat(uint8_t* chDane, uint8_t chRozmiarU8, float* fData);
 	uint8_t RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8_t* chDane);

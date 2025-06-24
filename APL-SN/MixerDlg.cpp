@@ -408,7 +408,7 @@ void CMixerDlg::OnBnClickedOk()
 	chErr |= getKomunikacja().ZapiszFloatFRAM(fMixPoch, KANALY_MIKSERA, FAU_MIX_POCHYL);
 	chErr |= getKomunikacja().ZapiszFloatFRAM(fMixOdch, KANALY_MIKSERA, FAU_MIX_ODCHYL);
 	if (chErr != ERR_OK)
-		MessageBoxExW(this->m_hWnd, _T("B³¹d zapisu"), _T("Ojojoj!"), MB_ICONWARNING, 0);
+		MessageBoxExW(this->m_hWnd, _T("B³¹d zapisu konfiguracji do FRAM"), _T("Ojojoj!"), MB_ICONWARNING, 0);
  
 	OnOK();
 }

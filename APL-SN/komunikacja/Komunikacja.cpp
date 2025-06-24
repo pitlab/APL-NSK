@@ -735,6 +735,34 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zapisuje do FRAM w APL liczby uint8_t (max 4*ROZMIAR_ROZNE)
+// parametry:
+// [i] chDane - wskaŸnik na tablicê z danymi do zapisu
+// [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chRozmiar;
+	m_unia8_32.dane16[0] = sAdres;
+	chDaneWychodzace[1] = m_unia8_32.dane8[0];
+	chDaneWychodzace[2] = m_unia8_32.dane8[1];
+	for (uint8_t n = 0; n < chRozmiar; n++)
+	{
+		chDaneWychodzace[3 + n] = *(chDane + n);
+	}
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FRAM_U8, chDaneWychodzace, 4 * chRozmiar + 3, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Zapisuje do FRAM w APL liczbê float (max ROZMIAR_ROZNE)
 // parametry:
 // [i] fDane - wskaŸnik na tablicê z danymi do zapisu
@@ -786,21 +814,20 @@ uint8_t CKomunikacja::PotwierdzZapisDanych(uint16_t sAdres)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Zapisuje do FRAM w APL liczbê float (max ROZMIAR_ROZNE) z potwierdzeniem zapisu
+// Zapisuje do FRAM w APL liczby uint8_t (max 4*ROZMIAR_ROZNE) z potwierdzeniem zapisu
 // parametry:
-// [i] fDane - wskaŸnik na tablicê z danymi do zapisu
+// [i] *chDane - wskaŸnik na tablicê z danymi do zapisu
 // [i] chRozmiar - rozmiar tablicy liczb
 // [i] sAdres - adres we FRAM
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
+uint8_t CKomunikacja::ZapiszU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
-	uint8_t chErr = ZapiszDaneFloatFRAM(fDane, chRozmiar, sAdres);
+	uint8_t chErr = ZapiszDaneU8FRAM(chDane, chRozmiar, sAdres);
 	if (chErr == ERR_OK)
 	{
-		//czekaj na potwierdzenie zanim wyœle kolejne dane do zapisu
-		do
+		do  //czekaj na potwierdzenie zanim wyœle kolejne dane do zapisu
 		{
 			chErr = PotwierdzZapisDanych(sAdres);
 			chLicznikProbPotw--;
@@ -814,14 +841,67 @@ uint8_t CKomunikacja::ZapiszFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Inicjuje odczyt z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
+// Zapisuje do FRAM w APL liczbê float (max ROZMIAR_ROZNE) z potwierdzeniem zapisu
 // parametry:
-// [i] fDane - wskaŸnik na tablicê z danymi do odczytu
+// [i] fDane - wskaŸnik na tablicê z danymi do zapisu
 // [i] chRozmiar - rozmiar tablicy liczb
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
+	uint8_t chErr = ZapiszDaneFloatFRAM(fDane, chRozmiar, sAdres);
+	if (chErr == ERR_OK)
+	{		
+		do  //czekaj na potwierdzenie zanim wyœle kolejne dane do zapisu
+		{
+			chErr = PotwierdzZapisDanych(sAdres);
+			chLicznikProbPotw--;
+		} while ((chErr != ERR_OK) && chLicznikProbPotw);
+		if (!chLicznikProbPotw)
+			chErr = ERR_BRAK_POTWIERDZ;
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Inicjuje odczyt liczb uint8_t z FRAM w APL (max 4*ROZMIAR_ROZNE)
+// parametry:
+// [i] chRozmiar - iloœæ liczb do odczytu
 // [i] sAdres - adres we FRAM
 // zwraca: kod b³êdu: ERR_OK lub ERR_ZLA_ILOSC_DANYCH
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::InicjujOdczytFRAM(uint8_t chRozmiar, uint16_t sAdres)
+uint8_t CKomunikacja::InicjujOdczytU8FRAM(uint8_t chRozmiar, uint16_t sAdres)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	if (chRozmiar > ROZMIAR_ROZNE)
+		return ERR_INVALID_DATA_SIZE;
+
+	chDaneWychodzace[0] = chRozmiar;
+	m_unia8_32.dane16[0] = sAdres;
+	chDaneWychodzace[1] = m_unia8_32.dane8[0];
+	chDaneWychodzace[2] = m_unia8_32.dane8[1];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_FRAM_U8, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Inicjuje odczyt z FRAM w APL liczb float (max ROZMIAR_ROZNE)
+// parametry:
+// [i] chRozmiar - iloœæ liczb do odczytu
+// [i] sAdres - adres we FRAM
+// zwraca: kod b³êdu: ERR_OK lub ERR_ZLA_ILOSC_DANYCH
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[3];
@@ -842,46 +922,14 @@ uint8_t CKomunikacja::InicjujOdczytFRAM(uint8_t chRozmiar, uint16_t sAdres)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Odczytuje z FRAM w APL liczbt float (max ROZMIAR_ROZNE)
-// parametry:
-// [i] fDane - wskaŸnik na tablicê z danymi do odczytu
-// [i] chRozmiar - rozmiar tablicy liczb
-// [i] sAdres - adres we FRAM
-// zwraca: kod b³êdu: ERR_OK lub ERR_HAL_BUSY je¿eli nie s¹ jeszcze gotowe
-///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajDaneFloatFRAM(float* fDane, uint8_t chRozmiar)
-{
-	uint8_t chErr;
-	uint8_t chDanePrzychodzace[4 * ROZMIAR_ROZNE];
-
-	chErr = CzytajDaneFRAM(chDanePrzychodzace, chRozmiar);
-	if (chErr == ERR_OK)
-	{
-		for (uint8_t n = 0; n < chRozmiar; n++)
-		{
-			for (int i = 0; i < 4; i++)
-				m_unia8_32.dane8[i] = chDanePrzychodzace[4 * n + i];
-			*(fDane + n) = m_unia8_32.daneFloat;
-		}
-	}
-	else
-	{
-		fDane = NULL;
-	}
-	return chErr;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Odczytuje z FRAM w APL wielokrotnoœæ 4 liczb uint8_t  (max ROZMIAR_ROZNE)
+// Odczytuje liczby uint8_t z FRAM w APL (max 4*ROZMIAR_ROZNE)
 // parametry:
 // [i] chDane - wskaŸnik na tablicê z danymi do odczytu
 // [i] chRozmiar - iloœæ czwrek liczb
 // [i] sAdres - adres we FRAM
 // zwraca: kod b³êdu: ERR_OK lub ERR_HAL_BUSY je¿eli nie s¹ jeszcze gotowe
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajDaneFRAM(uint8_t* chDane, uint8_t chRozmiar)
+uint8_t CKomunikacja::CzytajDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace;
@@ -894,7 +942,7 @@ uint8_t CKomunikacja::CzytajDaneFRAM(uint8_t* chDane, uint8_t chRozmiar)
 		if ((chOdebrano == 2) && (chDanePrzychodzace[0] == ERR_PROCES_TRWA))
 			return ERR_PROCES_TRWA;
 
-		for (uint8_t n = 0; n < 4*chRozmiar; n++)
+		for (uint8_t n = 0; n < 4 * chRozmiar; n++)
 		{
 			*(chDane + n) = chDanePrzychodzace[n];
 		}
@@ -905,6 +953,7 @@ uint8_t CKomunikacja::CzytajDaneFRAM(uint8_t* chDane, uint8_t chRozmiar)
 	}
 	return chErr;
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -918,17 +967,25 @@ uint8_t CKomunikacja::CzytajDaneFRAM(uint8_t* chDane, uint8_t chRozmiar)
 uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chLicznikProbOdczytu = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
-	uint8_t chErr = InicjujOdczytFRAM(chRozmiar, sAdres);
+	uint8_t chDane[4 * ROZMIAR_ROZNE];
+	uint8_t chErr = InicjujOdczytFloatFRAM(chRozmiar, sAdres);
 	if (chErr == ERR_OK)
 	{
 		do
 		{
-			chErr = CzytajDaneFloatFRAM(fDane, chRozmiar);
+			chErr = CzytajDaneU8FRAM(chDane, 4*chRozmiar);
 			chLicznikProbOdczytu--;
 		} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));
 
 		if (!chLicznikProbOdczytu)
 			chErr = ERR_BRAK_POTWIERDZ;
+
+		for (int n = 0; n < chRozmiar; n++)
+		{
+			for (int i = 0; i < 4; i++)
+				m_unia8_32.dane8[i] = chDane[4 * n + i];
+			*(fDane + n) = m_unia8_32.daneFloat;
+		}
 	}
 	return chErr;
 }
@@ -936,22 +993,22 @@ uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Kompletna procedura odczytu czwórek liczb uint8_t z FRAM w APL (max ROZMIAR_ROZNE). 
+// Kompletna procedura odczytu liczb uint8_t z FRAM w APL (max 4*ROZMIAR_ROZNE). 
 // parametry:
 // [i] chDane - wskaŸnik na tablicê z danymi do odczytu
 // [i] chRozmiar - liczba czwórek liczb
 // [i] sAdres - adres we FRAM
 // zwraca: kod b³êdu: ERR_OK lub ERR_BRAK_POTWIERDZ je¿eli nie s¹ jeszcze gotowe
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajFRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
+uint8_t CKomunikacja::CzytajU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chLicznikProbOdczytu = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
-	uint8_t chErr = InicjujOdczytFRAM(chRozmiar, sAdres);
+	uint8_t chErr = InicjujOdczytU8FRAM(chRozmiar, sAdres);
 	if (chErr == ERR_OK)
 	{
 		do
 		{
-			chErr = CzytajDaneFRAM(chDane, chRozmiar);
+			chErr = CzytajDaneU8FRAM(chDane, chRozmiar);
 			chLicznikProbOdczytu--;
 		} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));
 

@@ -202,6 +202,7 @@
     <ClInclude Include="komunikacja\PortSzeregowy.h" />
     <ClInclude Include="komunikacja\Protokol.h" />
     <ClInclude Include="KonfigPID.h" />
+    <ClInclude Include="konfig_fram.h" />
     <ClInclude Include="MixerDlg.h" />
     <ClInclude Include="OdbiornikiRC.h" />
     <ClInclude Include="PIDtabCtrl.h" />

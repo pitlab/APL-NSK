@@ -129,6 +129,9 @@
     <ClInclude Include="OdbiornikiRC.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="konfig_fram.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="APL-SN.cpp">
