@@ -25,11 +25,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
-	CButton m_ctlPPM1;
-	CButton m_ctlSBus1;
-	CButton m_ctlPPM2;
-	CButton m_ctlSbus2;
-	CButton m_ctlRC2_QSPI;
 	CProgressCtrl m_ctlRC1Kan1;
 	CProgressCtrl m_ctlRC1Kan2;
 	CProgressCtrl m_ctlRC1Kan3;
@@ -64,6 +59,8 @@ public:
 	CProgressCtrl m_ctlSerwo15;
 	CProgressCtrl m_ctlSerwo16;
 
+	CComboBox m_ctlOdbiornikRC1;
+	CComboBox m_ctlOdbiornikRC2;
 	CComboBox m_ctlTypWyjscia1;
 	CComboBox m_ctlTypWyjscia2;
 	CComboBox m_ctlTypWyjscia3;
@@ -74,12 +71,10 @@ public:
 	CComboBox m_ctlTypWyjscia8;
 	CComboBox m_ctlTypWyjscia9_16;
 
-	afx_msg void OnBnClickedRadioPpm1();
-	afx_msg void OnBnClickedRadioSbus1();
-	afx_msg void OnBnClickedRadioPpm2();
-	afx_msg void OnBnClickedRadioSbus2();
 	BOOL m_bZmienionoUstawienie;
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnCbnSelchangeComboRc1();
+	afx_msg void OnCbnSelchangeComboRc2();
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnCbnSelchangeCombo2();
 	afx_msg void OnCbnSelchangeCombo3();
@@ -89,7 +84,6 @@ public:
 	afx_msg void OnCbnSelchangeCombo7();
 	afx_msg void OnCbnSelchangeCombo8();
 	afx_msg void OnCbnSelchangeCombo9();
-	afx_msg void OnBnClickedRadioRc23();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedCancel();
 };

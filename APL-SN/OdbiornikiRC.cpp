@@ -56,10 +56,6 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS14, m_ctlRC1Kan14);
 	DDX_Control(pDX, IDC_PROGRESS15, m_ctlRC1Kan15);
 	DDX_Control(pDX, IDC_PROGRESS16, m_ctlRC1Kan16);
-	DDX_Control(pDX, IDC_RADIO_PPM1, m_ctlPPM1);
-	DDX_Control(pDX, IDC_RADIO_SBUS1, m_ctlSBus1);
-	DDX_Control(pDX, IDC_RADIO_PPM2, m_ctlPPM2);
-	DDX_Control(pDX, IDC_RADIO_SBUS2, m_ctlSbus2);
 	DDX_Control(pDX, IDC_PROGRESS33, m_ctlSerwo1);
 	DDX_Control(pDX, IDC_PROGRESS34, m_ctlSerwo2);
 	DDX_Control(pDX, IDC_PROGRESS35, m_ctlSerwo3);
@@ -85,17 +81,14 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO7, m_ctlTypWyjscia7);
 	DDX_Control(pDX, IDC_COMBO8, m_ctlTypWyjscia8);
 	DDX_Control(pDX, IDC_COMBO9, m_ctlTypWyjscia9_16);
-	DDX_Control(pDX, IDC_RADIO_RC23, m_ctlRC2_QSPI);
+	DDX_Control(pDX, IDC_COMBO_RC1, m_ctlOdbiornikRC1);
+	DDX_Control(pDX, IDC_COMBO_RC2, m_ctlOdbiornikRC2);
 }
 
 
 BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
-	ON_BN_CLICKED(IDC_RADIO_PPM1, &OdbiornikiRC::OnBnClickedRadioPpm1)
-	ON_BN_CLICKED(IDC_RADIO_SBUS1, &OdbiornikiRC::OnBnClickedRadioSbus1)
-	ON_BN_CLICKED(IDC_RADIO_PPM2, &OdbiornikiRC::OnBnClickedRadioPpm2)
-	ON_BN_CLICKED(IDC_RADIO_SBUS2, &OdbiornikiRC::OnBnClickedRadioSbus2)
-	ON_BN_CLICKED(IDC_RADIO_RC23, &OdbiornikiRC::OnBnClickedRadioRc23)
-	ON_BN_CLICKED(IDOK, &OdbiornikiRC::OnBnClickedOk)
+	ON_CBN_SELCHANGE(IDC_COMBO_RC1, &OdbiornikiRC::OnCbnSelchangeComboRc1)
+	ON_CBN_SELCHANGE(IDC_COMBO_RC2, &OdbiornikiRC::OnCbnSelchangeComboRc2)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &OdbiornikiRC::OnCbnSelchangeCombo1)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &OdbiornikiRC::OnCbnSelchangeCombo2)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &OdbiornikiRC::OnCbnSelchangeCombo3)
@@ -105,8 +98,8 @@ BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO7, &OdbiornikiRC::OnCbnSelchangeCombo7)
 	ON_CBN_SELCHANGE(IDC_COMBO8, &OdbiornikiRC::OnCbnSelchangeCombo8)
 	ON_CBN_SELCHANGE(IDC_COMBO9, &OdbiornikiRC::OnCbnSelchangeCombo9)
-	
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDOK, &OdbiornikiRC::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &OdbiornikiRC::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
@@ -120,7 +113,7 @@ END_MESSAGE_MAP()
 BOOL OdbiornikiRC::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	uint8_t chErr, chDane[4];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
+	uint8_t chErr, chDane[6];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
 	int nIndeksDronaWRoju;
 	uint16_t sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 
@@ -190,7 +183,12 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlSerwo14.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo15.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo16.SetRange(PPM_MIN, PPM_MAX);
-
+	
+	m_ctlOdbiornikRC1.InsertString(0, _T("CPPM"));
+	m_ctlOdbiornikRC1.InsertString(1, _T("S-Bus"));
+	m_ctlOdbiornikRC2.InsertString(0, _T("CPPM"));
+	m_ctlOdbiornikRC2.InsertString(1, _T("S-Bus"));
+	m_ctlOdbiornikRC2.InsertString(2, _T("CS QSPI"));
 	m_ctlTypWyjscia1.InsertString(0, _T("ESC1 400Hz"));
 	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus1"));
 	m_ctlTypWyjscia2.InsertString(0, _T("ESC2 400Hz"));
@@ -213,10 +211,8 @@ BOOL OdbiornikiRC::OnInitDialog()
 	if (chErr == ERR_OK)
 	{
 		//konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus, 2=inne (CS QSPI dla RC2)
-		m_ctlPPM1.SetCheck(chDane[0] & 0x01);
-		m_ctlSBus1.SetCheck(chDane[0] & 0x02);
-		m_ctlPPM2.SetCheck(chDane[0] & 0x10);
-		m_ctlSbus2.SetCheck(chDane[0] & 0x20);
+		m_ctlOdbiornikRC1.SetCurSel(chDane[1] & 0x0F);
+		m_ctlOdbiornikRC2.SetCurSel((chDane[1] & 0xF0) >> 4);
 
 		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 1, bity 4..7 = Wyjście 2: 0=PWM 400Hz, 1=SBus
 		m_ctlTypWyjscia1.SetCurSel(chDane[1] & 0x0F);
@@ -311,91 +307,17 @@ void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie radiobuttona PPM1
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::OnBnClickedRadioPpm1()
-{
-	m_bZmienionoUstawienie = TRUE;
-	m_ctlPPM1.SetCheck(1);
-	m_ctlSBus1.SetCheck(0);
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie radiobuttona SBus1
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::OnBnClickedRadioSbus1()
-{
-	m_bZmienionoUstawienie = TRUE;
-	m_ctlPPM1.SetCheck(0);
-	m_ctlSBus1.SetCheck(1);
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie radiobuttona PPM2
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::OnBnClickedRadioPpm2()
-{
-	m_bZmienionoUstawienie = TRUE;
-	m_ctlPPM2.SetCheck(1);
-	m_ctlSbus2.SetCheck(0);
-	m_ctlRC2_QSPI.SetCheck(0);
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie radiobuttona SBus2
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::OnBnClickedRadioSbus2()
-{
-	m_bZmienionoUstawienie = TRUE;
-	m_ctlPPM2.SetCheck(0);
-	m_ctlSbus2.SetCheck(1);
-	m_ctlRC2_QSPI.SetCheck(0);
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie radiobuttona RC2 CS QSPI
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::OnBnClickedRadioRc23()
-{
-	m_bZmienionoUstawienie = TRUE;
-	m_ctlPPM2.SetCheck(0);
-	m_ctlSbus2.SetCheck(0);
-	m_ctlRC2_QSPI.SetCheck(1);
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie przycisku OK
+// Reakcja na naciśnięcie przycisku OK - zapisuje konfigurcję jeżeli została zmieniona
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedOk()
 {
-	uint8_t chErr;
-	uint8_t chDane[6];
+	uint8_t chErr, chDane[6];
 
 	KillTimer(IDT_TIMER_RC);
 	if (m_bZmienionoUstawienie)
-	{
-		chDane[0] = 0x01 * m_ctlPPM1.GetCheck() | 0x02 * m_ctlSBus1.GetCheck() | 0x10 * m_ctlPPM2.GetCheck() | 0x20 * m_ctlSbus2.GetCheck();;
+	{	
+		chDane[0] = m_ctlOdbiornikRC1.GetCurSel() | m_ctlOdbiornikRC2.GetCurSel() << 4;
 		chDane[1] = m_ctlTypWyjscia1.GetCurSel() | m_ctlTypWyjscia2.GetCurSel() << 4;
 		chDane[2] = m_ctlTypWyjscia3.GetCurSel() | m_ctlTypWyjscia4.GetCurSel() << 4;
 		chDane[3] = m_ctlTypWyjscia5.GetCurSel() | m_ctlTypWyjscia6.GetCurSel() << 4;
@@ -519,8 +441,22 @@ void OdbiornikiRC::OnCbnSelchangeCombo9()
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę typu odbiornika 1
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboRc1()
+{
+	m_bZmienionoUstawienie = TRUE;
+}
 
 
 
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę typu odbiornika 2
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboRc2()
+{
+	m_bZmienionoUstawienie = TRUE;
+}

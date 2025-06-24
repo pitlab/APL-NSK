@@ -258,6 +258,9 @@
 #define IDC_COMBO7                      1130
 #define IDC_COMBO8                      1131
 #define IDC_COMBO9                      1132
+#define IDC_COMBO_RC1                   1133
+#define IDC_COMBO11                     1134
+#define IDC_COMBO_RC2                   1134
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
