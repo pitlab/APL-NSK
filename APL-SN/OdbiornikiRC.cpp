@@ -188,19 +188,44 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlOdbiornikRC1.InsertString(1, _T("S-Bus"));
 	m_ctlOdbiornikRC2.InsertString(0, _T("CPPM"));
 	m_ctlOdbiornikRC2.InsertString(1, _T("S-Bus"));
-	m_ctlOdbiornikRC2.InsertString(2, _T("CS QSPI"));
+
 	m_ctlTypWyjscia1.InsertString(0, _T("ESC1 400Hz"));
-	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus1"));
+	m_ctlTypWyjscia1.InsertString(1, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia1.InsertString(2, _T("Port I/O PB9"));
+	m_ctlTypWyjscia1.InsertString(3, _T("Wyjście S-Bus1"));
+
 	m_ctlTypWyjscia2.InsertString(0, _T("ESC2 400Hz"));
-	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus2"));
+	m_ctlTypWyjscia2.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia2.InsertString(2, _T("Port I/O PB10"));
+	m_ctlTypWyjscia2.InsertString(3, _T("Wyjście S-Bus2"));
+	m_ctlTypWyjscia2.InsertString(4, _T("CS QSPI"));
+
 	m_ctlTypWyjscia3.InsertString(0, _T("ESC3 400Hz"));
+	m_ctlTypWyjscia3.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia3.InsertString(2, _T("Port I/O PA15"));
+
 	m_ctlTypWyjscia4.InsertString(0, _T("ESC4 400Hz"));
-	m_ctlTypWyjscia4.InsertString(1, _T("ADC? "));
+	m_ctlTypWyjscia4.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia4.InsertString(2, _T("Port I/O PB0"));
+	m_ctlTypWyjscia4.InsertString(3, _T("ADC? "));
+
 	m_ctlTypWyjscia5.InsertString(0, _T("ESC5 400Hz"));
-	m_ctlTypWyjscia5.InsertString(1, _T("ADC? "));
+	m_ctlTypWyjscia5.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia5.InsertString(2, _T("Port I/O PB1"));
+	m_ctlTypWyjscia5.InsertString(3, _T("ADC? "));
+
 	m_ctlTypWyjscia6.InsertString(0, _T("ESC6 400Hz"));
+	m_ctlTypWyjscia6.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia6.InsertString(2, _T("Port I/O PI5"));
+
 	m_ctlTypWyjscia7.InsertString(0, _T("ESC7 400Hz"));
+	m_ctlTypWyjscia7.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia7.InsertString(2, _T("Port I/O P???"));
+
 	m_ctlTypWyjscia8.InsertString(0, _T("ESC8 400Hz"));
+	m_ctlTypWyjscia8.InsertString(1, _T("Serwo2 50Hz"));
+	m_ctlTypWyjscia8.InsertString(2, _T("Port I/O PH15"));
+
 	m_ctlTypWyjscia9_16.InsertString(0, _T("Serwa 9-16 50Hz"));
 	m_ctlTypWyjscia9_16.InsertString(1, _T("ESC 9-12 100Hz"));
 	m_ctlTypWyjscia9_16.InsertString(2, _T("ESC 9-10 200Hz"));
