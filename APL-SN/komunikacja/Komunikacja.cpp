@@ -4,6 +4,7 @@
 #include "KomunikatySieci.h"
 #include "Protokol.h"
 #include "../APL-SNDoc.h"
+#include "../konfig_fram.h"
 /*
 Klasa komunikacyjna poœrednicz¹ca miêdzy aplikacj¹ a protoko³em komunikacyjnym. 
 Aplikacja przesy³a polecenia wymiany danych a klasa nawi¹zuje po³¹czenie po znanym sobie interfejsie
@@ -1062,4 +1063,24 @@ uint8_t CKomunikacja::RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8
 		
 	}
 	return chRozmiarFloat;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia ponown¹ konfiguracjê wejsæ i wyjsæ RC po zmianie zawartoœci FRAM
+// Abyt polecenie nie wykonywa³o siê w pêtli, po poleceniu trzeba wydaæ inne polecenie zakoñczone POL_NIC, np. Odczyt FRAM
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::RekonfigurujWeWyRC()
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace;
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_REKONFIG_SERWA_RC, &chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+
+	CzytajU8FRAM(chDanePrzychodzace, 1, FAU_KONF_ODB_RC);
+	return chErr;
 }

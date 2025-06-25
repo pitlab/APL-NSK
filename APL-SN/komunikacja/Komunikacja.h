@@ -60,6 +60,7 @@ public:
 	uint8_t CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t SpakujU8doFloat(uint8_t* chDane, uint8_t chRozmiarU8, float* fData);
 	uint8_t RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8_t* chDane);
+	uint8_t RekonfigurujWeWyRC();
 
 	Roj m_cRoj;
 	Wron m_cWron;

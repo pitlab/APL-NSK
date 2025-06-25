@@ -65,6 +65,7 @@
 #define PK_CZYTAJ_FRAM_U8		19	//Wysyła  polecenie odczytu zawartości FRAM typu uint8_t
 #define PK_CZYTAJ_FRAM_FLOAT	20	//wysyła polecenie odczytu zawartości FRAM typu float
 #define PK_WYSLIJ_ODCZYT_FRAM	21	//pobiera odczytane wcześniej dane lub zwraca ERR_PROCES_TRWA
+#define PK_REKONFIG_SERWA_RC	22	//wykonuje ponowną konfigurację wejść i wyjść RC po zmianie zawartosci FRAM
 
 #define PK_ILOSC_POLECEN		22	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 #define PK_TELEMETRIA			99	//ramka telemetryczna
