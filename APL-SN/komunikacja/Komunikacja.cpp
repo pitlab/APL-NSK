@@ -39,92 +39,152 @@ CKomunikacja::CKomunikacja()
 	m_LicznikInstancji++;
 
 	//D³ugoœæ nazwy nie powinna przekraczaæ sta³ej DLUGOSC_NAZWY
-	m_strNazwyZmiennychTele[TELEID_AKCEL1X] = "Akcelerometr1 X";
-	m_strNazwyZmiennychTele[TELEID_AKCEL1Y] = "Akcelerometr1 Y";
-	m_strNazwyZmiennychTele[TELEID_AKCEL1Z] = "Akcelerometr1 Z";
-	m_strNazwyZmiennychTele[TELEID_AKCEL2X] = "Akcelerometr2 X";
-	m_strNazwyZmiennychTele[TELEID_AKCEL2Y] = "Akcelerometr2 Y";
-	m_strNazwyZmiennychTele[TELEID_AKCEL2Z] = "Akcelerometr2 Z";
-	m_strNazwyZmiennychTele[TELEID_ZYRO1P] = "¯yroskop1 P";
-	m_strNazwyZmiennychTele[TELEID_ZYRO1Q] = "¯yroskop1 Q";
-	m_strNazwyZmiennychTele[TELEID_ZYRO1R] = "¯yroskop1 R";
-	m_strNazwyZmiennychTele[TELEID_ZYRO2P] = "¯yroskop2 P";
-	m_strNazwyZmiennychTele[TELEID_ZYRO2Q] = "¯yroskop2 Q";
-	m_strNazwyZmiennychTele[TELEID_ZYRO2R] = "¯yroskop2 R";
-	m_strNazwyZmiennychTele[TELEID_MAGNE1X] = "Magnetometr 1 X";
-	m_strNazwyZmiennychTele[TELEID_MAGNE1Y] = "Magnetometr 1 Y";
-	m_strNazwyZmiennychTele[TELEID_MAGNE1Z] = "Magnetometr 1 Z";
-	m_strNazwyZmiennychTele[TELEID_MAGNE2X] = "Magnetometr 2 X";
-	m_strNazwyZmiennychTele[TELEID_MAGNE2Y] = "Magnetometr 2 Y";
-	m_strNazwyZmiennychTele[TELEID_MAGNE2Z] = "Magnetometr 2 Z";
-	m_strNazwyZmiennychTele[TELEID_MAGNE3X] = "Magnetometr 3 X";
-	m_strNazwyZmiennychTele[TELEID_MAGNE3Y] = "Magnetometr 3 Y";
-	m_strNazwyZmiennychTele[TELEID_MAGNE3Z] = "Magnetometr 3 Z";
-	m_strNazwyZmiennychTele[TELEID_TEMPIMU1] = "Temperatura IMU1";
-	m_strNazwyZmiennychTele[TELEID_TEMPIMU2] = "Temperatura IMU2";
+	m_strNazwyZmiennychTele[TELEID_AKCEL1X]		= "Akcelerometr1 X";
+	m_strNazwyZmiennychTele[TELEID_AKCEL1Y]		= "Akcelerometr1 Y";
+	m_strNazwyZmiennychTele[TELEID_AKCEL1Z]		= "Akcelerometr1 Z";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2X]		= "Akcelerometr2 X";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2Y]		= "Akcelerometr2 Y";
+	m_strNazwyZmiennychTele[TELEID_AKCEL2Z]		= "Akcelerometr2 Z";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1P]		= "¯yroskop1 P";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1Q]		= "¯yroskop1 Q";
+	m_strNazwyZmiennychTele[TELEID_ZYRO1R]		= "¯yroskop1 R";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2P]		= "¯yroskop2 P";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2Q]		= "¯yroskop2 Q";
+	m_strNazwyZmiennychTele[TELEID_ZYRO2R]		= "¯yroskop2 R";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1X]		= "Magnetometr 1 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1Y]		= "Magnetometr 1 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE1Z]		= "Magnetometr 1 Z";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2X]		= "Magnetometr 2 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2Y]		= "Magnetometr 2 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE2Z]		= "Magnetometr 2 Z";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3X]		= "Magnetometr 3 X";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3Y]		= "Magnetometr 3 Y";
+	m_strNazwyZmiennychTele[TELEID_MAGNE3Z]		= "Magnetometr 3 Z";
+	m_strNazwyZmiennychTele[TELEID_TEMPIMU1]	= "Temperatura IMU1";
+	m_strNazwyZmiennychTele[TELEID_TEMPIMU2]	= "Temperatura IMU2";
 
 	//zmienna AHRS
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU1X] = "Trygono. Phi";
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Y] = "Trygono. Theta";
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Z] = "Trygono. Psi";
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU2X] = "Kwatern. Phi";
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Y] = "Kwatern. Theta";
-	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Z] = "Kwatern. Psi";
-	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X] = "¯yro. Phi";
-	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Y] = "¯yro. Theta";
-	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Z] = "¯yro. Psi";
-	m_strNazwyZmiennychTele[TELEID_KAT_AKCELX] = "Akcel. Phi";
-	m_strNazwyZmiennychTele[TELEID_KAT_AKCELY] = "Akcel. Theta";
-	m_strNazwyZmiennychTele[TELEID_KAT_AKCELZ] = "Akcel. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1X]	= "Trygono. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Y]	= "Trygono. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU1Z]	= "Trygono. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2X]	= "Kwatern. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Y]	= "Kwatern. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_IMU2Z]	= "Kwatern. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1X]	= "¯yro. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Y]	= "¯yro. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_ZYRO1Z]	= "¯yro. Psi";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELX]	= "Akcel. Phi";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELY]	= "Akcel. Theta";
+	m_strNazwyZmiennychTele[TELEID_KAT_AKCELZ]	= "Akcel. Psi";
 
 	//zmienne barametryczne
-	m_strNazwyZmiennychTele[TELEID_CISBEZW1] = "Ciœn.Bzwzgl.1";
-	m_strNazwyZmiennychTele[TELEID_CISBEZW2] = "Ciœn.Bzwzgl.2";
-	m_strNazwyZmiennychTele[TELEID_WYSOKOSC1] = "Wysokoœæ AGL1";
-	m_strNazwyZmiennychTele[TELEID_WYSOKOSC2] = "Wysokoœæ AGL2";
-	m_strNazwyZmiennychTele[TELEID_CISROZN1] = "Ciœn.Ró¿n.1";
-	m_strNazwyZmiennychTele[TELEID_CISROZN2] = "Ciœn.Ró¿n.2";
-	m_strNazwyZmiennychTele[TELEID_PREDIAS1] = "Prêdkoœæ IAS1";
-	m_strNazwyZmiennychTele[TELEID_PREDIAS2] = "Prêdkoœæ IAS2";
-	m_strNazwyZmiennychTele[TELEID_TEMPCISB1] = "Temp.Ciœn.Bzwz1";
-	m_strNazwyZmiennychTele[TELEID_TEMPCISB2] = "Temp.Ciœn.Bzwz2";
-	m_strNazwyZmiennychTele[TELEID_TEMPCISR1] = "Temp.Ciœn.Ró¿n1";
-	m_strNazwyZmiennychTele[TELEID_TEMPCISR2] = "Temp.Ciœn.Ró¿n2";
+	m_strNazwyZmiennychTele[TELEID_CISBEZW1]	= "Ciœn.Bzwzgl.1";
+	m_strNazwyZmiennychTele[TELEID_CISBEZW2]	= "Ciœn.Bzwzgl.2";
+	m_strNazwyZmiennychTele[TELEID_WYSOKOSC1]	= "Wysokoœæ AGL1";
+	m_strNazwyZmiennychTele[TELEID_WYSOKOSC2]	= "Wysokoœæ AGL2";
+	m_strNazwyZmiennychTele[TELEID_CISROZN1]	= "Ciœn.Ró¿n.1";
+	m_strNazwyZmiennychTele[TELEID_CISROZN2]	= "Ciœn.Ró¿n.2";
+	m_strNazwyZmiennychTele[TELEID_PREDIAS1]	= "Prêdkoœæ IAS1";
+	m_strNazwyZmiennychTele[TELEID_PREDIAS2]	= "Prêdkoœæ IAS2";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISB1]	= "Temp.Ciœn.Bzwz1";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISB2]	= "Temp.Ciœn.Bzwz2";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISR1]	= "Temp.Ciœn.Ró¿n1";
+	m_strNazwyZmiennychTele[TELEID_TEMPCISR2]	= "Temp.Ciœn.Ró¿n2";
 
 	//odbiorniki RC i serwa
-	m_strNazwyZmiennychTele[TELEID_RC_KAN1] = "Wejœcie RC kan.1";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN2] = "Wejœcie RC kan.2";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN3] = "Wejœcie RC kan.3";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN4] = "Wejœcie RC kan.4";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN5] = "Wejœcie RC kan.5";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN6] = "Wejœcie RC kan.6";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN7] = "Wejœcie RC kan.7";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN8] = "Wejœcie RC kan.8";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN9] = "Wejœcie RC kan.9";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN10] = "Wejœcie RC kan.10";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN11] = "Wejœcie RC kan.11";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN12] = "Wejœcie RC kan.12";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN13] = "Wejœcie RC kan.13";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN14] = "Wejœcie RC kan.14";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN15] = "Wejœcie RC kan.15";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN16] = "Wejœcie RC kan.16";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN1]		= "Wejœcie RC kan.1";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN2]		= "Wejœcie RC kan.2";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN3]		= "Wejœcie RC kan.3";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN4]		= "Wejœcie RC kan.4";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN5]		= "Wejœcie RC kan.5";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN6]		= "Wejœcie RC kan.6";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN7]		= "Wejœcie RC kan.7";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN8]		= "Wejœcie RC kan.8";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN9]		= "Wejœcie RC kan.9";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN10]	= "Wejœcie RC kan.10";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN11]	= "Wejœcie RC kan.11";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN12]	= "Wejœcie RC kan.12";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN13]	= "Wejœcie RC kan.13";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN14]	= "Wejœcie RC kan.14";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN15]	= "Wejœcie RC kan.15";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN16]	= "Wejœcie RC kan.16";
 
-	m_strNazwyZmiennychTele[TELEID_SERWO1] = "Wyjœcie Serw kan.1";
-	m_strNazwyZmiennychTele[TELEID_SERWO2] = "Wyjœcie Serw kan.2";
-	m_strNazwyZmiennychTele[TELEID_SERWO3] = "Wyjœcie Serw kan.3";
-	m_strNazwyZmiennychTele[TELEID_SERWO4] = "Wyjœcie Serw kan.4";
-	m_strNazwyZmiennychTele[TELEID_SERWO5] = "Wyjœcie Serw kan.5";
-	m_strNazwyZmiennychTele[TELEID_SERWO6] = "Wyjœcie Serw kan.6";
-	m_strNazwyZmiennychTele[TELEID_SERWO7] = "Wyjœcie Serw kan.7";
-	m_strNazwyZmiennychTele[TELEID_SERWO8] = "Wyjœcie Serw kan.8";
-	m_strNazwyZmiennychTele[TELEID_SERWO9] = "Wyjœcie Serw kan.9";
-	m_strNazwyZmiennychTele[TELEID_SERWO10] = "Wyjœcie Serw kan.10";
-	m_strNazwyZmiennychTele[TELEID_SERWO11] = "Wyjœcie Serw kan.11";
-	m_strNazwyZmiennychTele[TELEID_SERWO12] = "Wyjœcie Serw kan.12";
-	m_strNazwyZmiennychTele[TELEID_SERWO13] = "Wyjœcie Serw kan.13";
-	m_strNazwyZmiennychTele[TELEID_SERWO14] = "Wyjœcie Serw kan.14";
-	m_strNazwyZmiennychTele[TELEID_SERWO15] = "Wyjœcie Serw kan.15";
-	m_strNazwyZmiennychTele[TELEID_SERWO16] = "Wyjœcie Serw kan.16";
+	m_strNazwyZmiennychTele[TELEID_SERWO1]		= "Wyjœcie Serw kan.1";
+	m_strNazwyZmiennychTele[TELEID_SERWO2]		= "Wyjœcie Serw kan.2";
+	m_strNazwyZmiennychTele[TELEID_SERWO3]		= "Wyjœcie Serw kan.3";
+	m_strNazwyZmiennychTele[TELEID_SERWO4]		= "Wyjœcie Serw kan.4";
+	m_strNazwyZmiennychTele[TELEID_SERWO5]		= "Wyjœcie Serw kan.5";
+	m_strNazwyZmiennychTele[TELEID_SERWO6]		= "Wyjœcie Serw kan.6";
+	m_strNazwyZmiennychTele[TELEID_SERWO7]		= "Wyjœcie Serw kan.7";
+	m_strNazwyZmiennychTele[TELEID_SERWO8]		= "Wyjœcie Serw kan.8";
+	m_strNazwyZmiennychTele[TELEID_SERWO9]		= "Wyjœcie Serw kan.9";
+	m_strNazwyZmiennychTele[TELEID_SERWO10]		= "Wyjœcie Serw kan.10";
+	m_strNazwyZmiennychTele[TELEID_SERWO11]		= "Wyjœcie Serw kan.11";
+	m_strNazwyZmiennychTele[TELEID_SERWO12]		= "Wyjœcie Serw kan.12";
+	m_strNazwyZmiennychTele[TELEID_SERWO13]		= "Wyjœcie Serw kan.13";
+	m_strNazwyZmiennychTele[TELEID_SERWO14]		= "Wyjœcie Serw kan.14";
+	m_strNazwyZmiennychTele[TELEID_SERWO15]		= "Wyjœcie Serw kan.15";
+	m_strNazwyZmiennychTele[TELEID_SERWO16]		= "Wyjœcie Serw kan.16";
+
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";	//wartoœæ zadana regulatora sterowania przechyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WYJ]		= "Wy PID przechyl";	//wyjœcie regulatora sterowania przechyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_P]		= "Wy P przechylenia";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_I]		= "Wy I przechylenia";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_D]		= "Wy D przechylenia";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WYJ]		= "Wy PID pr.k¹t.prze";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ przechylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_P]	= "Wy P pr.k¹t.prze";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_I]	= "Wy I pr.k¹t.prze";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_D]	= "Wy D pr.k¹t.prze";	//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WZAD]		= "Wart.zadana poch";	//wartoœæ zadana regulatora sterowania pochyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WYJ]		= "Wy PID pochylenia";	//wyjœcie regulatora sterowania pochyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_P]		= "Wy P pochylenia";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_I]		= "Wy I pochylenia";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_D]		= "Wy D pochylenia";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WYJ]		= "Wy PID pr.k¹t.poch";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_P]	= "Wy P pr.k¹t.poch";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_I]	= "Wy I pr.k¹t.poch";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_D]	= "Wy D pr.k¹t.poch";	//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WZAD]		= "Wart.zadana odch";	//wartoœæ zadana regulatora sterowania odchyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WYJ]		= "Wy PID odchylenia";	//wyjœcie regulatora sterowania odchyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_P]		= "Wy P odchylenia";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_I]		= "Wy I odchylenia";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_D]		= "Wy D odchylenia";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WYJ]		= "Wy PID pr.k¹t.odch";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ odchylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_P]	= "Wy P pr.k¹t.odch";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_I]	= "Wy I pr.k¹t.odch";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_D]	= "Wy D pr.k¹t.odch";	//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WZAD]		= "Wart.zadana wysoko";	//wartoœæ zadana regulatora sterowania wysokoœci¹
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WYJ]		= "Wy PID wysokoœci";	//wyjœcie regulatora sterowania wysokoœci¹
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_P]		= "Wy P wysokoœci";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_I]		= "Wy I wysokoœci";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_D]		= "Wy D wysokoœci";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WYJ]		= "Wy PID pr.zm.wysoko";	//wyjœcie regulatora sterowania prêdkoœci¹ zmiany wysokoœci
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_P]	= "Wy P pr.zm.wysoko";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_I]	= "Wy I pr.zm.wysoko";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_D]	= "Wy D pr.zm.wysoko";	//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WZAD]		= "Wart.zadana naw.N";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WYJ]		= "Wy PID nawigacji N";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_P]		= "Wy P nawigacji N";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_I]		= "Wy I  nawigacji N";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_D]		= "Wy D  nawigacji N";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WYJ]		= "Wy PID pr.nawig.N";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_P]	= "Wy P prêd.nawig.N";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_I]	= "Wy I prêd.nawig.N";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_D]	= "Wy D prêd.nawig.N";	//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WZAD]		= "Wart.zadana naw.E";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WYJ]		= "Wy PID nawigacji E";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_P]		= "Wy P nawigacji E";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_I]		= "Wy I  nawigacji E";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_D]		= "Wy D  nawigacji E";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WYJ]		= "Wy PID pr.nawig.E";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";	//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_D]	= "Wy D prêd.nawig.E";	//wyjœcie cz³onu D
 }
 
 
@@ -684,21 +744,31 @@ uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8
 // [i] chRozmiar - rozmiar tablicy
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
+uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[1];
+	uint8_t chDaneWychodzace[2];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+	uint8_t chLiczbaRamek = ceil((float)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint16_t sOdebranoLacznie = 0;
 
-	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
-	chDaneWychodzace[0] = chRozmiar;
+	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
-	if (chErr == ERR_OK)
+	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE (64)
+	for (int n = 0; n < chLiczbaRamek; n++)
 	{
-		ASSERT(chOdebrano/2 == chRozmiar);
-		for (uint8_t n = 0; n < chRozmiar; n++)
-			*(sOKres + n) = chDanePrzychodzace[2*n+0] + chDanePrzychodzace[2 * n + 1] * 0x100;
+		if ((sRozmiar - sOdebranoLacznie) > OKRESOW_TELEMETRII_W_RAMCE)
+			chDaneWychodzace[0] = OKRESOW_TELEMETRII_W_RAMCE;
+		else
+			chDaneWychodzace[0] = sRozmiar - sOdebranoLacznie;			//rozmiar
+		chDaneWychodzace[1] = n * OKRESOW_TELEMETRII_W_RAMCE;	//przesuniêcie,czyli czytaj od tego indeksu
+		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 2, chDanePrzychodzace, &chOdebrano);
+		if (chErr == ERR_OK)
+		{
+			for (uint8_t m = 0; m < chOdebrano/2; m++)
+				*(sOKres + n * OKRESOW_TELEMETRII_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
+			sOdebranoLacznie += chOdebrano/2;
+		}		
 	}
 	return chErr;
 }
@@ -706,29 +776,48 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Zapisuje do APL listê okresów dla wszystkich zmiennych telemetrycznych w formacie m³odszy przodem
+// Zapisuje do APL listê okresów dla zmiennych telemetrycznych w formacie m³odszy przodem
+// Dane s¹ zaspisywane we Flash dostêpny dla CM7, zapsuje siê w paczkach 32 bajtowych, gdzie nag³ówek paczki i suma kontrolna zajmuj¹ 2 bajty,
+// wiêc do efektywnego u¿ycia jest 30 bajtów, czyli 15 okresów. Dane nale¿y wysy³ac paczkami o rozmiarze  podzielnym przez 15, tak aby 
+// nie by³o problemu polegaj¹cego na tym ¿e czêœæ danych z koñca pierwszej i pocz¹tku drugiej ramki mai³a by byæ zapisana w jednej paczce.
+// To bardzo utrudni³o by zarz¹dzanie danymi, wiêc porz¹dek trzeba zrobiæ ju¿ tutaj wysy³ajac liczê danych podzieln¹ przez 15 czyli np 120 zmiennych -> 240 bajtów
 // parametry:
 // [i] chOKres - wskaŸnik na tablicê z okresem
-// [i] chRozmiar - rozmiar tablicy
+// [i] sRozmiar - rozmiar tablicy, czyli liczba okresów do zapisania
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint8_t chRozmiar)
+uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[2*LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	uint8_t chDaneWychodzace[ROZM_DANYCH_UART];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint16_t sTemp;
+	uint8_t chLiczbaRamek = ceil(sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chRozmiar;
+	uint16_t sDoZapisu = sRozmiar;
 
+	ASSERT(sRozmiar <= LICZBA_RAMEK_TELEMETR * OKRESOW_TELEMETRII_W_RAMCE);
 
-	ASSERT(chRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
-
-	for (uint8_t n = 0; n < chRozmiar; n++)
+	for (int n = 0; n < chLiczbaRamek; n++)
 	{
-		sTemp = *(sOKres + n);
-		chDaneWychodzace[2 * n + 0] = (uint8_t)(sTemp & 0x00FF);
-		chDaneWychodzace[2 * n + 1] = (uint8_t)((sTemp & 0xFF00) >> 8);		
-	}
+		//na pocz¹tku wyœlij indeks pierwszej zmiennej
+		chDaneWychodzace[0] = (uint8_t) ((n* OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);
+		chDaneWychodzace[1] = (uint8_t)(((n* OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
 
+		//okreœl iloœæ danych do zapisu
+		if (sDoZapisu > OKRESOW_TELEMETRII_W_RAMCE)
+			chRozmiar = OKRESOW_TELEMETRII_W_RAMCE;
+		else
+			chRozmiar = sDoZapisu;
+
+		//potem wyœlij kolejne zmienne
+		for (uint8_t m = 0; m < chRozmiar; m++)
+		{
+			sTemp = *(sOKres + m);
+			chDaneWychodzace[2 * m + 2] = (uint8_t)(sTemp & 0x00FF);
+			chDaneWychodzace[2 * m + 3] = (uint8_t)((sTemp & 0xFF00) >> 8);
+		}
+	}
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2*chRozmiar, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }

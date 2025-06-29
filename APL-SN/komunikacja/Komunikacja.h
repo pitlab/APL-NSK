@@ -45,8 +45,8 @@ public:
 	uint8_t SkasujSektorFlash(uint32_t nAdresPamieci);
 	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);
 	uint8_t CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8_t chRozmiar);
-	uint8_t CzytajOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
-	uint8_t ZapiszOkresTelemetrii(uint16_t* sOKres, uint8_t chRozmiar);
+	uint8_t CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar);
+	uint8_t ZapiszOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar);
 
 	uint8_t ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);

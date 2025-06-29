@@ -377,8 +377,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 			if (bRamkaTelemetrii)
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);				
-				//zbierz dane ramki do uporz¹dkowanejstruktury
-				for (x = 0; x < MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
+				//zbierz dane ramki do uporz¹dkowanej struktury
+				for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
 					sDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
 				nLicznik = 0;
 				sDaneTele.chZnakCzasu = m_chZnakCzasu;

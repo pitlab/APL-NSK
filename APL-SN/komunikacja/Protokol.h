@@ -36,7 +36,7 @@ public:
 	{
 		float fMin = 0;
 		float fMax = 0;
-	} m_stEkstremaTelemetrii[MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	} m_stEkstremaTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	
 	
 
