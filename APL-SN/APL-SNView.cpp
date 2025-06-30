@@ -217,12 +217,13 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 {
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
 	ASSERT_VALID(pRenderTarget);
+	CAPLSNDoc* pDoc = GetDocument();
 	//int nGora, nDol;
 	int nLiczbaWykresow;
 	int nIdZmiennej;
 	float fStartLegendy;
 	float fMinWykresu = 0.0f, fMaxWykresu = 0.0f;
-	float fMin1, fMin2, fMax1, fMax2;	//ekstrema dwóch pierwszych wykresów
+	float fMinLewy, fMinPrawy, fMaxLewy, fMaxPrawy;	//ekstrema dwóch pierwszych wykresów
 	CRect oknoGrupy, OknoWykresu;
 	GetClientRect(oknoGrupy);
 	OknoWykresu = oknoGrupy;
@@ -231,13 +232,12 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	pRenderTarget->FillRectangle(oknoGrupy, m_pLinearGradientBrush);
 	float fSkalaX = m_fZoomPoziomo;
 	float fSkalaY = (float)OknoWykresu.bottom / 40.0f * m_fZoomPionowo;
-	float fPoziomZera, fPoziomZera1, fPoziomZera2;
+	float fPoziomZera, fPoziomZeraLewy, fPoziomZeraPrawy;
 
 	//rysowanie wykresów telemetrii
-	if (m_bRysujTelemetrie || m_bRysujLog)
+	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)
 	{
 		m_bRysujTelemetrie = FALSE;
-		//m_bRysujLog = FALSE;
 		OknoWykresu.left = MIEJSCE_PRZED_WYKRESEM;
 		OknoWykresu.right -= MIEJSCE_PRZED_WYKRESEM;
 
@@ -246,7 +246,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		OknoWykresu.top = MIEJSCE_MIEDZY_WYKRESAMI;
 		for (int g = 0; g < nLiczbaGrupWykresow; g++)
 		{
-			fMin1 = fMax1 = fPoziomZera1 = fMin2 = fMax2 = fPoziomZera2 = 0.0f;;
+			fMinLewy = fMaxLewy = fPoziomZeraLewy = fMinPrawy = fMaxPrawy = fPoziomZeraPrawy = 0.0f;;
 			fStartLegendy = (float)(OknoWykresu.left + 5);	//wspólrzędne x początku legendy, będą zwiększane w każdej iteracji aby opisy nie nachodziły na siebie
 			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;			
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
@@ -257,15 +257,25 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-					if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
-						fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
-					if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
-						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;					
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					{
+						if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
+							fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
+						if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
+							fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
+					}
+					else               //log
+					{
+						if (fMinWykresu > pDoc->m_vLog[nIdZmiennej].fMin)
+							fMinWykresu = pDoc->m_vLog[nIdZmiennej].fMin;
+						if (fMaxWykresu < pDoc->m_vLog[nIdZmiennej].fMax)
+							fMaxWykresu = pDoc->m_vLog[nIdZmiennej].fMax;
+					}
 				}
-				fMin1 = fMin2 = fMinWykresu;
-				fMax1 = fMax2 = fMaxWykresu;
+				fMinLewy = fMinPrawy = fMinWykresu;
+				fMaxLewy = fMaxPrawy = fMaxWykresu;
 				fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-				fPoziomZera1 = fPoziomZera2 = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
+				fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
@@ -281,30 +291,39 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			}	
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
 			{
-				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
 				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
 					fMinWykresu = fMaxWykresu = 0.0f;
-					if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
-						fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
-					if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
-						fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					{
+						if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
+							fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
+						if (fMaxWykresu < getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax)
+							fMaxWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMax;
+					}
+					else            //log
+					{
+						if (fMinWykresu > pDoc->m_vLog[nIdZmiennej].fMin)
+							fMinWykresu = pDoc->m_vLog[nIdZmiennej].fMin;
+						if (fMaxWykresu < pDoc->m_vLog[nIdZmiennej].fMax)
+							fMaxWykresu = pDoc->m_vLog[nIdZmiennej].fMax;
+					}
 						
 					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
 					fPoziomZera = (float)OknoWykresu.bottom - (fSkalaY * (float)fabsf(fMinWykresu));					
-					if (w == 0)
+					if (w == 0)	//skala lewa dla wykresu 1
 					{
-						fMin1 = fMinWykresu;
-						fMax1 = fMaxWykresu;
-						fPoziomZera1 = fPoziomZera;
+						fMinLewy = fMinWykresu;
+						fMaxLewy = fMaxWykresu;
+						fPoziomZeraLewy = fPoziomZera;
 					}
-					if (w == 1)
+					if (w == 1)	//skala prawa dla wykresu 2
 					{
-						fMin2 = fMinWykresu;
-						fMax2 = fMaxWykresu;
-						fPoziomZera2 = fPoziomZera;
+						fMinPrawy = fMinWykresu;
+						fMaxPrawy = fMaxWykresu;
+						fPoziomZeraPrawy = fPoziomZera;
 					}					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
@@ -317,7 +336,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 			}
 			fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
-			RysujOknoGrupyWykresow(OknoWykresu, fPoziomZera1, fPoziomZera2, fMin1, fMax1, fMin2, fMax2, pRenderTarget, m_pBrushOsiWykresu);
+			RysujOknoGrupyWykresow(OknoWykresu, fPoziomZeraLewy, fPoziomZeraPrawy, fMinLewy, fMaxLewy, fMinPrawy, fMaxPrawy, pRenderTarget, m_pBrushOsiWykresu);
 			OknoWykresu.top = OknoWykresu.bottom + MIEJSCE_MIEDZY_WYKRESAMI;
 		}		
 	}
@@ -338,24 +357,23 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
-
 	CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
-		m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
+		m_nIloscDanychWykresu = (int)pDoc->m_vLog[nIndeksZmiennej].vfWartosci.size();
 		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
-		float fSkalaX = m_fZoomPoziomo;
-		float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		//pktfPoczatek.x = (float)okno.left;
-		pktfPoczatek.x = (float)okno.left + fHscroll;
-		pktfPoczatek.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
+		//float fSkalaX = m_fZoomPoziomo;
+		//float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
+		//pktfPoczatek.x = (float)okno.left + fHscroll;
+		pktfPoczatek.x = (float)okno.left;
+		pktfPoczatek.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
 		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
-			pktfKoniec.x = (float)(n - m_nBiezacyScrollPoziomo) * fSkalaX;
-			pktfKoniec.y = (float)(okno.bottom / 2 + m_nVscroll) - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
+			pktfKoniec.x = (float)(okno.left + (n - m_nBiezacyScrollPoziomo) * fSkalaX);
+			pktfKoniec.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresu);
 			pktfPoczatek = pktfKoniec;
 		}
@@ -404,6 +422,10 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 	fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
 	if (!fZmienna)
 		return;
+
+	//Znajdź najwiekszy rozmiar wykresu potrzebny do ustawienia poziomego scrollbara
+	if (vDaneTele.size() > m_nIloscDanychWykresu)
+		m_nIloscDanychWykresu = (int)vDaneTele.size();
 
 	pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
 
@@ -920,15 +942,14 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
 
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
-	m_nSzerokoscOkna = cx;
+	m_nSzerokoscOkna = cx - 2 * MIEJSCE_PRZED_WYKRESEM;
 	
-	CAPLSNDoc* pDoc = GetDocument();
+	/*CAPLSNDoc* pDoc = GetDocument();
 	if (pDoc)
 	{
 		if (pDoc->m_vLog.size())
 			m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
-	}
+	}*/
 
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
 	UstawScrollOdWidoku();

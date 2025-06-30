@@ -67,7 +67,6 @@ protected:
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
 	BOOL m_bRysujPasekPostepu;
 	BOOL m_bRysujTelemetrie;
-	BOOL m_bRysujLog;
 	BOOL m_bOknoGotowe;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;

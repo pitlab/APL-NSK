@@ -35,6 +35,16 @@ protected:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedMfccolor();
+	afx_msg void OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+
 	BOOL m_bPrzeciaganieMysza{FALSE};
 	BOOL m_bKursorPrzeciaganie{ FALSE };
 	CPoint m_cpPozycjaMyszy;	
@@ -45,13 +55,5 @@ public:
 	DrzewoWykresow m_cDrzewoWykresow;
 	COleDropTarget m_DropTarget;
 	CMFCColorButton m_ctrlKolor;
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult);	
-	afx_msg void OnBnClickedMfccolor();
-	afx_msg void OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult);
+	BOOL m_bZawieraLog;
 };

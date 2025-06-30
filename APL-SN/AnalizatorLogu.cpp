@@ -39,6 +39,8 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			//szukaj kolejnych zmiennych zakoñczonych œrednikiem lub CR
 			if ((chBufor[n] == ';') || (chBufor[n] == 0x0D))
 			{
+				stZmiennaLogu.fMin = 0.0f;
+				stZmiennaLogu.fMax = 0.0f;
 				vLogu.push_back(stZmiennaLogu);
 				stZmiennaLogu.strNazwaZmiennej = "";		//wyczyœæ nazwê zmiennej
 				m_chIndeksNazwy = 0;
@@ -68,6 +70,12 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 				else
 					fWartosc = (float)atof((const char*)m_chZmienna);
 				vLogu[m_chIndeksZmiennejLogu].vfWartosci.push_back(fWartosc);
+
+				//znajdŸ ekstrema zmiennych, bêd¹ potrzebne do rysowania wykresów
+				if (fWartosc < vLogu[m_chIndeksZmiennejLogu].fMin)
+					vLogu[m_chIndeksZmiennejLogu].fMin = fWartosc;
+				if (fWartosc > vLogu[m_chIndeksZmiennejLogu].fMax)
+					vLogu[m_chIndeksZmiennejLogu].fMax = fWartosc;
 				m_chIndeksZmiennejLogu++;
 				m_chIndeksZmiennej = 0;
 			}

@@ -13,9 +13,10 @@ public:
 	struct stZmiennaLogu_t 
 	{
 		uint8_t chIndeksZmiennej;
-		//uint8_t chNazwaZmiennej[DLUGOSC_NAZWY];
 		CString strNazwaZmiennej;
 		std::vector <float> vfWartosci;
+		float fMin;		//minimalna wartoœæ zmiennej
+		float fMax;		//maksymalna...
 	} ;
 
 	

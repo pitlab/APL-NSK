@@ -13,6 +13,7 @@ IMPLEMENT_DYNAMIC(KonfiguracjaWyresow, CDialogEx)
 
 KonfiguracjaWyresow::KonfiguracjaWyresow(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_KONFIG_WYKRESOW, pParent)
+	, m_bZawieraLog(FALSE)
 {
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
@@ -79,6 +80,7 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 	{
 		str.Delete(0, 3);	//skasuj 3 pierwsze znaki po to aby została sama cyfra
 		stZmienna.chZrodloZmiennej = (uint8_t)_ttoi(str);
+		m_bZawieraLog = TRUE;
 	}
 		
 	stZmienna.fMin = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, LD_MIN));
