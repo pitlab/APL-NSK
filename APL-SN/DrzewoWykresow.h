@@ -10,7 +10,8 @@ public:
 	HTREEITEM m_hGlownyWezel;	//g³ówny pieñ drzewa
 	struct stZmienna_t
 	{
-		uint8_t chIdZmiennej = 0;
+		uint16_t sIdZmiennej = 0;
+		uint8_t chZrodloZmiennej = 0;	//0 = telemetria lub jeden z logów 1..n
 		CString strNazwa = _T("");
 		float fMin = 0.0f;;
 		float fMax = 0.0f;	
@@ -49,6 +50,5 @@ public:
 
 private:
 	D2D1::ColorF m_cKolorD2D1;
-	//stZmienna_t m_stZmienna;
 };
 

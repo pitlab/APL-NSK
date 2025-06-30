@@ -192,12 +192,13 @@ void DrzewoWykresow::OnLButtonUp(UINT nFlags, CPoint point)
 		if (vGrupaWykresow[n].hGalazWykresow == hGalaz)
 		{
 			if (vGrupaWykresow[n].chTypWykresu == WYKRES_OSOBNA_SKALA)
-				hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 3, 4, hGalaz);
+				hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 3, 4, hGalaz);	//3 i 4 to indeksy obrazków 
 			else
 				hWykres = InsertItem(m_stZmiennaNowegoWykresu.strNazwa, 5, 6, hGalaz);
 			stZmienna.hWykres = hWykres;
-			stZmienna.chIdZmiennej = m_stZmiennaNowegoWykresu.chIdZmiennej;
+			stZmienna.sIdZmiennej = m_stZmiennaNowegoWykresu.sIdZmiennej;
 			stZmienna.strNazwa = m_stZmiennaNowegoWykresu.strNazwa;
+			stZmienna.chZrodloZmiennej = m_stZmiennaNowegoWykresu.chZrodloZmiennej;
 			stZmienna.cKolorD2D1 = m_cKolorD2D1;
 			
 			vGrupaWykresow[n].vZmienne.push_back(stZmienna);

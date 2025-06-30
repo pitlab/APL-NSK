@@ -3,6 +3,15 @@
 #include "APL-SNDoc.h"
 #include "afxcolorpickerctrl.h"
 
+//definicje kolumn listy Danych
+#define LD_NAZWA	0
+#define LD_ID		1
+#define LD_ZRODLO	2
+#define LD_LPOMIAR	3
+#define LD_MIN		4
+#define LD_MAX		5
+
+
 // Okno dialogowe KonfiguracjaWyresow
 class KonfiguracjaWyresow : public CDialogEx
 {

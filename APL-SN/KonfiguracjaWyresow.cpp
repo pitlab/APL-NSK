@@ -69,14 +69,24 @@ void KonfiguracjaWyresow::OnLvnBegindragListaDanych(NMHDR* pNMHDR, LRESULT* pRes
 	DrzewoWykresow::stZmienna_t stZmienna;
 	UpdateData(TRUE);
 	int nIndeksZmiennej = m_cListaDanych.GetSelectionMark();
-	stZmienna.strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, 0);
-	stZmienna.chIdZmiennej = (uint8_t)_ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, 1));
-	stZmienna.fMin = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 3));
-	stZmienna.fMax = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, 4));
+	stZmienna.strNazwa = m_cListaDanych.GetItemText(nIndeksZmiennej, LD_NAZWA);
+	stZmienna.sIdZmiennej = (uint16_t)_ttoi(m_cListaDanych.GetItemText(nIndeksZmiennej, LD_ID));
+	CString str = m_cListaDanych.GetItemText(nIndeksZmiennej, LD_ZRODLO);
+	if (str == "Tele")
+		stZmienna.chZrodloZmiennej = 0;
+	else
+	if (str.GetAt(0) == 'L')	//czy pierwszy znak wskazuje na "Log"
+	{
+		str.Delete(0, 3);	//skasuj 3 pierwsze znaki po to aby została sama cyfra
+		stZmienna.chZrodloZmiennej = (uint8_t)_ttoi(str);
+	}
+		
+	stZmienna.fMin = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, LD_MIN));
+	stZmienna.fMax = (float)_ttof(m_cListaDanych.GetItemText(nIndeksZmiennej, LD_MAX));
 	COLORREF cKolor = m_ctrlKolor.GetColor();
 	stZmienna.cKolorD2D1 = (D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f));
 	
-	if ((stZmienna.strNazwa) && (stZmienna.chIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
+	if ((stZmienna.strNazwa) && (stZmienna.sIdZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH))
 	{
 		m_cDrzewoWykresow.UstawDaneNowegoWykresu(stZmienna);
 		m_bKursorPrzeciaganie = TRUE;
@@ -99,12 +109,13 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	int nLicznikZmiennych = 0;
 	int nLiczbaZmiannychLogu;
 	float fZmienna, fMin, fMax;
-	
-	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 120);
-	m_cListaDanych.InsertColumn(1, _T("ID"), LVCFMT_CENTER, 30);
-	m_cListaDanych.InsertColumn(2, _T("Pomiarów"), LVCFMT_CENTER, 60);
-	m_cListaDanych.InsertColumn(3, _T("Min"), LVCFMT_CENTER, 50);
-	m_cListaDanych.InsertColumn(4, _T("Max"), LVCFMT_CENTER, 50);
+
+	m_cListaDanych.InsertColumn(LD_NAZWA, _T("Nazwa zmiennej"), LVCFMT_CENTER, 120);
+	m_cListaDanych.InsertColumn(LD_ID, _T("ID"), LVCFMT_CENTER, 30);
+	m_cListaDanych.InsertColumn(LD_ZRODLO, _T("Źrodlo"), LVCFMT_CENTER, 40);
+	m_cListaDanych.InsertColumn(LD_LPOMIAR, _T("Pomiarów"), LVCFMT_CENTER, 60);
+	m_cListaDanych.InsertColumn(LD_MIN, _T("Min"), LVCFMT_CENTER, 50);
+	m_cListaDanych.InsertColumn(LD_MAX, _T("Max"), LVCFMT_CENTER, 50);
 	//czy są jakieś dane?
 	nLiczbaDanych = (int)getProtokol().m_vDaneTelemetryczne.size();
 	if (nLiczbaDanych)
@@ -132,13 +143,14 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 			{
 				m_cListaDanych.InsertItem(nLicznikZmiennych, getKomunikacja().m_strNazwyZmiennychTele[n]);	
 				strNapis.Format(_T("%d"), n);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);	//ID
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_ID, strNapis);			//ID
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_ZRODLO, _T("Tele"));	//Źródło
 				strNapis.Format(_T("%d"), nRozmiarZmiennej);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//liczba pomiarów
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_LPOMIAR, strNapis);	//liczba pomiarów
 				strNapis.Format(_T("%.3f"), fMin);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//min
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_MIN, strNapis);		//min
 				strNapis.Format(_T("%.3f"), fMax);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//max
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_MAX, strNapis);		//max
 				nLicznikZmiennych++;
 			}
 		}
@@ -149,17 +161,21 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	POSITION Pos = AfxGetApp()->GetFirstDocTemplatePosition();
 	CDocTemplate* pDocTmpl = AfxGetApp()->GetNextDocTemplate(Pos);
 	POSITION PosDoc = pDocTmpl->GetFirstDocPosition();	
-	if (PosDoc != NULL)
+	CAPLSNDoc* pDoc;
+	uint8_t chNumerLogu = 1;	//0 = telemetria, log zaczyna się od 1
+
+	while (PosDoc != NULL)		//analizuj wszystkie otwarte dokumenty
 	{
-		CAPLSNDoc* pDoc = (CAPLSNDoc*)pDocTmpl->GetNextDoc(PosDoc);
+		pDoc = (CAPLSNDoc*)pDocTmpl->GetNextDoc(PosDoc);
 		nLiczbaZmiannychLogu = (int)pDoc->m_vLog.size();
+		
 
 		for (int n = 0; n < nLiczbaZmiannychLogu; n++)
 		{
 			//policz niezerowe dane dla tej zmiennej
 			nRozmiarZmiennej = 0;
 			fMin = fMax = 0.0f;
-			nLiczbaDanych = pDoc->m_vLog[n].vfWartosci.size();
+			nLiczbaDanych = (int)pDoc->m_vLog[n].vfWartosci.size();
 			for (int x = 0; x < nLiczbaDanych; x++)
 			{
 				fZmienna = pDoc->m_vLog[n].vfWartosci[x];
@@ -175,21 +191,21 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 
 			if (nRozmiarZmiennej)
 			{
-				m_cListaDanych.InsertItem(n, pDoc->m_vLog[n].strNazwaZmiennej);
-				strNapis.Format(_T("%d"), n);
+				m_cListaDanych.InsertItem(nLicznikZmiennych, pDoc->m_vLog[n].strNazwaZmiennej);
+				strNapis.Format(_T("%d"), nLicznikZmiennych);		
 				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);	//ID
+				strNapis.Format(_T("Log%d"), chNumerLogu);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//źródło
 				strNapis.Format(_T("%d"), nRozmiarZmiennej);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//liczba pomiarów
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//liczba pomiarów
 				strNapis.Format(_T("%.3f"), fMin);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//min
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//min
 				strNapis.Format(_T("%.3f"), fMax);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//max
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 5, strNapis);	//max
 				nLicznikZmiennych++;
 			}
-			//nRozmiarZmiennej = (int)pDoc->m_vLog[n].vfWartosci.size();
-			//strNapis.Format(_T("%d"), nRozmiarZmiennej);
-			//m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
 		}
+		chNumerLogu++;
 	}
 
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TVS_SHOWSELALWAYS;
