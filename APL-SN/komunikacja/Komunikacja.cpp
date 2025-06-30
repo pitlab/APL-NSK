@@ -749,7 +749,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[2];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-	uint8_t chLiczbaRamek = ceil((float)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil((float)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
 	uint16_t sOdebranoLacznie = 0;
 
 	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
@@ -792,7 +792,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 	uint8_t chDaneWychodzace[ROZM_DANYCH_UART];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint16_t sTemp;
-	uint8_t chLiczbaRamek = ceil(sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil(sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
 	uint8_t chRozmiar;
 	uint16_t sDoZapisu = sRozmiar;
 
@@ -808,7 +808,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 		if (sDoZapisu > OKRESOW_TELEMETRII_W_RAMCE)
 			chRozmiar = OKRESOW_TELEMETRII_W_RAMCE;
 		else
-			chRozmiar = sDoZapisu;
+			chRozmiar = (uint8_t)sDoZapisu;
 
 		//potem wyœlij kolejne zmienne
 		for (uint8_t m = 0; m < chRozmiar; m++)

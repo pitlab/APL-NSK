@@ -12,12 +12,10 @@ public:
 
 	struct stZmiennaLogu_t 
 	{
-		uint8_t chNazwaZmiennej[DLUGOSC_NAZWY];
 		uint8_t chIndeksZmiennej;
-		uint8_t chAdresWrona;	//identyfikator urz¹dzenia z którego pochodzi log
-		uint8_t chNazwaWrona[DLUGOSC_NAZWY];
-		std::vector <float> vfWartosci;
+		//uint8_t chNazwaZmiennej[DLUGOSC_NAZWY];
 		CString strNazwaZmiennej;
+		std::vector <float> vfWartosci;
 	} ;
 
 	

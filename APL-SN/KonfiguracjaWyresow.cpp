@@ -97,6 +97,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	int nRozmiarZmiennej;
 	int nLiczbaDanych;
 	int nLicznikZmiennych = 0;
+	int nLiczbaZmiannychLogu;
 	float fZmienna, fMin, fMax;
 	
 	m_cListaDanych.InsertColumn(0, _T("Nazwa zmiennej"), LVCFMT_CENTER, 120);
@@ -142,30 +143,55 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 			}
 		}
 	}
-	/*
-	//do listy dodaj zmiene z logu
-	//AfxGetApp()->GetFirstDocTemplatePosition();
-	//(CAPLSNDoc*) pDoc = CAPLSNDoc::CDocument::GetFirstDocPosition();
+	
+	//do listy dodaj zmiene z logu jeżeli jakiś jest otwarty
+	//https://www.codeproject.com/Tips/5349107/Activate-Document-Window-in-MDI-Application
 	POSITION Pos = AfxGetApp()->GetFirstDocTemplatePosition();
 	CDocTemplate* pDocTmpl = AfxGetApp()->GetNextDocTemplate(Pos);
-	POSITION PosDoc = pDocTmpl->GetFirstDocPosition();
-	//https://www.codeproject.com/Tips/5349107/Activate-Document-Window-in-MDI-Application
+	POSITION PosDoc = pDocTmpl->GetFirstDocPosition();	
 	if (PosDoc != NULL)
 	{
-		CAPLSNDoc* pDoc = pDocTmpl->GetNextDoc(PosDoc);
-		// CDocument* pDoc = pDocTmpl->GetNextDoc(PosDoc);
-		//nLiczbaDanych = (int)GetDocument()->m_vLog.size();
-		nLiczbaDanych = (int)pDoc->m_vLog.size();
+		CAPLSNDoc* pDoc = (CAPLSNDoc*)pDocTmpl->GetNextDoc(PosDoc);
+		nLiczbaZmiannychLogu = (int)pDoc->m_vLog.size();
 
-		for (int n = 0; n < nLiczbaDanych; n++)
+		for (int n = 0; n < nLiczbaZmiannychLogu; n++)
 		{
-			m_cListaDanych.InsertItem(n, pDoc->m_vLog[n].strNazwaZmiennej);
-			nRozmiarZmiennej = pDoc->m_vLog[n].vfWartosci.size();
-			strNapis.Format(_T("%d"), nRozmiarZmiennej);
-			m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
+			//policz niezerowe dane dla tej zmiennej
+			nRozmiarZmiennej = 0;
+			fMin = fMax = 0.0f;
+			nLiczbaDanych = pDoc->m_vLog[n].vfWartosci.size();
+			for (int x = 0; x < nLiczbaDanych; x++)
+			{
+				fZmienna = pDoc->m_vLog[n].vfWartosci[x];
+				if (fZmienna)
+				{
+					nRozmiarZmiennej++;
+					if (fZmienna < fMin)
+						fMin = fZmienna;
+					if (fZmienna > fMax)
+						fMax = fZmienna;
+				}
+			}
+
+			if (nRozmiarZmiennej)
+			{
+				m_cListaDanych.InsertItem(n, pDoc->m_vLog[n].strNazwaZmiennej);
+				strNapis.Format(_T("%d"), n);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);	//ID
+				strNapis.Format(_T("%d"), nRozmiarZmiennej);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//liczba pomiarów
+				strNapis.Format(_T("%.3f"), fMin);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//min
+				strNapis.Format(_T("%.3f"), fMax);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//max
+				nLicznikZmiennych++;
+			}
+			//nRozmiarZmiennej = (int)pDoc->m_vLog[n].vfWartosci.size();
+			//strNapis.Format(_T("%d"), nRozmiarZmiennej);
+			//m_cListaDanych.SetItemText(nLicznikZmiennych, 1, strNapis);
 		}
-	}*/
-	
+	}
+
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TVS_SHOWSELALWAYS;
 	m_cDrzewoWykresow.SetExtendedStyle(dwViewStyle, dwViewStyle);
 
@@ -241,7 +267,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	UINT nFlags = ILC_MASK;
 
 	nFlags |= (theApp.m_bHiColorIcons) ? ILC_COLOR24 : ILC_COLOR4;
-	m_ObrazkiDrzewa.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
+	if (m_ObrazkiDrzewa == NULL)
+		m_ObrazkiDrzewa.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
 	m_ObrazkiDrzewa.Add(&bmp, RGB(255, 0, 0));
 	m_cDrzewoWykresow.SetImageList(&m_ObrazkiDrzewa, TVSIL_NORMAL);
 	return TRUE;  // return TRUE unless you set the focus to a control

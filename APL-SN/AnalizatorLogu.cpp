@@ -22,7 +22,7 @@ CAnalizatorLogu::~CAnalizatorLogu()
 // Parametry:
 //  *chBufor - wskaŸnik na tablicê snaków logu
 //  nRozmiar - rozmiar logu do analizy
-//  vLogu - wektor logu, do którego wpisywane s¹ zdekodowane wartosi
+//  vLogu - wektor logu, do którego wpisywane s¹ zdekodowane wartoœci
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<stZmiennaLogu_t> &vLogu)
@@ -30,6 +30,7 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 	uint8_t chErr = ERR_OK;
 	float fWartosc;
 	stZmiennaLogu_t stZmiennaLogu;
+	m_chIndeksNazwy = 0;
 
 	for (UINT n = 0; n < nRozmiar; n++)
 	{
@@ -39,14 +40,15 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			if ((chBufor[n] == ';') || (chBufor[n] == 0x0D))
 			{
 				vLogu.push_back(stZmiennaLogu);
+				stZmiennaLogu.strNazwaZmiennej = "";		//wyczyœæ nazwê zmiennej
 				m_chIndeksNazwy = 0;
 				m_chIndeksZmiennejLogu++;
 			}
 			else
 			{
 				stZmiennaLogu.chIndeksZmiennej = m_chIndeksZmiennejLogu;
-				stZmiennaLogu.chNazwaZmiennej[m_chIndeksNazwy++] = chBufor[n];
-				stZmiennaLogu.strNazwaZmiennej.Insert(m_chIndeksNazwy, chBufor[n]);
+				stZmiennaLogu.strNazwaZmiennej.Insert(m_chIndeksNazwy, chBufor[n]);				
+				m_chIndeksNazwy++;
 			}
 
 			if (chBufor[n] == 0x0A)	//LF - koniec wiersza nag³ówka
@@ -61,7 +63,10 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			if (chBufor[n] == ';')
 			{
 				m_chZmienna[m_chIndeksZmiennej++] = 0;	//zero terminuj¹ce liczbê
-				fWartosc = (float)atof((const char*)m_chZmienna);
+				if (m_chIndeksZmiennejLogu == 0)	//czas hh:mm:ss.ss interpretuj jako liczbê sekund od pocz¹tku doby
+					fWartosc = 3600 * atoi((const char*)m_chZmienna) + 60* atoi((const char*)(m_chZmienna + 3)) + (float)atof((const char*)(m_chZmienna + 6));
+				else
+					fWartosc = (float)atof((const char*)m_chZmienna);
 				vLogu[m_chIndeksZmiennejLogu].vfWartosci.push_back(fWartosc);
 				m_chIndeksZmiennejLogu++;
 				m_chIndeksZmiennej = 0;
