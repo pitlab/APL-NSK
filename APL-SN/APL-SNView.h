@@ -83,6 +83,7 @@ protected:
 	static const int SCROLL_UNIT = 1 << 24;
 	int m_nIloscDanychWykresu;
 	int m_nSzerokoscOkna;
+	int m_nSzerokoscWykresu;
 	int m_nMaxScrollPoziomo;
 	int m_nBiezacyScrollPoziomo;
 
