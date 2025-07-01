@@ -67,8 +67,12 @@
 #define PK_WYSLIJ_ODCZYT_FRAM	21	//pobiera odczytane wcześniej dane lub zwraca ERR_PROCES_TRWA
 #define PK_REKONFIG_SERWA_RC	22	//wykonuje ponowną konfigurację wejść i wyjść RC po zmianie zawartosci FRAM
 
-#define PK_ILOSC_POLECEN		22	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
-#define PK_TELEMETRIA			99	//ramka telemetryczna
+#define PK_ILOSC_POLECEN		23	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
+
+#define PK_TELEMETRIA1			96	//ramka telemetryczna 1
+#define PK_TELEMETRIA2			97	//ramka telemetryczna 2
+#define PK_TELEMETRIA3			98	//ramka telemetryczna 3 - na razie nie używane
+#define PK_TELEMETRIA4			99	//ramka telemetryczna 4 - na razie nie używane
 
 
 

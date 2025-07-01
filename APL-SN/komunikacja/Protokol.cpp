@@ -360,7 +360,8 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 {
 	unsigned int x, y, n;
-	int nIndeks, nLicznik;
+	int nIndeksZmiennej;		//indeks zmiennej liczony z bitów obecnoœci zmiennej w ramce
+	int nNumerZmiennejwRamce;	//para bajtów przenosz¹ca wartoœæ zmiennej
 	uint8_t chBity,  chErr;
 	BOOL bRamkaTelemetrii;
 	_Ramka sRamka;
@@ -373,31 +374,31 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
-			bRamkaTelemetrii = (BOOL)(m_chPolecenie == PK_TELEMETRIA);
+			bRamkaTelemetrii = (BOOL)((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4));
 			if (bRamkaTelemetrii)
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);				
 				//zbierz dane ramki do uporz¹dkowanej struktury
 				for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
 					sDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
-				nLicznik = 0;
+				nNumerZmiennejwRamce = 0;
 				sDaneTele.chZnakCzasu = m_chZnakCzasu;
 				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
 				{
 					chBity = m_chDaneWy[x];
 					for (y = 0; y < 8; y++)
 					{
-						nIndeks = y + x * 8;
+						nIndeksZmiennej = y + x * 8;
 						if (chBity & (0x01 << y))
 						{
-							fZmienna = Char2Float16(&m_chDaneWy[2 * nLicznik + LICZBA_BAJTOW_ID_TELEMETRII]);
-							sDaneTele.dane[nIndeks] = fZmienna;
+							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
+							sDaneTele.dane[nIndeksZmiennej] = fZmienna;
 							//znajdŸ ekstrema potrzebne do skalowania wykresów
-							if (fZmienna > m_stEkstremaTelemetrii[nIndeks].fMax)
-								m_stEkstremaTelemetrii[nIndeks].fMax = fZmienna;
-							if (fZmienna < m_stEkstremaTelemetrii[nIndeks].fMin)
-								m_stEkstremaTelemetrii[nIndeks].fMin = fZmienna;
-							nLicznik++;
+							if (fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax)
+								m_stEkstremaTelemetrii[nIndeksZmiennej].fMax = fZmienna;
+							if (fZmienna < m_stEkstremaTelemetrii[nIndeksZmiennej].fMin)
+								m_stEkstremaTelemetrii[nIndeksZmiennej].fMin = fZmienna;
+							nNumerZmiennejwRamce++;
 						}
 					}
 				}
