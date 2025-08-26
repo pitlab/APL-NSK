@@ -97,6 +97,7 @@
 #define IDC_SLID_SZER_ZDJECIA           1007
 #define IDC_SLID_WYS_ZDJECIA            1008
 #define IDC_SLID_ZOOM_ZDJECIA2          1009
+#define IDC_SLID_ZOOM_ZDJECIA           1009
 #define IDC_CHECK_ODWR_PION             1010
 #define IDC_CHECK_ODWR_POZ              1011
 #define IDC_COMBO_TRYB_DIAGNOSTYCZNY    1012
@@ -251,15 +252,20 @@
 #define IDC_EDIT_SREDNICA_SMIGLA_CALE   1123
 #define IDC_COMBO1                      1124
 #define IDC_COMBO2                      1125
+#define IDC_SLID_PRZES_POZIOME          1125
 #define IDC_COMBO3                      1126
+#define IDC_SLIDER2                     1126
+#define IDC_SLID_PRZES_PIONOWE          1126
 #define IDC_COMBO4                      1127
+#define IDC_STATIC_ZOOM                 1127
 #define IDC_COMBO5                      1128
+#define IDC_STATIC_PRZES_POZOME         1128
 #define IDC_COMBO6                      1129
+#define IDC_STATIC_PRZES_PIONOWE        1129
 #define IDC_COMBO7                      1130
 #define IDC_COMBO8                      1131
 #define IDC_COMBO9                      1132
 #define IDC_COMBO_RC1                   1133
-#define IDC_COMBO11                     1134
 #define IDC_COMBO_RC2                   1134
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
@@ -297,7 +303,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        339
 #define _APS_NEXT_COMMAND_VALUE         32814
-#define _APS_NEXT_CONTROL_VALUE         1125
+#define _APS_NEXT_CONTROL_VALUE         1130
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

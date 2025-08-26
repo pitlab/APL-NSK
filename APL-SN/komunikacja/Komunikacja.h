@@ -4,6 +4,7 @@
 #include "polecenia_komunikacyjne.h"
 #include "../Roj.h"
 #include "../Wron.h"
+#include "../UstawieniaKamery.h"
 
 //#define WIELKOSC_ROJU	4
 #define LICZBA_PROB_ZANIM_ZGLOSI_BLAD	10
@@ -39,8 +40,8 @@ public:
 	uint8_t UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t WyslijOK();
 	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
-	uint8_t PobierzKamere(uint8_t* chSzerWy, uint8_t* chWysWy, uint8_t* chSzerWe, uint8_t* chWysWe, uint8_t* chTrybDiagn, uint8_t* chFlagi);
-	uint8_t UstawKamere(uint8_t chSzerWy, uint8_t chWysWy, uint8_t chSzerWe, uint8_t chWysWe, uint8_t chTrybDiagn, uint8_t chFlagi);
+	uint8_t PobierzKamere(st_KonfKam* stKonfig);
+	uint8_t UstawKamere(st_KonfKam* stKonfig);
 	uint8_t ZapiszFlash(uint32_t nAdresPamieci);
 	uint8_t SkasujSektorFlash(uint32_t nAdresPamieci);
 	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);

@@ -90,7 +90,7 @@ CProtokol::~CProtokol()
 // [we] chTypPortu - okreúla rodzaj portu komunikacyjnego [UART, Ethernet, USB]
 // [we] nNumerPortu - identyfikator portu [nr COM dla UART, gniazdo dla ethernet]
 // [we] nPredkosc - prÍdkoúÊ transmisji dla UART
-// [we] pWnd - wskaünik na widok obiektu wywolujπcego
+// [we] pWnd - wskaünik na widok obiektu wywo≥ujπcego
 // zwraca: kod b≥Ídu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd)
@@ -513,10 +513,9 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	int32_t x, iRozmiar, iNumer;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
 	clock_t poczatek, koniec;
-//	std::vector< BinaryFrame > vPrzychodzaceRamki;
 	uint32_t iCzasOczekiwania;
 
-	//zachowaj wskaüniki. Bπdπ potrzebne do retransmisji.
+	//zachowaj wskaüniki. BÍdπ potrzebne do retransmisji.
 	chKopiaDaneWe = chDaneWe;
 	chKopiaRozmiarWe = chRozmiarWe;
 
@@ -552,11 +551,10 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 				nErr = WaitForSingleObject(m_hZdarzenieRamkaPolecenGotowa, iCzasNaRamke);
 				if (nErr == WAIT_TIMEOUT)
 					nErr = GetLastError();	//breakpoint do testowania timeoutu
-
+					//if (nErr == ERROR_IO_PENDING)	//997
 				koniec = clock();
 				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 				TRACE("Czas %d\n", iCzasOczekiwania);
-				//iCzasOczekiwania = (m_Koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 
 				//sprawdü wszystkie odebrane ramki ktÛra z nich ma taki sam TimeStamp jak nadawcza
 				//iRozmiar = (uint32_t)vPrzychodzaceRamki.size();

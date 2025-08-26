@@ -15,7 +15,7 @@
 
 #define ROZM_DANYCH_ETH		1024
 #define ROZM_CIALA_RAMKI	8
-#define TR_TIMEOUT			100		//timeout ramki w ms
+#define TR_TIMEOUT			500		//timeout ramki w ms
 #define TR_PROB_WYSLANIA	5
 
 #define ROZMIAR_RAMKI_UART	254
@@ -83,9 +83,9 @@
 #define SGZ_BLAD		2		//wystapił błąd wykonania zdjecia
 
 //kamera
-#define SKALA_ROZDZ_KAM	16	//proporcja między obrazem zbieranym przez kamerę (HS x VS) a wysyłanym (DVPHO x DVPVO)
-#define MAX_SZER_KAM	2592
-#define MAX_WYS_KAM		1944 
+#define KROK_ROZDZ_KAM	16		//najmnijeszy krok zmiany rozmiaru obrazu o tyle pikseli. Umożliwia wysłanie rozmiaru jako liczby 8-bitowej
+#define MAX_SZER_KAM	2592	//mominalna szerokość przetwornika kamery
+#define MAX_WYS_KAM		1944	//nominalna wysokość przetwornika kamery
 
 //Flagi Ustawien Kamery - numery bitów określających funkcjonalność w UstawieniaKamery.cpp
 #define FUK1_ZDJ_FILM	0x01	//1 = zdjecie, 0 = film

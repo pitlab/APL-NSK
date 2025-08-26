@@ -1,6 +1,5 @@
 ﻿#pragma once
-
-
+#include "UstawieniaKamery.h"
 
 // Okno dialogowe UstawieniaKameryDlg
 
@@ -26,22 +25,30 @@ protected:
 public:
 	afx_msg void OnNMCustomdrawSlidSzerZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSlidWysZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSlidZoomZdjecia2(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSlidZoomZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBnClickedCheckOdwrPoz();
 	afx_msg void OnBnClickedCheckOdwrPion();
 	afx_msg void OnCbnSelchangeComboTrybDiagnostyczny();
 	afx_msg void OnBnClickedOk();
+	int WyslijDoKamery();
+	st_KonfKam m_stKonfKamery;
 	int m_nSzerokoscZdjecia;
 	int m_nWysokoscZdjecia;
 	int m_nPowiekszenieZdjecia;
 	
 	CSliderCtrl m_ctlSzerokoscZdjecia;
 	CSliderCtrl m_ctlWysokoscZdjecia;
-	CButton m_ctlOdwrocPoziomo;
-	BOOL m_bOdwrocPionowo;
-	CComboBox m_ctlTrybDiagnostyczny;
-	CButton m_ctlOdwrocPionowo;
 	CSliderCtrl m_ctlPowiekszenie;
+	CSliderCtrl m_ctlPrzesunieciePoziome;
+	CSliderCtrl m_ctlPrzesunieciePionowe;
+
+	CComboBox m_ctlTrybDiagnostyczny;
+	
 	CString m_StrSzerokosc;
 	CString m_strWysokosc;
+	CString m_strPowiekszenie;
+	BOOL m_bOdwrocPionowo;
+	BOOL m_bOdwrocPoziomo;
+
+	
 };
