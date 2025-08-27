@@ -72,15 +72,15 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS46, m_ctlSerwo14);
 	DDX_Control(pDX, IDC_PROGRESS47, m_ctlSerwo15);
 	DDX_Control(pDX, IDC_PROGRESS48, m_ctlSerwo16);
-	DDX_Control(pDX, IDC_COMBO1, m_ctlTypWyjscia1);
-	DDX_Control(pDX, IDC_COMBO2, m_ctlTypWyjscia2);
-	DDX_Control(pDX, IDC_COMBO3, m_ctlTypWyjscia3);
-	DDX_Control(pDX, IDC_COMBO4, m_ctlTypWyjscia4);
-	DDX_Control(pDX, IDC_COMBO5, m_ctlTypWyjscia5);
-	DDX_Control(pDX, IDC_COMBO6, m_ctlTypWyjscia6);
-	DDX_Control(pDX, IDC_COMBO7, m_ctlTypWyjscia7);
-	DDX_Control(pDX, IDC_COMBO8, m_ctlTypWyjscia8);
-	DDX_Control(pDX, IDC_COMBO9, m_ctlTypWyjscia9_16);
+	DDX_Control(pDX, IDC_COMBO_SERWO1, m_ctlTypWyjscia1);
+	DDX_Control(pDX, IDC_COMBO_SERWO2, m_ctlTypWyjscia2);
+	DDX_Control(pDX, IDC_COMBO_SERWO3, m_ctlTypWyjscia3);
+	DDX_Control(pDX, IDC_COMBO_SERWO4, m_ctlTypWyjscia4);
+	DDX_Control(pDX, IDC_COMBO_SERWO5, m_ctlTypWyjscia5);
+	DDX_Control(pDX, IDC_COMBO_SERWO6, m_ctlTypWyjscia6);
+	DDX_Control(pDX, IDC_COMBO_SERWO7, m_ctlTypWyjscia7);
+	DDX_Control(pDX, IDC_COMBO_SERWO8, m_ctlTypWyjscia8);
+	DDX_Control(pDX, IDC_COMBO_SERWO9, m_ctlTypWyjscia9_16);
 	DDX_Control(pDX, IDC_COMBO_RC1, m_ctlOdbiornikRC1);
 	DDX_Control(pDX, IDC_COMBO_RC2, m_ctlOdbiornikRC2);
 }
@@ -89,15 +89,15 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_RC1, &OdbiornikiRC::OnCbnSelchangeComboRc1)
 	ON_CBN_SELCHANGE(IDC_COMBO_RC2, &OdbiornikiRC::OnCbnSelchangeComboRc2)
-	ON_CBN_SELCHANGE(IDC_COMBO1, &OdbiornikiRC::OnCbnSelchangeCombo1)
-	ON_CBN_SELCHANGE(IDC_COMBO2, &OdbiornikiRC::OnCbnSelchangeCombo2)
-	ON_CBN_SELCHANGE(IDC_COMBO3, &OdbiornikiRC::OnCbnSelchangeCombo3)
-	ON_CBN_SELCHANGE(IDC_COMBO4, &OdbiornikiRC::OnCbnSelchangeCombo4)
-	ON_CBN_SELCHANGE(IDC_COMBO5, &OdbiornikiRC::OnCbnSelchangeCombo5)
-	ON_CBN_SELCHANGE(IDC_COMBO6, &OdbiornikiRC::OnCbnSelchangeCombo6)
-	ON_CBN_SELCHANGE(IDC_COMBO7, &OdbiornikiRC::OnCbnSelchangeCombo7)
-	ON_CBN_SELCHANGE(IDC_COMBO8, &OdbiornikiRC::OnCbnSelchangeCombo8)
-	ON_CBN_SELCHANGE(IDC_COMBO9, &OdbiornikiRC::OnCbnSelchangeCombo9)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO1, &OdbiornikiRC::OnCbnSelchangeCombo1)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO2, &OdbiornikiRC::OnCbnSelchangeCombo2)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO3, &OdbiornikiRC::OnCbnSelchangeCombo3)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO4, &OdbiornikiRC::OnCbnSelchangeCombo4)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO5, &OdbiornikiRC::OnCbnSelchangeCombo5)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO6, &OdbiornikiRC::OnCbnSelchangeCombo6)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO7, &OdbiornikiRC::OnCbnSelchangeCombo7)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO8, &OdbiornikiRC::OnCbnSelchangeCombo8)
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO9, &OdbiornikiRC::OnCbnSelchangeCombo9)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDOK, &OdbiornikiRC::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &OdbiornikiRC::OnBnClickedCancel)

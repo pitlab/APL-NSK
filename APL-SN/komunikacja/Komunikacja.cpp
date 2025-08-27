@@ -591,7 +591,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, uint8_t *chWysWy, uint8_t *chSzerWe, uint8_t *chWysWe, uint8_t *chTrybDiagn, uint8_t *chFlagi)
 {
-	uint8_t chDane[23];
+	uint8_t chDane[27];
 	uint8_t chErr, chOdebrano;
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POB_PAR_KAMERY, NULL, 0, chDane, &chOdebrano);
@@ -601,18 +601,22 @@ uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, u
 		stKonfig->chWysWy = chDane[1];
 		stKonfig->chSzerWe = chDane[2];
 		stKonfig->chWysWe = chDane[3];
-		stKonfig->chTrybDiagn = chDane[4];
-		stKonfig->chObracanieObrazu = chDane[5];
-		stKonfig->chFormatObrazu = chDane[6];
-		stKonfig->sWzmocnienieR = ((uint16_t)chDane[7] << 8) + chDane[8];
-		stKonfig->sWzmocnienieG = ((uint16_t)chDane[9] << 8) + chDane[10];
-		stKonfig->sWzmocnienieB = ((uint16_t)chDane[11] << 8) + chDane[12];
-		stKonfig->chKontrolaBalansuBieli = chDane[13];
-		stKonfig->nEkspozycjaReczna = ((uint32_t)chDane[14] << 16) + ((uint32_t)chDane[15] << 8) + chDane[16];
-		stKonfig->chKontrolaExpo = chDane[17];
-		stKonfig->chTrybyEkspozycji = chDane[18];
-		stKonfig->chGranicaMinExpo = chDane[19];
-		stKonfig->nGranicaMaxExpo = ((uint32_t)chDane[20] << 16) + ((uint32_t)chDane[21] << 8) + chDane[22];
+		stKonfig->chPrzesWyPoz = chDane[4];
+		stKonfig->chPrzesWyPio = chDane[5];
+		stKonfig->chObracanieObrazu = chDane[6];
+		stKonfig->chFormatObrazu = chDane[7];
+		stKonfig->sWzmocnienieR = ((uint16_t)chDane[8] << 8) + chDane[9];
+		stKonfig->sWzmocnienieG = ((uint16_t)chDane[10] << 8) + chDane[11];
+		stKonfig->sWzmocnienieB = ((uint16_t)chDane[12] << 8) + chDane[13];
+		stKonfig->chKontrolaBalansuBieli = chDane[14];
+		stKonfig->nEkspozycjaReczna = ((uint32_t)chDane[15] << 16) + ((uint32_t)chDane[16] << 8) + chDane[17];
+		stKonfig->chKontrolaExpo = chDane[18];
+		stKonfig->chTrybyEkspozycji = chDane[19];
+		stKonfig->chGranicaMinExpo = chDane[20];
+		stKonfig->nGranicaMaxExpo = ((uint32_t)chDane[21] << 16) + ((uint32_t)chDane[22] << 8) + chDane[23];
+		stKonfig->chKontrolaISP0 = chDane[24];		//0x5000
+		stKonfig->chKontrolaISP1 = chDane[25];		//0x50001
+		stKonfig->chProgUsuwania = chDane[26];		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
 	}	
 	return chErr;
 }
@@ -630,7 +634,7 @@ uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, u
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::UstawKamere(st_KonfKam* stKonfig)
 {
-	uint8_t chDane[23];
+	uint8_t chDane[27];
 	uint8_t chOdebrano;
 
 
@@ -638,27 +642,32 @@ uint8_t CKomunikacja::UstawKamere(st_KonfKam* stKonfig)
 	chDane[1] = stKonfig->chWysWy;
 	chDane[2] = stKonfig->chSzerWe;
 	chDane[3] = stKonfig->chWysWe;
-	chDane[4] = stKonfig->chTrybDiagn;
-	chDane[5] = stKonfig->chObracanieObrazu;
-	chDane[6] = stKonfig->chFormatObrazu;
-	chDane[7] = (uint8_t)(stKonfig->sWzmocnienieR >> 8);
-	chDane[8] = (uint8_t)(stKonfig->sWzmocnienieR & 0xFF);
-	chDane[9] = (uint8_t)(stKonfig->sWzmocnienieG >> 8);
-	chDane[10] = (uint8_t)(stKonfig->sWzmocnienieG & 0xFF);
-	chDane[11] = (uint8_t)(stKonfig->sWzmocnienieB >> 8);
-	chDane[12] = (uint8_t)(stKonfig->sWzmocnienieB & 0xFF);
-	chDane[13] = stKonfig->chKontrolaBalansuBieli;
-	chDane[14] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 16) & 0xF;	//AEC Long Channel Exposure [19:0]: 0x3500..02
-	chDane[15] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 8);
-	chDane[16] = (uint8_t)(stKonfig->nEkspozycjaReczna & 0xFF);
-	chDane[17] = stKonfig->chKontrolaExpo;
-	chDane[18] = stKonfig->chTrybyEkspozycji;
-	chDane[19] = stKonfig->chGranicaMinExpo;
-	chDane[20] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 16) & 0xF;		//Maximum Exposure Output Limit [19..0]: 0x3A02..04
-	chDane[21] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 8);
-	chDane[22] = (uint8_t)(stKonfig->nGranicaMaxExpo & 0xFF);
+	chDane[4] = stKonfig->chPrzesWyPoz;
+	chDane[5] = stKonfig->chPrzesWyPio;
+	chDane[6] = stKonfig->chObracanieObrazu;
+	chDane[7] = stKonfig->chFormatObrazu;
+	chDane[8] = (uint8_t)(stKonfig->sWzmocnienieR >> 8);
+	chDane[9] = (uint8_t)(stKonfig->sWzmocnienieR & 0xFF);
+	chDane[10] = (uint8_t)(stKonfig->sWzmocnienieG >> 8);
+	chDane[11] = (uint8_t)(stKonfig->sWzmocnienieG & 0xFF);
+	chDane[12] = (uint8_t)(stKonfig->sWzmocnienieB >> 8);
+	chDane[13] = (uint8_t)(stKonfig->sWzmocnienieB & 0xFF);
+	chDane[14] = stKonfig->chKontrolaBalansuBieli;
+	chDane[15] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 16) & 0xF;	//AEC Long Channel Exposure [19:0]: 0x3500..02
+	chDane[16] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 8);
+	chDane[17] = (uint8_t)(stKonfig->nEkspozycjaReczna & 0xFF);
+	chDane[18] = stKonfig->chKontrolaExpo;
+	chDane[19] = stKonfig->chTrybyEkspozycji;
+	chDane[20] = stKonfig->chGranicaMinExpo;
+	chDane[21] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 16) & 0xF;		//Maximum Exposure Output Limit [19..0]: 0x3A02..04
+	chDane[22] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 8);
+	chDane[23] = (uint8_t)(stKonfig->nGranicaMaxExpo & 0xFF);
+	chDane[24] = stKonfig->chKontrolaISP0;		//0x5000
+	chDane[25] = stKonfig->chKontrolaISP1;		//0x50001
+	chDane[26] = stKonfig->chProgUsuwania;		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
 
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 23, m_chRamkaPrzy, &chOdebrano);
+
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 24, m_chRamkaPrzy, &chOdebrano);
 }
 
 

@@ -211,6 +211,7 @@ protected:
 //	afx_msg LRESULT OnAfxPolaczonoWrona(WPARAM wParam, LPARAM lParam);
 public:
 
+	
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -224,6 +225,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 
+	
 END_MESSAGE_MAP()
 
 // Polecenie aplikacji uruchamiające okno dialogowe
@@ -403,3 +405,4 @@ void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 }
+

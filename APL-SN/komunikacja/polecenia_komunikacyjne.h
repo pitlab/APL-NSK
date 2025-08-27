@@ -93,12 +93,6 @@
 #define FUK1_OBR_PION	0x04	//odwróć obraz w pionie
 
 
-//Tryby Diagnostyczne Kamery
-#define TDK_PRACA		0		//normalna praca
-#define TDK_KRATA_CB	1		//czarnobiała karata
-#define TDK_PASKI		2		//7 pionowych pasków
-
-
 
 //definicje zmiennych telemetrycznych
 //zmienne IMU
