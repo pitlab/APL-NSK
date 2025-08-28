@@ -59,10 +59,11 @@ public:
 	CSliderCtrl m_ctlBalansBieli_Niebieski;
 	afx_msg void OnNMCustomdrawSliderBalansBieli_Czerwony(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSliderBalansBieli_Zielony(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSlider9(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSliderBalansBieli_Niebieski(NMHDR* pNMHDR, LRESULT* pResult);
 	CString m_strBalansBieliCzerwona;
 	CString m_strBalansBieliZielona;
 	CString m_strBalansBieliNiebieska;
+	BOOL m_bRecznyCzasEkspozycji;
 	CSliderCtrl m_ctlCzasEkspozycji;
 	CSliderCtrl m_ctlGornaGranicaEkspozycji;
 	CSliderCtrl m_ctlDolnaGranicaEkspozycji;
@@ -107,4 +108,7 @@ public:
 	afx_msg void OnBnClickedCheckIsp1MacierzKolorow();
 	BOOL m_bAutomatycznyBalansBieli;
 	afx_msg void OnBnClickedCheck1Isp1AutoBalansBieli();
+	afx_msg void OnBnClickedCheckEkspozycjaReczna();
+
+	CString m_strProgUsuwaniaSredniejKolumnParzystych;
 };

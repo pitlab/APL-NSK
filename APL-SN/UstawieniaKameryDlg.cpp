@@ -49,6 +49,8 @@ CUstawieniaKameryDlg::CUstawieniaKameryDlg(CWnd* pParent /*=nullptr*/)
 	, m_bUsrednianieChrominancji(FALSE)
 	, m_bMacierzKolorow(FALSE)
 	, m_bAutomatycznyBalansBieli(FALSE)
+	, m_bRecznyCzasEkspozycji(FALSE)
+	, m_strProgUsuwaniaSredniejKolumnParzystych(_T(""))
 {
 	
 }
@@ -93,7 +95,7 @@ void CUstawieniaKameryDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_GAMA_YUV, m_bGammaYUV);
 	DDX_Check(pDX, IDC_CHECK_GAMMA_SUROWA, m_bGammaSurowa);
 	DDX_Check(pDX, IDC_CHECK_ISP0_USUWA_USRED, m_bUsuwaUsrednianie);
-	DDX_Control(pDX, IDC_SLIDER1_PROG_USREDNIANIA_KOLUMN, m_ctlProgUsuwaniaUsrednianiaParzystychKolumn);
+	DDX_Control(pDX, IDC_SLID_PROG_USREDNIANIA_KOLUMN, m_ctlProgUsuwaniaUsrednianiaParzystychKolumn);
 	DDX_Check(pDX, IDC_CHECK_ISP0_ODSZUMIANIE, m_bOdszumianie);
 	DDX_Check(pDX, IDC_CHECK_ISP0_USUWANIE_CZARNYCH, m_bUsuwanieCzarnychPikseli);
 	DDX_Check(pDX, IDC_CHECK_ISP0_USUWANIE_BIALYCH, m_bUsuwanieBialychPikseli);
@@ -105,7 +107,9 @@ void CUstawieniaKameryDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_ISP1_ROZCIAGANIE_LINI, m_bRozciaganieLinii);
 	DDX_Check(pDX, IDC_CHECK_ISP1_USREDNIANIE_CHROMINANCJI, m_bUsrednianieChrominancji);
 	DDX_Check(pDX, IDC_CHECK_ISP1_MACIERZ_KOLOROW, m_bMacierzKolorow);
-	DDX_Check(pDX, IDC_CHECK1_ISP1_AUTO_BALANS_BIELI, m_bAutomatycznyBalansBieli);
+	DDX_Check(pDX, IDC_CHECK_ISP1_AUTO_BALANS_BIELI, m_bAutomatycznyBalansBieli);
+	DDX_Check(pDX, IDC_CHECK_EKSPOZYCJA_RECZNA, m_bRecznyCzasEkspozycji);
+	DDX_Text(pDX, IDC_STATIC_PROG_USUWANIA, m_strProgUsuwaniaSredniejKolumnParzystych);
 }
 
 
@@ -122,8 +126,8 @@ BEGIN_MESSAGE_MAP(CUstawieniaKameryDlg, CDialog)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_PRZES_PIONOWE, &CUstawieniaKameryDlg::OnNMCustomdrawSlidPrzesPionowe)
 	ON_BN_CLICKED(IDC_CHECK_BALANS_RECZNY, &CUstawieniaKameryDlg::OnBnClickedCheckRecznyBalansBieli)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AWB_CZERWONY, &CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Czerwony)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AWB_ZIELONY, &CUstawieniaKameryDlg::OnNMCustomdrawSlider9)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AWB_NIEBIESKI, &CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Zielony)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AWB_ZIELONY, &CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Zielony)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AWB_NIEBIESKI, &CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Niebieski)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AEC_CZAS, &CUstawieniaKameryDlg::OnNMCustomdrawSlidAecCzas)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AEC_GORNA_GRANICA, &CUstawieniaKameryDlg::OnNMCustomdrawSlidAecGornaGranica)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_AEC_DOLNA_GRANICA, &CUstawieniaKameryDlg::OnNMCustomdrawSlidAecDolnaGranica)
@@ -131,7 +135,7 @@ BEGIN_MESSAGE_MAP(CUstawieniaKameryDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_GAMA_YUV, &CUstawieniaKameryDlg::OnBnClickedCheckGamaYuv)
 	ON_BN_CLICKED(IDC_CHECK_GAMMA_SUROWA, &CUstawieniaKameryDlg::OnBnClickedCheckGammaSurowa)
 	ON_BN_CLICKED(IDC_CHECK_ISP0_USUWA_USRED, &CUstawieniaKameryDlg::OnBnClickedCheckIsp0UsuwaUsred)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER1_PROG_USREDNIANIA_KOLUMN, &CUstawieniaKameryDlg::OnNMCustomdrawSlider1ProgUsrednianiaKolumn)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_PROG_USREDNIANIA_KOLUMN, &CUstawieniaKameryDlg::OnNMCustomdrawSlider1ProgUsrednianiaKolumn)
 	ON_BN_CLICKED(IDC_CHECK_ISP0_ODSZUMIANIE, &CUstawieniaKameryDlg::OnBnClickedCheckOdszumianie)
 	ON_BN_CLICKED(IDC_CHECK_ISP0_USUWANIE_CZARNYCH, &CUstawieniaKameryDlg::OnBnClickedCheckIsp0UsuwanieCzarnych)
 	ON_BN_CLICKED(IDC_CHECK_ISP0_USUWANIE_BIALYCH, &CUstawieniaKameryDlg::OnBnClickedCheckIsp0UsuwanieBialych)
@@ -143,7 +147,8 @@ BEGIN_MESSAGE_MAP(CUstawieniaKameryDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_ISP1_ROZCIAGANIE_LINI, &CUstawieniaKameryDlg::OnBnClickedCheckIsp1RozciaganieLini)
 	ON_BN_CLICKED(IDC_CHECK_ISP1_USREDNIANIE_CHROMINANCJI, &CUstawieniaKameryDlg::OnBnClickedCheckIsp1UsrednianieChrominancji)
 	ON_BN_CLICKED(IDC_CHECK_ISP1_MACIERZ_KOLOROW, &CUstawieniaKameryDlg::OnBnClickedCheckIsp1MacierzKolorow)
-	ON_BN_CLICKED(IDC_CHECK1_ISP1_AUTO_BALANS_BIELI, &CUstawieniaKameryDlg::OnBnClickedCheck1Isp1AutoBalansBieli)
+	ON_BN_CLICKED(IDC_CHECK_ISP1_AUTO_BALANS_BIELI, &CUstawieniaKameryDlg::OnBnClickedCheck1Isp1AutoBalansBieli)
+	ON_BN_CLICKED(IDC_CHECK_EKSPOZYCJA_RECZNA, &CUstawieniaKameryDlg::OnBnClickedCheckEkspozycjaReczna)
 END_MESSAGE_MAP()
 
 
@@ -182,6 +187,27 @@ BOOL CUstawieniaKameryDlg::OnInitDialog()
 		m_ctlBalansBieli_Czerwony.SetPos(m_stKonfKamery.sWzmocnienieR);
 		m_ctlBalansBieli_Zielony.SetPos(m_stKonfKamery.sWzmocnienieG);
 		m_ctlBalansBieli_Niebieski.SetPos(m_stKonfKamery.sWzmocnienieB);
+
+		//włącz lub wyłącz kontrlki w zależności od stanu bitu je waczajacego
+		m_bRecznyCzasEkspozycji = m_stKonfKamery.chKontrolaExpo & 0x01;
+		GetDlgItem(IDC_SLID_AEC_CZAS)->EnableWindow(m_bRecznyCzasEkspozycji);
+		GetDlgItem(IDC_SLID_AEC_GORNA_GRANICA)->EnableWindow(m_bRecznyCzasEkspozycji);
+		GetDlgItem(IDC_SLID_AEC_DOLNA_GRANICA)->EnableWindow(m_bRecznyCzasEkspozycji);
+		GetDlgItem(IDC_STATIC_CZAS_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+		GetDlgItem(IDC_STATIC_GORNA_GRANICA_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+		GetDlgItem(IDC_STATIC_DOLNA_GRANICA_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+
+		m_bRecznyBalansBieli = m_stKonfKamery.chKontrolaBalansuBieli & 0x01;
+		GetDlgItem(IDC_SLID_AWB_CZERWONY)->EnableWindow(m_bRecznyBalansBieli);
+		GetDlgItem(IDC_SLID_AWB_ZIELONY)->EnableWindow(m_bRecznyBalansBieli);
+		GetDlgItem(IDC_SLID_AWB_NIEBIESKI)->EnableWindow(m_bRecznyBalansBieli);
+		GetDlgItem(IDC_STATIC_AWB_CZERWONA)->EnableWindow(m_bRecznyBalansBieli);
+		GetDlgItem(IDC_STATIC_AWB_ZIELONA)->EnableWindow(m_bRecznyBalansBieli);
+		GetDlgItem(IDC_STATIC_AWB_NIEBIESKA)->EnableWindow(m_bRecznyBalansBieli);
+
+		m_bUsuwaUsrednianie = m_stKonfKamery.chKontrolaISP0 & 0x10;
+		GetDlgItem(IDC_SLID_PROG_USREDNIANIA_KOLUMN)->EnableWindow(m_bUsuwaUsrednianie);
+		GetDlgItem(IDC_STATIC_PROG_USUWANIA)->EnableWindow(m_bUsuwaUsrednianie);
 
 		uint8_t chZakresZoom = (MAX_SZER_KAM / KROK_ROZDZ_KAM) / m_stKonfKamery.chSzerWy;
 		chZoom = m_stKonfKamery.chSzerWe / m_stKonfKamery.chSzerWy;
@@ -358,6 +384,12 @@ void CUstawieniaKameryDlg::OnBnClickedCheckRecznyBalansBieli()
 	UpdateData(TRUE);
 	m_stKonfKamery.chKontrolaBalansuBieli = 0x01 * m_bRecznyBalansBieli;
 	WyslijDoKamery();
+	GetDlgItem(IDC_SLID_AWB_CZERWONY)->EnableWindow(m_bRecznyBalansBieli);
+	GetDlgItem(IDC_SLID_AWB_ZIELONY)->EnableWindow(m_bRecznyBalansBieli);
+	GetDlgItem(IDC_SLID_AWB_NIEBIESKI)->EnableWindow(m_bRecznyBalansBieli);
+	GetDlgItem(IDC_STATIC_AWB_CZERWONA)->EnableWindow(m_bRecznyBalansBieli);
+	GetDlgItem(IDC_STATIC_AWB_ZIELONA)->EnableWindow(m_bRecznyBalansBieli);
+	GetDlgItem(IDC_STATIC_AWB_NIEBIESKA)->EnableWindow(m_bRecznyBalansBieli);
 }
 
 
@@ -430,7 +462,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Zielony(NMHDR* pNMHDR
 // parametry: ?
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CUstawieniaKameryDlg::OnNMCustomdrawSlider9(NMHDR* pNMHDR, LRESULT* pResult)
+void CUstawieniaKameryDlg::OnNMCustomdrawSliderBalansBieli_Niebieski(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
@@ -442,6 +474,24 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlider9(NMHDR* pNMHDR, LRESULT* pResult
 	*pResult = 0;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na kliknięcie checkbox Ręczny czas ekspozycji
+// Ustawia bit 0 w rejestrze 0x3503, konf->chKontrolaExpo
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CUstawieniaKameryDlg::OnBnClickedCheckEkspozycjaReczna()
+{
+	UpdateData(TRUE);
+	m_stKonfKamery.chKontrolaExpo = 0x01 * m_bRecznyCzasEkspozycji;
+	WyslijDoKamery();
+	GetDlgItem(IDC_SLID_AEC_CZAS)->EnableWindow(m_bRecznyCzasEkspozycji);
+	GetDlgItem(IDC_SLID_AEC_GORNA_GRANICA)->EnableWindow(m_bRecznyCzasEkspozycji);
+	GetDlgItem(IDC_SLID_AEC_DOLNA_GRANICA)->EnableWindow(m_bRecznyCzasEkspozycji);
+	GetDlgItem(IDC_STATIC_CZAS_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+	GetDlgItem(IDC_STATIC_GORNA_GRANICA_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+	GetDlgItem(IDC_STATIC_DOLNA_GRANICA_EKSPOZYCJI)->EnableWindow(m_bRecznyCzasEkspozycji);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,6 +589,8 @@ void CUstawieniaKameryDlg::OnBnClickedCheckIsp0UsuwaUsred()
 	m_stKonfKamery.chKontrolaISP0 &= ~0x10;
 	m_stKonfKamery.chKontrolaISP0 |= m_bUsuwaUsrednianie * 0x10;
 	WyslijDoKamery();
+	GetDlgItem(IDC_SLIDER1_PROG_USREDNIANIA_KOLUMN)->EnableWindow(m_bUsuwaUsrednianie);
+	GetDlgItem(IDC_STATIC_PROG_USUWANIA)->EnableWindow(m_bUsuwaUsrednianie);
 }
 
 
@@ -590,7 +642,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlider1ProgUsrednianiaKolumn(NMHDR* pNM
 	UpdateData(TRUE);
 	int nProg = m_ctlProgUsuwaniaUsrednianiaParzystychKolumn.GetPos();
 	m_stKonfKamery.chProgUsuwania = (uint8_t)(nProg & 0xFF);
-	m_strDolnaGranicaEkspozycji.Format(L"Próg usuwania: %d", nProg);
+	m_strProgUsuwaniaSredniejKolumnParzystych.Format(L"Próg usuwania: %d", nProg);	
 	UpdateData(FALSE);
 	WyslijDoKamery();
 	*pResult = 0;
@@ -673,3 +725,6 @@ void CUstawieniaKameryDlg::OnBnClickedCheck1Isp1AutoBalansBieli()
 	m_stKonfKamery.chKontrolaISP1 |= m_bAutomatycznyBalansBieli * 0x01;
 	WyslijDoKamery(); 
 }
+
+
+
