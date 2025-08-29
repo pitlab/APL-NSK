@@ -667,7 +667,7 @@ uint8_t CKomunikacja::UstawKamere(st_KonfKam* stKonfig)
 	chDane[26] = stKonfig->chProgUsuwania;		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
 
 
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 24, m_chRamkaPrzy, &chOdebrano);
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 27, m_chRamkaPrzy, &chOdebrano);
 }
 
 

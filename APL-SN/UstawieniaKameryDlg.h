@@ -25,28 +25,20 @@ protected:
 public:
 	afx_msg void OnNMCustomdrawSlidSzerZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSlidWysZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSlidZoomZdjecia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBnClickedCheckOdwrPoz();
 	afx_msg void OnBnClickedCheckOdwrPion();
 	afx_msg void OnBnClickedOk();
 	int WyslijDoKamery();
 	st_KonfKam m_stKonfKamery;
-	int m_nSzerokoscZdjecia;
-	int m_nWysokoscZdjecia;
-	int m_nPowiekszenieZdjecia;
-	
+	st_KonfKam m_stPierwotnaKonfiguracjaKamery;	
 	CSliderCtrl m_ctlSzerokoscZdjecia;
 	CSliderCtrl m_ctlWysokoscZdjecia;
-	CSliderCtrl m_ctlPowiekszenie;
 	CSliderCtrl m_ctlPrzesunieciePoziome;
 	CSliderCtrl m_ctlPrzesunieciePionowe;
-	
 	CString m_StrSzerokosc;
 	CString m_strWysokosc;
-	CString m_strPowiekszenie;
 	BOOL m_bOdwrocPionowo;
 	BOOL m_bOdwrocPoziomo;
-
 	
 	afx_msg void OnNMCustomdrawSlidPrzesPoziome(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSlidPrzesPionowe(NMHDR* pNMHDR, LRESULT* pResult);
@@ -111,4 +103,12 @@ public:
 	afx_msg void OnBnClickedCheckEkspozycjaReczna();
 
 	CString m_strProgUsuwaniaSredniejKolumnParzystych;
+	afx_msg void OnBnClickedButWyslijDoKamery();
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnNMCustomdrawSlidSzerokoscPatrzenia(NMHDR* pNMHDR, LRESULT* pResult);
+	CSliderCtrl m_ctlSzerokoscPatrzenia;
+	CSliderCtrl m_ctlWysokoscPatrzenia;
+	afx_msg void OnNMCustomdrawSlidWysokoscPatrzenia(NMHDR* pNMHDR, LRESULT* pResult);
+	CString m_strSzerokoscPatrzenia;
+	CString m_strWysokoscPatrzenia;
 };
