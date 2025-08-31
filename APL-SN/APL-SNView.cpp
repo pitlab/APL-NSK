@@ -275,6 +275,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 				fMinLewy = fMinPrawy = fMinWykresu;
 				fMaxLewy = fMaxPrawy = fMaxWykresu;
+				if ((fMinWykresu == 0.0) && (fMaxWykresu == 0.0f))
+					return FALSE;
 				fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
 				fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 				for (int w = 0; w < nLiczbaWykresow; w++)

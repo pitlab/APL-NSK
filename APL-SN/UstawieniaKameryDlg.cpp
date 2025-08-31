@@ -149,6 +149,7 @@ BEGIN_MESSAGE_MAP(CUstawieniaKameryDlg, CDialog)
 	ON_BN_CLICKED(IDCANCEL, &CUstawieniaKameryDlg::OnBnClickedCancel)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_SZEROKOSC_PATRZENIA, &CUstawieniaKameryDlg::OnNMCustomdrawSlidSzerokoscPatrzenia)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_WYSOKOSC_PATRZENIA, &CUstawieniaKameryDlg::OnNMCustomdrawSlidWysokoscPatrzenia)
+	ON_BN_CLICKED(IDC_BUT_WYSLIJ_GRUPOWO, &CUstawieniaKameryDlg::OnBnClickedButWyslijGrupowo)
 END_MESSAGE_MAP()
 
 
@@ -192,14 +193,15 @@ BOOL CUstawieniaKameryDlg::OnInitDialog()
 		m_ctlWysokoscZdjecia.SetPos(m_stKonfKamery.chWysWy);
 		m_strWysokosc.Format(L"Wysokość zdjęcia %d [pix]", m_stKonfKamery.chWysWy * KROK_ROZDZ_KAM);
 
-		m_ctlSzerokoscPatrzenia.SetRange(0, MAX_SZER_KAM / KROK_ROZDZ_KAM);
+
+		//rozmiar patrzenia nie może być mniejszy od rozmiaru obrazu wyjsciowego
+		m_ctlSzerokoscPatrzenia.SetRange(m_stKonfKamery.chSzerWy, MAX_SZER_KAM / KROK_ROZDZ_KAM);
 		m_ctlSzerokoscPatrzenia.SetPos(m_stKonfKamery.chSzerWe);
 		m_strSzerokoscPatrzenia.Format(L"Szerokość patrzenia %d", m_stKonfKamery.chSzerWe * KROK_ROZDZ_KAM);
 		GetDlgItem(IDC_SLID_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
 		GetDlgItem(IDC_STATIC_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
 		
-
-		m_ctlWysokoscPatrzenia.SetRange(0, MAX_WYS_KAM / KROK_ROZDZ_KAM);
+		m_ctlWysokoscPatrzenia.SetRange(m_stKonfKamery.chWysWy, MAX_WYS_KAM / KROK_ROZDZ_KAM);
 		m_ctlWysokoscPatrzenia.SetPos(m_stKonfKamery.chWysWe);
 		m_strWysokoscPatrzenia.Format(L"Wysokość patrzenia %d", m_stKonfKamery.chWysWe * KROK_ROZDZ_KAM);
 		GetDlgItem(IDC_SLID_WYSOKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePionowe);
@@ -213,9 +215,9 @@ BOOL CUstawieniaKameryDlg::OnInitDialog()
 		m_ctlPrzesunieciePionowe.SetPos(m_stKonfKamery.chPrzesWyPio);
 		m_strPrzesunieciePionowe.Format(L"Przesuniecie w pionie %d", m_stKonfKamery.chPrzesWyPio * KROK_ROZDZ_KAM);
 
-		m_ctlCzasEkspozycji.SetRange(0, 0xFFFFF / KROK_ROZDZ_KAM);
-		m_ctlCzasEkspozycji.SetPos(m_stKonfKamery.nEkspozycjaReczna / KROK_ROZDZ_KAM);
-		m_strCzasEkspozycji.Format(L"Czas ekspozycji: %d", m_stKonfKamery.nEkspozycjaReczna);
+		m_ctlCzasEkspozycji.SetRange(0, 0xFFFF / KROK_ROZDZ_KAM);
+		m_ctlCzasEkspozycji.SetPos(m_stKonfKamery.sCzasEkspozycji / KROK_ROZDZ_KAM);
+		m_strCzasEkspozycji.Format(L"Czas ekspozycji: %d", m_stKonfKamery.sCzasEkspozycji);
 
 		m_ctlGornaGranicaEkspozycji.SetRange(0, 0xFFFFF / KROK_ROZDZ_KAM);
 		m_ctlGornaGranicaEkspozycji.SetPos(m_stKonfKamery.nGranicaMaxExpo / KROK_ROZDZ_KAM);
@@ -270,6 +272,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidSzerZdjecia(NMHDR* pNMHDR, LRESULT*
 	UpdateData(TRUE);
 	m_stKonfKamery.chSzerWy = m_ctlSzerokoscZdjecia.GetPos();
 	m_StrSzerokosc.Format(L"Szerokość zdjęcia %d [pix]", m_stKonfKamery.chSzerWy * KROK_ROZDZ_KAM);
+	m_ctlSzerokoscPatrzenia.SetRangeMin(m_stKonfKamery.chSzerWy, TRUE);		//aktualizuj dolną granicę szerokości patrzenia
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -287,6 +290,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidWysZdjecia(NMHDR* pNMHDR, LRESULT* 
 	UpdateData(TRUE);
 	m_stKonfKamery.chWysWy = (uint8_t)m_ctlWysokoscZdjecia.GetPos();
 	m_strWysokosc.Format(L"Wysokość zdjęcia %d [pix]", m_stKonfKamery.chWysWy * KROK_ROZDZ_KAM);
+	m_ctlWysokoscPatrzenia.SetRangeMin(m_stKonfKamery.chWysWy, TRUE);	//aktualizuj dolną granicę wysokości patrzenia
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -499,7 +503,8 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidAecCzas(NMHDR* pNMHDR, LRESULT* pRe
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
 	int nCzasEkspozycji = m_ctlCzasEkspozycji.GetPos() * KROK_ROZDZ_KAM;
-	m_stKonfKamery.nEkspozycjaReczna = nCzasEkspozycji & 0xFFFFF;
+	//m_stKonfKamery.nEkspozycjaReczna = nCzasEkspozycji & 0xFFFFF;
+	m_stKonfKamery.sCzasEkspozycji = nCzasEkspozycji & 0xFFFF;
 	m_strCzasEkspozycji.Format(L"Czas ekspozycji: %d", nCzasEkspozycji);
 	UpdateData(FALSE);
 	//WyslijDoKamery();	
@@ -518,7 +523,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidAecGornaGranica(NMHDR* pNMHDR, LRES
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
 	int nGranicaEkspozycji = m_ctlGornaGranicaEkspozycji.GetPos();
-	m_stKonfKamery.nEkspozycjaReczna = nGranicaEkspozycji & 0xFFFFF;
+	m_stKonfKamery.nGranicaMaxExpo = nGranicaEkspozycji & 0xFFFFF;
 	m_strGornaGranicaEkspozycji.Format(L"Górna granica czasu ekspozycji: %d", nGranicaEkspozycji);
 	UpdateData(FALSE);
 	//WyslijDoKamery();
@@ -537,7 +542,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidAecDolnaGranica(NMHDR* pNMHDR, LRES
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
 	int nGranicaEkspozycji = m_ctlDolnaGranicaEkspozycji.GetPos();
-	m_stKonfKamery.nEkspozycjaReczna = nGranicaEkspozycji & 0xFFFFF;
+	m_stKonfKamery.chGranicaMinExpo = nGranicaEkspozycji & 0xFFFFF;
 	m_strDolnaGranicaEkspozycji.Format(L"Dolna granica czasu ekspozycji: %d", nGranicaEkspozycji);
 	UpdateData(FALSE);
 	//WyslijDoKamery();
@@ -731,7 +736,6 @@ void CUstawieniaKameryDlg::OnBnClickedCheck1Isp1AutoBalansBieli()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CUstawieniaKameryDlg::OnBnClickedButWyslijDoKamery()
 {
-	//WyslijDoKamery();
 	getKomunikacja().UstawKamere(&m_stKonfKamery);
 }
 
@@ -744,7 +748,6 @@ void CUstawieniaKameryDlg::OnBnClickedButWyslijDoKamery()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CUstawieniaKameryDlg::OnBnClickedOk()
 {
-	//WyslijDoKamery();
 	CDialog::OnOK();
 }
 
@@ -774,7 +777,8 @@ void CUstawieniaKameryDlg::OnBnClickedCancel()
 		(m_stPierwotnaKonfiguracjaKamery.chTrybyEkspozycji != m_stKonfKamery.chTrybyEkspozycji) ||
 		(m_stPierwotnaKonfiguracjaKamery.chWysWe != m_stKonfKamery.chWysWe) ||
 		(m_stPierwotnaKonfiguracjaKamery.chWysWy != m_stKonfKamery.chWysWy) ||
-		(m_stPierwotnaKonfiguracjaKamery.nEkspozycjaReczna != m_stKonfKamery.nEkspozycjaReczna) ||
+		//(m_stPierwotnaKonfiguracjaKamery.nEkspozycjaReczna != m_stKonfKamery.nEkspozycjaReczna) ||
+		(m_stPierwotnaKonfiguracjaKamery.sCzasEkspozycji != m_stKonfKamery.sCzasEkspozycji) ||
 		(m_stPierwotnaKonfiguracjaKamery.sWzmocnienieB != m_stKonfKamery.sWzmocnienieB) ||
 		(m_stPierwotnaKonfiguracjaKamery.sWzmocnienieG != m_stKonfKamery.sWzmocnienieG) ||
 		(m_stPierwotnaKonfiguracjaKamery.sWzmocnienieR != m_stKonfKamery.sWzmocnienieR))
@@ -784,3 +788,8 @@ void CUstawieniaKameryDlg::OnBnClickedCancel()
 
 
 
+
+void CUstawieniaKameryDlg::OnBnClickedButWyslijGrupowo()
+{
+	getKomunikacja().UstawKamereGrupowo(&m_stKonfKamery);
+}

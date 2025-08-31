@@ -280,6 +280,7 @@
 #define IDC_SLID_WYSOKOSC_PATRZENIA     1187
 #define IDC_STATIC_SZEROKOSC_PATRZENIA  1188
 #define IDC_STATIC_WYSOKOSC_PATRZENIA   1189
+#define IDC_BUT_WYSLIJ_GRUPOWO          1190
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -316,7 +317,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        339
 #define _APS_NEXT_COMMAND_VALUE         32814
-#define _APS_NEXT_CONTROL_VALUE         1190
+#define _APS_NEXT_CONTROL_VALUE         1191
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

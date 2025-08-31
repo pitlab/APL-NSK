@@ -42,6 +42,7 @@ public:
 	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
 	uint8_t PobierzKamere(st_KonfKam* stKonfig);
 	uint8_t UstawKamere(st_KonfKam* stKonfig);
+	uint8_t UstawKamereGrupowo(st_KonfKam* stKonfig);
 	uint8_t ZapiszFlash(uint32_t nAdresPamieci);
 	uint8_t SkasujSektorFlash(uint32_t nAdresPamieci);
 	uint8_t ZapiszBuforFlash(uint16_t sAdresBufora, uint8_t* chDane, uint8_t chRozmiar);

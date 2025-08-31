@@ -111,4 +111,5 @@ public:
 	afx_msg void OnNMCustomdrawSlidWysokoscPatrzenia(NMHDR* pNMHDR, LRESULT* pResult);
 	CString m_strSzerokoscPatrzenia;
 	CString m_strWysokoscPatrzenia;
+	afx_msg void OnBnClickedButWyslijGrupowo();
 };
