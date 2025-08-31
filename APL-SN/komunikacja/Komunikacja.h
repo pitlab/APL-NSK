@@ -40,6 +40,7 @@ public:
 	uint8_t UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t WyslijOK();
 	uint8_t ZrobZdjecie(uint16_t* sBuforZdjecia);
+	uint8_t ResetujKamere();
 	uint8_t PobierzKamere(st_KonfKam* stKonfig);
 	uint8_t UstawKamere(st_KonfKam* stKonfig);
 	uint8_t UstawKamereGrupowo(st_KonfKam* stKonfig);

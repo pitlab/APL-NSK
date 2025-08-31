@@ -170,6 +170,7 @@
 #define IDC_STATIC_KP1                  1079
 #define IDC_STATIC_KP2                  1080
 #define IDC_STATIC_                     1081
+#define IDC_STATIC_POZIOM_EKSPOZCJI     1081
 #define IDC_EDIT_TI2                    1082
 #define IDC_EDIT_LIMIT_CALKI2           1083
 #define IDC_EDIT_NAZWA                  1083
@@ -222,6 +223,7 @@
 #define IDC_SLID_AEC_CZAS               1130
 #define IDC_CHECK_EKSPOZYCJA_RECZNA     1131
 #define IDC_SLID_AEC_GORNA_GRANICA      1132
+#define IDC_SLID_WZMOCNIENIE            1132
 #define IDC_COMBO_RC1                   1133
 #define IDC_COMBO_RC2                   1134
 #define IDC_SLID_AWB_CZERWONY           1135
@@ -256,13 +258,12 @@
 #define IDC_STATIC_AWB_CZERWONA         1164
 #define IDC_STATIC_AWB_ZIELONA          1165
 #define IDC_STATIC_AWB_NIEBIESKA        1166
-#define IDC_SLID_AEC_DOLNA_GRANICA      1167
+#define IDC_SLID_VTS                    1167
 #define IDC_CHECK_EKSPOZYCJA_AUTOMATYCZNA 1168
-#define IDC_STATIC_PROG_USUWANIA        1168
-#define IDC_STATIC_EKSPOZYCJA           1169
+#define IDC_STATIC_CZULOSC              1169
 #define IDC_STATIC_BALANS               1170
-#define IDC_STATIC_GORNA_GRANICA_EKSPOZYCJI 1171
-#define IDC_STATIC_DOLNA_GRANICA_EKSPOZYCJI 1172
+#define IDC_STATIC_WZMOCNIENIE          1171
+#define IDC_STATIC_VTS                  1172
 #define IDC_STATIC_CZAS_EKSPOZYCJI      1173
 #define IDC_CHECK_KOREKCJA_LENC         1174
 #define IDC_CHECK_GAMA_YUV              1175
@@ -281,6 +282,17 @@
 #define IDC_STATIC_SZEROKOSC_PATRZENIA  1188
 #define IDC_STATIC_WYSOKOSC_PATRZENIA   1189
 #define IDC_BUT_WYSLIJ_GRUPOWO          1190
+#define IDC_CHECK_RECZNE_WZMOCNIENIE    1191
+#define IDC_CHECK_VTS                   1192
+#define IDC_SLID_AGC_ADJ                1193
+#define IDC_STATIC_AGC_ADJ              1194
+#define IDC_COMBO_TYP_OBRAZU            1195
+#define IDC_STATIC_KODOWANIE_KOLORU     1197
+#define IDC_STATIC_PROG_USUWANIA        1198
+#define IDC_SLID_NASYCENIE              1199
+#define IDC_STATIC_NASYCENIE            1200
+#define IDC_SLID_POZIOM_EXPOZYCJI       1201
+#define IDC_BUT_RESET                   1202
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -317,7 +329,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        339
 #define _APS_NEXT_COMMAND_VALUE         32814
-#define _APS_NEXT_CONTROL_VALUE         1191
+#define _APS_NEXT_CONTROL_VALUE         1203
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

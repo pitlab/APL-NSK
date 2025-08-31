@@ -28,7 +28,12 @@ public:
 	afx_msg void OnBnClickedCheckOdwrPoz();
 	afx_msg void OnBnClickedCheckOdwrPion();
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedButReset();
+	afx_msg void OnBnClickedButWyslijDoKamery();
+	afx_msg void OnBnClickedCancel();
+
 	int WyslijDoKamery();
+	uint8_t PrzeladujDanezKamery();
 	st_KonfKam m_stKonfKamery;
 	st_KonfKam m_stPierwotnaKonfiguracjaKamery;	
 	CSliderCtrl m_ctlSzerokoscZdjecia;
@@ -57,15 +62,14 @@ public:
 	CString m_strBalansBieliNiebieska;
 	BOOL m_bRecznyCzasEkspozycji;
 	CSliderCtrl m_ctlCzasEkspozycji;
-	CSliderCtrl m_ctlGornaGranicaEkspozycji;
-	CSliderCtrl m_ctlDolnaGranicaEkspozycji;
+	CSliderCtrl m_ctlAGCLongGain;
+	CSliderCtrl m_ctlAGC_VTS;
 	CString m_strCzasEkspozycji;
-	CString m_strGornaGranicaEkspozycji;
-	CString m_strDolnaGranicaEkspozycji;
+	CString m_strWzmocnienie;
+	CString m_strVTS;
 	afx_msg void OnNMCustomdrawSlidAecCzas(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSlidAecGornaGranica(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSlidAecDolnaGranica(NMHDR* pNMHDR, LRESULT* pResult);
-	
+	afx_msg void OnNMCustomdrawSlidWzmocnienie(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSlidVts(NMHDR* pNMHDR, LRESULT* pResult);
 	BOOL m_bKorekcjaLENC;
 	afx_msg void OnBnClickedCheckKorekcjaLenc();
 	BOOL m_bGammaYUV;
@@ -101,10 +105,7 @@ public:
 	BOOL m_bAutomatycznyBalansBieli;
 	afx_msg void OnBnClickedCheck1Isp1AutoBalansBieli();
 	afx_msg void OnBnClickedCheckEkspozycjaReczna();
-
 	CString m_strProgUsuwaniaSredniejKolumnParzystych;
-	afx_msg void OnBnClickedButWyslijDoKamery();
-	afx_msg void OnBnClickedCancel();
 	afx_msg void OnNMCustomdrawSlidSzerokoscPatrzenia(NMHDR* pNMHDR, LRESULT* pResult);
 	CSliderCtrl m_ctlSzerokoscPatrzenia;
 	CSliderCtrl m_ctlWysokoscPatrzenia;
@@ -112,4 +113,20 @@ public:
 	CString m_strSzerokoscPatrzenia;
 	CString m_strWysokoscPatrzenia;
 	afx_msg void OnBnClickedButWyslijGrupowo();
+
+	CSliderCtrl m_ctlAGC_Adjust;
+	CString m_strAGC_Adjust;
+	afx_msg void OnNMCustomdrawSlidAgcAdj(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedCheckReczneWzmocnienie();
+	BOOL m_bReczneWzmocnienie;
+	BOOL m_bRecznyVTS;
+	afx_msg void OnBnClickedCheckVts();
+	CComboBox m_ctlTypObrazu;
+	afx_msg void OnCbnSelchangeComboTypObrazu();
+	CString m_strNasycenie;
+	afx_msg void OnNMCustomdrawSlidNasycenie(NMHDR* pNMHDR, LRESULT* pResult);
+	CSliderCtrl m_ctlNasycenie;
+	CSliderCtrl m_ctlPoziomEkspozycji;
+	afx_msg void OnNMCustomdrawSlidPoziomExpozycji(NMHDR* pNMHDR, LRESULT* pResult);
+	CString m_strPoziomEkspozycji;	
 };

@@ -580,6 +580,20 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchaie polecenie inicjalizacji kamery resetujac j¹ i przywracaj¹c nastawy domyœlne
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ResetujKamere()
+{
+	uint8_t chDane[10];
+	uint8_t chOdebrano;
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_RESETUJ_KAMERE, NULL, 0, chDane, &chOdebrano);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wysy³a polecenie odczytu konfiguracji kamery
 // parametry:
 // [i] chAdres - adres autopilota
@@ -591,7 +605,7 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, uint8_t *chWysWy, uint8_t *chSzerWe, uint8_t *chWysWe, uint8_t *chTrybDiagn, uint8_t *chFlagi)
 {
-	uint8_t chDane[27];
+	uint8_t chDane[30];
 	uint8_t chErr, chOdebrano;
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POB_PAR_KAMERY, NULL, 0, chDane, &chOdebrano);
@@ -609,15 +623,17 @@ uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, u
 		stKonfig->sWzmocnienieG = ((uint16_t)chDane[10] << 8) + chDane[11];
 		stKonfig->sWzmocnienieB = ((uint16_t)chDane[12] << 8) + chDane[13];
 		stKonfig->chKontrolaBalansuBieli = chDane[14];
-		//stKonfig->nEkspozycjaReczna = ((uint32_t)chDane[15] << 16) + ((uint32_t)chDane[16] << 8) + chDane[17];
-		stKonfig->sCzasEkspozycji = ((uint16_t)chDane[15] << 12) + ((uint16_t)chDane[16] << 4) + (chDane[17] >> 4);
+		stKonfig->chNasycenie = chDane[15];
+		stKonfig->sCzasEkspozycji = ((uint16_t)chDane[16] << 8) + chDane[17]; 
 		stKonfig->chKontrolaExpo = chDane[18];
 		stKonfig->chTrybyEkspozycji = chDane[19];
-		stKonfig->chGranicaMinExpo = chDane[20];
-		stKonfig->nGranicaMaxExpo = ((uint32_t)chDane[21] << 16) + ((uint32_t)chDane[22] << 8) + chDane[23];
+		stKonfig->sAGCLong = ((uint16_t)chDane[20] << 8) + chDane[21];
+		stKonfig->sAGCVTS = ((uint16_t)chDane[22] << 8) + chDane[23];
 		stKonfig->chKontrolaISP0 = chDane[24];		//0x5000
 		stKonfig->chKontrolaISP1 = chDane[25];		//0x50001
 		stKonfig->chProgUsuwania = chDane[26];		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
+		stKonfig->sAGCAdjust = ((uint16_t)chDane[27] << 8) + chDane[28];
+		stKonfig->chPoziomEkspozycji = chDane[29];
 	}	
 	return chErr;
 }
@@ -635,9 +651,8 @@ uint8_t CKomunikacja::PobierzKamere(st_KonfKam *stKonfig)// uint8_t *chSzerWy, u
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::UstawKamere(st_KonfKam* stKonfig)
 {
-	uint8_t chDane[27];
+	uint8_t chDane[30];
 	uint8_t chOdebrano;
-
 
 	chDane[0] = stKonfig->chSzerWy;
 	chDane[1] = stKonfig->chWysWy;
@@ -654,31 +669,29 @@ uint8_t CKomunikacja::UstawKamere(st_KonfKam* stKonfig)
 	chDane[12] = (uint8_t)(stKonfig->sWzmocnienieB >> 8);
 	chDane[13] = (uint8_t)(stKonfig->sWzmocnienieB & 0xFF);
 	chDane[14] = stKonfig->chKontrolaBalansuBieli;
-	//chDane[15] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 16) & 0xF;	//AEC Long Channel Exposure [19:0]: 0x3500..02
-	//chDane[16] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 8);
-	//chDane[17] = (uint8_t)(stKonfig->nEkspozycjaReczna & 0xFF);
-	chDane[15] = 0;
+	chDane[15] = stKonfig->chNasycenie;
 	chDane[16] = (uint8_t)(stKonfig->sCzasEkspozycji >> 8);
 	chDane[17] = (uint8_t)(stKonfig->sCzasEkspozycji & 0xFF);
-	
 	chDane[18] = stKonfig->chKontrolaExpo;
 	chDane[19] = stKonfig->chTrybyEkspozycji;
-	chDane[20] = stKonfig->chGranicaMinExpo;
-	chDane[21] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 16) & 0xF;		//Maximum Exposure Output Limit [19..0]: 0x3A02..04
-	chDane[22] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 8);
-	chDane[23] = (uint8_t)(stKonfig->nGranicaMaxExpo & 0xFF);
+	chDane[20] = (uint8_t)(stKonfig->sAGCLong >> 8);
+	chDane[21] = (uint8_t)(stKonfig->sAGCLong & 0xFF);
+	chDane[22] = (uint8_t)(stKonfig->sAGCVTS >> 8);
+	chDane[23] = (uint8_t)(stKonfig->sAGCVTS & 0xFF);
 	chDane[24] = stKonfig->chKontrolaISP0;		//0x5000
 	chDane[25] = stKonfig->chKontrolaISP1;		//0x50001
 	chDane[26] = stKonfig->chProgUsuwania;		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
+	chDane[27] = (uint8_t)(stKonfig->sAGCAdjust >> 8);
+	chDane[28] = (uint8_t)(stKonfig->sAGCAdjust & 0xFF);
+	chDane[29] = stKonfig->chPoziomEkspozycji;
 
-
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 27, m_chRamkaPrzy, &chOdebrano);
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY, chDane, 30, m_chRamkaPrzy, &chOdebrano);
 }
 
 
 uint8_t CKomunikacja::UstawKamereGrupowo(st_KonfKam* stKonfig)
 {
-	uint8_t chDane[27];
+	uint8_t chDane[30];
 	uint8_t chOdebrano;
 
 
@@ -697,25 +710,26 @@ uint8_t CKomunikacja::UstawKamereGrupowo(st_KonfKam* stKonfig)
 	chDane[12] = (uint8_t)(stKonfig->sWzmocnienieB >> 8);
 	chDane[13] = (uint8_t)(stKonfig->sWzmocnienieB & 0xFF);
 	chDane[14] = stKonfig->chKontrolaBalansuBieli;
-	//chDane[15] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 16) & 0xF;	//AEC Long Channel Exposure [19:0]: 0x3500..02
-	//chDane[16] = (uint8_t)(stKonfig->nEkspozycjaReczna >> 8);
-	//chDane[17] = (uint8_t)(stKonfig->nEkspozycjaReczna & 0xFF);
-	chDane[15] = 0;
+	chDane[15] = stKonfig->chNasycenie;
 	chDane[16] = (uint8_t)(stKonfig->sCzasEkspozycji >> 8);
 	chDane[17] = (uint8_t)(stKonfig->sCzasEkspozycji & 0xFF);
 	chDane[18] = stKonfig->chKontrolaExpo;
 	chDane[19] = stKonfig->chTrybyEkspozycji;
-	chDane[20] = stKonfig->chGranicaMinExpo;
-	chDane[21] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 16) & 0xF;		//Maximum Exposure Output Limit [19..0]: 0x3A02..04
-	chDane[22] = (uint8_t)(stKonfig->nGranicaMaxExpo >> 8);
-	chDane[23] = (uint8_t)(stKonfig->nGranicaMaxExpo & 0xFF);
+	chDane[20] = (uint8_t)(stKonfig->sAGCLong >> 8);
+	chDane[21] = (uint8_t)(stKonfig->sAGCLong & 0xFF);
+	chDane[22] = (uint8_t)(stKonfig->sAGCVTS >> 8);
+	chDane[23] = (uint8_t)(stKonfig->sAGCVTS & 0xFF);
 	chDane[24] = stKonfig->chKontrolaISP0;		//0x5000
 	chDane[25] = stKonfig->chKontrolaISP1;		//0x50001
 	chDane[26] = stKonfig->chProgUsuwania;		//0x5080 Even CTRL 00 Treshold for even odd  cancelling
+	chDane[27] = (uint8_t)(stKonfig->sAGCAdjust >> 8);
+	chDane[28] = (uint8_t)(stKonfig->sAGCAdjust & 0xFF);
+	chDane[29] = stKonfig->chPoziomEkspozycji;
 
-
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY_GRUP, chDane, 27, m_chRamkaPrzy, &chOdebrano);
+	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_UST_PAR_KAMERY_GRUP, chDane, 30, m_chRamkaPrzy, &chOdebrano);
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wysy³a polecenie zapisu danych pod wskazany adres we flash. Optymalne jest programowanie co najmniej ca³ymi stronami po 16 s³ów (32 bajty)
