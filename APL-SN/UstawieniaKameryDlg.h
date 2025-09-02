@@ -129,4 +129,7 @@ public:
 	CSliderCtrl m_ctlPoziomEkspozycji;
 	afx_msg void OnNMCustomdrawSlidPoziomExpozycji(NMHDR* pNMHDR, LRESULT* pResult);
 	CString m_strPoziomEkspozycji;	
+	BOOL m_bZachowajProporcjeSkalowania;
+	afx_msg void OnBnClickedCheckZachowajProporcjeSkalowania();
+	float m_fWspProporcjiObrazuWy;
 };

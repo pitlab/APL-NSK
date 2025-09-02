@@ -1,6 +1,9 @@
 #pragma once
 
 #define SKALA_POZIOMU_EKSPOZYCJI	96
+#define ROZDZ_KAMERY_POZIOMO	2592
+#define ROZDZ_KAMERY_PIONOWO	1944
+
 
 struct st_KonfKam
 {

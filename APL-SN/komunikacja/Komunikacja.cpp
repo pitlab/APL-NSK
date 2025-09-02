@@ -588,7 +588,15 @@ uint8_t CKomunikacja::ResetujKamere()
 {
 	uint8_t chDane[10];
 	uint8_t chOdebrano;
-	return getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_RESETUJ_KAMERE, NULL, 0, chDane, &chOdebrano);
+	uint8_t chErr;
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_RESETUJ_KAMERE, NULL, 0, chDane, &chOdebrano);
+	if (!chErr)
+	{
+		if (chDane[0] == SGZ_BLAD)
+			chErr = ERR_BLAD_KAMERY;
+	}
+	return chErr;
 }
 
 

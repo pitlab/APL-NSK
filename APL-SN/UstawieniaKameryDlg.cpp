@@ -55,6 +55,7 @@ CUstawieniaKameryDlg::CUstawieniaKameryDlg(CWnd* pParent /*=nullptr*/)
 	, m_bRecznyVTS(FALSE)
 	, m_strNasycenie(_T(""))
 	, m_strPoziomEkspozycji(_T(""))
+	, m_bZachowajProporcjeSkalowania(FALSE)
 {
 	
 }
@@ -122,6 +123,7 @@ void CUstawieniaKameryDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLID_NASYCENIE, m_ctlNasycenie);
 	DDX_Control(pDX, IDC_SLID_POZIOM_EXPOZYCJI, m_ctlPoziomEkspozycji);
 	DDX_Text(pDX, IDC_STATIC_POZIOM_EKSPOZCJI, m_strPoziomEkspozycji);
+	DDX_Check(pDX, IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA, m_bZachowajProporcjeSkalowania);
 }
 
 
@@ -171,6 +173,7 @@ BEGIN_MESSAGE_MAP(CUstawieniaKameryDlg, CDialog)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_NASYCENIE, &CUstawieniaKameryDlg::OnNMCustomdrawSlidNasycenie)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_POZIOM_EXPOZYCJI, &CUstawieniaKameryDlg::OnNMCustomdrawSlidPoziomExpozycji)
 	ON_BN_CLICKED(IDC_BUT_RESET, &CUstawieniaKameryDlg::OnBnClickedButReset)
+	ON_BN_CLICKED(IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA, &CUstawieniaKameryDlg::OnBnClickedCheckZachowajProporcjeSkalowania)
 END_MESSAGE_MAP()
 
 
@@ -218,6 +221,8 @@ uint8_t CUstawieniaKameryDlg::PrzeladujDanezKamery()
 		m_ctlWysokoscZdjecia.SetRange(4, 1944 / KROK_ROZDZ_KAM, TRUE);
 		m_ctlWysokoscZdjecia.SetPos(m_stKonfKamery.chWysWy);
 		m_strWysokosc.Format(L"Wysokość zdjęcia %d [pix]", m_stKonfKamery.chWysWy * KROK_ROZDZ_KAM);
+
+		m_fWspProporcjiObrazuWy = (float)m_stKonfKamery.chSzerWy / m_stKonfKamery.chWysWy;	//proporcja szerokości do wysokości obrazu wyjściowego
 
 		//rozmiar patrzenia nie może być mniejszy od rozmiaru obrazu wyjsciowego
 		m_ctlSzerokoscPatrzenia.SetRange(m_stKonfKamery.chSzerWy, MAX_SZER_KAM / KROK_ROZDZ_KAM);
@@ -324,6 +329,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidSzerZdjecia(NMHDR* pNMHDR, LRESULT*
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
 	m_stKonfKamery.chSzerWy = m_ctlSzerokoscZdjecia.GetPos();
+	m_fWspProporcjiObrazuWy = (float)m_stKonfKamery.chSzerWy / m_stKonfKamery.chWysWy;	//proporcja szerokości do wysokości obrazu wyjściowego
 	m_StrSzerokosc.Format(L"Szerokość zdjęcia %d [pix]", m_stKonfKamery.chSzerWy * KROK_ROZDZ_KAM);
 	m_ctlSzerokoscPatrzenia.SetRangeMin(m_stKonfKamery.chSzerWy, TRUE);		//aktualizuj dolną granicę szerokości patrzenia
 	UpdateData(FALSE);
@@ -342,6 +348,7 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidWysZdjecia(NMHDR* pNMHDR, LRESULT* 
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
 	m_stKonfKamery.chWysWy = (uint8_t)m_ctlWysokoscZdjecia.GetPos();
+	m_fWspProporcjiObrazuWy = (float)m_stKonfKamery.chSzerWy / m_stKonfKamery.chWysWy;	//proporcja szerokości do wysokości obrazu wyjściowego
 	m_strWysokosc.Format(L"Wysokość zdjęcia %d [pix]", m_stKonfKamery.chWysWy * KROK_ROZDZ_KAM);
 	m_ctlWysokoscPatrzenia.SetRangeMin(m_stKonfKamery.chWysWy, TRUE);	//aktualizuj dolną granicę wysokości patrzenia
 	UpdateData(FALSE);
@@ -361,6 +368,13 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidSzerokoscPatrzenia(NMHDR* pNMHDR, L
 	UpdateData(TRUE);
 	m_stKonfKamery.chSzerWe = m_ctlSzerokoscPatrzenia.GetPos();
 	m_strSzerokoscPatrzenia.Format(L"Szerokość patrzenia %d", m_stKonfKamery.chSzerWe * KROK_ROZDZ_KAM);
+	if (m_bZachowajProporcjeSkalowania)	//oblicz proporcje dla drugiej strony okna i ustaw
+	{
+		m_bSkalowaniePionowe = FALSE;
+		GetDlgItem(IDC_SLID_WYSOKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePionowe);
+		GetDlgItem(IDC_STATIC_WYSOKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePionowe);		
+		m_stKonfKamery.chWysWe = (int)(m_stKonfKamery.chSzerWe / m_fWspProporcjiObrazuWy);
+	}
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -372,6 +386,13 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidWysokoscPatrzenia(NMHDR* pNMHDR, LR
 	UpdateData(TRUE);
 	m_stKonfKamery.chWysWe = m_ctlWysokoscPatrzenia.GetPos();
 	m_strWysokoscPatrzenia.Format(L"Wysokość patrzenia %d", m_stKonfKamery.chWysWe * KROK_ROZDZ_KAM);
+	if (m_bZachowajProporcjeSkalowania)
+	{
+		m_bSkalowaniePoziome = FALSE;
+		GetDlgItem(IDC_SLID_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
+		GetDlgItem(IDC_STATIC_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
+		m_stKonfKamery.chSzerWe = (int)(m_stKonfKamery.chWysWe * m_fWspProporcjiObrazuWy);
+	}
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -762,6 +783,12 @@ void CUstawieniaKameryDlg::OnBnClickedCheckIsp1SkalowaniePionowe()
 	m_stKonfKamery.chKontrolaISP1 |= m_bSkalowaniePionowe * 0x20;
 	GetDlgItem(IDC_SLID_WYSOKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePionowe);
 	GetDlgItem(IDC_STATIC_WYSOKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePionowe);
+	//GetDlgItem(IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA)->EnableWindow(m_bSkalowaniePoziome);
+	if (m_bZachowajProporcjeSkalowania && m_bSkalowaniePionowe)
+	{
+		m_ctlWysokoscPatrzenia.SetPos(m_stKonfKamery.chWysWe);
+		UpdateData(FALSE);
+	}
 }
 
 
@@ -772,6 +799,12 @@ void CUstawieniaKameryDlg::OnBnClickedCheckIsp1SkalowaniePoziome()
 	m_stKonfKamery.chKontrolaISP1 |= m_bSkalowaniePoziome * 0x10;
 	GetDlgItem(IDC_SLID_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
 	GetDlgItem(IDC_STATIC_SZEROKOSC_PATRZENIA)->EnableWindow(m_bSkalowaniePoziome);
+	//GetDlgItem(IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA)->EnableWindow(m_bSkalowaniePoziome);
+	if (m_bZachowajProporcjeSkalowania && m_bSkalowaniePionowe)
+	{
+		m_ctlSzerokoscPatrzenia.SetPos(m_stKonfKamery.chSzerWe);
+		UpdateData(FALSE);
+	}
 }
 
 
@@ -815,7 +848,44 @@ void CUstawieniaKameryDlg::OnBnClickedCheck1Isp1AutoBalansBieli()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CUstawieniaKameryDlg::OnBnClickedButWyslijDoKamery()
 {
-	getKomunikacja().UstawKamere(&m_stKonfKamery);
+	uint8_t chErr;
+	CString strOpis;
+	chErr = getKomunikacja().UstawKamere(&m_stKonfKamery);
+	if (chErr)
+	{
+		strOpis.Format(L"Funkcja konfigurująca kamerę zwróciła kod błędu: %d", chErr);
+		MessageBoxExW(this->m_hWnd, strOpis, L"Ojojoj!", MB_ICONEXCLAMATION, 0);
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// naciśnieto przycisk resetowania kamery. Wysyła polecenie sprzętowo resetujace kamerę i pobiera domyślne nastawy
+// parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CUstawieniaKameryDlg::OnBnClickedButReset()
+{
+	uint8_t chErr;
+	CString strOpis;
+	chErr = getKomunikacja().ResetujKamere();
+	if (chErr)
+	{
+		strOpis.Format(L"Funkcja resetująca zwróciła kod błędu: %d", chErr);
+		MessageBoxExW(this->m_hWnd, strOpis, L"Ojojoj!", MB_ICONEXCLAMATION, 0);
+	}
+	else
+	{
+		chErr = getKomunikacja().PobierzKamere(&m_stKonfKamery);
+		if (chErr)
+		{
+			strOpis.Format(L"Funkcja pobierające dane z kamery zwróciła kod błędu: %d", chErr);
+			MessageBoxExW(this->m_hWnd, strOpis, L"Ojojoj!", MB_ICONEXCLAMATION, 0);
+		}
+		else
+			PrzeladujDanezKamery();
+	}
 }
 
 
@@ -922,30 +992,14 @@ void CUstawieniaKameryDlg::OnNMCustomdrawSlidPoziomExpozycji(NMHDR* pNMHDR, LRES
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// naciśnieto przycisk resetowania kamery. Wysyła polecenie sprzętowo resetujace kamerę i pobiera domyślne nastawy
-// parametry: brak
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CUstawieniaKameryDlg::OnBnClickedButReset()
+
+
+void CUstawieniaKameryDlg::OnBnClickedCheckZachowajProporcjeSkalowania()
 {
-	uint8_t chErr;
-	CString strOpis;
-	chErr = getKomunikacja().ResetujKamere();
-	if (chErr)
-	{
-		strOpis.Format(L"Funkcja resetująca zwróciła kod błędu: %d", chErr);
-		MessageBoxExW(this->m_hWnd, strOpis, L"Ojojoj!", MB_ICONEXCLAMATION, 0);
-	}
-	else
-	{
-		chErr = getKomunikacja().PobierzKamere(&m_stKonfKamery);
-		if (chErr)
-		{
-			strOpis.Format(L"Funkcja pobierające dane z kamery zwróciła kod błędu: %d", chErr);
-			MessageBoxExW(this->m_hWnd, strOpis, L"Ojojoj!", MB_ICONEXCLAMATION, 0);
-		}
-		else
-			PrzeladujDanezKamery();
-	}
+	UpdateData(TRUE);
+	/*GetDlgItem(IDC_SLID_WYSOKOSC_PATRZENIA)->EnableWindow(m_bZachowajProporcjeSkalowania);
+	GetDlgItem(IDC_STATIC_WYSOKOSC_PATRZENIA)->EnableWindow(m_bZachowajProporcjeSkalowania);
+	GetDlgItem(IDC_SLID_SZEROKOSC_PATRZENIA)->EnableWindow(!m_bZachowajProporcjeSkalowania);
+	GetDlgItem(IDC_STATIC_SZEROKOSC_PATRZENIA)->EnableWindow(!m_bZachowajProporcjeSkalowania);*/
+	//m_bJestZmienianaSzerokosc = m_bZachowajProporcjeSkalowania;
 }
