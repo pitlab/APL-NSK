@@ -28,6 +28,7 @@ CGniazdoSieci	CProtokol::m_cGniazdoSluchajace;
 CGniazdoSieci	CProtokol::m_cGniazdoPolaczenia;
 BOOL			CProtokol::m_bKoniecWatkuUart = FALSE;
 BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
+BOOL			CProtokol::m_bPolaczonoEth = FALSE;
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
 //std::vector <_Telemetria> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
@@ -141,18 +142,16 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	case ETHK:	//ethernet jako klient
 		//m_hZdarzenieNawiazanoPolaczenieETH = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 		m_cGniazdoPolaczenia.UstawRodzica(pWnd);
-		//if (m_cGniazdoPolaczenia == NULL)
-		//{
-			if (m_cGniazdoPolaczenia.Create())
-			{
-				chErr = ERR_OK;
-			}
-			else
-			{
-				chErr = ERR_CANT_CONNECT;
-				dwErr = GetLastError();
-			}
-		//}
+		if (m_cGniazdoPolaczenia.Create())
+		{
+			chErr = ERR_OK;
+		}
+		else
+		{
+			chErr = ERR_CANT_CONNECT;
+			dwErr = GetLastError();
+		}
+
 
 		if (m_cGniazdoPolaczenia.Connect(strAdres, nNumerPortu))
 		{
@@ -162,16 +161,15 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		}
 		else
 		{
-			chErr = ERR_CANT_CONNECT;
+			//chErr = ERR_CANT_CONNECT;
 			dwErr = GetLastError();
 		}
 
-		//pWskWatkuSluchajacegoEth = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
-		//nErr = WaitForSingleObject(m_hZdarzenieNawiazanoPolaczenieETH, 5000);
-		//if (nErr == WAIT_TIMEOUT)
-			//chErr = ERR_CANT_CONNECT;
-	
-		
+		pWskWatkuSluchajacegoEth = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
+		//int nErr = WaitForSingleObject(m_hZdarzenieNawiazanoPolaczenieETH, 5000);
+		/*dwErr = WaitForSingleObject(CGniazdoSieci::m_hZdarzeniePolaczonoEth[0], 5000);
+		if (dwErr == WAIT_TIMEOUT)
+			chErr = ERR_CANT_CONNECT;*/
 		break;
 
 	default: chErr = ERR_ZLY_TYP_PORTU;	break;
@@ -205,15 +203,14 @@ void CProtokol::AkceptujPolaczenieETH(void)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Generuje potwierdzenie nawi¹zania po³¹czenia przez ethernet. Jest wywo³ywane z okna w³aœciciela
+// Zwraca stan po³¹czenia przez ethernet
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CProtokol::PolaczonoETH()
-{
-	m_chTypPortu = ETHK;
-	//SetEvent(m_hZdarzenieNawiazanoPolaczenieETH);
+BOOL CProtokol::CzyPolaczonoEth()
+{ 
+	//m_bPolaczonoEth = m_cGniazdoSluchajace.CzyPolaczonoEth();
+	return m_bPolaczonoEth; 
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,10 +336,11 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 	unsigned int iOdczytano = 0;
 	uint8_t chBuforOdb[ROZM_DANYCH_ETH + ROZM_CIALA_RAMKI];
 
-	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth[0], INFINITE);		//czekaj na po³¹czenie	
+	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth[1], INFINITE);		//czekaj na po³¹czenie z instancj¹ 1 gniazda, czyli klientem
+	m_bPolaczonoEth = TRUE;
 	while (!m_bKoniecWatkuEth)
 	{
-		WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzenieOdebranoEth[0], INFINITE);		//czekaj na odbiór danych
+		WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzenieOdebranoEth[1], INFINITE);		//czekaj na odbiór danych
 
 		//iOdczytano = m_cGniazdoSluchajace.Receive(chBuforOdb, ROZM_DANYCH_WE_ETH);
 		iOdczytano = m_cGniazdoPolaczenia.Receive(chBuforOdb, ROZM_DANYCH_ETH);

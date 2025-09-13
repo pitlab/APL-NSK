@@ -22,6 +22,7 @@
 #endif
 
 
+int	CAPLSNView::m_LicznikInstancji = 0;
 // CAPLSNView
 
 IMPLEMENT_DYNCREATE(CAPLSNView, CView)
@@ -35,9 +36,10 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_WM_RBUTTONUP()
 	ON_WM_INPUT()
 	ON_COMMAND(ID_KONFIG_PORT, &CAPLSNView::OnKonfigPort)
-	ON_UPDATE_COMMAND_UI(ID_KONFIG_PORT, &CAPLSNView::OnUpdateKonfigPort)
 	ON_COMMAND(ID_POLACZ_COM, &CAPLSNView::OnPolaczCom)
 	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
+	ON_COMMAND(ID_POLACZ_ETH, &CAPLSNView::OnPolaczEth)
+	ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CAPLSNView::OnUpdatePolaczEth)
 	ON_COMMAND(ID_ZROB_ZDJECIE, &CAPLSNView::OnZrobZdjecie)
 	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
 	ON_COMMAND(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnZapiszPamiec)
@@ -57,6 +59,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_TELEMETRII, &CAPLSNView::OnUpdateKonfigTelemetrii)
 	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnKonfigRejestratora)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnUpdateKonfigRejestratora)
+
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -83,18 +86,14 @@ CAPLSNView::CAPLSNView() noexcept
 , m_sBiezacyStanPaskaPostepu(0)
 , m_nSzerokoscOkna(0)
 , m_nSzerokoscWykresu(0)
-//, m_chNumerIP(0)
 , pWskWatkuPaskaPostepu(0)
 , pWskWatkuOdswiezaniaTelemetrii(0)
 {
 	getKomunikacja().m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 	// Enable D2D support for this window:
 	EnableD2DSupport();
-
+	m_LicznikInstancji++;
 	// Initialize D2D resources:
-	//m_pBrushBlack = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Black));
-	//m_pBrushWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Red));
-	//m_pBrushWykresuG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
 	m_pBrushWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 	m_pBrushOsiWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 
@@ -130,20 +129,21 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
 	//  styl kaskadowy CREATESTRUCT
-	m_cObslugaRejestru.CzytajRejestrIP(L"AdresIP", m_chNumerIP);
+	m_cObslugaRejestru.CzytajRejestrIP(L"AdresIP", m_chAdresIP);
 	m_cObslugaRejestru.CzytajRejestrInt(L"PredkoscCOM", &m_nPredkoscPortuCom);
 	m_cObslugaRejestru.CzytajRejestrInt(L"NrPortuCOM", &m_nNumerPortuCom);
 	m_cObslugaRejestru.CzytajRejestrInt(L"PortETH", &m_nNumerPortuEth);
 	m_cObslugaRejestru.CzytajRejestrInt(L"TypPortu", &m_nTypPolaczenia);
 
+	m_strAdresIP.Format(L"%d.%d.%d.%d", m_chAdresIP[0], m_chAdresIP[1], m_chAdresIP[2], m_chAdresIP[3]);
 	getKomunikacja().UstawRodzica(this);
-	getKomunikacja().UstawAdresPortuETH(L"127.0.0.1");
+	getKomunikacja().UstawAdresIP(m_strAdresIP);
 	getKomunikacja().UstawNumerPortuETH(m_nNumerPortuEth);
 	getKomunikacja().UstawTypPolaczenia((uint8_t)m_nTypPolaczenia);
 	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
 
-	uint8_t chErr = getKomunikacja().Polacz(this);
+	/*uint8_t chErr = getKomunikacja().Polacz(this);
 	if (chErr == ERR_OK)
 	{
 		m_bPolaczono = TRUE;		
@@ -153,7 +153,7 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 		}
 	}
-	else
+	else*/
 		m_bPolaczono = FALSE;
 	
 	return CView::PreCreateWindow(cs);
@@ -712,26 +712,19 @@ CAPLSNDoc* CAPLSNView::GetDocument() const // wbudowana jest wersja bez debugowa
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnRawInput(UINT nInputcode, HRAWINPUT hRawInput)
 {
-	//char chBufor[1025];
-	//int iRozmiar;
-
 	CAPLSNDoc* pDoc = GetDocument();
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-	//assert(pDoc);
 
-	//iRozmiar = sizeof(chBufor);
 	switch (nInputcode)
 	{
 	case ON_ACCEPT:		getKomunikacja().AkceptujPolaczenieETH();
 		pDoc->SetTitle(L"Ustanowiono połączenie ETH");
 		break;
 
-	case ON_SEND:	//m_cKomunikacja.WyslanoDaneETH();
+	case ON_SEND:	
 		pDoc->SetTitle(L"Wysłano dane");
 		break;
 
-	case ON_RECEIVE:	//m_cKomunikacja.OdebranoDaneETH();
-		//pDoc->SetTitle(m_cKomunikacja.m_vRoj[0].strNazwa);		
+	case ON_RECEIVE:
 		break;
 
 	case ON_CLOSE:		
@@ -752,19 +745,9 @@ void CAPLSNView::OnKonfigPort()
 	m_cKonfigPolacz.UstawNumerPortuCom(m_nNumerPortuCom);
 	m_cKonfigPolacz.UstawPredkoscPortuCom(m_nPredkoscPortuCom);
 	m_cKonfigPolacz.UstawNumerPortuEth(m_nNumerPortuEth);
-	m_cKonfigPolacz.UstawAdresIP(m_chNumerIP);
+	m_cKonfigPolacz.UstawAdresIP(m_chAdresIP);
 	m_cKonfigPolacz.UstawTypPolaczenia(m_nTypPolaczenia);
 	m_cKonfigPolacz.DoModal();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Aktualizuje stan przycisku połącz eth w pasku narzędzi
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
-{
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
 }
 
 
@@ -775,8 +758,6 @@ void CAPLSNView::OnUpdateKonfigPort(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
 	getKomunikacja().UstawTypPolaczenia(UART + m_nTypPolaczenia);
 	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
 	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
@@ -797,17 +778,53 @@ void CAPLSNView::OnPolaczCom()
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Aktualizuje stan przycisku połącz com w pasku narzędzi
+// Aktualizuje stan przycisku Połącz Com w pasku narzędzi
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
 	pCmdUI->Enable(!getKomunikacja().CzyPolaczonoUart());
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Łączy się z portem Ethernet
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnPolaczEth()
+{
+	getKomunikacja().UstawTypPolaczenia(ETHK);
+	getKomunikacja().UstawNumerPortuETH(m_nNumerPortuEth);
+	getKomunikacja().UstawAdresIP(m_strAdresIP);
+	if (getKomunikacja().CzyPolaczonoEth())
+	{
+		m_bKoniecWatkuOdswiezaniaTelemtrii = TRUE;
+		getKomunikacja().Rozlacz();
+	}
+	else
+	{
+		getKomunikacja().Polacz(this);
+		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
+		{
+			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
+			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+		}
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku Połącz Eth w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::OnUpdatePolaczEth(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(!getKomunikacja().CzyPolaczonoEth());
+}
 
 
 
@@ -820,7 +837,6 @@ void CAPLSNView::OnZrobZdjecie()
 	uint8_t chErr;
 
 	CAPLSNDoc* pDoc = GetDocument();
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
 
 	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
 	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
@@ -847,9 +863,7 @@ void CAPLSNView::OnZrobZdjecie()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
-	pCmdUI->Enable(getKomunikacja().CzyPolaczonoUart());
+		pCmdUI->Enable(m_bPolaczono);
 }
 
 
@@ -871,8 +885,6 @@ uint8_t CAPLSNView::WatekRysujPasekPostepu(LPVOID pParam)
 uint8_t CAPLSNView::WlasciwyWatekRysujPasekPostepu()
 {
 	uint32_t nErr;
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
 
 	while (!m_bKoniecWatkuPaskaPostepu)
 	{
@@ -909,7 +921,7 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 	{
 		if (m_bOknoGotowe)
 		{
-			uint32_t nErr = WaitForSingleObject(m_cProtokol.m_hZdarzenieRamkaTelemetriiGotowa, INFINITE);
+			uint32_t nErr = WaitForSingleObject(getProtokol().m_hZdarzenieRamkaTelemetriiGotowa, INFINITE);
 			if (nErr != WAIT_TIMEOUT)
 			{
 				m_bRysujTelemetrie = TRUE;
@@ -939,9 +951,7 @@ void CAPLSNView::OnZapiszPamiec()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 {
-	//CKomunikacja m_cKomunikacja = getKomunikacja();
-
-	pCmdUI->Enable(getKomunikacja().CzyPolaczonoUart());
+	pCmdUI->Enable(m_bPolaczono);
 }
 
 
@@ -1197,3 +1207,4 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 {
 	
 }
+

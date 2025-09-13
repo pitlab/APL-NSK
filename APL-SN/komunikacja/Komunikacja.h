@@ -17,6 +17,7 @@ public:
 	static HANDLE m_hZdarzeniePaczkaDanych;
 	static HANDLE m_hZdarzenieZmianaPolaczeniaWrona;
 	static int m_LicznikInstancji;
+	int m_wskaznikInstancji;
 	void UstawTypPolaczenia(uint8_t chTyp) { m_chTypPolaczenia = chTyp; }
 	uint8_t Polacz(CView* pWnd);
 	uint8_t Rozlacz();
@@ -27,14 +28,16 @@ public:
 	void UstawRodzica(CView* pWnd);
 	void UstawNumerPortuETH(uint32_t iNumer) { m_iNumerPortuETH = iNumer; }
 	uint32_t PobierzNumerPortuETH() { return m_iNumerPortuETH; }
-	void UstawAdresPortuETH(CString strAdres) { m_strAdresPortuETH = strAdres; }
-	CString PobierzAdresPortuETH() { return m_strAdresPortuETH; }
+	void UstawAdresIP(CString strAdres) { m_strAdresIP = strAdres; }
+	//void UstawAdresIP(CString strAdres);
+	CString PobierzAdresIP() { return m_strAdresIP; }
 	void UstawNumerPortuUART(uint32_t iNumer) { m_iNumerPortuUART = iNumer; }
 	uint32_t PobierzNumerPortuUART() { return m_iNumerPortuUART; }
 	void UstawPredkoscPortuUART(uint32_t iPredkosc) { m_iPredkoscUART = iPredkosc; }
 	uint32_t PobierzPredkoscPortuUART() { return m_iPredkoscUART; }
 	BOOL CzyPolaczonoUart() { return m_bPolaczonoUart; }
-	BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
+	//BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
+	BOOL CzyPolaczonoEth(); 
 	void UstawAdresWrona(uint8_t chAdres) { m_chAdresAutopilota = chAdres;  }
 	uint8_t PobierzBSP(uint8_t* chId, uint8_t* chNazwa, uint8_t* chIP);
 	uint8_t UstawBSP(uint8_t chId, uint8_t* chNazwa, uint8_t* chIP);
@@ -85,7 +88,7 @@ private:
 	BOOL m_bPolaczonoEth;
 	static uint8_t m_chTypPolaczenia;
 	uint32_t m_iNumerPortuETH;
-	CString m_strAdresPortuETH;
+	CString m_strAdresIP;
 	uint32_t m_iNumerPortuUART;
 	uint32_t m_iPredkoscUART;
 	uint8_t m_chRamkaWych[260];

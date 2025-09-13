@@ -21,7 +21,9 @@ public:
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
 	uint8_t ZamknijPort(uint8_t chTypPortu);
-	void PolaczonoETH();
+	//BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
+	 BOOL CzyPolaczonoEth();
+	//void PolaczonoETH();
 	void OdbierzDaneETH();
 	void WyslanoDaneETH();	
 	void AkceptujPolaczenieETH();
@@ -72,7 +74,7 @@ private:
 	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_ETH];		//bufor odbiorczy ethernetu
 	uint32_t m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
 	BOOL m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet
-
+	static BOOL m_bPolaczonoEth;
 	uint8_t	m_chStanProtokolu;
 	uint8_t	m_chAdresOdbiorcy;
 	uint8_t	m_chAdresNadawcy;

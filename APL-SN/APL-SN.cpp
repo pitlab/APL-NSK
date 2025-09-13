@@ -309,7 +309,7 @@ void CAPLSNApp::OnUstawieniaRegulatoryPid()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 {
-	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
@@ -323,7 +323,7 @@ void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateIndicatorPolacz(CCmdUI* pCmdUI)
 {
-	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
@@ -349,7 +349,7 @@ void CAPLSNApp::OnUstawieniaDefinicjewrona()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI)
 {
-	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
@@ -376,7 +376,7 @@ void CAPLSNApp::OnUstawieniaMikser()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaMikser(CCmdUI* pCmdUI)
 {
-	if (m_cKomunikacja.CzyPolaczonoUart() || m_cKomunikacja.CzyPolaczonoEth())
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
@@ -403,6 +403,9 @@ void CAPLSNApp::OnUstawieniaOdbiornikirc()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia uaktualnienia UI
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
 }
 

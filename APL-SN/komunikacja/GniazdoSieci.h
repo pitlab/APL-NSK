@@ -9,10 +9,11 @@ public:
 	CGniazdoSieci();
 	virtual ~CGniazdoSieci();
 	BOOL m_bPolaczone;
+	BOOL CzyPolaczonoEth() { return m_bPolaczone; }
 	void UstawRodzica(CView* pWnd);
 	int m_wskaznikInstancji;
 	static int m_LicznikInstancji;
-	static HANDLE m_hZdarzeniePolaczonoEth[LICZBA_INSTANCJI];
+	static HANDLE m_hZdarzeniePolaczonoEth[LICZBA_INSTANCJI];	//zmienne statyczne maj¹ 2 uintancje poniewa¿ s¹ uruchamiane: gniazdo s³uchajace (serwer) i gniazdo po³¹czenia (klient) 
 	static HANDLE m_hZdarzenieOdebranoEth[LICZBA_INSTANCJI];
 
 

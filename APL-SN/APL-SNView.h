@@ -3,8 +3,6 @@
 //
 
 #pragma once
-#include "komunikacja/Protokol.h"
-#include "komunikacja/Komunikacja.h"
 #include "CDaneFlash.h"
 #include "Rejestr.h"
 #include "CkonfigTelemetrii.h"
@@ -44,6 +42,7 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	CWinThread* pWskWatkuPaskaPostepu;
 	CWinThread* pWskWatkuOdswiezaniaTelemetrii;
+	static int m_LicznikInstancji;
 
 // Implementacja
 public:
@@ -54,10 +53,8 @@ public:
 #endif
 
 protected:
-	//CKomunikacja m_cKomunikacja;
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
-	CProtokol m_cProtokol;
 	KonfiguracjaWyresow m_cKonfiguracjaWykresow;
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 	KonfigRejestratora m_cKonfigRejestratora;
@@ -90,9 +87,10 @@ protected:
 public:
 	uint32_t m_nNumerPortuCom;
 	uint32_t m_nTypPolaczenia;	//0=UART, 1=ETH
-	uint8_t m_chNumerIP[4] = {0,0,0,0};
+	uint8_t m_chAdresIP[4] = {0,0,0,0};
 	uint32_t m_nPredkoscPortuCom;
 	uint32_t m_nNumerPortuEth;
+	CString m_strAdresIP;
 
 	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, float* fStartLegendy);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
@@ -110,7 +108,6 @@ protected:
 public:
 	afx_msg void OnRawInput(UINT nInputcode, HRAWINPUT hRawInput);
 	afx_msg void OnKonfigPort();
-	afx_msg void OnUpdateKonfigPort(CCmdUI* pCmdUI);
 	afx_msg void OnPolaczCom();
 	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
 	afx_msg void OnZrobZdjecie();
@@ -134,6 +131,8 @@ public:
 	afx_msg void OnUpdateKonfigTelemetrii(CCmdUI* pCmdUI);
 	afx_msg void OnKonfigRejestratora();
 	afx_msg void OnUpdateKonfigRejestratora(CCmdUI* pCmdUI);
+	afx_msg void OnPolaczEth();
+	afx_msg void OnUpdatePolaczEth(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

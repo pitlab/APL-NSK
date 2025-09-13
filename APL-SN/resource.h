@@ -293,7 +293,6 @@
 #define IDC_STATIC_NASYCENIE            1200
 #define IDC_SLID_POZIOM_EXPOZYCJI       1201
 #define IDC_BUT_RESET                   1202
-#define IDC_CHECK1                      1203
 #define IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA 1203
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
@@ -324,13 +323,17 @@
 #define ID_Menu                         32810
 #define ID_USTAWIENIA_MIKSER            32811
 #define ID_USTAWIENIA_ODBIORNIKIRC      32812
+#define ID_BUT_POLACZ                   32814
+#define ID_BUT_POLACZ_ETH               32817
+#define ID_BUT_POLACZ_COM               32818
+#define ID_POLACZ_ETH                   32819
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        339
-#define _APS_NEXT_COMMAND_VALUE         32814
+#define _APS_NEXT_COMMAND_VALUE         32820
 #define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

@@ -57,7 +57,8 @@ void CGniazdoSieci::OnAccept(int nErrorCode)
 	if (nErrorCode == 0)
 	{
 		m_pWnd->SendMessage(WM_INPUT, ON_ACCEPT, nErrorCode);
-		SetEvent(m_hZdarzeniePolaczonoEth[m_wskaznikInstancji]);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
+		//SetEvent(m_hZdarzeniePolaczonoEth[m_wskaznikInstancji]);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
+		SetEvent(m_hZdarzeniePolaczonoEth);		//generuj zdarzenie, ktre będzie odebrane w CProtokol::WlasciwyWatekSluchajPortuEth()
 	}
 	CAsyncSocket::OnAccept(nErrorCode);
 }

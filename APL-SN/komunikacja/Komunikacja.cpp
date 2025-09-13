@@ -29,7 +29,7 @@ CKomunikacja::CKomunikacja()
 	: m_bPolaczonoUart(FALSE)
 	, m_bPolaczonoEth(FALSE)
 	, m_iNumerPortuETH(0)
-	, m_strAdresPortuETH("")
+	, m_strAdresIP("")
 	, m_iNumerPortuUART(0)
 	, m_iPredkoscUART(115200)
 	, m_chAdresAutopilota(0)
@@ -37,7 +37,7 @@ CKomunikacja::CKomunikacja()
 	pWskWatkuDekodujacego = AfxBeginThread((AFX_THREADPROC)WatekDekodujRamkiPolecen, (LPVOID)m_pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 	m_hZdarzeniePaczkaDanych = CreateEvent(NULL, false, false, _T("PaczkaDanych")); // auto-reset event, non-signalled state	
 	m_hZdarzenieZmianaPolaczeniaWrona = CreateEvent(NULL, false, false, _T("ZmianaPo³¹czenia")); // auto-reset event, non-signalled state	;
-	m_LicznikInstancji++;
+	m_wskaznikInstancji = m_LicznikInstancji++;
 
 	//D³ugoœæ nazwy nie powinna przekraczaæ sta³ej DLUGOSC_NAZWY
 	m_strNazwyZmiennychTele[TELEID_AKCEL1X]		= "Akcelerometr1 X";
@@ -218,6 +218,12 @@ void CKomunikacja::UstawRodzica(CView* pWnd)
 }
 
 
+/*void CKomunikacja::UstawAdresIP(CString strAdres)
+{
+	m_strAdresIP = strAdres;
+}*/
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Nawi¹zuje po³¹czenia ze znanymi sobie portami komunikacyjnymi
 // zwraca: kod b³êdu
@@ -275,12 +281,15 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		break;
 
 	case ETHS:	
-		chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresPortuETH, m_pWnd);
-		if (chErr == ERR_OK)
-			m_bPolaczonoEth = TRUE;
-		else
-			m_bPolaczonoEth = FALSE;
+		chErr = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
+		m_bPolaczonoEth = (chErr == ERR_OK);
 		break;
+
+	case ETHK:
+		m_bPolaczonoEth = FALSE;	//po po³aczeniu zmienna CProtokol::m_bPolaczonoEth bêdzie ustawiona w w¹tku CProtokol::WatekSluchajPortuEth() i bêdzie ustawiona w trakcie odpytania CAPLSNView::OnUpdatePolaczEth
+		chErr = getProtokol().PolaczPort(ETHK, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
+		break;
+
 
 	case USB:	break;
 	
@@ -318,6 +327,11 @@ void CKomunikacja::AkceptujPolaczenieETH()
 }
 
 //
+BOOL CKomunikacja::CzyPolaczonoEth()
+{ 
+	m_bPolaczonoEth = getProtokol().CzyPolaczonoEth();
+	return m_bPolaczonoEth; 
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Odbiór wektorów z danymi ramek i ich parsowanie
