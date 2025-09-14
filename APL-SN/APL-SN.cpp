@@ -30,10 +30,11 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_COMMAND(ID_FILE_OPEN, &CWinAppEx::OnFileOpen)
 	// Standardowe polecenie konfiguracji wydruku
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
-
-	ON_COMMAND(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUstawieniaRegulatoryPid)
-	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUpdateUstawieniaRegulatoryPid)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_POLACZ, &CAPLSNApp::OnUpdateIndicatorPolacz)
+
+	//obsługa poleceń menu
+	ON_COMMAND(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUstawieniaRegulatoryPid)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_REGULATORY_PID, &CAPLSNApp::OnUpdateUstawieniaRegulatoryPid)	
 	ON_COMMAND(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUstawieniaDefinicjewrona)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_DEFINICJEWRONA, &CAPLSNApp::OnUpdateUstawieniaDefinicjewrona)
 	ON_COMMAND(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUstawieniaMikser)
@@ -257,7 +258,7 @@ void CAPLSNApp::SaveCustomState()
 {
 }
 
-// procedury obsługi komunikatów klasy CAPLSNApp
+//funkcje zwracające wskaźniki do klas komunikacyjnych, po to aby nie produkować zbędnych instancji
 
 CPortSzeregowy& CAPLSNApp::getPortSzeregowy()
 {
@@ -269,6 +270,16 @@ CPortSzeregowy& getPortSzeregowy()
 	return theApp.getPortSzeregowy();
 }
 
+
+/*CGniazdoSieci& CAPLSNApp::getGniazdoSieci()
+{
+	return m_cGniazdoSieci;
+}
+
+CGniazdoSieci& getGniazdoSieci()
+{
+	return theApp.getGniazdoSieci();
+}*/
 
 CProtokol& CAPLSNApp::getProtokol()
 {

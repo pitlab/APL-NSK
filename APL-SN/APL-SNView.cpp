@@ -35,11 +35,11 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 	ON_WM_INPUT()
+
+	//obsługa poleceń toolbara
 	ON_COMMAND(ID_KONFIG_PORT, &CAPLSNView::OnKonfigPort)
 	ON_COMMAND(ID_POLACZ_COM, &CAPLSNView::OnPolaczCom)
-	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CAPLSNView::OnUpdatePolaczCom)
 	ON_COMMAND(ID_POLACZ_ETH, &CAPLSNView::OnPolaczEth)
-	ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CAPLSNView::OnUpdatePolaczEth)
 	ON_COMMAND(ID_ZROB_ZDJECIE, &CAPLSNView::OnZrobZdjecie)
 	ON_UPDATE_COMMAND_UI(ID_ZROB_ZDJECIE, &CAPLSNView::OnUpdateZrobZdjecie)
 	ON_COMMAND(ID_ZAPISZ_PAMIEC, &CAPLSNView::OnZapiszPamiec)
@@ -758,7 +758,7 @@ void CAPLSNView::OnKonfigPort()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
-	getKomunikacja().UstawTypPolaczenia(UART + m_nTypPolaczenia);
+	getKomunikacja().UstawTypPolaczenia(UART);
 	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
 	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
 	if (getKomunikacja().CzyPolaczonoUart())
@@ -775,17 +775,6 @@ void CAPLSNView::OnPolaczCom()
 			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 		}
 	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Aktualizuje stan przycisku Połącz Com w pasku narzędzi
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnUpdatePolaczCom(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(!getKomunikacja().CzyPolaczonoUart());
 }
 
 
@@ -813,17 +802,6 @@ void CAPLSNView::OnPolaczEth()
 			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 		}
 	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Aktualizuje stan przycisku Połącz Eth w pasku narzędzi
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnUpdatePolaczEth(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(!getKomunikacja().CzyPolaczonoEth());
 }
 
 
@@ -863,7 +841,8 @@ void CAPLSNView::OnZrobZdjecie()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZrobZdjecie(CCmdUI* pCmdUI)
 {
-		pCmdUI->Enable(m_bPolaczono);
+	m_bPolaczono = getKomunikacja().CzyPolaczonoEth() | getKomunikacja().CzyPolaczonoUart();
+	pCmdUI->Enable(m_bPolaczono);
 }
 
 
@@ -951,6 +930,7 @@ void CAPLSNView::OnZapiszPamiec()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnUpdateZapiszPamiec(CCmdUI* pCmdUI)
 {
+	m_bPolaczono = getKomunikacja().CzyPolaczonoEth() | getKomunikacja().CzyPolaczonoUart();
 	pCmdUI->Enable(m_bPolaczono);
 }
 

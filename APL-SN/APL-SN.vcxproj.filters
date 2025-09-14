@@ -324,5 +324,29 @@
     <Image Include="res\bitmap_PID_wezel.bmp">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\icon2.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\icona_rozlacz_com.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\polacz_com.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\rozlacz_com.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\toolbar1.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\polacz_eth.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\polaczenie.bmp">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
 </Project>

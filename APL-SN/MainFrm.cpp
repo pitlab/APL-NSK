@@ -31,6 +31,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 
 	ON_COMMAND(ID_USTAW_PARKAMERY, &CMainFrame::OnUstawParkamery)
 	ON_COMMAND(ID_BUT_KONF_TELEMETRII, &CMainFrame::OnButKonfTelemetrii)
+	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CMainFrame::OnUpdatePolaczCom)
+	ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CMainFrame::OnUpdateButPolaczEth)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -341,4 +343,55 @@ void CMainFrame::OnButKonfTelemetrii()
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
 	CKonfigTelemetrii dlg;
 	dlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku Połącz Com w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CMainFrame::OnUpdatePolaczCom(CCmdUI* pCmdUI)
+{
+	int index = m_wndToolBar.CommandToIndex(ID_POLACZ_COM);
+	if (index >= 0)
+	{
+		CMFCToolBarButton* pNowyPrzycisk;
+		if (getKomunikacja().CzyPolaczonoUart())
+		{			
+			pNowyPrzycisk = m_wndToolBar.GetButton(index);
+			pNowyPrzycisk->SetImage(9);
+		}
+		else
+		{
+			pNowyPrzycisk = m_wndToolBar.GetButton(index);
+			pNowyPrzycisk->SetImage(10);
+		}
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Aktualizuje stan przycisku Połącz ETH w pasku narzędzi
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CMainFrame::OnUpdateButPolaczEth(CCmdUI* pCmdUI)
+{
+	int index = m_wndToolBar.CommandToIndex(ID_POLACZ_ETH);
+	if (index >= 0)
+	{
+		CMFCToolBarButton* pNowyPrzycisk;
+		if (getKomunikacja().CzyPolaczonoEth())
+		{
+			pNowyPrzycisk = m_wndToolBar.GetButton(index);
+			pNowyPrzycisk->SetImage(9);
+		}
+		else
+		{
+			pNowyPrzycisk = m_wndToolBar.GetButton(index);
+			pNowyPrzycisk->SetImage(10);
+		}
+		UpdateData(FALSE);
+	}
 }

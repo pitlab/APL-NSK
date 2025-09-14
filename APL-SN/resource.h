@@ -88,6 +88,10 @@
 #define IDD_MIKSER                      334
 #define IDD_ODBIORNIKI_RC               336
 #define IDR_ACCELERATOR1                338
+#define IDI_POLACZ_COM                  339
+#define IDI_ROZLACZ_COM                 340
+#define IDI_ICON1                       343
+#define IDI_POLACZ_ETH                  343
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -332,8 +336,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        339
-#define _APS_NEXT_COMMAND_VALUE         32820
+#define _APS_NEXT_RESOURCE_VALUE        346
+#define _APS_NEXT_COMMAND_VALUE         32822
 #define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

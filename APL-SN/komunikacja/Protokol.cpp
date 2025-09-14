@@ -31,7 +31,6 @@ BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
 BOOL			CProtokol::m_bPolaczonoEth = FALSE;
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
-//std::vector <_Telemetria> CProtokol::m_vRamkaTelemetryczna;		//wektor do przechowywania ramek
 std::vector <_Ramka> CProtokol::m_vRamkaPolecenia;
 std::vector <_Telemetria> CProtokol::m_vDaneTelemetryczne;
 int				CProtokol::m_LicznikInstancji = 0;
@@ -98,6 +97,8 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 {
 	uint8_t chErr = ERR_CANT_CONNECT;
 	DWORD dwErr;
+	CString strSprawdzanyAdres;
+	UINT nNumerSprawdzanegoPortu;
 
 	switch (chTypPortu)
 	{
@@ -109,8 +110,6 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 			m_chTypPortu = UART;
 		}
 		break;
-
-	case USB:	break;
 
 	case ETHS:	//ethernet jako serwer
 		m_cGniazdoSluchajace.UstawRodzica(pWnd);
@@ -142,16 +141,22 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	case ETHK:	//ethernet jako klient
 		//m_hZdarzenieNawiazanoPolaczenieETH = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 		m_cGniazdoPolaczenia.UstawRodzica(pWnd);
-		if (m_cGniazdoPolaczenia.Create())
-		{
-			chErr = ERR_OK;
-		}
-		else
-		{
-			chErr = ERR_CANT_CONNECT;
-			dwErr = GetLastError();
-		}
 
+		//m_cGniazdoPolaczenia.GetSockName(strSprawdzanyAdres, nNumerSprawdzanegoPortu);
+		//if (nNumerSprawdzanegoPortu != nNumerPortu)	//sprawdŸ czy gniazdo ju¿ istnieje
+			//GetSockName(CString& rSocketAddress, UINT& rSocketPort)
+		{
+			if (m_cGniazdoPolaczenia.Create())
+			{
+				m_chTypPortu = ETHK;
+				chErr = ERR_OK;
+			}
+			else
+			{
+				chErr = ERR_CANT_CONNECT;
+				dwErr = GetLastError();
+			}
+		}
 
 		if (m_cGniazdoPolaczenia.Connect(strAdres, nNumerPortu))
 		{
@@ -208,7 +213,15 @@ void CProtokol::AkceptujPolaczenieETH(void)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL CProtokol::CzyPolaczonoEth()
 { 
-	//m_bPolaczonoEth = m_cGniazdoSluchajace.CzyPolaczonoEth();
+	BOOL bPasywne, bAktywne;
+	bPasywne = m_cGniazdoSluchajace.CzyPolaczonoEth();
+	bAktywne = m_cGniazdoPolaczenia.CzyPolaczonoEth();
+	if (!bPasywne && bAktywne)
+		m_bPolaczonoEth = TRUE;
+	else
+	if (bPasywne && !bAktywne)
+		m_bPolaczonoEth = FALSE;
+
 	return m_bPolaczonoEth; 
 }
 
@@ -260,11 +273,10 @@ uint8_t CProtokol::ZamknijPort(uint8_t chTypPortu)
 	case ETHK:
 		if (m_cGniazdoPolaczenia.m_bPolaczone)
 			m_cGniazdoPolaczenia.Close();
+		m_bPolaczonoEth = FALSE;
 		m_bKoniecWatkuEth = TRUE;
 		WaitForSingleObject(pWskWatkuSluchajacegoEth, INFINITE);
 		break;
-
-	case USB:	break;
 
 	default: chErr = ERR_ZLY_TYP_PORTU;	break;
 	}
@@ -337,7 +349,7 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 	uint8_t chBuforOdb[ROZM_DANYCH_ETH + ROZM_CIALA_RAMKI];
 
 	WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzeniePolaczonoEth[1], INFINITE);		//czekaj na po³¹czenie z instancj¹ 1 gniazda, czyli klientem
-	m_bPolaczonoEth = TRUE;
+	//m_bPolaczonoEth = TRUE;
 	while (!m_bKoniecWatkuEth)
 	{
 		WaitForSingleObject(m_cGniazdoSluchajace.m_hZdarzenieOdebranoEth[1], INFINITE);		//czekaj na odbiór danych
@@ -350,6 +362,7 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 			getProtokol().AnalizujOdebraneDane(chBuforOdb, iOdczytano);
 		}
 	}
+	//m_bPolaczonoEth = FALSE;
 	return ERR_OK;
 }
 
@@ -526,7 +539,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 		chErr = CzyscBuforPortu(m_chTypPortu);
 		if (chErr != ERR_OK)
 			return chErr;
-		
+
 		//je¿eli ponowne wys³anie ramki
 		if (chLicznikRetransmisji > 0)
 		{
@@ -585,7 +598,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 			}
 		}
 		else
-			if (chErr == ERR_NOT_CONNECTED)
+			if ((chErr == ERR_NOT_CONNECTED) || (chErr == ERR_SEND_DATA))
 				return chErr;
 	}
 	return chErr;

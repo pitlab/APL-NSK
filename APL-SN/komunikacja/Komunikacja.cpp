@@ -289,9 +289,6 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		m_bPolaczonoEth = FALSE;	//po po³aczeniu zmienna CProtokol::m_bPolaczonoEth bêdzie ustawiona w w¹tku CProtokol::WatekSluchajPortuEth() i bêdzie ustawiona w trakcie odpytania CAPLSNView::OnUpdatePolaczEth
 		chErr = getProtokol().PolaczPort(ETHK, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
 		break;
-
-
-	case USB:	break;
 	
 	default:	break;
 	}

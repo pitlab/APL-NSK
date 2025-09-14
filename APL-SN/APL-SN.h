@@ -30,20 +30,19 @@ public:
 	CPortSzeregowy& getPortSzeregowy();
 	CProtokol& getProtokol();
 	CKomunikacja& getKomunikacja();
+	//CGniazdoSieci& getGniazdoSieci();
 
 // Implementacja
 	BOOL  m_bHiColorIcons;
-
 	virtual void PreLoadState();
 	virtual void LoadCustomState();
 	virtual void SaveCustomState();
-
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 
-
 	private:	
 	CPortSzeregowy m_cPortSzeregowy;
+	//CGniazdoSieci m_cGniazdoSieci;
 	CProtokol m_cProtokol;
 	CKomunikacja m_cKomunikacja;
 

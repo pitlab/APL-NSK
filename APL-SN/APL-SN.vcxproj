@@ -288,17 +288,25 @@
     <Image Include="res\fileview_hc.bmp" />
     <Image Include="res\file_view.ico" />
     <Image Include="res\file_view_hc.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\icona_rozlacz_com.ico" />
     <Image Include="res\menuimages.bmp" />
     <Image Include="res\menuimages_hc.bmp" />
     <Image Include="res\output_wnd.ico" />
     <Image Include="res\output_wnd_hc.ico" />
+    <Image Include="res\polaczenie.bmp" />
+    <Image Include="res\polacz_com.ico" />
+    <Image Include="res\polacz_eth.ico" />
     <Image Include="res\properties.bmp" />
     <Image Include="res\properties_hc.bmp" />
     <Image Include="res\properties_wnd.ico" />
     <Image Include="res\properties_wnd_hc.ico" />
+    <Image Include="res\rozlacz_com.ico" />
     <Image Include="res\sort.bmp" />
     <Image Include="res\sort_hc.bmp" />
     <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\toolbar1.bmp" />
     <Image Include="res\Toolbar256.bmp" />
     <Image Include="res\userimages.bmp" />
   </ItemGroup>

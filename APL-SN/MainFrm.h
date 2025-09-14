@@ -65,6 +65,8 @@ private:
 	CObslugaRejestru m_cObslugaRejestru;
 public:
 	afx_msg void OnButKonfTelemetrii();
+	afx_msg void OnUpdatePolaczCom(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateButPolaczEth(CCmdUI* pCmdUI);
 };
 
 

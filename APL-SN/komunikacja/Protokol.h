@@ -21,9 +21,7 @@ public:
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
 	uint8_t ZamknijPort(uint8_t chTypPortu);
-	//BOOL CzyPolaczonoEth() { return m_bPolaczonoEth; }
 	 BOOL CzyPolaczonoEth();
-	//void PolaczonoETH();
 	void OdbierzDaneETH();
 	void WyslanoDaneETH();	
 	void AkceptujPolaczenieETH();
@@ -68,7 +66,6 @@ private:
 	
 	int	m_iLecznikWejRamekTelemetrii;		///< Zlicza przychodz¹ce ramki
 	int	m_iLecznikWejRamekZwyklych;
-	//void getIncommingAnswerFrames(std::vector< BinaryFrame >& _frames);
 	static CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 	static CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
 	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_ETH];		//bufor odbiorczy ethernetu

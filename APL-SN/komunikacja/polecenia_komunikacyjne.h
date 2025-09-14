@@ -3,9 +3,9 @@
 //definicje portów
 #define UART	1
 #define ETHS	2	//ethernet jako serwer
-#define ETHK	3	//ethernet jako klient
-#define USB		4
-#define LICZBA_TYPOW_PORTOW	4
+#define ETHK	4	//ethernet jako klient
+//#define USB		8
+#define LICZBA_TYPOW_PORTOW	3
 
 //#define ROZM_DANYCH_WE_UART	128
 //#define ROZM_DANYCH_WY_UART	128
