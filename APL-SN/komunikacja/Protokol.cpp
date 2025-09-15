@@ -2,7 +2,8 @@
 #include "Protokol.h"
 #include "../Errors.h"
 #include "../multithreading.h"
-
+#include <chrono>
+#include <thread>
 
 /*Struktura ramki komunikacyjnej
 0xAA - Nag³ówek.Strumieñ danych wejœciowych analizujemy pod k¹tem obecnoœci preambu³y.
@@ -260,6 +261,16 @@ uint8_t CProtokol::ZamknijPort(uint8_t chTypPortu)
 	switch(chTypPortu)
 	{
 	case UART:	
+		uint8_t chDaneWy;
+		uint8_t chRamka[ROZMIAR_RAMKI_UART];
+		using namespace std::this_thread; // sleep_for, sleep_until
+		using namespace std::chrono; // nanoseconds, system_clock, seconds
+
+		chErr = PrzygotujRamke(ADRES_BROADCAST, ADRES_STACJI, PK_ZAMKNIJ_POLACZENIE, &chDaneWy, 0, chRamka);
+		if (chErr == ERR_OK)
+			chErr = WyslijRamke(m_chTypPortu, chRamka, ROZM_CIALA_RAMKI);
+		
+		sleep_for(milliseconds(2));
 		chErr = getPortSzeregowy().Disconnect();
 		m_bKoniecWatkuUart = TRUE;
 		WaitForSingleObject(pWskWatkuSluchajacegoUart, INFINITE);

@@ -306,13 +306,17 @@ uint8_t CKomunikacja::Rozlacz()
 	uint8_t chErr = ERR_OK;
 	
 	if (m_bPolaczonoEth)
-		chErr = getProtokol().ZamknijPort(ETHK);
-	chErr = getProtokol().ZamknijPort(ETHS);
-	m_bPolaczonoEth = FALSE;
+	{
+		//chErr = getProtokol().ZamknijPort(ETHK);
+		chErr = getProtokol().ZamknijPort(ETHS);
+		m_bPolaczonoEth = FALSE;
+	}
 
 	if (m_bPolaczonoUart)
+	{
 		chErr = getProtokol().ZamknijPort(UART);
-	m_bPolaczonoUart = FALSE;
+		m_bPolaczonoUart = FALSE;
+	}
 	return chErr;
 }
 
