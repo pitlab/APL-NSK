@@ -9,6 +9,7 @@
 #include "KonfiguracjaWyresow.h"
 #include "KonfigRejestratora.h"
 #include <vector>
+#include <memory>
 
 #define MIEJSCE_MIEDZY_WYKRESAMI	8
 #define MIEJSCE_PRZED_WYKRESEM		30
@@ -43,6 +44,7 @@ protected:
 	CWinThread* pWskWatkuPaskaPostepu;
 	CWinThread* pWskWatkuOdswiezaniaTelemetrii;
 	static int m_LicznikInstancji;
+	std::unique_ptr<CD2DBitmap> m_pCameraBitmap;  // bitmapa do rysowania
 
 // Implementacja
 public:
@@ -83,6 +85,8 @@ protected:
 	int m_nSzerokoscWykresu;
 	int m_nMaxScrollPoziomo;
 	int m_nBiezacyScrollPoziomo;
+	int m_nSzerokoscKamery;
+	int m_nWysokoscKamery;
 
 public:
 	uint32_t m_nNumerPortuCom;

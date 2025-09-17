@@ -17,9 +17,8 @@ public:
 
 // Operacje
 public:
-	uint16_t m_sZdjecie[480*320];
+	uint16_t m_sZdjecieRGB565[480 * 320];
 	bool m_bZdjecieGotowe;
-	//std::vector <float> dane_telemetryczne;
 
 // Przesłania
 public:

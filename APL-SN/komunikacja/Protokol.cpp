@@ -270,7 +270,7 @@ uint8_t CProtokol::ZamknijPort(uint8_t chTypPortu)
 		if (chErr == ERR_OK)
 			chErr = WyslijRamke(m_chTypPortu, chRamka, ROZM_CIALA_RAMKI);
 		
-		sleep_for(milliseconds(2));
+		sleep_for(microseconds(1500));	//czekaj a¿ ramka zostanie wys³ana, dopiero potem roz³acz port. Do wys³ania jest 80 bitów. Przy 57600 zajmie to 1388us
 		chErr = getPortSzeregowy().Disconnect();
 		m_bKoniecWatkuUart = TRUE;
 		WaitForSingleObject(pWskWatkuSluchajacegoUart, INFINITE);

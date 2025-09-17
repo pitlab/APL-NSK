@@ -34,7 +34,7 @@ CAPLSNDoc::CAPLSNDoc() noexcept
 	
 {
 	// TODO: tutaj dodaj jednorazowy kod konstruowania
-	m_sZdjecie[0] = 0;
+	//m_sZdjecie[0] = 0;
 
 }
 

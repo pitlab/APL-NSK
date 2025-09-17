@@ -164,10 +164,6 @@ BOOL CAPLSNView::PreCreateWindow(CREATESTRUCT& cs)
 // Rysowanie obiektu CAPLSNView - docelowo do usunięcia
 void CAPLSNView::OnDraw(CDC* pDC)
 {
-	int32_t x, y;
-	uint8_t chKolor[3];
-	uint16_t sPix;
-	COLORREF crKolor;
 	CAPLSNDoc* pDoc = GetDocument();
 	RECT prost;
 	ASSERT_VALID(pDoc);
@@ -175,23 +171,7 @@ void CAPLSNView::OnDraw(CDC* pDC)
 		return;
 
 	// TODO: tutaj dodaj kod rysowania danych natywnych
-	if (pDoc->m_bZdjecieGotowe)
-	{
-		for (y = 0; y < 320; y++)
-		{
-			for (x = 0; x < 480; x++)
-			{
-				sPix = pDoc->m_sZdjecie[y * 480 + x];
-				chKolor[0] = ((sPix & 0xF800) >> 11)*8;		//R
-				chKolor[1] = ((sPix & 0x070E) >> 5)*4;		//G
-				chKolor[2] = (sPix & 0x001F)*8;			//B
-				crKolor = RGB(chKolor[0], chKolor[1], chKolor[2]);
 
-				pDC->SetPixel(x, y, crKolor);
-			}
-		}
-		pDoc->m_bZdjecieGotowe = FALSE;
-	}
 
 	//rysuj pasek postepu
 	if (m_bRysujPasekPostepu)
@@ -234,6 +214,56 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	float fSkalaX = m_fZoomPoziomo;
 	float fSkalaY = (float)OknoWykresu.bottom / 40.0f * m_fZoomPionowo;
 	float fPoziomZera, fPoziomZeraLewy, fPoziomZeraPrawy;
+
+	//wyświetl obraz z kamery
+	uint8_t chKolor[3];
+	uint16_t sPix;
+
+	const CD2DRectU rectUObraz(0, 0, 480, 320);
+	CD2DRectF rectObraz;
+	ID2D1Bitmap* m_pCameraBitmap = nullptr;
+
+	if (pDoc->m_bZdjecieGotowe)
+	{
+		m_nSzerokoscKamery = 480;
+		m_nWysokoscKamery = 320;
+		size_t Indeks;
+		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
+		size_t bufferSize = static_cast<size_t>(m_nSzerokoscKamery) * static_cast<size_t>(m_nWysokoscKamery) * 4;
+		std::vector<uint8_t> bgraBuffer(bufferSize);
+
+		for (int y = 0; y < m_nWysokoscKamery; y++)
+		{
+			for (int x = 0; x < m_nSzerokoscKamery; x++)
+			{
+				sPix = pDoc->m_sZdjecieRGB565[y * 480 + x];
+				chKolor[0] = ((sPix & 0xF800) >> 11) * 8;		//R
+				chKolor[1] = ((sPix & 0x070E) >> 5) * 4;		//G
+				chKolor[2] = (sPix & 0x001F) * 8;				//B
+
+
+				Indeks = (y * 480 + x) *4;
+				bgraBuffer[Indeks + 0] = chKolor[2];	//B
+				bgraBuffer[Indeks + 1] = chKolor[1];	//G
+				bgraBuffer[Indeks + 2] = chKolor[0];	//R
+				bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
+			}
+		}
+
+		D2D1_SIZE_U size = D2D1::SizeU(m_nSzerokoscKamery, m_nWysokoscKamery);
+		D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+		m_spCameraBitmap.Release();
+
+		ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
+		HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nSzerokoscKamery * 4, &props, &m_spCameraBitmap);
+
+		if (m_spCameraBitmap)
+		{
+			pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)m_nSzerokoscKamery, (FLOAT)m_nWysokoscKamery));
+		}
+	}
+
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)
@@ -816,7 +846,7 @@ void CAPLSNView::OnZrobZdjecie()
 
 	CAPLSNDoc* pDoc = GetDocument();
 
-	uint32_t rozmiar = sizeof(pDoc->m_sZdjecie);
+	uint32_t rozmiar = sizeof(pDoc->m_sZdjecieRGB565);
 	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
 	m_bKoniecWatkuPaskaPostepu = FALSE;
 	pWskWatkuPaskaPostepu = AfxBeginThread((AFX_THREADPROC)WatekRysujPasekPostepu, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
@@ -824,7 +854,7 @@ void CAPLSNView::OnZrobZdjecie()
 	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
 	m_sBiezacyStanPaskaPostepu = 0;
 	pDoc->m_bZdjecieGotowe = FALSE;
-	chErr = getKomunikacja().ZrobZdjecie(pDoc->m_sZdjecie);
+	chErr = getKomunikacja().ZrobZdjecie(pDoc->m_sZdjecieRGB565);
 	if (chErr == ERR_OK)
 	{
 		pDoc->m_bZdjecieGotowe = TRUE;
