@@ -521,20 +521,12 @@ uint8_t CKomunikacja::WyslijOK()
 // Wysy³a polecenie zrobienia zdjêcia
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//uint8_t CKomunikacja::ZrobZdjecie(uint8_t chAdres, uint16_t sSzerokosc, uint16_t sWysokosc, uint16_t* sBuforZdjecia)
 uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 {
-	//uint8_t chRamka[ROZM_CIALA_RAMKI + 5];
 	uint8_t chDane[5];
 	uint8_t x, chErr, chOdebrano;
 	uint8_t chLicznikBledow = 0;
-	uint32_t nPobrano, nRozmiarDanych;
-	/*m_unia8_16.dane16 = sSzerokosc;
-	chDane[0] = m_unia8_16.dane8[0];
-	chDane[1] = m_unia8_16.dane8[1];
-	m_unia8_16.dane16 = sWysokosc;
-	chDane[2] = m_unia8_16.dane8[0];
-	chDane[3] = m_unia8_16.dane8[1];*/
+	uint32_t nPobranoBajtow, nRozmiarDanych;
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZROB_ZDJECIE, chDane, 0, chDane, &chOdebrano);
 	if (chErr == ERR_OK)
@@ -560,24 +552,25 @@ uint8_t CKomunikacja::ZrobZdjecie(uint16_t* sBuforZdjecia)
 		}
 
 		//pobierz zdjêcie
-		nPobrano = 0;
-		nRozmiarDanych = (uint32_t)(480 * 320 * 2);
-		while (nPobrano < nRozmiarDanych)
+		nPobranoBajtow = 0;
+		nRozmiarDanych = (uint32_t)(480 * 320 * 2);	//rozmiar obrazu w bajtach
+		while (nPobranoBajtow < nRozmiarDanych)
 		{
-			m_unia8_32.dane32 = nPobrano/4;	//offset pobieranych danych zdjêcia, /4 - konwersja z bajtów s³owa 32/bit 
+			//m_unia8_32.dane32 = nPobranoBajtow /4;	//offset pobieranych danych zdjêcia, /4 - konwersja z bajtów s³owa 32/bit 
+			m_unia8_32.dane32 = nPobranoBajtow / 2;	//offset pobieranych danych zdjêcia, /2 - konwersja z bajtów  16 bitowe piksele
 			for (x = 0; x < 4; x++)
 				chDane[x] = m_unia8_32.dane8[x];
 
 			//rozmiar paczki danych do pobrania
-			if ((nRozmiarDanych - nPobrano) > ROZM_DANYCH_UART)
+			if ((nRozmiarDanych - nPobranoBajtow) > ROZM_DANYCH_UART)
 				chDane[4] = ROZM_DANYCH_UART;
 			else
-				chDane[4] = nRozmiarDanych - nPobrano;
+				chDane[4] = nRozmiarDanych - nPobranoBajtow;
 
-			chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobrano/2), &chOdebrano);
+			chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_POBIERZ_ZDJECIE, chDane, 5, (uint8_t*)(sBuforZdjecia + nPobranoBajtow /2), &chOdebrano);
 			if (chErr == ERR_OK)
 			{
-				nPobrano += chOdebrano;
+				nPobranoBajtow += chOdebrano;
 				SetEvent(m_hZdarzeniePaczkaDanych);
 				chLicznikBledow = 0;
 			}
