@@ -861,6 +861,12 @@ void CAPLSNView::OnZrobZdjecie()
 		m_bKoniecWatkuPaskaPostepu = TRUE;
 		Invalidate();
 	}
+	else
+	{
+		CString strKomunikat;
+		strKomunikat.Format(L"Wystąpił błąd: %d", chErr);
+		MessageBoxW(strKomunikat, L"Ojojoj!");	//dodać flagi
+	}
 }
 
 
