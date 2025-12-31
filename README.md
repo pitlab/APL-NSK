@@ -1,4 +1,4 @@
-Naziemna Stacja Kontroli do obsługi roju Wronów z APL3 do zwalczania kóz bojowych i innych niekonwencjonalnych zagrożeń. Patrz: https://www.youtube.com/shorts/rCg7bQjVZZg
+Naziemna Stacja Kontroli do obsługi roju Wronów z APL3 do zwalczania <a href="https://www.youtube.com/shorts/rCg7bQjVZZg" target="_blank">kóz bojowych</a> i innych niekonwencjonalnych zagrożeń. 
 
 Działają już pierwsze wykresy z telemetrii on-line
 ![Kostka](obrazki/wykresy.png)

@@ -115,7 +115,7 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctrlKanalPID.InsertItem(4, _T("Nawigacja N"));
 	m_ctrlKanalPID.InsertItem(5, _T("Nawigacja E"));
 
-	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
+	m_nBiezacyParametr = m_ctrlKanalPID.GetCurSel();
 
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
@@ -133,103 +133,107 @@ BOOL KonfigPID::OnInitDialog()
 			getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
 			m_stPID[n].chPodstFiltraD = chDane[0] & 0x3F;
 			m_stPID[n].bWylaczony = (chDane[0] & 0x40) >> 6;
-			m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
+			if (n & 0x01)	//regulatory nieparzyste obsługują pochodną, czyli prędkość katową lub liniową, więc nie mogą być kątowe
+				m_stPID[n].bKatowy = FALSE;
+			else
+				m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
 		}
 	}
 
 	m_ctlSlidPOdstCzasuFiltraD1.SetRange(0, 64);
 	m_ctlSlidPOdstCzasuFiltraD2.SetRange(0, 64);
-	UstawKontrolki();
+	UstawKontrolki(m_nBiezacyParametr);
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zmienia stan włączenia kontrolek okna dialogowego
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch)
+{
+	GetDlgItem(IDC_EDIT_KP1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_TI1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_TD1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(!bRegGlow);
+
+	GetDlgItem(IDC_EDIT_KP2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_TI2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_TD2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(!bRegPoch);
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wstawia zawartość do pól edycyjnych
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::UstawKontrolki()
+void KonfigPID::UstawKontrolki(int nParametr)
 {
-	m_strKP1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fKp);
+	int nRegGlow = 2 * nParametr + 0;
+	int nRegPoch = 2 * nParametr + 1;
+
+	m_bWylaczony1 = m_stPID[nRegGlow].bWylaczony;
+	m_bWylaczony2 = m_stPID[nRegPoch].bWylaczony;
+	WlaczKontrolki(m_bWylaczony1, m_bWylaczony2);
+
+	m_strKP1.Format(_T("%.4f"), m_stPID[nRegGlow].fKp);
 	m_strKP1.Replace(_T('.'), _T(','));
-	m_strKP2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fKp);
+	UpdateData(FALSE);
+	m_strKP2.Format(_T("%.4f"), m_stPID[nRegPoch].fKp);
 	m_strKP2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_strTI1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fTi);
-	m_strTD1.Replace(_T('.'), _T(','));
-	m_strTI2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fTi);
-	m_strTD1.Replace(_T('.'), _T(','));
+	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fTi);
+	m_strTI1.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
+	m_strTI2.Format(_T("%.4f"), m_stPID[nRegPoch].fTi);
+	m_strTI2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_strTD1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fTd);
+	m_strTD1.Format(_T("%.4f"), m_stPID[nRegGlow].fTd);
 	m_strTD1.Replace(_T('.'), _T(','));
-	m_strTD2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fTd);
-	m_strTD1.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
+	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
+	m_strTD2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_strOgrCalki1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fOgrCalki);
-	m_strTD1.Replace(_T('.'), _T(','));
-	m_strOgrCalki2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fOgrCalki);
-	m_strTD1.Replace(_T('.'), _T(','));
+	m_strOgrCalki1.Format(_T("%.4f"), m_stPID[nRegGlow].fOgrCalki);
+	m_strOgrCalki1.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
+	m_strOgrCalki2.Format(_T("%.4f"), m_stPID[nRegPoch].fOgrCalki);
+	m_strOgrCalki2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_strMinWyj1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fMinWyj);
+	m_strMinWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMinWyj);
 	m_strMinWyj1.Replace(_T('.'), _T(','));
-	m_strMinWyj2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fMinWyj);
+	UpdateData(FALSE);
+	m_strMinWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMinWyj);
 	m_strMinWyj2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_strMaxWyj1.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 0].fMaxWyj);
+	m_strMaxWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMaxWyj);
 	m_strMaxWyj1.Replace(_T('.'), _T(','));
-	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[2 * m_nBiezacyRegulator + 1].fMaxWyj);
+	UpdateData(FALSE);
+	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 
-	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD);
-	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD);
-	m_bKatowy = m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy;
-	m_bWylaczony1 = m_stPID[2 * m_nBiezacyRegulator + 0].bWylaczony;
-	m_bWylaczony2 = m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony;
-
-	if (m_bWylaczony1)
-	{
-		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(FALSE);
-	}
-	else
-	{
-		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(TRUE);
-	}
-	if (m_bWylaczony2)
-	{
-		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(FALSE);
-	}
-	else
-	{
-		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(TRUE);
-	}
+	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].chPodstFiltraD);
+	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].chPodstFiltraD);
+	m_bKatowy = m_stPID[nRegGlow].bKatowy;	
 	UpdateData(FALSE);
 }
 
@@ -278,10 +282,22 @@ void KonfigPID::OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	UpdateData(TRUE);
-	m_nBiezacyRegulator = m_ctrlKanalPID.GetCurSel();
-	UstawKontrolki();
+	m_nBiezacyParametr = m_ctrlKanalPID.GetCurSel();
+	UstawKontrolki(m_nBiezacyParametr);
 	UpdateData(FALSE);
 	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zamienia string parametru na liczbę float
+// Zwraca: liczbę float
+///////////////////////////////////////////////////////////////////////////////////////////////////
+float KonfigPID::ZamienStrNaFloat(CString strLiczba)
+{
+	strLiczba.Replace(_T(','), _T('.'));
+	return (float)_wtof(strLiczba);
 }
 
 
@@ -293,10 +309,9 @@ void KonfigPID::OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult)
 void KonfigPID::OnEnChangeEditKp1()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strKP1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fKp = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].fKp = ZamienStrNaFloat(m_strKP1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -308,10 +323,9 @@ void KonfigPID::OnEnChangeEditKp1()
 void KonfigPID::OnEnChangeEditKp2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strKP2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fKp = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fKp = ZamienStrNaFloat(m_strKP2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -323,10 +337,9 @@ void KonfigPID::OnEnChangeEditKp2()
 void KonfigPID::OnEnChangeEditTi1()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strTI1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fTi = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].fTi = ZamienStrNaFloat(m_strTI1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -338,10 +351,9 @@ void KonfigPID::OnEnChangeEditTi1()
 void KonfigPID::OnEnChangeEditTi2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strTI2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fTi = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fTi = ZamienStrNaFloat(m_strTI2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -353,10 +365,9 @@ void KonfigPID::OnEnChangeEditTi2()
 void KonfigPID::OnEnChangeEditTd1()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strTD1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fTd = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].fTd = ZamienStrNaFloat(m_strTD1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -368,10 +379,9 @@ void KonfigPID::OnEnChangeEditTd1()
 void KonfigPID::OnEnChangeEditTd2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strTD2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fTd = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fTd = ZamienStrNaFloat(m_strTD2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -383,25 +393,9 @@ void KonfigPID::OnEnChangeEditTd2()
 void KonfigPID::OnEnChangeEditMinWy1()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strMinWyj1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fMinWyj = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki maksimum wyjścia regulatora pochodnej
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnEnChangeEditMaxWy1()
-{
-	UpdateData(TRUE);
-	CString strLiczba = m_strMaxWyj1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fMaxWyj = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].fMinWyj = ZamienStrNaFloat(m_strMinWyj1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -413,10 +407,23 @@ void KonfigPID::OnEnChangeEditMaxWy1()
 void KonfigPID::OnEnChangeEditMinWy2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strMinWyj2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fMinWyj = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fMinWyj = ZamienStrNaFloat(m_strMinWyj2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Edycja kontrolki maksimum wyjścia regulatora pochodnej
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditMaxWy1()
+{
+	UpdateData(TRUE);
+	m_stPID[2 * m_nBiezacyParametr + 0].fMaxWyj = ZamienStrNaFloat(m_strMaxWyj1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -428,10 +435,9 @@ void KonfigPID::OnEnChangeEditMinWy2()
 void KonfigPID::OnEnChangeEditMaxWy2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strMaxWyj2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fMaxWyj = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fMaxWyj = ZamienStrNaFloat(m_strMaxWyj2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -443,10 +449,9 @@ void KonfigPID::OnEnChangeEditMaxWy2()
 void KonfigPID::OnEnChangeEditLimitCalki1()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strOgrCalki1.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 0].fOgrCalki = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].fOgrCalki = ZamienStrNaFloat(m_strOgrCalki1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
@@ -458,16 +463,15 @@ void KonfigPID::OnEnChangeEditLimitCalki1()
 void KonfigPID::OnEnChangeEditLimitCalki2()
 {
 	UpdateData(TRUE);
-	CString strLiczba = m_strOgrCalki2.GetString();
-	strLiczba.Replace(_T(','), _T('.'));
-	m_stPID[2 * m_nBiezacyRegulator + 1].fOgrCalki = (float)_wtof(strLiczba);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].fOgrCalki = ZamienStrNaFloat(m_strOgrCalki2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na potrzebę przerywowania suwaka filtra D
+// Reakcja na potrzebę przerysowania suwaka filtra D
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
@@ -477,8 +481,8 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 	float fCzas;
 	UpdateData(TRUE);
 	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
-	m_stPID[2 * m_nBiezacyRegulator + 0].chPodstFiltraD = m_PodstFiltraD1;
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].chPodstFiltraD = m_PodstFiltraD1;
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	if (m_PodstFiltraD1)
 		fCzas = m_PodstFiltraD1 / 200.f * 1000;
 	else
@@ -501,8 +505,8 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 	float fCzas;
 	UpdateData(TRUE);
 	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
-	m_stPID[2 * m_nBiezacyRegulator + 1].chPodstFiltraD = m_PodstFiltraD2;
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].chPodstFiltraD = m_PodstFiltraD2;
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	if (m_PodstFiltraD2)
 		fCzas = m_PodstFiltraD2 / 200.f * 1000;
 	else
@@ -521,8 +525,8 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 void KonfigPID::OnBnClickedCheckKatowy()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bKatowy = m_bKatowy;
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].bKatowy = m_bKatowy;
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 }
 
 
@@ -534,8 +538,8 @@ void KonfigPID::OnBnClickedCheckKatowy()
 void KonfigPID::OnBnClickedCheckWylacz1()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyRegulator + 0].bWylaczony = m_bWylaczony1;
-	m_stPID[2 * m_nBiezacyRegulator + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony = m_bWylaczony1;
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	if (m_bWylaczony1)
 	{
 		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(FALSE);
@@ -570,8 +574,8 @@ void KonfigPID::OnBnClickedCheckWylacz1()
 void KonfigPID::OnBnClickedCheckWylacz2()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyRegulator + 1].bWylaczony = m_bWylaczony2;
-	m_stPID[2 * m_nBiezacyRegulator + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony = m_bWylaczony2;
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	if (m_bWylaczony2)
 	{
 		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(FALSE);

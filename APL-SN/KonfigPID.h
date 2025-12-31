@@ -41,7 +41,9 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
-	void UstawKontrolki();
+	void UstawKontrolki(int nParametr);
+	float ZamienStrNaFloat(CString str);
+	void WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -49,10 +51,10 @@ public:
 	afx_msg void OnBnClickedOk();
 
 private:
-	int m_nBiezacyRegulator;
-	CTabCtrl m_ctrlKanalPID;
-	CString m_strTI2;
+	int m_nBiezacyParametr;
+	CTabCtrl m_ctrlKanalPID;	
 	CString m_strTI1;
+	CString m_strTI2;
 	CString m_strKP1;
 	CString m_strKP2;
 	CString m_strFiltrD1;
@@ -62,8 +64,8 @@ private:
 	CString m_strOgrCalki1;
 	CString m_strOgrCalki2;
 	CString m_strMinWyj1;
-	CString m_strMaxWyj1;
 	CString m_strMinWyj2;
+	CString m_strMaxWyj1;	
 	CString m_strMaxWyj2;
 	BOOL m_bKatowy;
 	BOOL m_bWylaczony1;
@@ -83,13 +85,13 @@ public:
 	afx_msg void OnEnChangeEditTd1();
 	afx_msg void OnEnChangeEditTd2();
 	afx_msg void OnEnChangeEditMinWy1();
-	afx_msg void OnEnChangeEditMaxWy1();
 	afx_msg void OnEnChangeEditMinWy2();
+	afx_msg void OnEnChangeEditMaxWy1();	
 	afx_msg void OnEnChangeEditMaxWy2();
 	afx_msg void OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnEnChangeEditLimitCalki2();
+	afx_msg void OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);	
 	afx_msg void OnEnChangeEditLimitCalki1();
+	afx_msg void OnEnChangeEditLimitCalki2();
 	afx_msg void OnBnClickedCheckKatowy();
 	afx_msg void OnBnClickedCheckWylacz1();
 	afx_msg void OnBnClickedCheckWylacz2();
