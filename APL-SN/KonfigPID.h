@@ -95,4 +95,6 @@ public:
 	afx_msg void OnBnClickedCheckKatowy();
 	afx_msg void OnBnClickedCheckWylacz1();
 	afx_msg void OnBnClickedCheckWylacz2();
+	afx_msg void OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMReleasedcaptureSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
 };

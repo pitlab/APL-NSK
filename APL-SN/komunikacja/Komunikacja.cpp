@@ -860,22 +860,24 @@ uint8_t CKomunikacja::CzytajFlash(uint32_t nAdresPamieci, uint16_t* sDane, uint8
 uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[2];
+	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-	uint8_t chLiczbaRamek = (uint8_t)ceil((float)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
 	uint16_t sOdebranoLacznie = 0;
 
 	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 
-	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE (64)
+	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE
 	for (int n = 0; n < chLiczbaRamek; n++)
 	{
 		if ((sRozmiar - sOdebranoLacznie) > OKRESOW_TELEMETRII_W_RAMCE)
 			chDaneWychodzace[0] = OKRESOW_TELEMETRII_W_RAMCE;
 		else
 			chDaneWychodzace[0] = sRozmiar - sOdebranoLacznie;			//rozmiar
-		chDaneWychodzace[1] = n * OKRESOW_TELEMETRII_W_RAMCE;	//przesuniêcie,czyli czytaj od tego indeksu
-		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 2, chDanePrzychodzace, &chOdebrano);
+		chDaneWychodzace[1] = (uint8_t)((n * OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);		//przesuniêcie, czyli czytaj od tego indeksu
+		chDaneWychodzace[2] = (uint8_t)(((n * OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
+
+		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
 		if (chErr == ERR_OK)
 		{
 			for (uint8_t m = 0; m < chOdebrano/2; m++)
@@ -892,7 +894,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 // Zapisuje do APL listê okresów dla zmiennych telemetrycznych w formacie m³odszy przodem
 // Dane s¹ zaspisywane we Flash dostêpny dla CM7, zapsuje siê w paczkach 32 bajtowych, gdzie nag³ówek paczki i suma kontrolna zajmuj¹ 2 bajty,
 // wiêc do efektywnego u¿ycia jest 30 bajtów, czyli 15 okresów. Dane nale¿y wysy³ac paczkami o rozmiarze  podzielnym przez 15, tak aby 
-// nie by³o problemu polegaj¹cego na tym ¿e czêœæ danych z koñca pierwszej i pocz¹tku drugiej ramki mai³a by byæ zapisana w jednej paczce.
+// nie by³o problemu polegaj¹cego na tym ¿e czêœæ danych z koñca pierwszej i pocz¹tku drugiej ramki mia³a by byæ zapisana w jednej paczce.
 // To bardzo utrudni³o by zarz¹dzanie danymi, wiêc porz¹dek trzeba zrobiæ ju¿ tutaj wysy³ajac liczê danych podzieln¹ przez 15 czyli np 120 zmiennych -> 240 bajtów
 // parametry:
 // [i] chOKres - wskaŸnik na tablicê z okresem
@@ -905,7 +907,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 	uint8_t chDaneWychodzace[ROZM_DANYCH_UART];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint16_t sTemp;
-	uint8_t chLiczbaRamek = (uint8_t)ceil(sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
 	uint8_t chRozmiar;
 	uint16_t sDoZapisu = sRozmiar;
 
@@ -926,12 +928,13 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 		//potem wyœlij kolejne zmienne
 		for (uint8_t m = 0; m < chRozmiar; m++)
 		{
-			sTemp = *(sOKres + m);
+			sTemp = *(sOKres + n * OKRESOW_TELEMETRII_W_RAMCE + m);
 			chDaneWychodzace[2 * m + 2] = (uint8_t)(sTemp & 0x00FF);
 			chDaneWychodzace[2 * m + 3] = (uint8_t)((sTemp & 0xFF00) >> 8);
 		}
+		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2 * chRozmiar + 2, chDanePrzychodzace, &chOdebrano);
 	}
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2*chRozmiar, chDanePrzychodzace, &chOdebrano);
+	
 	return chErr;
 }
 

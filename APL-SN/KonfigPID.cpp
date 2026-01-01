@@ -90,6 +90,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_KATOWY1, &KonfigPID::OnBnClickedCheckKatowy)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ1, &KonfigPID::OnBnClickedCheckWylacz1)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ2, &KonfigPID::OnBnClickedCheckWylacz2)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_D1, &KonfigPID::OnNMReleasedcaptureSliderFiltrD1)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_D2, &KonfigPID::OnNMReleasedcaptureSliderFiltrD2)
 END_MESSAGE_MAP()
 
 
@@ -477,12 +479,11 @@ void KonfigPID::OnEnChangeEditLimitCalki2()
 void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	float fCzas;
+
 	UpdateData(TRUE);
 	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 0].chPodstFiltraD = m_PodstFiltraD1;
-	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 0].chPodstFiltraD = m_PodstFiltraD1;	//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD1, więc aktualizuj również tutaj podczas odświeżania
 	if (m_PodstFiltraD1)
 		fCzas = m_PodstFiltraD1 / 200.f * 1000;
 	else
@@ -495,24 +496,53 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka filtra D regulatora głównego
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateData(TRUE);
+	m_PodstFiltraD1 = m_ctlSlidPOdstCzasuFiltraD1.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 0].chPodstFiltraD = m_PodstFiltraD1;
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Reakcja na potrzebę przerysowania suwaka filtra D
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	float fCzas;
+
 	UpdateData(TRUE);
 	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 1].chPodstFiltraD = m_PodstFiltraD2;
-	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	m_stPID[2 * m_nBiezacyParametr + 1].chPodstFiltraD = m_PodstFiltraD2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
 	if (m_PodstFiltraD2)
 		fCzas = m_PodstFiltraD2 / 200.f * 1000;
 	else
 		fCzas = 0.0f;
 	m_strPodstFiltraD2.Format(_T("Filtr D: %d (%.0f ms)"), m_PodstFiltraD2, fCzas);	
 	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka filtra D regulatora pochodnej
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnNMReleasedcaptureSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateData(TRUE);
+	m_PodstFiltraD2 = m_ctlSlidPOdstCzasuFiltraD2.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 1].chPodstFiltraD = m_PodstFiltraD2;
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	*pResult = 0;
 }
 
@@ -598,6 +628,10 @@ void KonfigPID::OnBnClickedCheckWylacz2()
 	}
 	UpdateData(FALSE);
 }
+
+
+
+
 
 
 
