@@ -50,6 +50,81 @@ END_MESSAGE_MAP()
 // Procedury obsługi komunikatów CKonfigTelemetrii
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Buduje zawartość okna konfiguracji telemetrii
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+BOOL CKonfigTelemetrii::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+	int nPozycja, nPoprzedniaPoz = -1;
+	int nMiejsceNaLiscie = 0;
+	uint16_t sOkres;
+	uint8_t chErr = 1;
+	CString strNapis;
+	float fCzestotliwosc;
+
+	//Zbuduj listę częstotliwości
+	nPozycja = m_ctlListaCzestotliwosciTelemetrii.GetCount();	//liczba pozycji na liście
+	if (nPozycja == 0)
+	{
+		//jeżeli nie ma pozycji to je wstaw
+		for (int n = 1; n < MAX_OKRES_TELEMETRII+2; n++)
+		{
+			nPozycja = PozycjaDlaOkresu(n, &sOkres);
+			if (nPoprzedniaPoz != nPozycja)
+			{
+				if (sOkres < TEMETETRIA_WYLACZONA)
+					strNapis.Format(_T("%.2f Hz (%.2f s)"), MAX_CZESTOTLIWOSC_TELEMETRII / sOkres, (float)sOkres / MAX_CZESTOTLIWOSC_TELEMETRII);
+				else
+					strNapis.Format(_T("Wyłączone"));
+				m_ctlListaCzestotliwosciTelemetrii.InsertString(nPozycja, strNapis);
+				nPoprzedniaPoz = nPozycja;
+			}
+		}
+	}
+
+	//wstaw listę zmiennych telemetrycznych
+	m_ctlOkresTelemetrii.InsertColumn(0, _T("Nazwa zmiennej"), 0, 120);
+	m_ctlOkresTelemetrii.InsertColumn(1, _T("Częstotliwość"), 0, 80);
+
+	//Odczytaj z roju liste telemetrii
+	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+	{
+		if (getKomunikacja().m_cRoj.vWron.size())
+		{
+			m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];
+			fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
+		}
+		else
+		{
+			m_sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
+			fCzestotliwosc = 0;
+		}
+
+		m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
+		if (fCzestotliwosc)
+			strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
+		else
+			strNapis.Format(_T("Wyłączone"));
+		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);
+	}
+
+	m_ctrlZajetosc.SetRange(0, 100);
+	AktualizujZajetoscLacza();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie OK
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CKonfigTelemetrii::OnBnClickedOk()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
@@ -80,11 +155,13 @@ void CKonfigTelemetrii::OnBnClickedOk()
 
 
 
-/// <summary>
-/// Funkcja oblicza numer pozycji na liście zmiennych dla podanego okresu
-/// </summary>
-/// <param name="chOkres"></param>
-/// <returns>Obliczony numer pozycji na liście</returns>
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Oblicza numer pozycji na liście zmiennych dla podanego okresu
+// Parametry: 
+//  chOkres - wartość przeładowania licznika okresu odczytana z APL
+//	*sZaokraglonyOkres - wskaźnik na zwracaną wartość okresu po zaokrągleniu dla eleganckiego wyświetlania
+// zwraca: Obliczony numer pozycji na liście
+///////////////////////////////////////////////////////////////////////////////////////////////////
 int CKonfigTelemetrii::PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres)
 {
 	if (nOkres == 0)
@@ -142,9 +219,9 @@ int CKonfigTelemetrii::PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres)
 		*sZaokraglonyOkres = 2000;
 		return 13;
 	}
-	if (nOkres <= 5000)	//0,02Hz -> 1/50
+	if (nOkres <= MAX_OKRES_TELEMETRII)	//0,02Hz -> 1/50
 	{
-		*sZaokraglonyOkres = 5000;
+		*sZaokraglonyOkres = MAX_OKRES_TELEMETRII;
 		return 14;
 	}
 	else               //wyłączone
@@ -155,12 +232,12 @@ int CKonfigTelemetrii::PozycjaDlaOkresu(int nOkres, uint16_t* sZaokraglonyOkres)
 }
 
 
-
-/// <summary>
-/// Zwraca wartość okresu na podstawie pozycji na liście częstotliwosci 
-/// </summary>
-/// <param name="nPozycja"></param>
-/// <returns></returns>
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zwraca wartość okresu na podstawie pozycji na liście częstotliwosci 
+// Parametry: 
+//  nPozycja - pozycja na liście
+// zwraca: Obliczony okres
+///////////////////////////////////////////////////////////////////////////////////////////////////
 uint16_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 {
 	uint16_t sOkres = TEMETETRIA_WYLACZONA;
@@ -189,89 +266,14 @@ uint16_t CKonfigTelemetrii::OkresDlaPozycji(int nPozycja)
 
 
 
-/// <summary>
-/// Budowanie zawartosci okna konfiguracji telemetrii
-/// </summary>
-/// <returns></returns>
-BOOL CKonfigTelemetrii::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-
-	// TODO:  Dodaj tutaj dodatkową inicjację
-	int nPozycja, nPoprzedniaPoz = -1;
-	int nMiejsceNaLiscie = 0;
-	uint16_t sOkres;
-	uint8_t chErr = 1;
-	CString strNapis;
-	float fCzestotliwosc;
-	
-
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów
-
-	//Zbuduj listę częstotliwości
-	nPozycja = m_ctlListaCzestotliwosciTelemetrii.GetCount();	//liczba pozycji na liście
-	if (nPozycja == 0)
-	{
-		//jeżeli nie ma pozycji to je wstaw
-		for (int n = 1; n < 5002; n++)
-		{
-			nPozycja = PozycjaDlaOkresu(n, &sOkres);
-			if (nPoprzedniaPoz != nPozycja)
-			{
-				if (sOkres < TEMETETRIA_WYLACZONA)
-					strNapis.Format(_T("%.2f Hz (%.2f s)"), MAX_CZESTOTLIWOSC_TELEMETRII / sOkres, (float)sOkres / MAX_CZESTOTLIWOSC_TELEMETRII);
-				else
-					strNapis.Format(_T("Wyłączone"));
-				m_ctlListaCzestotliwosciTelemetrii.InsertString(nPozycja, strNapis);
-				nPoprzedniaPoz = nPozycja;
-			}
-		}
-	}
-
-	//wstaw listę zmiennych telemetrycznych
-	m_ctlOkresTelemetrii.InsertColumn(0, _T("Nazwa zmiennej"), 0, 120);
-	m_ctlOkresTelemetrii.InsertColumn(1, _T("Częstotliwość"), 0, 80);
-
-	//Odczytaj z roju liste telemetrii
-	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
-	{
-		if (getKomunikacja().m_cRoj.vWron.size())
-		{
-			m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];		
-			fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
-		}
-		else
-		{
-			m_sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
-			fCzestotliwosc = 0;
-		}
-
-		m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
-		if (fCzestotliwosc)
-			strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
-		else
-			strNapis.Format(_T("Wyłączone"));
-		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);	
-	}
-
-	m_ctrlZajetosc.SetRange(0, 100);
-	AktualizujZajetoscLacza();
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
-}
-
-
-
-/// <summary>
-/// Klikięto na listę zmiennych. Pobierz bieżący okres i podświetl na liście częstotliwości
-/// </summary>
-/// <param name="pNMHDR"></param>
-/// <param name="pResult"></param>
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Kliknięto na listę zmiennych. Pobierz bieżący okres i podświetl na liście częstotliwości
+// Parametry: 
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CKonfigTelemetrii::OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	uint16_t sZaokraglonyokres;
 	uint8_t chPozycjaCzestotliwosci;
 	
@@ -285,12 +287,13 @@ void CKonfigTelemetrii::OnLvnItemchangedListZmienneTele(NMHDR* pNMHDR, LRESULT* 
 
 
 
-/// <summary>
-/// Kliknięto na liste częstotliwości
-/// </summary>
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Kliknięto na liste częstotliwości
+// Parametry: 
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	CString strNapis;
 
 	m_nIndeksOkresu = m_ctlListaCzestotliwosciTelemetrii.GetCurSel();
@@ -307,6 +310,12 @@ void CKonfigTelemetrii::OnLbnSelchangeListaCzestotliwosci()
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Oblicza zajetość łącza bieżącą telemetrią
+// Parametry: 
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CKonfigTelemetrii::AktualizujZajetoscLacza()
 {
 	struct

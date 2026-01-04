@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #define DLUGOSC_NAZWY_ZMIENNEJ_TELEMETRII	30
-#define ILOSC_OKRESOW	15
+#define ILOSC_OKRESOW				15
+#define MAX_OKRES_TELEMETRII		5000	//maksymalny okres pozwalajacy uzyskać częstotliwość telemetri 1/50s = 0,02Hz
 
 // Okno dialogowe CKonfigTelemetrii
 

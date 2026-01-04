@@ -93,39 +93,39 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_TEMPCISR2]	= "Temp.Ciœn.Ró¿n2";
 
 	//odbiorniki RC i serwa
-	m_strNazwyZmiennychTele[TELEID_RC_KAN1]		= "Wejœcie RC kan.1";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN2]		= "Wejœcie RC kan.2";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN3]		= "Wejœcie RC kan.3";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN4]		= "Wejœcie RC kan.4";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN5]		= "Wejœcie RC kan.5";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN6]		= "Wejœcie RC kan.6";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN7]		= "Wejœcie RC kan.7";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN8]		= "Wejœcie RC kan.8";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN9]		= "Wejœcie RC kan.9";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN10]	= "Wejœcie RC kan.10";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN11]	= "Wejœcie RC kan.11";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN12]	= "Wejœcie RC kan.12";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN13]	= "Wejœcie RC kan.13";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN14]	= "Wejœcie RC kan.14";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN15]	= "Wejœcie RC kan.15";
-	m_strNazwyZmiennychTele[TELEID_RC_KAN16]	= "Wejœcie RC kan.16";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN1]		= "Odb RC kan.1";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN2]		= "Odb RC kan.2";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN3]		= "Odb RC kan.3";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN4]		= "Odb RC kan.4";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN5]		= "Odb RC kan.5";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN6]		= "Odb RC kan.6";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN7]		= "Odb RC kan.7";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN8]		= "Odb RC kan.8";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN9]		= "Odb RC kan.9";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN10]	= "Odb RC kan.10";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN11]	= "Odb RC kan.11";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN12]	= "Odb RC kan.12";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN13]	= "Odb RC kan.13";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN14]	= "Odb RC kan.14";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN15]	= "Odb RC kan.15";
+	m_strNazwyZmiennychTele[TELEID_RC_KAN16]	= "Odb RC kan.16";
 
-	m_strNazwyZmiennychTele[TELEID_SERWO1]		= "Wyjœcie Serw kan.1";
-	m_strNazwyZmiennychTele[TELEID_SERWO2]		= "Wyjœcie Serw kan.2";
-	m_strNazwyZmiennychTele[TELEID_SERWO3]		= "Wyjœcie Serw kan.3";
-	m_strNazwyZmiennychTele[TELEID_SERWO4]		= "Wyjœcie Serw kan.4";
-	m_strNazwyZmiennychTele[TELEID_SERWO5]		= "Wyjœcie Serw kan.5";
-	m_strNazwyZmiennychTele[TELEID_SERWO6]		= "Wyjœcie Serw kan.6";
-	m_strNazwyZmiennychTele[TELEID_SERWO7]		= "Wyjœcie Serw kan.7";
-	m_strNazwyZmiennychTele[TELEID_SERWO8]		= "Wyjœcie Serw kan.8";
-	m_strNazwyZmiennychTele[TELEID_SERWO9]		= "Wyjœcie Serw kan.9";
-	m_strNazwyZmiennychTele[TELEID_SERWO10]		= "Wyjœcie Serw kan.10";
-	m_strNazwyZmiennychTele[TELEID_SERWO11]		= "Wyjœcie Serw kan.11";
-	m_strNazwyZmiennychTele[TELEID_SERWO12]		= "Wyjœcie Serw kan.12";
-	m_strNazwyZmiennychTele[TELEID_SERWO13]		= "Wyjœcie Serw kan.13";
-	m_strNazwyZmiennychTele[TELEID_SERWO14]		= "Wyjœcie Serw kan.14";
-	m_strNazwyZmiennychTele[TELEID_SERWO15]		= "Wyjœcie Serw kan.15";
-	m_strNazwyZmiennychTele[TELEID_SERWO16]		= "Wyjœcie Serw kan.16";
+	m_strNazwyZmiennychTele[TELEID_SERWO1]		= "Serwo kan.1";
+	m_strNazwyZmiennychTele[TELEID_SERWO2]		= "Serwo kan.2";
+	m_strNazwyZmiennychTele[TELEID_SERWO3]		= "Serwo kan.3";
+	m_strNazwyZmiennychTele[TELEID_SERWO4]		= "Serwo kan.4";
+	m_strNazwyZmiennychTele[TELEID_SERWO5]		= "Serwo kan.5";
+	m_strNazwyZmiennychTele[TELEID_SERWO6]		= "Serwo kan.6";
+	m_strNazwyZmiennychTele[TELEID_SERWO7]		= "Serwo kan.7";
+	m_strNazwyZmiennychTele[TELEID_SERWO8]		= "Serwo kan.8";
+	m_strNazwyZmiennychTele[TELEID_SERWO9]		= "Serwo kan.9";
+	m_strNazwyZmiennychTele[TELEID_SERWO10]		= "Serwo kan.10";
+	m_strNazwyZmiennychTele[TELEID_SERWO11]		= "Serwo kan.11";
+	m_strNazwyZmiennychTele[TELEID_SERWO12]		= "Serwo kan.12";
+	m_strNazwyZmiennychTele[TELEID_SERWO13]		= "Serwo kan.13";
+	m_strNazwyZmiennychTele[TELEID_SERWO14]		= "Serwo kan.14";
+	m_strNazwyZmiennychTele[TELEID_SERWO15]		= "Serwo kan.15";
+	m_strNazwyZmiennychTele[TELEID_SERWO16]		= "Serwo kan.16";
 
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";	//wartoœæ zadana regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WYJ]		= "Wy PID przechyl";	//wyjœcie regulatora sterowania przechyleniem
@@ -167,21 +167,21 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_I]	= "Wy I pr.zm.wysoko";	//wyjœcie cz³onu I
 	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_D]	= "Wy D pr.zm.wysoko";	//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WZAD]		= "Wart.zadana naw.N";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WYJ]		= "Wy PID nawigacji N";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WZAD]		= "Wart.zad.naw. N";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WYJ]		= "Wy PID nawig. N";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_P]		= "Wy P nawigacji N";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_I]		= "Wy I  nawigacji N";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_D]		= "Wy D  nawigacji N";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_I]		= "Wy I nawigacji N";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_D]		= "Wy D nawigacji N";	//wyjœcie cz³onu D
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WYJ]		= "Wy PID pr.nawig.N";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_P]	= "Wy P prêd.nawig.N";	//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_I]	= "Wy I prêd.nawig.N";	//wyjœcie cz³onu I
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_D]	= "Wy D prêd.nawig.N";	//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WZAD]		= "Wart.zadana naw.E";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WYJ]		= "Wy PID nawigacji E";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WZAD]		= "Wart.zad.naw. E";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WYJ]		= "Wy PID nawig. E";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
 	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_P]		= "Wy P nawigacji E";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_I]		= "Wy I  nawigacji E";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_D]		= "Wy D  nawigacji E";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_I]		= "Wy I nawigacji E";	//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_D]		= "Wy D nawigacji E";	//wyjœcie cz³onu D
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WYJ]		= "Wy PID pr.nawig.E";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku wschodnim
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";	//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";	//wyjœcie cz³onu I
@@ -233,7 +233,7 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	uint8_t chErr = ERR_NOT_CONNECTED;
 	Wron cWron;
 	uint8_t chNazwa[DLUGOSC_NAZWY];
-	int nIndeks = 0;
+	int nIndeks = -1;
 
 	switch (m_chTypPolaczenia)
 	{
@@ -257,17 +257,15 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 				}
 
 				//je¿eli nie ma go w roju to wstaw
-				if (nIndeks == 0)
+				if (nIndeks < 0)
 				{
 					m_cRoj.vWron.push_back(cWron);
 					nIndeks = (int)m_cRoj.vWron.size() - 1;
 					m_cRoj.m_nIndeksWrona = nIndeks;
+					m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
+					m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
+					UstawAdresWrona(cWron.m_chAdres);	//ustaw adres na potrzeby klasy komunikacji
 				}
-
-				m_cRoj.vWron[nIndeks].UstawNazwe(chNazwa);
-				m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
-				UstawAdresWrona(cWron.m_chAdres);	//ustaw adres na potrzeby klasy komunikacji
-
 				chErr = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia			
 			}				
@@ -933,8 +931,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 			chDaneWychodzace[2 * m + 3] = (uint8_t)((sTemp & 0xFF00) >> 8);
 		}
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2 * chRozmiar + 2, chDanePrzychodzace, &chOdebrano);
-	}
-	
+	}	
 	return chErr;
 }
 

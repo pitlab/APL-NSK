@@ -99,7 +99,6 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 	uint8_t chErr = ERR_CANT_CONNECT;
 	DWORD dwErr;
 	CString strSprawdzanyAdres;
-	UINT nNumerSprawdzanegoPortu;
 
 	switch (chTypPortu)
 	{
@@ -128,7 +127,6 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		if (m_cGniazdoSluchajace.Listen())
 		{
 			m_chTypPortu = ETHS;
-			//pWskWatkuSluchajacegoEth = AfxBeginThread((AFX_THREADPROC)WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 			pWskWatkuSluchajacegoEth = AfxBeginThread(WatekSluchajPortuEth, (LPVOID)pWnd, THREAD_PRIORITY_ABOVE_NORMAL, 0, 0, NULL);
 			chErr = ERR_OK;
 		}
@@ -140,12 +138,7 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		break;
 
 	case ETHK:	//ethernet jako klient
-		//m_hZdarzenieNawiazanoPolaczenieETH = CreateEvent(NULL, false, false, _T("")); // auto-reset event, non-signalled state
 		m_cGniazdoPolaczenia.UstawRodzica(pWnd);
-
-		//m_cGniazdoPolaczenia.GetSockName(strSprawdzanyAdres, nNumerSprawdzanegoPortu);
-		//if (nNumerSprawdzanegoPortu != nNumerPortu)	//sprawdü czy gniazdo juø istnieje
-			//GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 		{
 			if (m_cGniazdoPolaczenia.Create())
 			{
@@ -167,7 +160,6 @@ uint8_t CProtokol::PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc
 		}
 		else
 		{
-			//chErr = ERR_CANT_CONNECT;
 			dwErr = GetLastError();
 		}
 
@@ -390,7 +382,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	_Telemetria sDaneTele;
 	float fZmienna;
 
-	TRACE("odczytano %d\n", iOdczytano);
+	//TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)
 	{		
 		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
@@ -445,7 +437,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();
 				SetEvent(m_hZdarzenieRamkaPolecenGotowa);	
-				//TRACE("SetEvent: Polecenia\n");
+				TRACE("SetEvent: Polecenie %d\n", m_chPolecenie);
 			}
 		}
 	}
@@ -560,7 +552,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 		}
 
 		//wyslij ramkÍ
-		TRACE("Wyúlij ramkÍ, ret=%d\n", chLicznikRetransmisji);
+		TRACE("Wyúlij ramkÍ: %d, rt: %d\n", chPolecenie, chLicznikRetransmisji);
 
 		chErr = WyslijRamke(m_chTypPortu, chRamka, chRozmiarWy + ROZM_CIALA_RAMKI);
 		if (chErr == ERR_OK)
@@ -570,20 +562,17 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 			do
 			{
 				//wersja na zdarzeniach - wychodzi na timeoucie
-				nErr = WaitForSingleObject(m_hZdarzenieRamkaPolecenGotowa, iCzasNaRamke);
+				nErr = WaitForSingleObject(m_hZdarzenieRamkaPolecenGotowa, iCzasNaRamke / 4);
 				if (nErr == WAIT_TIMEOUT)
 					nErr = GetLastError();	//breakpoint do testowania timeoutu
-					//if (nErr == ERROR_IO_PENDING)	//997
 				koniec = clock();
 				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 				TRACE("Czas %d\n", iCzasOczekiwania);
 
 				//sprawdü wszystkie odebrane ramki ktÛra z nich ma taki sam TimeStamp jak nadawcza
-				//iRozmiar = (uint32_t)vPrzychodzaceRamki.size();
 				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
 				for (x = 0; x < iRozmiar; x++)
 				{
-					//if (vPrzychodzaceRamki[x].time == chZnakczasu)	//porÛwnuj czas
 					if (m_vRamkaPolecenia[x].chZnakCzasu == chRamka[PR_ZNAK_CZASU])	//porÛwnuj czas
 					{
 						iNumer = x;	//zapamiÍtaj indeks ramki
@@ -594,11 +583,9 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 			if (iCzasOczekiwania < iCzasNaRamke)
 			{
-				//iRozmiar = (uint32_t)vPrzychodzaceRamki[iNumer].data.size();
 				iRozmiar = (uint32_t)m_vRamkaPolecenia[iNumer].dane.size();
 				*chRozmiarWe = iRozmiar;
 				for (x = 0; x < iRozmiar; x++)
-					//*chDaneWe++ = vPrzychodzaceRamki[iNumer].data[x];
 					*chDaneWe++ = m_vRamkaPolecenia[iNumer].dane[x];
 				bPolecenieGotowe = TRUE;
 			}
