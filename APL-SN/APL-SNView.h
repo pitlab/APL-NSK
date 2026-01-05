@@ -12,7 +12,7 @@
 #include <memory>
 
 #define MIEJSCE_MIEDZY_WYKRESAMI	8
-#define MIEJSCE_PRZED_WYKRESEM		30
+#define MIEJSCE_PRZED_WYKRESEM		40
 #define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 40
 
 class CAPLSNView : public CView

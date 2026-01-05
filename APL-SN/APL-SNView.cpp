@@ -266,7 +266,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 
 	//rysowanie wykresów telemetrii
-	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)
+	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)	//czy są dane telemetryczne lub wczytany z pliku log
 	{
 		m_bRysujTelemetrie = FALSE;
 		OknoWykresu.left = MIEJSCE_PRZED_WYKRESEM;
@@ -539,7 +539,9 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = 0;
 		rectWartosciOsi.right = MIEJSCE_PRZED_WYKRESEM;
-		if (n * fSkokPodzialki < 10.f)
+		if (n * fSkokPodzialki < 1)
+			strNazwa.Format(_T("%.3f"), n * fSkokPodzialki);
+		else if (n * fSkokPodzialki < 10)
 			strNazwa.Format(_T("%.2f"), n * fSkokPodzialki);
 		else if (n * fSkokPodzialki < 100.f)
 			strNazwa.Format(_T("%.1f"), n * fSkokPodzialki);
@@ -562,7 +564,9 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 			rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 			rectWartosciOsi.left = 0;
 			rectWartosciOsi.right = MIEJSCE_PRZED_WYKRESEM;
-			if (n * fSkokPodzialki < 10.f)
+			if (n * fSkokPodzialki < 1)
+				strNazwa.Format(_T("%.3f"), n * -fSkokPodzialki);
+			else if (n * fSkokPodzialki < 10)
 				strNazwa.Format(_T("%.2f"), n * -fSkokPodzialki);
 			else if (n * fSkokPodzialki < 100.f)
 				strNazwa.Format(_T("%.1f"), n * -fSkokPodzialki);
@@ -590,7 +594,9 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = (float)okno.right;
 		rectWartosciOsi.right = (float)(okno.right + MIEJSCE_PRZED_WYKRESEM);
-		if (n * fSkokPodzialki < 10)
+		if (n * fSkokPodzialki < 1)
+			strNazwa.Format(_T("%.3f"), n * fSkokPodzialki);
+		else if (n * fSkokPodzialki < 10)
 			strNazwa.Format(_T("%.2f"), n * fSkokPodzialki);
 		else if (n * fSkokPodzialki < 100)
 			strNazwa.Format(_T("%.1f"), n * fSkokPodzialki);
@@ -611,7 +617,9 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = (float)okno.right;;
 		rectWartosciOsi.right = (float)(okno.right + MIEJSCE_PRZED_WYKRESEM);
-		if (n * fSkokPodzialki < 10)
+		if (n * fSkokPodzialki < 1)
+			strNazwa.Format(_T("%.3f"), n * -fSkokPodzialki);
+		else if (n * fSkokPodzialki < 10)
 			strNazwa.Format(_T("%.2f"), n * -fSkokPodzialki);
 		else if (n * fSkokPodzialki < 100)
 			strNazwa.Format(_T("%.1f"), n * -fSkokPodzialki);
