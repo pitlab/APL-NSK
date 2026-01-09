@@ -127,6 +127,11 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_SERWO15]		= "Serwo kan.15 [us]";
 	m_strNazwyZmiennychTele[TELEID_SERWO16]		= "Serwo kan.16 [us]";
 
+	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC0] = "Ekran dotyk. ADC[0]";
+	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC1] = "Ekran dotyk. ADC[1]";
+	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC2] = "Ekran dotyk. ADC[2]";
+
+
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";	//wartoœæ zadana regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WYJ]		= "Wy PID przechyl";	//wyjœcie regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_P]		= "Wy P przechylenia";	//wyjœcie cz³onu P
@@ -917,7 +922,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 		chDaneWychodzace[0] = (uint8_t) ((n* OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);
 		chDaneWychodzace[1] = (uint8_t)(((n* OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
 
-		//okreœl iloœæ danych do zapisu
+		//okreœl iloœæ danych w bie¿¹cej ramce
 		if (sDoZapisu > OKRESOW_TELEMETRII_W_RAMCE)
 			chRozmiar = OKRESOW_TELEMETRII_W_RAMCE;
 		else
@@ -931,6 +936,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 			chDaneWychodzace[2 * m + 3] = (uint8_t)((sTemp & 0xFF00) >> 8);
 		}
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_OKRES_TELE, chDaneWychodzace, 2 * chRozmiar + 2, chDanePrzychodzace, &chOdebrano);
+		sDoZapisu -= chRozmiar;
 	}	
 	return chErr;
 }

@@ -288,7 +288,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
 					{
 						if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
 							fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
@@ -313,7 +313,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
 						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
@@ -329,7 +329,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
 					fMinWykresu = fMaxWykresu = 0.0f;
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
 					{
 						if (fMinWykresu > getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin)
 							fMinWykresu = getProtokol().m_stEkstremaTelemetrii[nIdZmiennej].fMin;
@@ -359,7 +359,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						fPoziomZeraPrawy = fPoziomZera;
 					}					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
-					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == 0)	//0 == telemetria
+					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
 						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
@@ -461,9 +461,16 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 	pktfPoczatek.x = (float)okno.left + fHscroll;
 	pktfKoniec.x = 1.0f * fSkalaX + okno.left + fHscroll;
 
-	fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
-	if (!fZmienna)
+	//znajdź ostatnią istniejacą zmienną. Może jej nie być w ostatniej ramce, ze względu na różne okresy telemerii
+	do
+	{
+		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+	} while (!fZmienna && nIndexRamki);
+	
+	//jeżeli cofając się do początku nie znajdzie żadnej zmiennej to zakończ rysowanie
+	if (!fZmienna && nIndexRamki)
 		return;
+	
 
 	//Znajdź najwiekszy rozmiar wykresu potrzebny do ustawienia poziomego scrollbara
 	if (vDaneTele.size() > m_nIloscDanychWykresu)

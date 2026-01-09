@@ -2,6 +2,8 @@
 #define WYKRES_WSPOLNA_SKALA	1
 #define WYKRES_OSOBNA_SKALA		2
 
+#define ZRODLO_TELEMETRIA		0
+
 class DrzewoWykresow :  public CTreeCtrl
 {
 public:
