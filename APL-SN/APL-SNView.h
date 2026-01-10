@@ -96,9 +96,9 @@ public:
 	uint32_t m_nNumerPortuEth;
 	CString m_strAdresIP;
 
-	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, float* fStartLegendy);
-	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, float fMin1, float fMax1, float fMin2, float fMax2, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
+	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
+	void RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, float fMin1, float fMax1, float fMin2, float fMax2, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 private:
 	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
 

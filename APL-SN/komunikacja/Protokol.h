@@ -15,8 +15,8 @@ class CProtokol //: public CAsyncSocket
 public:
 	CProtokol();	//noexcept;
 	virtual ~CProtokol();
-	static std::vector <_Telemetria> m_vDaneTelemetryczne;	//posortowane dane telemetryczne
-	static std::vector <_Ramka> m_vRamkaPolecenia;
+	static std::vector <stTelemetria_t> m_vDaneTelemetryczne;	//posortowane dane telemetryczne
+	static std::vector <stRamka_t> m_vRamkaPolecenia;
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);

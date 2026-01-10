@@ -32,8 +32,8 @@ BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
 BOOL			CProtokol::m_bPolaczonoEth = FALSE;
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
-std::vector <_Ramka> CProtokol::m_vRamkaPolecenia;
-std::vector <_Telemetria> CProtokol::m_vDaneTelemetryczne;
+std::vector <stRamka_t> CProtokol::m_vRamkaPolecenia;
+std::vector <stTelemetria_t> CProtokol::m_vDaneTelemetryczne;
 int				CProtokol::m_LicznikInstancji = 0;
 
 CProtokol::CProtokol() 
@@ -377,15 +377,16 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	int nIndeksZmiennej;		//indeks zmiennej liczony z bitów obecnoœci zmiennej w ramce
 	int nNumerZmiennejwRamce;	//para bajtów przenosz¹ca wartoœæ zmiennej
 	uint8_t chBity,  chErr;
+	uint8_t chCzasPoprzedniejRamki = 0;
 	BOOL bRamkaTelemetrii;
-	_Ramka sRamka;
-	_Telemetria sDaneTele;
+	stRamka_t stRamka;
+	stTelemetria_t stDaneTele;
 	float fZmienna;
 
 	//TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)
 	{		
-		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
+		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &stDaneTele.chSubSekunda, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
 			bRamkaTelemetrii = (BOOL)((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4));
@@ -394,20 +395,19 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);				
 				//zbierz dane ramki do uporz¹dkowanej struktury
 				for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
-					sDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
+					stDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
 				nNumerZmiennejwRamce = 0;
-				sDaneTele.chZnakCzasu = m_chZnakCzasu;
 				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
 				{
 					chBity = m_chDaneWy[x];
-					for (y = 0; y < 8; y++)
+					for (y = 0; y < 8; y++)	//iteracja po bitach bajtu ID telemetrii
 					{
 						//indeks zmiennej jest zdefiniowany przez numer ustawionego bitu identyfikacyjnego oraz offset wynikaj¹cy z numeru ramki, która definiuje jedna z MAX_INDEKSOW_TELEMETR_W_RAMCE (128) zmiennych
 						nIndeksZmiennej = y + x * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
 						if (chBity & (0x01 << y))
 						{
 							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
-							sDaneTele.dane[nIndeksZmiennej] = fZmienna;
+							stDaneTele.dane[nIndeksZmiennej] = fZmienna;
 							//znajdŸ ekstrema potrzebne do skalowania wykresów
 							if (fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax)
 								m_stEkstremaTelemetrii[nIndeksZmiennej].fMax = fZmienna;
@@ -417,7 +417,20 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						}
 					}
 				}
-				m_vDaneTelemetryczne.push_back(sDaneTele);
+
+				//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki bêd¹ mia³y ten sam znacznik czasu. W takim przypadku scal to w jednym indeksie wektora
+				if ((stDaneTele.chSubSekunda == chCzasPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
+				{
+					int nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
+					for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
+					{
+						if (stDaneTele.dane[x] != 0.0f)
+							m_vDaneTelemetryczne[nIndeksWektora].dane[x] = stDaneTele.dane[x];
+					}
+				}
+				else
+					m_vDaneTelemetryczne.push_back(stDaneTele);
+				chCzasPoprzedniejRamki = stDaneTele.chSubSekunda;
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
 				//TRACE("SetEvent: Telemetria\n");	
 			}
@@ -427,13 +440,13 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				if (!m_chIloscDanychRamki)	//wykrzacza siê na zerowych ramkach typu OK, wiêc zrób niezerowy rozmiar danych
 					m_chIloscDanychRamki = 1;
 				//zbierz dane ramki do struktury
-				sRamka.chPolecenie = m_chPolecenie;
-				sRamka.chZnakCzasu = m_chZnakCzasu;
-				sRamka.chRozmiar = m_chIloscDanychRamki;
-				sRamka.chAdrNadawcy = m_chAdresNadawcy;
+				stRamka.chPolecenie = m_chPolecenie;
+				stRamka.chZnakCzasu = m_chZnakCzasu;
+				stRamka.chRozmiar = m_chIloscDanychRamki;
+				stRamka.chAdrNadawcy = m_chAdresNadawcy;
 				for (x = 0; x < m_chIloscDanychRamki; x++)
-					sRamka.dane.push_back(m_chDaneWy[x]);
-				m_vRamkaPolecenia.push_back(sRamka);	//wstaw strukturê do wektora
+					stRamka.dane.push_back(m_chDaneWy[x]);
+				m_vRamkaPolecenia.push_back(stRamka);	//wstaw strukturê do wektora
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();
 				SetEvent(m_hZdarzenieRamkaPolecenGotowa);	

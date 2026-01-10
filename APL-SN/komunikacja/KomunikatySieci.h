@@ -22,7 +22,7 @@ struct BinaryFrame
 	std::vector< unsigned char > data;		///< Binarne dane ramki
 };
 
-struct _Ramka
+struct stRamka_t
 {
 	uint8_t chPolecenie = 0;
 	uint8_t chZnakCzasu = 0;
@@ -33,8 +33,10 @@ struct _Ramka
 
 
 //struct _TelemetriaUporzadkowana
-struct _Telemetria
+struct stTelemetria_t
 {
-	uint8_t chZnakCzasu = 0;
-	float dane[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH] = {0,0,0,0,0};
+	uint8_t chSubSekunda = 0;		//1/256 czêœæ sekundy z RTC
+	uint8_t chAdres;
+	float dane[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH] = {0};
 };
+

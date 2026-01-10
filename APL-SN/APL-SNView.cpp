@@ -314,7 +314,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
+						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
 						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
@@ -360,7 +360,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					}					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
+						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
 						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
@@ -437,13 +437,13 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, std::vector<_Telemetria>vDaneTele, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush, float* fStartLegendy)
+void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy)
 {
 	float fZmienna;
-	long lLiczbaRamek = (long)vDaneTele.size();
+	long lLiczbaRamek = (long)vDaneTele->size();
 	if (!lLiczbaRamek)
 		return;
-	_Telemetria stDaneTele;
+	stTelemetria_t stDaneTele;
 	int32_t nIndexRamki = lLiczbaRamek - 1;
 	CD2DPointF pktfPoczatek, pktfKoniec;
 	CD2DRectF rectLegenda;
@@ -464,7 +464,7 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 	//znajdź ostatnią istniejacą zmienną. Może jej nie być w ostatniej ramce, ze względu na różne okresy telemerii
 	do
 	{
-		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+		fZmienna = (*vDaneTele)[nIndexRamki--].dane[nIndeksZmiennej];
 	} while (!fZmienna && nIndexRamki);
 	
 	//jeżeli cofając się do początku nie znajdzie żadnej zmiennej to zakończ rysowanie
@@ -473,14 +473,14 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 	
 
 	//Znajdź najwiekszy rozmiar wykresu potrzebny do ustawienia poziomego scrollbara
-	if (vDaneTele.size() > m_nIloscDanychWykresu)
-		m_nIloscDanychWykresu = (int)vDaneTele.size();
+	if (vDaneTele->size() > m_nIloscDanychWykresu)
+		m_nIloscDanychWykresu = (int)vDaneTele->size();
 
 	pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
-		fZmienna = vDaneTele[nIndexRamki--].dane[nIndeksZmiennej];
+		fZmienna = (*vDaneTele)[nIndexRamki--].dane[nIndeksZmiennej];
 		if (fZmienna)
 		{
 			pktfKoniec.x += fSkalaX;
