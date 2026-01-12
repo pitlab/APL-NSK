@@ -377,7 +377,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	int nIndeksZmiennej;		//indeks zmiennej liczony z bitów obecnoœci zmiennej w ramce
 	int nNumerZmiennejwRamce;	//para bajtów przenosz¹ca wartoœæ zmiennej
 	uint8_t chBity,  chErr;
-	uint8_t chCzasPoprzedniejRamki = 0;
+	uint8_t chZnakCzasuPoprzedniejRamki = 0;
 	BOOL bRamkaTelemetrii;
 	stRamka_t stRamka;
 	stTelemetria_t stDaneTele;
@@ -386,7 +386,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	//TRACE("odczytano %d\n", iOdczytano);
 	for (n = 0; n < iOdczytano; n++)
 	{		
-		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &stDaneTele.chSubSekunda, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
+		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
 			bRamkaTelemetrii = (BOOL)((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4));
@@ -397,6 +397,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
 					stDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
 				nNumerZmiennejwRamce = 0;
+				stDaneTele.chSubSekunda = m_chZnakCzasu;
 				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
 				{
 					chBity = m_chDaneWy[x];
@@ -419,7 +420,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				}
 
 				//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki bêd¹ mia³y ten sam znacznik czasu. W takim przypadku scal to w jednym indeksie wektora
-				if ((stDaneTele.chSubSekunda == chCzasPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
+				if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 				{
 					int nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
 					for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
@@ -430,7 +431,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				}
 				else
 					m_vDaneTelemetryczne.push_back(stDaneTele);
-				chCzasPoprzedniejRamki = stDaneTele.chSubSekunda;
+				chZnakCzasuPoprzedniejRamki = m_chZnakCzasu;
 				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
 				//TRACE("SetEvent: Telemetria\n");	
 			}
@@ -586,10 +587,12 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
 				for (x = 0; x < iRozmiar; x++)
 				{
+					TRACE("Ramka %d: czas: %d == %d\n", x, m_vRamkaPolecenia[x].chZnakCzasu, chRamka[PR_ZNAK_CZASU]);
 					if (m_vRamkaPolecenia[x].chZnakCzasu == chRamka[PR_ZNAK_CZASU])	//porównuj czas
 					{
 						iNumer = x;	//zapamiêtaj indeks ramki
 						bRamkaOK = TRUE;
+						TRACE("Ramka OK\n");
 					}
 				}
 			} while (!bRamkaOK && (iCzasOczekiwania < iCzasNaRamke));
