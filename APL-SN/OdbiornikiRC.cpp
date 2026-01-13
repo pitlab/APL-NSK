@@ -189,48 +189,123 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlOdbiornikRC2.InsertString(0, _T("CPPM2"));
 	m_ctlOdbiornikRC2.InsertString(1, _T("S-Bus2"));
 
-	m_ctlTypWyjscia1.InsertString(0, _T("ESC1 400Hz"));
-	m_ctlTypWyjscia1.InsertString(1, _T("Serwo1 50Hz"));
-	m_ctlTypWyjscia1.InsertString(2, _T("Port I/O PB9"));
-	m_ctlTypWyjscia1.InsertString(3, _T("Wyjście S-Bus"));
+	m_ctlTypWyjscia1.InsertString(0, _T("Port I/O PB9"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia1.InsertString(2, _T("-"));				//wejście ADC
+	m_ctlTypWyjscia1.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia1.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia1.InsertString(5, _T("-"));				//wyjście PWM 100Hz
+	m_ctlTypWyjscia1.InsertString(6, _T("-"));				//wyjście PWM 200Hz
+	m_ctlTypWyjscia1.InsertString(7, _T("ESC1 400Hz"));		//wyjście PWM 400Hz	
+	m_ctlTypWyjscia1.InsertString(8, _T("DShot150"));		//wyjście DShot150
+	m_ctlTypWyjscia1.InsertString(9, _T("DShot300"));		//wyjście DShot300
+	m_ctlTypWyjscia1.InsertString(10, _T("DShot600"));		//wyjście DShot600
+	m_ctlTypWyjscia1.InsertString(11, _T("DShot1200"));		//wyjście DShot1200		
 
-	m_ctlTypWyjscia2.InsertString(0, _T("ESC2 400Hz"));
-	m_ctlTypWyjscia2.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia2.InsertString(2, _T("Port I/O PB10"));
-	m_ctlTypWyjscia2.InsertString(3, _T("CS QSPI"));
+	m_ctlTypWyjscia2.InsertString(0, _T("Port I/O PB10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia2.InsertString(2, _T("-"));				//wejście ADC
+	m_ctlTypWyjscia2.InsertString(3, _T("CS QSPI"));		//fukcja alternatywna
+	m_ctlTypWyjscia2.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia2.InsertString(5, _T("-"));				//wyjście PWM 100Hz
+	m_ctlTypWyjscia2.InsertString(6, _T("-"));				//wyjście PWM 200Hz
+	m_ctlTypWyjscia2.InsertString(7, _T("ESC2 400Hz"));		//wyjście PWM 400Hz	
+	m_ctlTypWyjscia2.InsertString(8, _T("DShot150"));		//wyjście DShot150
+	m_ctlTypWyjscia2.InsertString(9, _T("DShot300"));		//wyjście DShot300
+	m_ctlTypWyjscia2.InsertString(10, _T("DShot600"));		//wyjście DShot600
+	m_ctlTypWyjscia2.InsertString(11, _T("DShot1200"));		//wyjście DShot1200
 
-	m_ctlTypWyjscia3.InsertString(0, _T("ESC3 400Hz"));
-	m_ctlTypWyjscia3.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia3.InsertString(2, _T("Port I/O PA15"));
+	m_ctlTypWyjscia3.InsertString(0, _T("Port I/O PA15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia3.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia3.InsertString(2, _T("-"));				//wejście ADC
+	m_ctlTypWyjscia3.InsertString(3, _T("CS QSPI"));		//fukcja alternatywna
+	m_ctlTypWyjscia3.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia3.InsertString(5, _T("-"));				
+	m_ctlTypWyjscia3.InsertString(6, _T("-"));				
+	m_ctlTypWyjscia3.InsertString(7, _T("ESC3 400Hz"));		
+	m_ctlTypWyjscia3.InsertString(8, _T("DShot150"));		
+	m_ctlTypWyjscia3.InsertString(9, _T("DShot300"));		
+	m_ctlTypWyjscia3.InsertString(10, _T("DShot600"));		
+	m_ctlTypWyjscia3.InsertString(11, _T("DShot1200"));		
 
-	m_ctlTypWyjscia4.InsertString(0, _T("ESC4 400Hz"));
-	m_ctlTypWyjscia4.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia4.InsertString(2, _T("Port I/O PB0"));
-	m_ctlTypWyjscia4.InsertString(3, _T("ADC1_INP9"));
+	m_ctlTypWyjscia4.InsertString(0, _T("Port I/O PB0"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia4.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia4.InsertString(2, _T("ADC1_INP9"));		//wejście ADC
+	m_ctlTypWyjscia4.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia4.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia4.InsertString(5, _T("-"));
+	m_ctlTypWyjscia4.InsertString(6, _T("-"));
+	m_ctlTypWyjscia4.InsertString(7, _T("ESC4 400Hz"));
+	m_ctlTypWyjscia4.InsertString(8, _T("DShot150"));
+	m_ctlTypWyjscia4.InsertString(9, _T("DShot300"));
+	m_ctlTypWyjscia4.InsertString(10, _T("DShot600"));
+	m_ctlTypWyjscia4.InsertString(11, _T("DShot1200"));
 
-	m_ctlTypWyjscia5.InsertString(0, _T("ESC5 400Hz"));
-	m_ctlTypWyjscia5.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia5.InsertString(2, _T("Port I/O PB1"));
-	m_ctlTypWyjscia5.InsertString(3, _T("ADC1_INP5"));
+	m_ctlTypWyjscia5.InsertString(0, _T("Port I/O PB1"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia5.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia5.InsertString(2, _T("ADC1_INP5"));		//wejście ADC
+	m_ctlTypWyjscia5.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia5.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia5.InsertString(5, _T("-"));
+	m_ctlTypWyjscia5.InsertString(6, _T("-"));
+	m_ctlTypWyjscia5.InsertString(7, _T("ESC5 400Hz"));
+	m_ctlTypWyjscia5.InsertString(8, _T("DShot150"));
+	m_ctlTypWyjscia5.InsertString(9, _T("DShot300"));
+	m_ctlTypWyjscia5.InsertString(10, _T("DShot600"));
+	m_ctlTypWyjscia5.InsertString(11, _T("DShot1200"));
 
-	m_ctlTypWyjscia6.InsertString(0, _T("ESC6 400Hz"));
-	m_ctlTypWyjscia6.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia6.InsertString(2, _T("Port I/O PI5"));
-	m_ctlTypWyjscia6.InsertString(3, _T("ADC1_INP2"));
+	m_ctlTypWyjscia6.InsertString(0, _T("Port I/O PI5"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia6.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia6.InsertString(2, _T("ADC1_INP2"));		//wejście ADC
+	m_ctlTypWyjscia6.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia6.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia6.InsertString(5, _T("-"));
+	m_ctlTypWyjscia6.InsertString(6, _T("-"));
+	m_ctlTypWyjscia6.InsertString(7, _T("ESC6 400Hz"));
+	m_ctlTypWyjscia6.InsertString(8, _T("DShot150"));
+	m_ctlTypWyjscia6.InsertString(9, _T("DShot300"));
+	m_ctlTypWyjscia6.InsertString(10, _T("DShot600"));
+	m_ctlTypWyjscia6.InsertString(11, _T("DShot1200"));
 
-	m_ctlTypWyjscia7.InsertString(0, _T("ESC7 400Hz"));
-	m_ctlTypWyjscia7.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia7.InsertString(2, _T("Port I/O PI10"));
+	m_ctlTypWyjscia7.InsertString(0, _T("Port I/O PI10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia7.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia7.InsertString(2, _T("-"));				//wejście ADC
+	m_ctlTypWyjscia7.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia7.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia7.InsertString(5, _T("-"));
+	m_ctlTypWyjscia7.InsertString(6, _T("-"));
+	m_ctlTypWyjscia7.InsertString(7, _T("ESC7 400Hz"));
+	m_ctlTypWyjscia7.InsertString(8, _T("DShot150"));
+	m_ctlTypWyjscia7.InsertString(9, _T("DShot300"));
+	m_ctlTypWyjscia7.InsertString(10, _T("DShot600"));
+	m_ctlTypWyjscia7.InsertString(11, _T("DShot1200"));
 
-	m_ctlTypWyjscia8.InsertString(0, _T("ESC8 400Hz"));
-	m_ctlTypWyjscia8.InsertString(1, _T("Serwo2 50Hz"));
-	m_ctlTypWyjscia8.InsertString(2, _T("Port I/O PH15"));
+	m_ctlTypWyjscia8.InsertString(0, _T("Port I/O PH15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia8.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
+	m_ctlTypWyjscia8.InsertString(2, _T("-"));				//wejście ADC
+	m_ctlTypWyjscia8.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia8.InsertString(4, _T("Serwo1 50Hz"));
+	m_ctlTypWyjscia8.InsertString(5, _T("-"));
+	m_ctlTypWyjscia8.InsertString(6, _T("-"));
+	m_ctlTypWyjscia8.InsertString(7, _T("ESC8 400Hz"));
+	m_ctlTypWyjscia8.InsertString(8, _T("DShot150"));
+	m_ctlTypWyjscia8.InsertString(9, _T("DShot300"));
+	m_ctlTypWyjscia8.InsertString(10, _T("DShot600"));
+	m_ctlTypWyjscia8.InsertString(11, _T("DShot1200"));
 
-	m_ctlTypWyjscia9_16.InsertString(0, _T("ESC 9 400Hz"));
-	m_ctlTypWyjscia9_16.InsertString(1, _T("Serwa 9-16 50Hz"));
-	m_ctlTypWyjscia9_16.InsertString(2, _T("Port I/O PA8"));
-	m_ctlTypWyjscia9_16.InsertString(3, _T("ESC 9-10 200Hz"));
-	m_ctlTypWyjscia9_16.InsertString(4, _T("ESC 9-12 100Hz"));
+	m_ctlTypWyjscia9_16.InsertString(0, _T("-"));			//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+	m_ctlTypWyjscia9_16.InsertString(1, _T("-"));			//wyjście S-Bus
+	m_ctlTypWyjscia9_16.InsertString(2, _T("-"));			//wejście ADC
+	m_ctlTypWyjscia9_16.InsertString(3, _T("-"));			//fukcja alternatywna
+	m_ctlTypWyjscia9_16.InsertString(4, _T("Serwa 9-16 50Hz"));
+	m_ctlTypWyjscia9_16.InsertString(5, _T("ESC 9-12 100Hz"));	//wyjście PWM 100Hz
+	m_ctlTypWyjscia9_16.InsertString(6, _T("ESC 9-10 200Hz"));	//wyjście PWM 200Hz
+	m_ctlTypWyjscia9_16.InsertString(7, _T("ESC 9 400Hz"));		//wyjście PWM 400Hz	
+	m_ctlTypWyjscia9_16.InsertString(8, _T("-"));
+	m_ctlTypWyjscia9_16.InsertString(7, _T("-"));
+	m_ctlTypWyjscia9_16.InsertString(10, _T("-"));
+	m_ctlTypWyjscia9_16.InsertString(11, _T("-"));
+
 
 	//odczytaj konfigurację wejść odbiorników i wyjść serw.
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
@@ -242,8 +317,8 @@ BOOL OdbiornikiRC::OnInitDialog()
 
 		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 1, bity 4..7 = Wyjście 2: 0=PWM 400Hz, 1=SBus
 		m_ctlTypWyjscia1.SetCurSel(chDane[1] & 0x0F);
-		m_ctlTypWyjscia2.SetCurSel((chDane[1] & 0xF0)>>4);
-		
+		m_ctlTypWyjscia2.SetCurSel((chDane[1] & 0xF0) >> 4);
+
 		//1U konfiguracja wyjść: Bity 0..3 = Wyjście 3, bity 4..7 = Wyjście 4: 0=PWM 400Hz, 1=ADC
 		m_ctlTypWyjscia3.SetCurSel(chDane[2] & 0x0F);
 		m_ctlTypWyjscia4.SetCurSel((chDane[2] & 0xF0) >> 4);

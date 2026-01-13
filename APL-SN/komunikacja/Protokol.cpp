@@ -538,7 +538,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	uint8_t chLicznikRetransmisji = 0;
 	uint8_t chErr = ERR_OK;
 	uint32_t nErr;
-	int32_t x, iRozmiar, iNumer;
+	int32_t x, iRozmiar, iNumer, iKoniecZakresuSzukania;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
 	clock_t poczatek, koniec;
 	uint32_t iCzasOczekiwania;
@@ -583,9 +583,14 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 				TRACE("Czas %d\n", iCzasOczekiwania);
 
-				//sprawdŸ wszystkie odebrane ramki która z nich ma taki sam TimeStamp jak nadawcza
+				//sprawdŸ kilka ostatnich ramek która z nich ma taki sam TimeStamp jak nadawcza
 				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
-				for (x = 0; x < iRozmiar; x++)
+				if (iRozmiar > 5)
+					iKoniecZakresuSzukania = iRozmiar - 5;
+				else
+					iKoniecZakresuSzukania = 0;
+
+				for (x = iRozmiar-1; x > iKoniecZakresuSzukania; x--)
 				{
 					TRACE("Ramka %d: czas: %d == %d\n", x, m_vRamkaPolecenia[x].chZnakCzasu, chRamka[PR_ZNAK_CZASU]);
 					if (m_vRamkaPolecenia[x].chZnakCzasu == chRamka[PR_ZNAK_CZASU])	//porównuj czas
