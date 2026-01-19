@@ -430,9 +430,11 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 					}
 				}
 				else
+				{
 					m_vDaneTelemetryczne.push_back(stDaneTele);
-				chZnakCzasuPoprzedniejRamki = m_chZnakCzasu;
-				SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+					SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+				}
+				chZnakCzasuPoprzedniejRamki = m_chZnakCzasu;				
 				//TRACE("SetEvent: Telemetria\n");	
 			}
 			else
@@ -585,8 +587,8 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 				//sprawdŸ kilka ostatnich ramek która z nich ma taki sam TimeStamp jak nadawcza
 				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
-				if (iRozmiar > 5)
-					iKoniecZakresuSzukania = iRozmiar - 5;
+				if (iRozmiar > LICZBA_SPRAWDZANYCH_RAMEK)
+					iKoniecZakresuSzukania = iRozmiar - LICZBA_SPRAWDZANYCH_RAMEK;	//szukaj ramki z odpowiedz¹ tylko w ostatnich n=LICZBA_SPRAWDZANYCH_RAMEK ramkach
 				else
 					iKoniecZakresuSzukania = 0;
 

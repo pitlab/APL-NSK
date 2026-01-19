@@ -7,6 +7,8 @@
 //#define USB		8
 #define LICZBA_TYPOW_PORTOW	3
 
+#define LICZBA_SPRAWDZANYCH_RAMEK	5	//tyle ramek wstecz jest porównywanych po polu znacznika czasu z ramką wychodzącą
+
 //#define ROZM_DANYCH_WE_UART	128
 //#define ROZM_DANYCH_WY_UART	128
 //#define ROZM_DANYCH_WE_ETH	1024
