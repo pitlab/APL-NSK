@@ -67,6 +67,7 @@ public:
 	uint8_t SpakujU8doFloat(uint8_t* chDane, uint8_t chRozmiarU8, float* fData);
 	uint8_t RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8_t* chDane);
 	uint8_t RekonfigurujWeWyRC();
+	uint8_t ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, uint8_t chStalaCzasowaFiltraD);
 
 	Roj m_cRoj;
 	Wron m_cWron;

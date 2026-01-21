@@ -1292,3 +1292,48 @@ uint8_t CKomunikacja::RekonfigurujWeWyRC()
 	CzytajU8FRAM(chDanePrzychodzace, 1, FAU_KONF_ODB_RC);
 	return chErr;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Przekazuje do autopilota zmodyfikowan¹ konfiguracjê regulatora PID
+// parametry: chIndeksRegulatora - wskazuje na regualtor do zapisania
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, uint8_t chStalaCzasowaFiltraD)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chIndeksRegulatora;
+	chDaneWychodzace[1] = chStalaCzasowaFiltraD;
+	
+	m_unia8_32.daneFloat = fKp;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[2 + i] = m_unia8_32.dane8[i];
+	m_unia8_32.daneFloat = fTi;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[6 + i] = m_unia8_32.dane8[i];
+	m_unia8_32.daneFloat = fTd;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[10 + i] = m_unia8_32.dane8[i];
+
+	m_unia8_32.daneFloat = fLimitCalki;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[14 + i] = m_unia8_32.dane8[i];
+	m_unia8_32.daneFloat = fMinPid;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[18 + i] = m_unia8_32.dane8[i];
+	m_unia8_32.daneFloat = fMaxPid;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[22 + i] = m_unia8_32.dane8[i];
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, 26, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano >= 2))
+	{
+		if (chDanePrzychodzace[1] == PK_ZAPISZ_KONFIG_PID)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];
+	}
+	return chErr;
+}

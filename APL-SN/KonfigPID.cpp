@@ -248,29 +248,25 @@ void KonfigPID::UstawKontrolki(int nParametr)
 void KonfigPID::OnBnClickedOk()
 {
 	float fDane[ROZMIAR_REG_PID/4];
-	uint8_t chDane[4];
+	uint8_t chPodstawaFiltraiBity;
 	uint8_t chErr = ERR_OK;
-	CString strLiczba;
+	CString strKomunikat;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
-		{
-			fDane[0] = m_stPID[n].fKp;			//FA_USER_PID+0   //4U wzmocnienienie członu P regulatora 0
-			fDane[1] = m_stPID[n].fTi;			//FA_USER_PID+4   //4U wzmocnienienie członu I regulatora 0
-			fDane[2] = m_stPID[n].fTd;			//FA_USER_PID+8   //4U wzmocnienienie członu D regulatora 0
-			fDane[3] = m_stPID[n].fOgrCalki;	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
-			fDane[4] = m_stPID[n].fMinWyj;
-			fDane[5] = m_stPID[n].fMaxWyj;
-
-			chDane[0] = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
-			getKomunikacja().SpakujU8doFloat(chDane, 1, &fDane[6]);
-			chErr |= getKomunikacja().ZapiszFloatFRAM(fDane, ROZMIAR_REG_PID/4, FAU_PID_P0 + n *ROZMIAR_REG_PID);
+		{		
+			chPodstawaFiltraiBity = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, chPodstawaFiltraiBity);
 		}
 	}
+
 	if (chErr != ERR_OK)
-		MessageBoxExW(this->m_hWnd, _T("Błąd zapisu"), _T("Ojojoj!"), MB_ICONWARNING, 0);
+	{
+		strKomunikat.Format(_T("Błąd zapisu konfiguracji nr %d"), chErr);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+	}
 	CDialogEx::OnOK();
 }
 
