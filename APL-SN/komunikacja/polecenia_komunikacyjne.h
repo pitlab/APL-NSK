@@ -42,7 +42,10 @@
 #define ADRES_BROADCAST		0xFF
 #define WIELOMIAN_CRC		0x1021
 #define DLUGOSC_NAZWY		20		//maksymalna długość nazwy BSP, zmiennych telemetrycznych, lub innych nazw
-#define ROZMIAR_ROZNE		8		//rozmiar tablicy float w strukturze wymiany danych miedzy rdzeniami
+//efine ROZMIAR_ROZNE		8		//rozmiar tablicy float w strukturze wymiany danych miedzy rdzeniami
+#define ROZMIAR_ROZNE_FLOAT				8
+#define ROZMIAR_ROZNE_SHORT				16
+#define ROZMIAR_ROZNE_CHAR				32
 
 //nazwy poleceń protokołu
 #define PK_OK					0	//akceptacja

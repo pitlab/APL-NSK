@@ -28,8 +28,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 	ON_WM_SETTINGCHANGE()
-
-	ON_COMMAND(ID_USTAW_PARKAMERY, &CMainFrame::OnUstawParkamery)
 	ON_COMMAND(ID_BUT_KONF_TELEMETRII, &CMainFrame::OnButKonfTelemetrii)
 	ON_UPDATE_COMMAND_UI(ID_POLACZ_COM, &CMainFrame::OnUpdatePolaczCom)
 	ON_UPDATE_COMMAND_UI(ID_POLACZ_ETH, &CMainFrame::OnUpdateButPolaczEth)
@@ -327,15 +325,7 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Okno dialogowe z ustawieniami kamery
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CMainFrame::OnUstawParkamery()
-{
-	CUstawieniaKameryDlg dlg;
-	dlg.DoModal();
-}
+
 
 
 void CMainFrame::OnButKonfTelemetrii()

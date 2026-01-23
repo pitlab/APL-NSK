@@ -15,6 +15,8 @@
 #include "DefinicjeWrona.h"
 #include "MixerDlg.h"
 #include "OdbiornikiRC.h"
+#include "NapedStrojenie.h"
+#include "UstawieniaKameryDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,6 +43,10 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUpdateUstawieniaMikser)
 	ON_COMMAND(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUstawieniaOdbiornikirc)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUpdateUstawieniaOdbiornikirc)
+	ON_COMMAND(ID_USTAWIENIA_NA, &CAPLSNApp::OnUstawieniaNaped)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_NA, &CAPLSNApp::OnUpdateUstawieniaNaped)
+	ON_COMMAND(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUstawParkamery)
+	ON_UPDATE_COMMAND_UI(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUpdateUstawParkamery)
 END_MESSAGE_MAP()
 
 
@@ -305,7 +311,7 @@ CKomunikacja& getKomunikacja()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Uruchamia polecenie menu Konfiguracja -> PID...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaRegulatoryPid()
 {
@@ -314,9 +320,11 @@ void CAPLSNApp::OnUstawieniaRegulatoryPid()
 	cKonfigPID.DoModal();
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje dostępność polecenia menu Konfiguracja -> PID...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 {
@@ -330,7 +338,7 @@ void CAPLSNApp::OnUpdateUstawieniaRegulatoryPid(CCmdUI* pCmdUI)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje stan identyfikatora Połaczenie w pasku statusu
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateIndicatorPolacz(CCmdUI* pCmdUI)
 {
@@ -344,7 +352,7 @@ void CAPLSNApp::OnUpdateIndicatorPolacz(CCmdUI* pCmdUI)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Uruchamia polecenie menu Konfiguracja -> Definicje Wrona...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaDefinicjewrona()
 {
@@ -356,7 +364,7 @@ void CAPLSNApp::OnUstawieniaDefinicjewrona()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje dostępność polecenia menu Konfiguracja -> Definicje Wrona...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI)
 {
@@ -370,7 +378,7 @@ void CAPLSNApp::OnUpdateUstawieniaDefinicjewrona(CCmdUI* pCmdUI)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Uruchamia polecenie menu Konfiguracja -> Mikser...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaMikser()
 {
@@ -383,7 +391,7 @@ void CAPLSNApp::OnUstawieniaMikser()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje dostępność polecenia menu Konfiguracja -> Mikser...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaMikser(CCmdUI* pCmdUI)
 {
@@ -397,7 +405,7 @@ void CAPLSNApp::OnUpdateUstawieniaMikser(CCmdUI* pCmdUI)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Uruchamia polecenie menu Konfiguracja -> Odbiorniki RC...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUstawieniaOdbiornikirc()
 {
@@ -410,7 +418,7 @@ void CAPLSNApp::OnUstawieniaOdbiornikirc()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje dostępność polecenia menu Konfiguracja -> Odbiorniki RC...
-// zwraca: kod błędu
+// zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
 {
@@ -420,3 +428,52 @@ void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
 		pCmdUI->Enable(FALSE);
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia polecenie menu Konfiguracja -> Napęd i strojenie...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaNaped()
+{
+	NapedStrojenie cNapedStrojenieDlg;
+	cNapedStrojenieDlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Napęd i strojenie...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaNaped(CCmdUI* pCmdUI)
+{
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Okno dialogowe z ustawieniami kamery
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawParkamery()
+{
+	CUstawieniaKameryDlg dlg;
+	dlg.DoModal();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Ustawienia kamery...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawParkamery(CCmdUI* pCmdUI)
+{
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}

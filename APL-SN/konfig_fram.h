@@ -3,7 +3,7 @@
 // Definicje zmiennych konfguracyjnych trzymanych w pamięci FRAM FM25CL64
 // Zakres adresów do 0x7FF
 //
-// (c) PitLab 2024
+// (c) PitLab 2024-26
 // http://www.pitlab.pl
 //////////////////////////////////////////////////////////////////////////////
 //adresy zmiennych konfiguracyjnych w zakresie 0..0x2000  (FA == Fram Address)
@@ -32,10 +32,12 @@
 #define FAU_CH7_FUNCT       FAU_CH7_MAX+4       //1U funkcja kanału 7: rodzaj zmiennej do regulacji
 
 //128+18=146=0x92
-#define FAU_PWM_MIN         0x0092           	//2U minimalne wysterowanie regulatorów w trakcie lotu [us]
-#define FAU_PWM_JALOWY      FAU_PWM_MIN+2 		//2U wysterowanie regulatorów na biegu jałowym [us]
-#define FAU_WPM_ZAWISU      FAU_PWM_JALOWY+2   	//2U wysterowanie regulatorów w zawisie [us]
-#define FAU_PWM_MAX         FAU_WPM_ZAWISU+2  	//2U maksymalne wysterowanie silników w trakcie lotu [us]
+#define FAU_PWM_JALOWY      0x0092           	//2U wysterowanie regulatorów na biegu jałowym [us]
+#define FAU_PWM_MIN			FAU_PWM_JALOWY+2 	//2U minimalne wysterowanie regulatorów w trakcie lotu [us]
+#define FAU_PWM_ZAWISU      FAU_PWM_MIN+2   	//2U wysterowanie regulatorów w zawisie [us]
+#define FAU_PWM_MAX         FAU_PWM_ZAWISU+2  	//2U maksymalne wysterowanie silników w trakcie lotu [us]
+#define ROZMIAR_PWM			4
+
 
 #define FAU_TSYNC_MON       0x009A           	//miesiąc ostatniej synchronizacji
 #define FAU_TSYNC_DAY       FAU_TSYNC_MON+1 	//dzień ostatniej synchronizacji
@@ -79,12 +81,11 @@
 #define FAU_VOLT_DROP_COMP  FAU_LOW_VOLT_ALARM+4	//4F współczynnik kompensacji spadku napięcia pakietu
 #define FAU_LANDING_SPD     FAU_VOLT_DROP_COMP+4 	//4F prędkość lądowania
 
-//wzmocnienia drążków aparatury dla posczególnych trybów pracy regulatorów
-#define FAU_SP_GAIN         0x3E0
-#define FAU_SPG_ACRO        FAU_SP_GAIN+0   //16U wzmocnienie drążków dla regulatora Acro
-#define FAU_SPG_STAB        FAU_SPG_ACRO+16 //16U wzmocnienie drążków dla regulatora Stab
-#define FAU_SPG_GSPD        FAU_SPG_STAB+16 //8U wzmocnienie drążków dla regulatora prędkości GPS
-#define FAU_SPG_GPOS        FAU_SPG_GSPD+8  //8U wzmocnienie drążków dla regulatora pozycji GPS
+//zakres wychylenia drążków aparatury dla poszczególnych trybów pracy regulatorów
+#define FAU_ZAKRES_DRAZKOW		0x3E0
+#define FAU_ZAKR_DRAZKOW_AKRO   FAU_ZAKRES_DRAZKOW+0		//4*4F wzmocnienie drążków dla regulatora Akro
+#define FAU_ZAKR_DRAZKOW_STAB   FAU_ZAKR_DRAZKOW_AKRO+16	//4*4F wzmocnienie drążków dla regulatora Stab
+#define ROZMIAR_DRAZKOW			4
 
 
 #define FA_SYS_VAR	    0x0400	    //zmienne systemowe i dynamiczne

@@ -204,6 +204,7 @@
     <ClInclude Include="KonfigPID.h" />
     <ClInclude Include="konfig_fram.h" />
     <ClInclude Include="MixerDlg.h" />
+    <ClInclude Include="NapedStrojenie.h" />
     <ClInclude Include="OdbiornikiRC.h" />
     <ClInclude Include="PIDtabCtrl.h" />
     <ClInclude Include="Roj.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="komunikacja\Protokol.cpp" />
     <ClCompile Include="KonfigPID.cpp" />
     <ClCompile Include="MixerDlg.cpp" />
+    <ClCompile Include="NapedStrojenie.cpp" />
     <ClCompile Include="OdbiornikiRC.cpp" />
     <ClCompile Include="PIDtabCtrl.cpp" />
     <ClCompile Include="Roj.cpp" />

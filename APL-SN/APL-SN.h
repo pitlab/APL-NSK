@@ -56,6 +56,10 @@ public:
 	afx_msg void OnUpdateUstawieniaMikser(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaOdbiornikirc();
 	afx_msg void OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaNaped();
+	afx_msg void OnUpdateUstawieniaNaped(CCmdUI* pCmdUI);
+	afx_msg void OnUstawParkamery();
+	afx_msg void OnUpdateUstawParkamery(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

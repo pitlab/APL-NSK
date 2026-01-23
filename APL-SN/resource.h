@@ -92,6 +92,7 @@
 #define IDI_ROZLACZ_COM                 340
 #define IDI_ICON1                       343
 #define IDI_POLACZ_ETH                  343
+#define IDD_NAPED_I_STROJENIE           346
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_SLIDER_FILTR_D1             1002
@@ -298,6 +299,18 @@
 #define IDC_SLID_POZIOM_EXPOZYCJI       1201
 #define IDC_BUT_RESET                   1202
 #define IDC_CHECK_ZACHOWAJ_PROPORCJE_SKALOWANIA 1203
+#define IDC_EDIT_PRZECHYLENIE_AKRO      1204
+#define IDC_EDIT_POCHYLENIE_AKRO        1205
+#define IDC_EDIT_ODCHYLENIE_AKRO        1206
+#define IDC_EDIT_WYSOKOSC_AKRO          1207
+#define IDC_EDIT_OBR_JALOWE             1208
+#define IDC_EDIT_OBR_MIN                1209
+#define IDC_EDIT_OBR_ZAWIS              1210
+#define IDC_EDIT_OBR_MAX                1211
+#define IDC_EDIT_PRZECHYLENIE_STAB      1216
+#define IDC_EDIT_POCHYLENIE_STAB        1217
+#define IDC_EDIT_ODCHYLENIE_STAB        1218
+#define IDC_EDIT_WYSOKOSC_STAB          1219
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -331,14 +344,15 @@
 #define ID_BUT_POLACZ_ETH               32817
 #define ID_BUT_POLACZ_COM               32818
 #define ID_POLACZ_ETH                   32819
+#define ID_USTAWIENIA_NA                32822
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        346
-#define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1204
+#define _APS_NEXT_RESOURCE_VALUE        348
+#define _APS_NEXT_COMMAND_VALUE         32823
+#define _APS_NEXT_CONTROL_VALUE         1212
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

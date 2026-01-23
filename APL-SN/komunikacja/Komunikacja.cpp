@@ -954,7 +954,7 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 uint8_t CKomunikacja::ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDaneWychodzace[3 + ROZMIAR_ROZNE_CHAR];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chDaneWychodzace[0] = chRozmiar;
@@ -980,7 +980,7 @@ uint8_t CKomunikacja::ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint1
 uint8_t CKomunikacja::ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[3+ 4 * ROZMIAR_ROZNE];
+	uint8_t chDaneWychodzace[3+ ROZMIAR_ROZNE_CHAR];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chDaneWychodzace[0] = chRozmiar;
@@ -1008,7 +1008,7 @@ uint8_t CKomunikacja::ZapiszDaneFloatFRAM(float* fDane, uint8_t chRozmiar, uint1
 uint8_t CKomunikacja::PotwierdzZapisDanych(uint16_t sAdres)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDaneWychodzace[3 + ROZMIAR_ROZNE_CHAR];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	m_unia8_32.dane16[0] = sAdres;
@@ -1087,7 +1087,7 @@ uint8_t CKomunikacja::InicjujOdczytU8FRAM(uint8_t chRozmiar, uint16_t sAdres)
 	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
-	if (chRozmiar > ROZMIAR_ROZNE)
+	if (chRozmiar > ROZMIAR_ROZNE_CHAR)
 		return ERR_INVALID_DATA_SIZE;
 
 	chDaneWychodzace[0] = chRozmiar;
@@ -1114,7 +1114,7 @@ uint8_t CKomunikacja::InicjujOdczytFloatFRAM(uint8_t chRozmiar, uint16_t sAdres)
 	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
-	if (chRozmiar > ROZMIAR_ROZNE)
+	if (chRozmiar > ROZMIAR_ROZNE_FLOAT)
 		return ERR_INVALID_DATA_SIZE;
 
 	chDaneWychodzace[0] = chRozmiar;
@@ -1171,7 +1171,7 @@ uint8_t CKomunikacja::CzytajDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar)
 uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres)
 {
 	uint8_t chLicznikProbOdczytu = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
-	uint8_t chDane[4 * ROZMIAR_ROZNE];
+	uint8_t chDane[4 * ROZMIAR_ROZNE_FLOAT];
 	uint8_t chErr = InicjujOdczytFloatFRAM(chRozmiar, sAdres);
 	if (chErr == ERR_OK)
 	{
@@ -1206,6 +1206,7 @@ uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::CzytajU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint16_t sAdres)
 {
+
 	uint8_t chLicznikProbOdczytu = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 	uint8_t chErr = InicjujOdczytU8FRAM(chRozmiar, sAdres);
 	if (chErr == ERR_OK)
@@ -1303,7 +1304,7 @@ uint8_t CKomunikacja::RekonfigurujWeWyRC()
 uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, uint8_t chStalaCzasowaFiltraD)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE];
+	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE_FLOAT];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chDaneWychodzace[0] = chIndeksRegulatora;
