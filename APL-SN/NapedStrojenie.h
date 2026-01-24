@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Konfig_fram.h"
+#include "pid_kanaly.h"
 
 
 // Okno dialogowe NapedStrojenie
@@ -36,11 +37,6 @@ public:
 	CString m_strZakresPochyleniaAkro;
 	CString m_strZakresOdchyleniaAkro;
 	CString m_strZakresWysokosciAkro;
-	float m_fZakresPrzechyleniaAkro;
-	float m_fZakresPochyleniaAkro;
-	float m_fZakresOdchyleniaAkro;
-	float m_fZakresWysokosciAkro;
-
 	afx_msg void OnEnChangeEditPrzechylenieStab();
 	afx_msg void OnEnChangeEditPochylenieStab();
 	afx_msg void OnEnChangeEditOdchylenieStab();
@@ -49,11 +45,6 @@ public:
 	CString m_strZakresPochyleniaStab;
 	CString m_strZakresOdchyleniaStab;
 	CString m_strZakresWysokosciStab;
-	float m_fZakresPrzechyleniaStab;
-	float m_fZakresPochyleniaStab;
-	float m_fZakresOdchyleniaStab;
-	float m_fZakresWysokosciStab;
-
 	afx_msg void OnEnChangeEditObrJalowe();
 	afx_msg void OnEnChangeEditObrMin();
 	afx_msg void OnEnChangeEditObrZawis();
@@ -62,11 +53,13 @@ public:
 	CString m_strObrotyMin;
 	CString m_strObrotyZawis;
 	CString m_strObrotyMax;
+	float m_fSkalaWartosciZadanejAkro[ROZMIAR_DRAZKOW];	//wartość zadana dla pełnego wychylenia drążka aparatury w trybie AKRO
+	float m_fSkalaWartosciZadanejStab[ROZMIAR_DRAZKOW];	//wartość zadana dla pełnego wychylenia drążka aparatury w trybie STAB
 	int m_nObrotyJalowe;
 	int m_nObrotyMin;
 	int m_nObrotyZawis;
 	int m_nObrotyMax;
 	
-	
+	float ZamienStrNaFloat(CString strLiczba);
 
 };

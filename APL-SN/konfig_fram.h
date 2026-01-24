@@ -82,10 +82,9 @@
 #define FAU_LANDING_SPD     FAU_VOLT_DROP_COMP+4 	//4F prędkość lądowania
 
 //zakres wychylenia drążków aparatury dla poszczególnych trybów pracy regulatorów
-#define FAU_ZAKRES_DRAZKOW		0x3E0
-#define FAU_ZAKR_DRAZKOW_AKRO   FAU_ZAKRES_DRAZKOW+0		//4*4F wzmocnienie drążków dla regulatora Akro
-#define FAU_ZAKR_DRAZKOW_STAB   FAU_ZAKR_DRAZKOW_AKRO+16	//4*4F wzmocnienie drążków dla regulatora Stab
-#define ROZMIAR_DRAZKOW			4
+#define FAU_ZADANA_AKRO     0x3E0					//4x4F wartość zadana z drążków aparatury dla regulatora Akro 
+#define FAU_ZADANA_STAB     FAU_ZADANA_AKRO+16 		//4x4F wartość zadana z drążków aparatury dla regulatora Stab
+#define ROZMIAR_DRAZKOW		4						//liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 
 
 #define FA_SYS_VAR	    0x0400	    //zmienne systemowe i dynamiczne

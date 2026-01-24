@@ -1338,3 +1338,103 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fK
 	}
 	return chErr;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Przekazuje do autopilota skalê wartosci zadanej dla pe³nego wychylenia dr¹¿ka aparatury w trybie AKRO
+// parametry: fDane - wskaŸnik na skale wartoœci zadanej
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float* fDane)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * ROZMIAR_ROZNE_FLOAT];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	
+	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	{
+		m_unia8_32.daneFloat = *(fDane + n);
+		for (int i = 0; i < 4; i++)
+			chDaneWychodzace[n * 4 + i] = m_unia8_32.dane8[i];
+	}
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_AKRO, chDaneWychodzace, 4*ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano >= 2))
+	{
+		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_AKRO)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Przekazuje do autopilota skalê wartosci zadanej dla pe³nego wychylenia dr¹¿ka aparatury w trybie STAB
+// parametry: fDane - wskaŸnik na skale wartoœci zadanej
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float* fDane)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * sizeof(float)];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+
+	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	{
+		m_unia8_32.daneFloat = *(fDane + n);
+		for (int i = 0; i < 4; i++)
+			chDaneWychodzace[n * 4 + i] = m_unia8_32.dane8[i];
+	}
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_STAB, chDaneWychodzace, 4 * ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano >= 2))
+	{
+		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_STAB)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Przekazuje do autopilota wartoœci wysterowania dla zapewnienia obrotów
+// parametry: 
+//  sJalowe - wysterowanie dla uzyskania obrotów ja³owych
+//  sMin - wysterowanie dla uzyskania obrotów minimalnych w trakcie lotu
+//  sZawis - wysterowanie dla uzyskania obrotów pozwalaj¹cych na zawis
+//  sMax - wysterowanie dla uzyskania obrotów maksymalnych
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin, uint16_t sZawis, uint16_t sMax)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[4 * sizeof(uint16_t)];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	m_unia8_32.dane16[0] = sJalowe;
+	for (int i = 0; i < 2; i++)
+		chDaneWychodzace[i + 0] = m_unia8_32.dane8[i];
+	m_unia8_32.dane16[0] = sMin;
+	for (int i = 0; i < 2; i++)
+		chDaneWychodzace[i + 2] = m_unia8_32.dane8[i];
+	m_unia8_32.dane16[0] = sZawis;
+	for (int i = 0; i < 2; i++)
+		chDaneWychodzace[i + 4] = m_unia8_32.dane8[i];
+	m_unia8_32.dane16[0] = sMax;
+	for (int i = 0; i < 2; i++)
+		chDaneWychodzace[i + 6] = m_unia8_32.dane8[i];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_WYSTER_NAPEDU, chDaneWychodzace, 4 * sizeof(uint16_t), chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano >= 2))
+	{
+		if (chDanePrzychodzace[1] == PK_ZAPISZ_WYSTER_NAPEDU)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];
+	}
+	return chErr;
+}
