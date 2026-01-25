@@ -5,6 +5,8 @@
 #include "Protokol.h"
 #include "../APL-SNDoc.h"
 #include "../konfig_fram.h"
+#include "../pid_kanaly.h"
+
 
 /*
 Klasa komunikacyjna poœrednicz¹ca miêdzy aplikacj¹ a protoko³em komunikacyjnym. 
@@ -1351,7 +1353,7 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float* fDane)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * ROZMIAR_ROZNE_FLOAT];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 	
 	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
 	{
@@ -1363,8 +1365,22 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float* fDane)
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_AKRO)
+		{
 			if (chDanePrzychodzace[0] != ERR_OK)
 				chErr = chDanePrzychodzace[0];
+			else
+			{
+				do  //czekaj na potwierdzenie zapisu
+				{
+					chErr = PotwierdzZapisDanych(PK_ZAPISZ_ZADANE_AKRO);
+					chLicznikProbPotw--;
+				} while ((chErr != ERR_OK) && chLicznikProbPotw);
+				if (!chLicznikProbPotw)
+					chErr = ERR_BRAK_POTWIERDZ;
+			}
+		}
+		else
+			chErr = ERR_BRAK_POTWIERDZ;
 	}
 	return chErr;
 }
@@ -1381,7 +1397,7 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float* fDane)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * sizeof(float)];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
 	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
 	{
@@ -1395,6 +1411,16 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float* fDane)
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_STAB)
 			if (chDanePrzychodzace[0] != ERR_OK)
 				chErr = chDanePrzychodzace[0];
+			else
+			{
+				do  //czekaj na potwierdzenie zapisu
+				{
+					chErr = PotwierdzZapisDanych(PK_ZAPISZ_ZADANE_STAB);
+					chLicznikProbPotw--;
+				} while ((chErr != ERR_OK) && chLicznikProbPotw);
+				if (!chLicznikProbPotw)
+					chErr = ERR_BRAK_POTWIERDZ;
+			}
 	}
 	return chErr;
 }
@@ -1415,6 +1441,7 @@ uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin,
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[4 * sizeof(uint16_t)];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
 	m_unia8_32.dane16[0] = sJalowe;
 	for (int i = 0; i < 2; i++)
@@ -1435,6 +1462,16 @@ uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin,
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_WYSTER_NAPEDU)
 			if (chDanePrzychodzace[0] != ERR_OK)
 				chErr = chDanePrzychodzace[0];
+			else
+			{
+				do  //czekaj na potwierdzenie zapisu
+				{
+					chErr = PotwierdzZapisDanych(PK_ZAPISZ_WYSTER_NAPEDU);
+					chLicznikProbPotw--;
+				} while ((chErr != ERR_OK) && chLicznikProbPotw);
+				if (!chLicznikProbPotw)
+					chErr = ERR_BRAK_POTWIERDZ;
+			}
 	}
 	return chErr;
 }

@@ -43,7 +43,7 @@
 #define REG_GPS_POS       5   //regulacja prędkości liniowej w osiach XYZ ze stabilizacją położenia
 
 #define NUM_REG_MOD       6   //liczba trybów regulatora
-
+#define ROZMIAR_DRAZKOW	  4	  //liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 
 //definicje bitów konfiguracji PID
 #define PID_MASKA_FILTRA_D		0x3F
