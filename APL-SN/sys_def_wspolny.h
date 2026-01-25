@@ -1,3 +1,6 @@
+#include <math.h>
+#define _USE_MATH_DEFINES
+
 //flagi inicjalizacji sprzętu CM4
 #define INIT_WYKR_MTK			0x00000001
 #define INIT_WYKR_UBLOX			0x00000002
@@ -20,7 +23,7 @@
 #define INIT_TRWA_KAL_ZYRO_GOR	0x00040000	//trwa kalibracja zera żyroskopu na gorąco
 #define INIT_WYK_KAL_WZM_ZYRO	0x00080000	//wykonano kalibrację wzmocnienia żyroskopu w danej osi
 
-
+#define M_PI				3.14159265358979323846  /* pi */
 #define RAD2DEG				(180/M_PI)
 #define DEG2RAD				(M_PI/180)
 #define KELVIN				273.15f

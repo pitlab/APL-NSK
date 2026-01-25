@@ -6,6 +6,8 @@
 #include "NapedStrojenie.h"
 #include "afxdialogex.h"
 #include "Errors.h"
+#include "sys_def_wspolny.h"
+#include <math.h>
 
 // Okno dialogowe NapedStrojenie
 
@@ -91,11 +93,11 @@ BOOL NapedStrojenie::OnInitDialog()
 	chErr = getKomunikacja().CzytajFloatFRAM(fDane, ROZMIAR_DRAZKOW, FAU_ZADANA_AKRO);
 	if (chErr == ERR_OK)
 	{
-		m_fSkalaWartosciZadanejAkro[PRZE] = fDane[0];
+		m_fSkalaWartosciZadanejAkro[PRZE] = RAD2DEG * fDane[0];
 		m_strZakresPrzechyleniaAkro.Format(_T("%.2f"), m_fSkalaWartosciZadanejAkro[PRZE]);
-		m_fSkalaWartosciZadanejAkro[POCH] = fDane[1];
+		m_fSkalaWartosciZadanejAkro[POCH] = RAD2DEG * fDane[1];
 		m_strZakresPochyleniaAkro.Format(_T("%.2f"), m_fSkalaWartosciZadanejAkro[POCH]);
-		m_fSkalaWartosciZadanejAkro[ODCH] = fDane[2];
+		m_fSkalaWartosciZadanejAkro[ODCH] = RAD2DEG * fDane[2];
 		m_strZakresOdchyleniaAkro.Format(_T("%.2f"), m_fSkalaWartosciZadanejAkro[ODCH]);
 		m_fSkalaWartosciZadanejAkro[WYSO] = fDane[3];
 		m_strZakresWysokosciAkro.Format(_T("%.2f"), m_fSkalaWartosciZadanejAkro[WYSO]);
@@ -105,11 +107,11 @@ BOOL NapedStrojenie::OnInitDialog()
 	chErr = getKomunikacja().CzytajFloatFRAM(fDane, ROZMIAR_DRAZKOW, FAU_ZADANA_STAB);
 	if (chErr == ERR_OK)
 	{
-		m_fSkalaWartosciZadanejStab[PRZE] = fDane[0];
+		m_fSkalaWartosciZadanejStab[PRZE] = RAD2DEG * fDane[0];
 		m_strZakresPrzechyleniaStab.Format(_T("%.2f"), m_fSkalaWartosciZadanejStab[PRZE]);
-		m_fSkalaWartosciZadanejStab[POCH] = fDane[1];
+		m_fSkalaWartosciZadanejStab[POCH] = RAD2DEG * fDane[1];
 		m_strZakresPochyleniaStab.Format(_T("%.2f"), m_fSkalaWartosciZadanejStab[POCH]);
-		m_fSkalaWartosciZadanejStab[ODCH] = fDane[2];
+		m_fSkalaWartosciZadanejStab[ODCH] = RAD2DEG * fDane[2];
 		m_strZakresOdchyleniaStab.Format(_T("%.2f"), m_fSkalaWartosciZadanejStab[ODCH]);
 		m_fSkalaWartosciZadanejStab[WYSO] = fDane[3];
 		m_strZakresWysokosciStab.Format(_T("%.2f"), m_fSkalaWartosciZadanejStab[WYSO]);
@@ -138,7 +140,7 @@ BOOL NapedStrojenie::OnInitDialog()
 void NapedStrojenie::OnEnChangeEditPrzechylenieAkro()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejAkro[PRZE] = ZamienStrNaFloat(m_strZakresPrzechyleniaAkro);
+	m_fSkalaWartosciZadanejAkro[PRZE] = DEG2RAD * ZamienStrNaFloat(m_strZakresPrzechyleniaAkro);
 	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
 	Invalidate();
 }
@@ -148,7 +150,7 @@ void NapedStrojenie::OnEnChangeEditPrzechylenieAkro()
 void NapedStrojenie::OnEnChangeEditPochylenieAkro()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejAkro[POCH] = ZamienStrNaFloat(m_strZakresPochyleniaAkro);
+	m_fSkalaWartosciZadanejAkro[POCH] = DEG2RAD * ZamienStrNaFloat(m_strZakresPochyleniaAkro);
 	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
 	Invalidate();
 }
@@ -157,7 +159,7 @@ void NapedStrojenie::OnEnChangeEditPochylenieAkro()
 void NapedStrojenie::OnEnChangeEditOdchylenieAkro()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejAkro[ODCH] = ZamienStrNaFloat(m_strZakresOdchyleniaAkro);
+	m_fSkalaWartosciZadanejAkro[ODCH] = DEG2RAD * ZamienStrNaFloat(m_strZakresOdchyleniaAkro);
 	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
 	Invalidate();
 }
@@ -174,7 +176,7 @@ void NapedStrojenie::OnEnChangeEditWysokoscAkro()
 void NapedStrojenie::OnEnChangeEditPrzechylenieStab()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejStab[PRZE] = ZamienStrNaFloat(m_strZakresPrzechyleniaStab);
+	m_fSkalaWartosciZadanejStab[PRZE] = DEG2RAD * ZamienStrNaFloat(m_strZakresPrzechyleniaStab);
 	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
 	Invalidate();
 }
@@ -183,7 +185,7 @@ void NapedStrojenie::OnEnChangeEditPrzechylenieStab()
 void NapedStrojenie::OnEnChangeEditPochylenieStab()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejStab[POCH] = ZamienStrNaFloat(m_strZakresPochyleniaStab);
+	m_fSkalaWartosciZadanejStab[POCH] = DEG2RAD * ZamienStrNaFloat(m_strZakresPochyleniaStab);
 	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
 	Invalidate();
 }
@@ -192,7 +194,7 @@ void NapedStrojenie::OnEnChangeEditPochylenieStab()
 void NapedStrojenie::OnEnChangeEditOdchylenieStab()
 {
 	UpdateData();
-	m_fSkalaWartosciZadanejStab[ODCH] = ZamienStrNaFloat(m_strZakresOdchyleniaStab);
+	m_fSkalaWartosciZadanejStab[ODCH] = DEG2RAD * ZamienStrNaFloat(m_strZakresOdchyleniaStab);
 	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
 	Invalidate();
 }
