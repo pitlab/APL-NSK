@@ -307,10 +307,16 @@
 #define IDC_EDIT_OBR_MIN                1209
 #define IDC_EDIT_OBR_ZAWIS              1210
 #define IDC_EDIT_OBR_MAX                1211
+#define IDC_STAT__PRZECHYLENIE_AKRO     1212
+#define IDC_STAT_POCHYLENIE_AKRO        1213
+#define IDC_STAT_ODCHYLENIE_AKRO        1214
+#define IDC_STAT_PRZECHYLENIE_STAB      1215
 #define IDC_EDIT_PRZECHYLENIE_STAB      1216
 #define IDC_EDIT_POCHYLENIE_STAB        1217
 #define IDC_EDIT_ODCHYLENIE_STAB        1218
 #define IDC_EDIT_WYSOKOSC_STAB          1219
+#define IDC_STAT_POCHYLENIE_STAB        1220
+#define IDC_STAT_ODCHYLENIE_STAB        1221
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -352,7 +358,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32823
-#define _APS_NEXT_CONTROL_VALUE         1212
+#define _APS_NEXT_CONTROL_VALUE         1222
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
