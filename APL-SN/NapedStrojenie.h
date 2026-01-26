@@ -62,10 +62,10 @@ public:
 	
 	float ZamienStrNaFloat(CString strLiczba);
 
-	CString m_strPrzechylenieAkroStopnie;
-	CString m_strPochylenieAkroStopnie;
-	CString m_strOdchylenieAkroStopnie;
-	CString m_strPrzechylenieStabStopnie;
-	CString m_strPochylenieStabStopnie;
-	CString m_strOdchylenieStabStopnie;
+	CString m_strZakresPrzechyleniaAkroStopnie;
+	CString m_strZakresPochyleniaAkroStopnie;
+	CString m_strZakresOdchyleniaAkroStopnie;
+	CString m_strZakresPrzechyleniaStabStopnie;
+	CString m_strZakresPochyleniaStabStopnie;
+	CString m_strZakresOdchyleniaStabStopnie;
 };
