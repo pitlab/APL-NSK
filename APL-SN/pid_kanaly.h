@@ -42,6 +42,13 @@
 #define REG_GPS_SPEED     4   //regulacja prędkości liniowej w osiach XYZ
 #define REG_GPS_POS       5   //regulacja prędkości liniowej w osiach XYZ ze stabilizacją położenia
 
+//definicje trybów regulacji
+#define REG_WYLACZ		0		//regultor wyłączony
+#define REG_RECZNA		1		//regulacja ręczna, bezpośrednio z drążków aparatury
+#define REG_AKRO		2		//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
+#define REG_STAB		3		//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
+#define REG_AUTO		4		//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
+
 #define NUM_REG_MOD       6   //liczba trybów regulatora
 #define ROZMIAR_DRAZKOW	  4	  //liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 

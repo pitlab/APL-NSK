@@ -422,7 +422,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki bêd¹ mia³y ten sam znacznik czasu. W takim przypadku scal to w jednym indeksie wektora
 				if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 				{
-					int nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
+					size_t nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
 					for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
 					{
 						if (stDaneTele.dane[x] != 0.0f)

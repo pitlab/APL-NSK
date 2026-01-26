@@ -36,6 +36,11 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_strPodstFiltraD2(_T(""))
 	, m_bWylaczony1(FALSE)
 	, m_bWylaczony2(FALSE)
+	, m_bTrybRegulacjiWylaczony(FALSE)
+	, m_bTrybRegulacjiReczny(FALSE)
+	, m_bTrybRegulacjiAkro(FALSE)
+	, m_bTrybRegulacjiStab(FALSE)
+	, m_bTrybRegulacjiAuto(FALSE)
 {
 
 }
@@ -67,6 +72,11 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_FILTR_D2, m_ctlSlidPOdstCzasuFiltraD2);
 	DDX_Check(pDX, IDC_CHECK_WYLACZ1, m_bWylaczony1);
 	DDX_Check(pDX, IDC_CHECK_WYLACZ2, m_bWylaczony2);
+	DDX_Check(pDX, IDC_RADIO_REG_WYLACZ, m_bTrybRegulacjiWylaczony);
+	DDX_Check(pDX, IDC_RADIO_REG_RECZNY, m_bTrybRegulacjiReczny);
+	DDX_Check(pDX, IDC_RADIO_REG_AKRO, m_bTrybRegulacjiAkro);
+	DDX_Check(pDX, IDC_RADIO_REG_STAB, m_bTrybRegulacjiStab);
+	DDX_Check(pDX, IDC_RADIO_REG_AUTO, m_bTrybRegulacjiAuto);
 }
 
 
@@ -92,6 +102,11 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_WYLACZ2, &KonfigPID::OnBnClickedCheckWylacz2)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_D1, &KonfigPID::OnNMReleasedcaptureSliderFiltrD1)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_D2, &KonfigPID::OnNMReleasedcaptureSliderFiltrD2)
+	ON_BN_CLICKED(IDC_RADIO_REG_WYLACZ, &KonfigPID::OnBnClickedRadioRegWylacz)
+	ON_BN_CLICKED(IDC_RADIO_REG_RECZNY, &KonfigPID::OnBnClickedRadioRegReczny)
+	ON_BN_CLICKED(IDC_RADIO_REG_AKRO, &KonfigPID::OnBnClickedRadioRegAkro)
+	ON_BN_CLICKED(IDC_RADIO_REG_STAB, &KonfigPID::OnBnClickedRadioRegStab)
+	ON_BN_CLICKED(IDC_RADIO_REG_AUTO, &KonfigPID::OnBnClickedRadioRegAuto)
 END_MESSAGE_MAP()
 
 
@@ -106,7 +121,7 @@ BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	float fDane[ROZMIAR_REG_PID / 4];
-	uint8_t chDane[4];
+	uint8_t chDane[ROZMIAR_DRAZKOW];
 	uint8_t chErr;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
@@ -142,6 +157,13 @@ BOOL KonfigPID::OnInitDialog()
 		}
 	}
 
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, ROZMIAR_DRAZKOW, FA_TRYB_REG);
+	if (chErr == ERR_OK)
+	{
+		for (uint8_t n = 0; n < ROZMIAR_DRAZKOW; n++)
+			m_chTrybRegulacji[n] = chDane[n];
+		m_bZmienionyTrybRegulacji = FALSE;
+	}
 	m_ctlSlidPOdstCzasuFiltraD1.SetRange(0, 64);
 	m_ctlSlidPOdstCzasuFiltraD2.SetRange(0, 64);
 	UstawKontrolki(m_nBiezacyParametr);
@@ -193,49 +215,65 @@ void KonfigPID::UstawKontrolki(int nParametr)
 
 	m_strKP1.Format(_T("%.4f"), m_stPID[nRegGlow].fKp);
 	m_strKP1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strKP2.Format(_T("%.4f"), m_stPID[nRegPoch].fKp);
 	m_strKP2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fTi);
 	m_strTI1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strTI2.Format(_T("%.4f"), m_stPID[nRegPoch].fTi);
 	m_strTI2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_strTD1.Format(_T("%.4f"), m_stPID[nRegGlow].fTd);
 	m_strTD1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
 	m_strTD2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_strOgrCalki1.Format(_T("%.4f"), m_stPID[nRegGlow].fOgrCalki);
 	m_strOgrCalki1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strOgrCalki2.Format(_T("%.4f"), m_stPID[nRegPoch].fOgrCalki);
 	m_strOgrCalki2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_strMinWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMinWyj);
 	m_strMinWyj1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strMinWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMinWyj);
 	m_strMinWyj2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_strMaxWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMaxWyj);
 	m_strMaxWyj1.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
-	UpdateData(FALSE);
 
 	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].chPodstFiltraD);
 	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].chPodstFiltraD);
-	m_bKatowy = m_stPID[nRegGlow].bKatowy;	
+	m_bKatowy = m_stPID[nRegGlow].bKatowy;
+	UstawTrybRegulacji(nParametr);
+}
+
+
+
+void KonfigPID::UstawTrybRegulacji(int nParametr)
+{
+	int nIndeksRegulatora;
+	if (nParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = nParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_bTrybRegulacjiWylaczony = FALSE;
+	m_bTrybRegulacjiReczny = FALSE;
+	m_bTrybRegulacjiAkro = FALSE;
+	m_bTrybRegulacjiStab = FALSE;
+	m_bTrybRegulacjiAuto = FALSE;
+
+	switch (m_chTrybRegulacji[nIndeksRegulatora])
+	{
+	case REG_WYLACZ: m_bTrybRegulacjiWylaczony = TRUE;	break;
+	case REG_RECZNA: m_bTrybRegulacjiReczny = TRUE;	break;
+	case REG_AKRO: m_bTrybRegulacjiAkro = TRUE;	break;
+	case REG_STAB: m_bTrybRegulacjiStab = TRUE;	break;
+	case REG_AUTO: m_bTrybRegulacjiAuto = TRUE;	break;
+	}
+	
 	UpdateData(FALSE);
 }
 
@@ -247,7 +285,6 @@ void KonfigPID::UstawKontrolki(int nParametr)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedOk()
 {
-	float fDane[ROZMIAR_REG_PID/4];
 	uint8_t chPodstawaFiltraiBity;
 	uint8_t chErr = ERR_OK;
 	CString strKomunikat;
@@ -260,6 +297,11 @@ void KonfigPID::OnBnClickedOk()
 			chPodstawaFiltraiBity = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
 			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, chPodstawaFiltraiBity);
 		}
+	}
+
+	if (m_bZmienionyTrybRegulacji)
+	{
+		chErr |= getKomunikacja().ZapiszTrybRegulacji(m_chTrybRegulacji);
 	}
 
 	if (chErr != ERR_OK)
@@ -631,3 +673,78 @@ void KonfigPID::OnBnClickedCheckWylacz2()
 
 
 
+
+
+void KonfigPID::OnBnClickedRadioRegWylacz()
+{
+	int nIndeksRegulatora;
+	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = m_nBiezacyParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_chTrybRegulacji[nIndeksRegulatora] = REG_WYLACZ;		//regultor wyłączony
+	UstawTrybRegulacji(nIndeksRegulatora);
+	m_bZmienionyTrybRegulacji = TRUE;
+	UpdateData(FALSE);
+}
+
+
+void KonfigPID::OnBnClickedRadioRegReczny()
+{
+	int nIndeksRegulatora;
+	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = m_nBiezacyParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_chTrybRegulacji[nIndeksRegulatora] = REG_RECZNA;		//regulacja ręczna, bezpośrednio z drążków aparatury	
+	UstawTrybRegulacji(nIndeksRegulatora);
+	m_bZmienionyTrybRegulacji = TRUE;
+	UpdateData(FALSE);
+}
+
+
+void KonfigPID::OnBnClickedRadioRegAkro()
+{
+	int nIndeksRegulatora;
+	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = m_nBiezacyParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_chTrybRegulacji[nIndeksRegulatora] = REG_AKRO;	//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
+	UstawTrybRegulacji(nIndeksRegulatora);
+	m_bZmienionyTrybRegulacji = TRUE;
+	UpdateData(FALSE);
+}
+
+
+void KonfigPID::OnBnClickedRadioRegStab()
+{
+	int nIndeksRegulatora;
+	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = m_nBiezacyParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_chTrybRegulacji[nIndeksRegulatora] = REG_STAB;	//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
+	UstawTrybRegulacji(nIndeksRegulatora);
+	m_bZmienionyTrybRegulacji = TRUE;
+	UpdateData(FALSE);
+}
+
+
+void KonfigPID::OnBnClickedRadioRegAuto()
+{
+	int nIndeksRegulatora;
+	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+		nIndeksRegulatora = m_nBiezacyParametr;
+	else
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+
+	m_chTrybRegulacji[nIndeksRegulatora] = REG_AUTO;	//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
+	UstawTrybRegulacji(nIndeksRegulatora);
+	m_bZmienionyTrybRegulacji = TRUE;
+	UpdateData(FALSE);
+}

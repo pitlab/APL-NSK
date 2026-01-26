@@ -34,6 +34,8 @@ public:
 		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
 	} m_stPID[LICZBA_PID];
+	uint8_t m_chTrybRegulacji[ROZMIAR_DRAZKOW];
+	BOOL m_bZmienionyTrybRegulacji;
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_KONFIG_PID };
@@ -42,6 +44,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	void UstawKontrolki(int nParametr);
+	void UstawTrybRegulacji(int nParametr);
 	float ZamienStrNaFloat(CString str);
 	void WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch);
 
@@ -76,6 +79,12 @@ private:
 	CString m_strPodstFiltraD2;
 	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD1;
 	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD2;
+	BOOL m_bTrybRegulacjiWylaczony;
+	BOOL m_bTrybRegulacjiReczny;
+	BOOL m_bTrybRegulacjiAkro;
+	BOOL m_bTrybRegulacjiStab;
+	BOOL m_bTrybRegulacjiAuto;
+
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditKp1();
@@ -97,4 +106,9 @@ public:
 	afx_msg void OnBnClickedCheckWylacz2();
 	afx_msg void OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMReleasedcaptureSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedRadioRegWylacz();
+	afx_msg void OnBnClickedRadioRegReczny();
+	afx_msg void OnBnClickedRadioRegAkro();
+	afx_msg void OnBnClickedRadioRegStab();
+	afx_msg void OnBnClickedRadioRegAuto();
 };

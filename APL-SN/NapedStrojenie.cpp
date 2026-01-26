@@ -204,6 +204,7 @@ void NapedStrojenie::OnEnChangeEditWysokoscAkro()
 	Invalidate();
 }
 
+
 void NapedStrojenie::OnEnChangeEditPrzechylenieStab()
 {
 	UpdateData();

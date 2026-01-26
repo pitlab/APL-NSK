@@ -1348,7 +1348,7 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fK
 // parametry: fDane - wskaŸnik na skale wartoœci zadanej
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float* fDane)
+uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float *fDane)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * ROZMIAR_ROZNE_FLOAT];
@@ -1392,7 +1392,7 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float* fDane)
 // parametry: fDane - wskaŸnik na skale wartoœci zadanej
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float* fDane)
+uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float *fDane)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * sizeof(float)];
@@ -1467,6 +1467,49 @@ uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin,
 				do  //czekaj na potwierdzenie zapisu
 				{
 					chErr = PotwierdzZapisDanych(PK_ZAPISZ_WYSTER_NAPEDU);
+					chLicznikProbPotw--;
+				} while ((chErr != ERR_OK) && chLicznikProbPotw);
+				if (!chLicznikProbPotw)
+					chErr = ERR_BRAK_POTWIERDZ;
+			}
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Przekazuje do autopilota wartoœci wysterowania dla zapewnienia obrotów
+// parametry: 
+//  sJalowe - wysterowanie dla uzyskania obrotów ja³owych
+//  sMin - wysterowanie dla uzyskania obrotów minimalnych w trakcie lotu
+//  sZawis - wysterowanie dla uzyskania obrotów pozwalaj¹cych na zawis
+//  sMax - wysterowanie dla uzyskania obrotów maksymalnych
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszTrybRegulacji(uint8_t *chTrybRegulacji)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[4 * sizeof(uint16_t)];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
+
+	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	{
+		chDaneWychodzace[n] = chTrybRegulacji[n];
+	}
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_TRYB_REG, chDaneWychodzace, ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano >= 2))
+	{
+		if (chDanePrzychodzace[1] == PK_ZAPISZ_TRYB_REG)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];
+			else
+			{
+				do  //czekaj na potwierdzenie zapisu
+				{
+					chErr = PotwierdzZapisDanych(PK_ZAPISZ_TRYB_REG);
 					chLicznikProbPotw--;
 				} while ((chErr != ERR_OK) && chLicznikProbPotw);
 				if (!chLicznikProbPotw)
