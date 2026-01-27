@@ -58,15 +58,16 @@
 #define FAU_PID_OGR_I0      FA_USER_PID+12		//4F ograniczenie wartości całki członu I regulatora 0
 #define FAU_PID_MIN_WY0		FA_USER_PID+16		//4F minimalna wartość wyjścia
 #define FAU_PID_MAX_WY0		FA_USER_PID+20		//4F maksymalna wartość wyjścia
-#define FAU_FILTRD_TYP 		FA_USER_PID+24		//1U Stała czasowa filtru członu różniczkującego (bity 0..5), wyłączony (bit 6), Regulator kątowy (bit 7)
-#define FAU_PID1	        FA_USER_PID+25		//1U nic
-#define FAU_PID2			FA_USER_PID+26		//1U nic
-#define FAU_PID3			FA_USER_PID+27		//1U nic
-#define ROZMIAR_REG_PID		28
+#define FAU_SKALA_WZADANEJ0 FA_USER_PID+24	//4F skalowanie wartości zadanej
+#define FAU_FILTRD_TYP 		FA_USER_PID+28  //1U Stała czasowa filtru członu różniczkującego (bity 0..5), wyłączony (bit 6), Regulator kątowy (bit 7)
+#define FAU_PID1	        FA_USER_PID+29  //1U nic
+#define FAU_PID2			FA_USER_PID+30	//1U nic
+#define FAU_PID3			FA_USER_PID+31	//1U nic
+#define ROZMIAR_REG_PID		32
 
 
-//12 regulatorów zajmuje 336 bajtów - 0x150
-#define FA_TRYB_REG	    	0x0250		//4*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków
+//12 regulatorów zajmuje 336 bajtów - 0x180
+#define FA_TRYB_REG	    	0x0280		//4*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków
 
 //konfiguracja odbiorników RC i wyjść serw/ESC zdefiniowane w sys_def_wspolnych.h
 #define FAU_KONF_ODB_RC		0x0300		//1U konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus

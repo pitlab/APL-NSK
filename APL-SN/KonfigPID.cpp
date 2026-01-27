@@ -129,6 +129,7 @@ BOOL KonfigPID::OnInitDialog()
 	float fDane[ROZMIAR_REG_PID / 4];
 	uint8_t chDane[ROZMIAR_DRAZKOW];
 	uint8_t chErr;
+	CString strKomunikat;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));
@@ -154,7 +155,7 @@ BOOL KonfigPID::OnInitDialog()
 			m_stPID[n].fSkalaWartZadanej = fDane[6];
 			m_stPID[n].bZmieniony = FALSE;
 
-			getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
+			getKomunikacja().RozpakujFloatDoU8(&fDane[7], 1, chDane);
 			m_stPID[n].chPodstFiltraD = chDane[0] & 0x3F;
 			m_stPID[n].bWylaczony = (chDane[0] & 0x40) >> 6;
 			if (n & 0x01)	//regulatory nieparzyste obsługują pochodną, czyli prędkość katową lub liniową, więc nie mogą być kątowe
@@ -162,7 +163,17 @@ BOOL KonfigPID::OnInitDialog()
 			else
 				m_stPID[n].bKatowy = (chDane[0] & 0x80) >> 7;
 		}
+		else
+		{
+			if (chErr == ERR_BRAK_POTWIERDZ)
+			{
+				strKomunikat.Format(_T("Błąd odczytu konfiguracji, brak potwierdzenia"));
+				MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			}
+			return FALSE;
+		}
 	}
+	
 
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, ROZMIAR_DRAZKOW, FA_TRYB_REG);
 	if (chErr == ERR_OK)
@@ -250,6 +261,11 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 
+	m_strSkalaWartZadanejStab.Format(_T("%.4f"), m_stPID[nRegGlow].fSkalaWartZadanej);
+	m_strSkalaWartZadanejStab.Replace(_T('.'), _T(','));
+	m_strSkalaWartZadanejAkro.Format(_T("%.4f"), m_stPID[nRegPoch].fSkalaWartZadanej);
+	m_strSkalaWartZadanejAkro.Replace(_T('.'), _T(','));
+
 	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].chPodstFiltraD);
 	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].chPodstFiltraD);
 	m_bKatowy = m_stPID[nRegGlow].bKatowy;
@@ -302,7 +318,7 @@ void KonfigPID::OnBnClickedOk()
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
 		{		
 			chPodstawaFiltraiBity = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
-			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, chPodstawaFiltraiBity);
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fSkalaWartZadanej, chPodstawaFiltraiBity);
 		}
 	}
 
@@ -504,13 +520,41 @@ void KonfigPID::OnEnChangeEditLimitCalki1()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki ograniczenia całki 1
+// Edycja kontrolki ograniczenia całki 2
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditLimitCalki2()
 {
 	UpdateData(TRUE);
 	m_stPID[2 * m_nBiezacyParametr + 1].fOgrCalki = ZamienStrNaFloat(m_strOgrCalki2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Edycja kontrolki skalowania wartości zadanej regulatora podstawowego
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditSkalaWartZadStab()
+{
+	UpdateData(TRUE);
+	m_stPID[2 * m_nBiezacyParametr + 0].fSkalaWartZadanej = ZamienStrNaFloat(m_strSkalaWartZadanejStab.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Edycja kontrolki skalowania wartości zadanej regulatora pochodnej
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditSkalaWartZadAkro()
+{
+	UpdateData(TRUE);
+	m_stPID[2 * m_nBiezacyParametr + 1].fSkalaWartZadanej = ZamienStrNaFloat(m_strSkalaWartZadanejAkro.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -759,23 +803,3 @@ void KonfigPID::OnBnClickedRadioRegAuto()
 
 
 
-void KonfigPID::OnEnChangeEditSkalaWartZadStab()
-{
-	// TODO:  Jeżeli to jest kontrolka RICHEDIT, to kontrolka nie będzie
-	// wyślij to powiadomienie, chyba że przesłonisz element CDialogEx::OnInitDialog()
-	// funkcja i wywołanie CRichEditCtrl().SetEventMask()
-	// z flagą ENM_CHANGE zsumowaną logicznie z maską.
-
-	// TODO:  Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-}
-
-
-void KonfigPID::OnEnChangeEditSkalaWartZadAkro()
-{
-	// TODO:  Jeżeli to jest kontrolka RICHEDIT, to kontrolka nie będzie
-	// wyślij to powiadomienie, chyba że przesłonisz element CDialogEx::OnInitDialog()
-	// funkcja i wywołanie CRichEditCtrl().SetEventMask()
-	// z flagą ENM_CHANGE zsumowaną logicznie z maską.
-
-	// TODO:  Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
-}

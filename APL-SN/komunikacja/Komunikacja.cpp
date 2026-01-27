@@ -1184,7 +1184,7 @@ uint8_t CKomunikacja::CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t 
 		} while ((chErr != ERR_OK) && (chLicznikProbOdczytu));
 
 		if (!chLicznikProbOdczytu)
-			chErr = ERR_BRAK_POTWIERDZ;
+			return ERR_BRAK_POTWIERDZ;
 
 		for (int n = 0; n < chRozmiar; n++)
 		{
@@ -1303,7 +1303,7 @@ uint8_t CKomunikacja::RekonfigurujWeWyRC()
 // parametry: chIndeksRegulatora - wskazuje na regualtor do zapisania
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, uint8_t chStalaCzasowaFiltraD)
+uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, uint8_t chStalaCzasowaFiltraD)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE_FLOAT];
@@ -1331,7 +1331,12 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fK
 	m_unia8_32.daneFloat = fMaxPid;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[22 + i] = m_unia8_32.dane8[i];
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, 26, chDanePrzychodzace, &chOdebrano);
+	
+	m_unia8_32.daneFloat = fSkalaWZadanej;
+	for (int i = 0; i < 4; i++)
+		chDaneWychodzace[26 + i] = m_unia8_32.dane8[i];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, 30, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_KONFIG_PID)
