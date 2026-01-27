@@ -29,6 +29,8 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_strMaxWyj1(_T(""))
 	, m_strMinWyj2(_T(""))
 	, m_strMaxWyj2(_T(""))
+	, m_strSkalaWartZadanejStab(_T(""))
+	, m_strSkalaWartZadanejAkro(_T(""))
 	, m_bKatowy(FALSE)
 	, m_PodstFiltraD1(0)
 	, m_PodstFiltraD2(0)
@@ -65,6 +67,8 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_MAX_WY1, m_strMaxWyj1);
 	DDX_Text(pDX, IDC_EDIT_MIN_WY2, m_strMinWyj2);
 	DDX_Text(pDX, IDC_EDIT_MAX_WY2, m_strMaxWyj2);
+	DDX_Text(pDX, IDC_EDIT_SKALA_WART_ZAD_STAB, m_strSkalaWartZadanejStab);
+	DDX_Text(pDX, IDC_EDIT_SKALA_WART_ZAD_AKRO, m_strSkalaWartZadanejAkro);
 	DDX_Check(pDX, IDC_CHECK_KATOWY1, m_bKatowy);
 	DDX_Text(pDX, IDC_STATIC_FILTR_D1, m_strPodstFiltraD1);
 	DDX_Text(pDX, IDC_STATIC_FILTR_D2, m_strPodstFiltraD2);
@@ -107,6 +111,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_REG_AKRO, &KonfigPID::OnBnClickedRadioRegAkro)
 	ON_BN_CLICKED(IDC_RADIO_REG_STAB, &KonfigPID::OnBnClickedRadioRegStab)
 	ON_BN_CLICKED(IDC_RADIO_REG_AUTO, &KonfigPID::OnBnClickedRadioRegAuto)
+	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_STAB, &KonfigPID::OnEnChangeEditSkalaWartZadStab)
+	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_AKRO, &KonfigPID::OnEnChangeEditSkalaWartZadAkro)
 END_MESSAGE_MAP()
 
 
@@ -145,6 +151,7 @@ BOOL KonfigPID::OnInitDialog()
 			m_stPID[n].fOgrCalki = fDane[3];	//FA_USER_PID+12  //4U górna granica wartości całki członu I regulatora 0
 			m_stPID[n].fMinWyj = fDane[4];		//FA_USER_PID+16  //4U 
 			m_stPID[n].fMaxWyj = fDane[5];		//FA_USER_PID+20  //4U 
+			m_stPID[n].fSkalaWartZadanej = fDane[6];
 			m_stPID[n].bZmieniony = FALSE;
 
 			getKomunikacja().RozpakujFloatDoU8(&fDane[6], 1, chDane);
@@ -747,4 +754,28 @@ void KonfigPID::OnBnClickedRadioRegAuto()
 	UstawTrybRegulacji(nIndeksRegulatora);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
+}
+
+
+
+
+void KonfigPID::OnEnChangeEditSkalaWartZadStab()
+{
+	// TODO:  Jeżeli to jest kontrolka RICHEDIT, to kontrolka nie będzie
+	// wyślij to powiadomienie, chyba że przesłonisz element CDialogEx::OnInitDialog()
+	// funkcja i wywołanie CRichEditCtrl().SetEventMask()
+	// z flagą ENM_CHANGE zsumowaną logicznie z maską.
+
+	// TODO:  Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+}
+
+
+void KonfigPID::OnEnChangeEditSkalaWartZadAkro()
+{
+	// TODO:  Jeżeli to jest kontrolka RICHEDIT, to kontrolka nie będzie
+	// wyślij to powiadomienie, chyba że przesłonisz element CDialogEx::OnInitDialog()
+	// funkcja i wywołanie CRichEditCtrl().SetEventMask()
+	// z flagą ENM_CHANGE zsumowaną logicznie z maską.
+
+	// TODO:  Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 }

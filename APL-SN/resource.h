@@ -323,6 +323,9 @@
 #define IDC_RADIO_REG_STAB              1225
 #define IDC_RADIO_REG_AUTO              1226
 #define IDC_EDIT1                       1227
+#define IDC_EDIT_SKALA_WART_ZAD_STAB    1227
+#define IDC_EDIT2                       1228
+#define IDC_EDIT_SKALA_WART_ZAD_AKRO    1228
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -364,7 +367,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32823
-#define _APS_NEXT_CONTROL_VALUE         1228
+#define _APS_NEXT_CONTROL_VALUE         1229
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

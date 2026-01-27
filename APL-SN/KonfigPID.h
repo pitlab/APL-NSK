@@ -29,6 +29,7 @@ public:
 		float fOgrCalki;	//ograniczenie członu całkujacego
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
+		float fSkalaWartZadanej;
 		uint8_t chPodstFiltraD;	//podstawa filtra IIR
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
 		BOOL bWylaczony;	//regulator jest wyłączony
@@ -84,6 +85,8 @@ private:
 	BOOL m_bTrybRegulacjiAkro;
 	BOOL m_bTrybRegulacjiStab;
 	BOOL m_bTrybRegulacjiAuto;
+	CString m_strSkalaWartZadanejStab;
+	CString m_strSkalaWartZadanejAkro;
 
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
@@ -111,4 +114,6 @@ public:
 	afx_msg void OnBnClickedRadioRegAkro();
 	afx_msg void OnBnClickedRadioRegStab();
 	afx_msg void OnBnClickedRadioRegAuto();
+	afx_msg void OnEnChangeEditSkalaWartZadStab();
+	afx_msg void OnEnChangeEditSkalaWartZadAkro();
 };
