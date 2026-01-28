@@ -21,30 +21,12 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
-	BOOL m_bBylaZmianaWychyleniaDrazkowAkro;
-	BOOL m_bBylaZmianaWychyleniaDrazkowStab;
 	BOOL m_bBylaZmianaObrotow;
 
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnEnChangeEditPrzechylenieAkro();
-	afx_msg void OnEnChangeEditPochylenieAkro();
-	afx_msg void OnEnChangeEditOdchylenieAkro();
-	afx_msg void OnEnChangeEditWysokoscAkro();
-	CString m_strZakresPrzechyleniaAkro;
-	CString m_strZakresPochyleniaAkro;
-	CString m_strZakresOdchyleniaAkro;
-	CString m_strZakresWysokosciAkro;
-	afx_msg void OnEnChangeEditPrzechylenieStab();
-	afx_msg void OnEnChangeEditPochylenieStab();
-	afx_msg void OnEnChangeEditOdchylenieStab();
-	afx_msg void OnEnChangeEditWysokoscStab();
-	CString m_strZakresPrzechyleniaStab;
-	CString m_strZakresPochyleniaStab;
-	CString m_strZakresOdchyleniaStab;
-	CString m_strZakresWysokosciStab;
 	afx_msg void OnEnChangeEditObrJalowe();
 	afx_msg void OnEnChangeEditObrMin();
 	afx_msg void OnEnChangeEditObrZawis();
@@ -53,19 +35,10 @@ public:
 	CString m_strObrotyMin;
 	CString m_strObrotyZawis;
 	CString m_strObrotyMax;
-	float m_fSkalaWartosciZadanejAkro[ROZMIAR_DRAZKOW];	//wartość zadana dla pełnego wychylenia drążka aparatury w trybie AKRO
-	float m_fSkalaWartosciZadanejStab[ROZMIAR_DRAZKOW];	//wartość zadana dla pełnego wychylenia drążka aparatury w trybie STAB
 	int m_nObrotyJalowe;
 	int m_nObrotyMin;
 	int m_nObrotyZawis;
 	int m_nObrotyMax;
 	
 	float ZamienStrNaFloat(CString strLiczba);
-
-	CString m_strZakresPrzechyleniaAkroStopnie;
-	CString m_strZakresPochyleniaAkroStopnie;
-	CString m_strZakresOdchyleniaAkroStopnie;
-	CString m_strZakresPrzechyleniaStabStopnie;
-	CString m_strZakresPochyleniaStabStopnie;
-	CString m_strZakresOdchyleniaStabStopnie;
 };

@@ -97,6 +97,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_MAX_WY1, &KonfigPID::OnEnChangeEditMaxWy1)
 	ON_EN_CHANGE(IDC_EDIT_MIN_WY2, &KonfigPID::OnEnChangeEditMinWy2)
 	ON_EN_CHANGE(IDC_EDIT_MAX_WY2, &KonfigPID::OnEnChangeEditMaxWy2)
+	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_STAB, &KonfigPID::OnEnChangeEditSkalaWartZadStab)
+	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_AKRO, &KonfigPID::OnEnChangeEditSkalaWartZadAkro)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_D1, &KonfigPID::OnNMCustomdrawSliderFiltrD1)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_D2, &KonfigPID::OnNMCustomdrawSliderFiltrD2)
 	ON_EN_CHANGE(IDC_EDIT_LIMIT_CALKI2, &KonfigPID::OnEnChangeEditLimitCalki2)
@@ -111,8 +113,6 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_REG_AKRO, &KonfigPID::OnBnClickedRadioRegAkro)
 	ON_BN_CLICKED(IDC_RADIO_REG_STAB, &KonfigPID::OnBnClickedRadioRegStab)
 	ON_BN_CLICKED(IDC_RADIO_REG_AUTO, &KonfigPID::OnBnClickedRadioRegAuto)
-	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_STAB, &KonfigPID::OnEnChangeEditSkalaWartZadStab)
-	ON_EN_CHANGE(IDC_EDIT_SKALA_WART_ZAD_AKRO, &KonfigPID::OnEnChangeEditSkalaWartZadAkro)
 END_MESSAGE_MAP()
 
 
@@ -269,6 +269,8 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].chPodstFiltraD);
 	m_ctlSlidPOdstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].chPodstFiltraD);
 	m_bKatowy = m_stPID[nRegGlow].bKatowy;
+	UpdateData(FALSE);
+
 	UstawTrybRegulacji(nParametr);
 }
 

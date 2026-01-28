@@ -15,24 +15,10 @@ IMPLEMENT_DYNAMIC(NapedStrojenie, CDialogEx)
 
 NapedStrojenie::NapedStrojenie(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_NAPED_I_STROJENIE, pParent)
-	, m_strZakresPrzechyleniaAkro(_T(""))
-	, m_strZakresPochyleniaAkro(_T(""))
-	, m_strZakresOdchyleniaAkro(_T(""))
-	, m_strZakresWysokosciAkro(_T(""))
 	, m_strObrotyJalowe(_T(""))
 	, m_strObrotyMin(_T(""))
 	, m_strObrotyMax(_T(""))
 	, m_strObrotyZawis(_T(""))
-	, m_strZakresPrzechyleniaStab(_T(""))
-	, m_strZakresPochyleniaStab(_T(""))
-	, m_strZakresOdchyleniaStab(_T(""))
-	, m_strZakresWysokosciStab(_T(""))
-	, m_strZakresPrzechyleniaAkroStopnie(_T(""))
-	, m_strZakresPochyleniaAkroStopnie(_T(""))
-	, m_strZakresOdchyleniaAkroStopnie(_T(""))
-	, m_strZakresPrzechyleniaStabStopnie(_T(""))
-	, m_strZakresPochyleniaStabStopnie(_T(""))
-	, m_strZakresOdchyleniaStabStopnie(_T(""))
 {
 
 }
@@ -45,47 +31,20 @@ NapedStrojenie::~NapedStrojenie()
 void NapedStrojenie::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_PRZECHYLENIE_AKRO, m_strZakresPrzechyleniaAkro);
-	DDX_Text(pDX, IDC_EDIT_POCHYLENIE_AKRO, m_strZakresPochyleniaAkro);
-	DDX_Text(pDX, IDC_EDIT_ODCHYLENIE_AKRO, m_strZakresOdchyleniaAkro);
-	DDX_Text(pDX, IDC_EDIT_WYSOKOSC_AKRO, m_strZakresWysokosciAkro);
-
 	DDX_Text(pDX, IDC_EDIT_OBR_JALOWE, m_strObrotyJalowe);
 	DDX_Text(pDX, IDC_EDIT_OBR_MIN, m_strObrotyMin);
 	DDX_Text(pDX, IDC_EDIT_OBR_ZAWIS, m_strObrotyMax);
 	DDX_Text(pDX, IDC_EDIT_OBR_MAX, m_strObrotyMax);
 	DDX_Text(pDX, IDC_EDIT_OBR_ZAWIS, m_strObrotyZawis);
-
-	DDX_Text(pDX, IDC_EDIT_PRZECHYLENIE_STAB, m_strZakresPrzechyleniaStab);
-	DDX_Text(pDX, IDC_EDIT_POCHYLENIE_STAB, m_strZakresPochyleniaStab);
-	DDX_Text(pDX, IDC_EDIT_ODCHYLENIE_STAB, m_strZakresOdchyleniaStab);
-	DDX_Text(pDX, IDC_EDIT_WYSOKOSC_STAB, m_strZakresWysokosciStab);
-
-	DDX_Text(pDX, IDC_STAT_PRZECHYLENIE_AKRO, m_strZakresPrzechyleniaAkroStopnie);
-	DDX_Text(pDX, IDC_STAT_POCHYLENIE_AKRO, m_strZakresPochyleniaAkroStopnie);
-	DDX_Text(pDX, IDC_STAT_ODCHYLENIE_AKRO, m_strZakresOdchyleniaAkroStopnie);
-
-	DDX_Text(pDX, IDC_STAT_PRZECHYLENIE_STAB, m_strZakresPrzechyleniaStabStopnie);
-	DDX_Text(pDX, IDC_STAT_POCHYLENIE_STAB, m_strZakresPochyleniaStabStopnie);
-	DDX_Text(pDX, IDC_STAT_ODCHYLENIE_STAB, m_strZakresOdchyleniaStabStopnie);
 }
 
 
 BEGIN_MESSAGE_MAP(NapedStrojenie, CDialogEx)
-
-	ON_EN_CHANGE(IDC_EDIT_PRZECHYLENIE_AKRO, &NapedStrojenie::OnEnChangeEditPrzechylenieAkro)
-	ON_EN_CHANGE(IDC_EDIT_POCHYLENIE_AKRO, &NapedStrojenie::OnEnChangeEditPochylenieAkro)
-	ON_EN_CHANGE(IDC_EDIT_ODCHYLENIE_AKRO, &NapedStrojenie::OnEnChangeEditOdchylenieAkro)
-	ON_EN_CHANGE(IDC_EDIT_WYSOKOSC_AKRO, &NapedStrojenie::OnEnChangeEditWysokoscAkro)
 	ON_EN_CHANGE(IDC_EDIT_OBR_JALOWE, &NapedStrojenie::OnEnChangeEditObrJalowe)
 	ON_EN_CHANGE(IDC_EDIT_OBR_MIN, &NapedStrojenie::OnEnChangeEditObrMin)
 	ON_EN_CHANGE(IDC_EDIT_OBR_ZAWIS, &NapedStrojenie::OnEnChangeEditObrZawis)
 	ON_EN_CHANGE(IDC_EDIT_OBR_MAX, &NapedStrojenie::OnEnChangeEditObrMax)
 	ON_BN_CLICKED(IDOK, &NapedStrojenie::OnBnClickedOk)
-	ON_EN_CHANGE(IDC_EDIT_PRZECHYLENIE_STAB, &NapedStrojenie::OnEnChangeEditPrzechylenieStab)
-	ON_EN_CHANGE(IDC_EDIT_POCHYLENIE_STAB, &NapedStrojenie::OnEnChangeEditPochylenieStab)
-	ON_EN_CHANGE(IDC_EDIT_ODCHYLENIE_STAB, &NapedStrojenie::OnEnChangeEditOdchylenieStab)
-	ON_EN_CHANGE(IDC_EDIT_WYSOKOSC_STAB, &NapedStrojenie::OnEnChangeEditWysokoscStab)
 END_MESSAGE_MAP()
 
 
@@ -102,49 +61,8 @@ BOOL NapedStrojenie::OnInitDialog()
 	uint8_t chErr;
 
 	CDialogEx::OnInitDialog();
-	m_bBylaZmianaWychyleniaDrazkowAkro = FALSE;
 	m_bBylaZmianaObrotow = FALSE;
 
-
-	//4x4F wartość zadana z drążków aparatury dla regulatora Akro 
-	chErr = getKomunikacja().CzytajFloatFRAM(fDane, ROZMIAR_DRAZKOW, FAU_ZADANA_AKRO);
-	if (chErr == ERR_OK)
-	{
-		m_fSkalaWartosciZadanejAkro[PRZE] = fDane[0];
-		m_strZakresPrzechyleniaAkro.Format(_T("%.3f"), m_fSkalaWartosciZadanejAkro[PRZE]);
-		m_strZakresPrzechyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[PRZE] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejAkro[POCH] = fDane[1];
-		m_strZakresPochyleniaAkro.Format(_T("%.3f"), m_fSkalaWartosciZadanejAkro[POCH]);
-		m_strZakresPochyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[POCH] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejAkro[ODCH] = fDane[2];
-		m_strZakresOdchyleniaAkro.Format(_T("%.3f"), m_fSkalaWartosciZadanejAkro[ODCH]);
-		m_strZakresOdchyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[ODCH] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejAkro[WYSO] = fDane[3];
-		m_strZakresWysokosciAkro.Format(_T("%.1f"), m_fSkalaWartosciZadanejAkro[WYSO]);
-	}
-
-	//4x4F wartość zadana z drążków aparatury dla regulatora Stab
-	chErr = getKomunikacja().CzytajFloatFRAM(fDane, ROZMIAR_DRAZKOW, FAU_ZADANA_STAB);
-	if (chErr == ERR_OK)
-	{
-		m_fSkalaWartosciZadanejStab[PRZE] = fDane[0];
-		m_strZakresPrzechyleniaStab.Format(_T("%.3f"), m_fSkalaWartosciZadanejStab[PRZE]);
-		m_strZakresPrzechyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[PRZE] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejStab[POCH] = fDane[1];
-		m_strZakresPochyleniaStab.Format(_T("%.3f"), m_fSkalaWartosciZadanejStab[POCH]);
-		m_strZakresPochyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[POCH] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejStab[ODCH] = fDane[2];
-		m_strZakresOdchyleniaStab.Format(_T("%.3f"), m_fSkalaWartosciZadanejStab[ODCH]);
-		m_strZakresOdchyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[ODCH] * RAD2DEG);
-
-		m_fSkalaWartosciZadanejStab[WYSO] = fDane[3];
-		m_strZakresWysokosciStab.Format(_T("%.1f"), m_fSkalaWartosciZadanejStab[WYSO]);
-	}
 
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, 2*ROZMIAR_PWM, FAU_PWM_JALOWY);
 	if (chErr == ERR_OK)
@@ -166,82 +84,6 @@ BOOL NapedStrojenie::OnInitDialog()
 
 
 
-void NapedStrojenie::OnEnChangeEditPrzechylenieAkro()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejAkro[PRZE] = ZamienStrNaFloat(m_strZakresPrzechyleniaAkro);
-	m_strZakresPrzechyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[PRZE] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditPochylenieAkro()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejAkro[POCH] = ZamienStrNaFloat(m_strZakresPochyleniaAkro);
-	m_strZakresPochyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[POCH] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditOdchylenieAkro()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejAkro[ODCH] = ZamienStrNaFloat(m_strZakresOdchyleniaAkro);
-	m_strZakresOdchyleniaAkroStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejAkro[ODCH] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditWysokoscAkro()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejAkro[WYSO] = ZamienStrNaFloat(m_strZakresWysokosciAkro);
-	m_bBylaZmianaWychyleniaDrazkowAkro = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditPrzechylenieStab()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejStab[PRZE] = ZamienStrNaFloat(m_strZakresPrzechyleniaStab);
-	m_strZakresPrzechyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[PRZE] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditPochylenieStab()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejStab[POCH] = ZamienStrNaFloat(m_strZakresPochyleniaStab);
-	m_strZakresPochyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[POCH] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditOdchylenieStab()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejStab[ODCH] = ZamienStrNaFloat(m_strZakresOdchyleniaStab);
-	m_strZakresOdchyleniaStabStopnie.Format(_T("%.1f °/s"), m_fSkalaWartosciZadanejStab[ODCH] * RAD2DEG);
-	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
-	Invalidate();
-}
-
-
-void NapedStrojenie::OnEnChangeEditWysokoscStab()
-{
-	UpdateData();
-	m_fSkalaWartosciZadanejStab[WYSO] = ZamienStrNaFloat(m_strZakresWysokosciStab);
-	m_bBylaZmianaWychyleniaDrazkowStab = TRUE;
-	Invalidate();
-}
 
 
 void NapedStrojenie::OnEnChangeEditObrJalowe()
@@ -290,25 +132,6 @@ void NapedStrojenie::OnBnClickedOk()
 	CString strKomunikat;
 	uint8_t chErr;
 
-	if (m_bBylaZmianaWychyleniaDrazkowAkro)
-	{
-		chErr = getKomunikacja().ZapiszSkaleWartosciZadanejAkro(m_fSkalaWartosciZadanejAkro);
-		if (chErr != ERR_OK)
-		{
-			strKomunikat.Format(_T("Błąd zapisu konfiguracji Akro nr %d"), chErr);
-			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
-		}
-	}
-
-	if (m_bBylaZmianaWychyleniaDrazkowStab)
-	{
-		chErr = getKomunikacja().ZapiszSkaleWartosciZadanejStab(m_fSkalaWartosciZadanejStab);
-		if (chErr != ERR_OK)
-		{
-			strKomunikat.Format(_T("Błąd zapisu konfiguracji Stab nr %d"), chErr);
-			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
-		}
-	}
 
 	if (m_bBylaZmianaObrotow)
 	{
