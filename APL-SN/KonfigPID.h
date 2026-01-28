@@ -48,6 +48,8 @@ protected:
 	void UstawTrybRegulacji(int nParametr);
 	float ZamienStrNaFloat(CString str);
 	void WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch);
+	void WylaczAkro(BOOL bWylacz);
+	void WylaczStab(BOOL bWylacz);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -72,8 +74,6 @@ private:
 	CString m_strMaxWyj1;	
 	CString m_strMaxWyj2;
 	BOOL m_bKatowy;
-	BOOL m_bWylaczony1;
-	BOOL m_bWylaczony2;
 	int m_PodstFiltraD1;
 	int m_PodstFiltraD2;
 	CString m_strPodstFiltraD1;
@@ -105,8 +105,6 @@ public:
 	afx_msg void OnEnChangeEditLimitCalki1();
 	afx_msg void OnEnChangeEditLimitCalki2();
 	afx_msg void OnBnClickedCheckKatowy();
-	afx_msg void OnBnClickedCheckWylacz1();
-	afx_msg void OnBnClickedCheckWylacz2();
 	afx_msg void OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMReleasedcaptureSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBnClickedRadioRegWylacz();
