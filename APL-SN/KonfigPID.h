@@ -35,7 +35,7 @@ public:
 		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
 	} m_stPID[LICZBA_PID];
-	uint8_t m_chTrybRegulacji[ROZMIAR_DRAZKOW];
+	uint8_t m_chTrybRegulacji[LICZBA_REG_PARAM];
 	BOOL m_bZmienionyTrybRegulacji;
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
@@ -50,6 +50,7 @@ protected:
 	void WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch);
 	void WylaczAkro(BOOL bWylacz);
 	void WylaczStab(BOOL bWylacz);
+	void WylaczTrybRegulacji(BOOL bWylacz);
 
 	DECLARE_MESSAGE_MAP()
 public:

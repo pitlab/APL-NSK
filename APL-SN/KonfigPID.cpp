@@ -121,17 +121,19 @@ BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	float fDane[ROZMIAR_REG_PID / 4];
-	uint8_t chDane[ROZMIAR_DRAZKOW];
+	uint8_t chDane[LICZBA_REG_PARAM];
 	uint8_t chErr;
 	CString strKomunikat;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
-	m_ctrlKanalPID.InsertItem(0, _T("Przechylenie"));
-	m_ctrlKanalPID.InsertItem(1, _T("Pochylenie"));
-	m_ctrlKanalPID.InsertItem(2, _T("Odchylenie"));
-	m_ctrlKanalPID.InsertItem(3, _T("Wysokość"));
-	m_ctrlKanalPID.InsertItem(4, _T("Nawigacja N"));
-	m_ctrlKanalPID.InsertItem(5, _T("Nawigacja E"));
+	m_ctrlKanalPID.InsertItem(PRZE, _T("Przechylenie"));	//regulator sterowania przechyleniem (lotkami w samolocie)
+	m_ctrlKanalPID.InsertItem(POCH, _T("Pochylenie"));		//regulator sterowania pochyleniem (sterem wysokości)
+	m_ctrlKanalPID.InsertItem(ODCH, _T("Odchylenie"));		//regulator sterowania obrotem (sterem kierunku)
+	m_ctrlKanalPID.InsertItem(WYSO, _T("Wysokość"));		//regulator sterowania wysokością
+	m_ctrlKanalPID.InsertItem(POZN, _T("Nawigacja N"));		//regulator sterowania prędkością i położeniem północnym
+	m_ctrlKanalPID.InsertItem(POZE, _T("Nawigacja E"));		//regulator sterowania prędkością i położeniem wschodnim
+
+ 
 
 	m_nBiezacyParametr = m_ctrlKanalPID.GetCurSel();
 
@@ -169,10 +171,10 @@ BOOL KonfigPID::OnInitDialog()
 	}
 	
 
-	chErr = getKomunikacja().CzytajU8FRAM(chDane, ROZMIAR_DRAZKOW, FA_TRYB_REG);
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_REG_PARAM, FA_TRYB_REG);
 	if (chErr == ERR_OK)
 	{
-		for (uint8_t n = 0; n < ROZMIAR_DRAZKOW; n++)
+		for (uint8_t n = 0; n < LICZBA_REG_PARAM; n++)
 			m_chTrybRegulacji[n] = chDane[n];
 		m_bZmienionyTrybRegulacji = FALSE;
 	}
@@ -274,11 +276,12 @@ void KonfigPID::UstawKontrolki(int nParametr)
 
 void KonfigPID::UstawTrybRegulacji(int nParametr)
 {
-	int nIndeksRegulatora;
+	/*int nIndeksRegulatora;
 	if (nParametr < ROZMIAR_DRAZKOW)
 		nIndeksRegulatora = nParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
+	assert(nParametr < LICZBA_REG_PARAM);
 
 	m_bTrybRegulacjiWylaczony = FALSE;
 	m_bTrybRegulacjiReczny = FALSE;
@@ -286,7 +289,7 @@ void KonfigPID::UstawTrybRegulacji(int nParametr)
 	m_bTrybRegulacjiStab = FALSE;
 	m_bTrybRegulacjiAuto = FALSE;
 
-	switch (m_chTrybRegulacji[nIndeksRegulatora])
+	switch (m_chTrybRegulacji[nParametr])
 	{
 	case REG_WYLACZ: m_bTrybRegulacjiWylaczony = TRUE;	break;
 	case REG_RECZNA: m_bTrybRegulacjiReczny = TRUE;	break;
@@ -347,6 +350,8 @@ void KonfigPID::OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult)
 	UstawKontrolki(m_nBiezacyParametr);
 	WylaczStab(m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony);
 	WylaczAkro(m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony);
+
+	WylaczTrybRegulacji(m_nBiezacyParametr >= POZN);	//wybór trybu jest niemożliwy dla regulatora pozycji - zawsze jest AUTO
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -722,18 +727,34 @@ void KonfigPID::WylaczAkro(BOOL bWylacz)
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wyłączenie wszystkich kontrolek wybory trybu regulacji
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::WylaczTrybRegulacji(BOOL bWylacz)
+{
+	GetDlgItem(IDC_RADIO_REG_WYLACZ)->EnableWindow(!bWylacz);
+	GetDlgItem(IDC_RADIO_REG_RECZNY)->EnableWindow(!bWylacz);
+	GetDlgItem(IDC_RADIO_REG_AKRO)->EnableWindow(!bWylacz);
+	GetDlgItem(IDC_RADIO_REG_STAB)->EnableWindow(!bWylacz);
+	GetDlgItem(IDC_RADIO_REG_AUTO)->EnableWindow(!bWylacz);
+	UpdateData(FALSE);
+}
+
+
+
 void KonfigPID::OnBnClickedRadioRegWylacz()
 {
-	int nIndeksRegulatora;
-	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
+	/*int nIndeksRegulatora;
+	if (m_nBiezacyParametr < LICZBA_DRAZKOW)
 		nIndeksRegulatora = m_nBiezacyParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = LICZBA_DRAZKOW - 1;*/
 
-	m_chTrybRegulacji[nIndeksRegulatora] = REG_WYLACZ;		//regultor wyłączony
+	m_chTrybRegulacji[m_nBiezacyParametr] = REG_WYLACZ;		//regultor wyłączony
 	m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony = TRUE;
 	m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony = TRUE;
-	UstawTrybRegulacji(nIndeksRegulatora);
+	UstawTrybRegulacji(m_nBiezacyParametr);
 	WylaczStab(TRUE);
 	WylaczAkro(TRUE);
 	m_bZmienionyTrybRegulacji = TRUE;
@@ -743,14 +764,14 @@ void KonfigPID::OnBnClickedRadioRegWylacz()
 
 void KonfigPID::OnBnClickedRadioRegReczny()
 {
-	int nIndeksRegulatora;
+	/*int nIndeksRegulatora;
 	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
 		nIndeksRegulatora = m_nBiezacyParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
 
-	m_chTrybRegulacji[nIndeksRegulatora] = REG_RECZNA;		//regulacja ręczna, bezpośrednio z drążków aparatury	
-	UstawTrybRegulacji(nIndeksRegulatora);
+	m_chTrybRegulacji[m_nBiezacyParametr] = REG_RECZNA;		//regulacja ręczna, bezpośrednio z drążków aparatury	
+	UstawTrybRegulacji(m_nBiezacyParametr);
 	WylaczStab(TRUE);
 	WylaczAkro(TRUE);
 	m_bZmienionyTrybRegulacji = TRUE;
@@ -760,14 +781,14 @@ void KonfigPID::OnBnClickedRadioRegReczny()
 
 void KonfigPID::OnBnClickedRadioRegAkro()
 {
-	int nIndeksRegulatora;
+	/*int nIndeksRegulatora;
 	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
 		nIndeksRegulatora = m_nBiezacyParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
 
-	m_chTrybRegulacji[nIndeksRegulatora] = REG_AKRO;	//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
-	UstawTrybRegulacji(nIndeksRegulatora);
+	m_chTrybRegulacji[m_nBiezacyParametr] = REG_AKRO;	//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
+	UstawTrybRegulacji(m_nBiezacyParametr);
 	WylaczStab(TRUE);
 	WylaczAkro(FALSE);
 	m_bZmienionyTrybRegulacji = TRUE;
@@ -777,14 +798,14 @@ void KonfigPID::OnBnClickedRadioRegAkro()
 
 void KonfigPID::OnBnClickedRadioRegStab()
 {
-	int nIndeksRegulatora;
+	/*int nIndeksRegulatora;
 	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
 		nIndeksRegulatora = m_nBiezacyParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
 
-	m_chTrybRegulacji[nIndeksRegulatora] = REG_STAB;	//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
-	UstawTrybRegulacji(nIndeksRegulatora);
+	m_chTrybRegulacji[m_nBiezacyParametr] = REG_STAB;	//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
+	UstawTrybRegulacji(m_nBiezacyParametr);
 	WylaczStab(FALSE);
 	WylaczAkro(FALSE);
 	m_bZmienionyTrybRegulacji = TRUE;
@@ -794,14 +815,14 @@ void KonfigPID::OnBnClickedRadioRegStab()
 
 void KonfigPID::OnBnClickedRadioRegAuto()
 {
-	int nIndeksRegulatora;
+	/*int nIndeksRegulatora;
 	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
 		nIndeksRegulatora = m_nBiezacyParametr;
 	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;
+		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
 
-	m_chTrybRegulacji[nIndeksRegulatora] = REG_AUTO;	//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
-	UstawTrybRegulacji(nIndeksRegulatora);
+	m_chTrybRegulacji[m_nBiezacyParametr] = REG_AUTO;	//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
+	UstawTrybRegulacji(m_nBiezacyParametr);
 	WylaczStab(FALSE);
 	WylaczAkro(FALSE);
 	m_bZmienionyTrybRegulacji = TRUE;

@@ -1356,17 +1356,17 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fK
 uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float *fDane)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * ROZMIAR_ROZNE_FLOAT];
+	uint8_t chDaneWychodzace[LICZBA_DRAZKOW * ROZMIAR_ROZNE_FLOAT];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 	
-	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	for (int n = 0; n < LICZBA_DRAZKOW; n++)
 	{
 		m_unia8_32.daneFloat = *(fDane + n);
 		for (int i = 0; i < 4; i++)
 			chDaneWychodzace[n * 4 + i] = m_unia8_32.dane8[i];
 	}
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_AKRO, chDaneWychodzace, 4*ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_AKRO, chDaneWychodzace, 4* LICZBA_DRAZKOW, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_AKRO)
@@ -1400,17 +1400,17 @@ uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejAkro(float *fDane)
 uint8_t CKomunikacja::ZapiszSkaleWartosciZadanejStab(float *fDane)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[ROZMIAR_DRAZKOW * sizeof(float)];
+	uint8_t chDaneWychodzace[LICZBA_DRAZKOW * sizeof(float)];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
-	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	for (int n = 0; n < LICZBA_DRAZKOW; n++)
 	{
 		m_unia8_32.daneFloat = *(fDane + n);
 		for (int i = 0; i < 4; i++)
 			chDaneWychodzace[n * 4 + i] = m_unia8_32.dane8[i];
 	}
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_STAB, chDaneWychodzace, 4 * ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_ZADANE_STAB, chDaneWychodzace, 4 * LICZBA_DRAZKOW, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_ZADANE_STAB)
@@ -1499,12 +1499,12 @@ uint8_t CKomunikacja::ZapiszTrybRegulacji(uint8_t *chTrybRegulacji)
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
-	for (int n = 0; n < ROZMIAR_DRAZKOW; n++)
+	for (int n = 0; n < LICZBA_DRAZKOW; n++)
 	{
 		chDaneWychodzace[n] = chTrybRegulacji[n];
 	}
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_TRYB_REG, chDaneWychodzace, ROZMIAR_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_TRYB_REG, chDaneWychodzace, LICZBA_DRAZKOW, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_TRYB_REG)

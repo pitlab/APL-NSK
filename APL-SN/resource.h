@@ -296,10 +296,7 @@
 #define IDC_EDIT_SKALA_WART_ZAD_AKRO    1231
 #define IDC_SLIDER_FILTR_D2             1232
 #define IDC_STATIC_FILTR_D2             1233
-//efine IDC_CHECK_KATOWY2               1094
 #define IDC_CHECK_WYLACZ2               1234
-//efine IDC_STATIC_KP1                  1211
-//efine IDC_STATIC_KP2                  1212
 
 #define IDC_EDIT_OBR_JALOWE             1240
 #define IDC_EDIT_OBR_MIN                1241

@@ -11,10 +11,10 @@
 #define POCH	1    //regulator sterowania pochyleniem (sterem wysokości)
 #define ODCH    2    //regulator sterowania obrotem (sterem kierunku)
 #define WYSO	3    //regulator sterowania wysokością
-#define GPSN	4    //regulator sterowania prędkością i położeniem północnym
-#define GPSE	5    //regulator sterowania prędkością i położeniem wschodnim
+#define POZN	4    //regulator sterowania prędkością i położeniem północnym
+#define POZE	5    //regulator sterowania prędkością i położeniem wschodnim
 
-#define NUM_PARAMS  6 //liczba regulowanych parametrów
+#define LICZBA_REG_PARAM  6 //liczba regulowanych parametrów
 
 
 //definicje nazw regulatorów
@@ -31,7 +31,7 @@
 #define PID_NAW_E 	10  //regulator sterowania nawigacją w kierunku wschodnim
 #define PID_PRE_E	11 	//regulator sterowania prędkością w kierunku wschodnim
 
-#define LICZBA_PID  12 //liczba regulatorów
+#define LICZBA_PID  (2 * LICZBA_REG_PARAM)	//liczba regulatorów
 
 
 //definicje trybów pracy regulatora
@@ -50,7 +50,7 @@
 #define REG_AUTO		4		//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
 
 #define NUM_REG_MOD       6   //liczba trybów regulatora
-#define ROZMIAR_DRAZKOW	  4	  //liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
+#define LICZBA_DRAZKOW	  4	  //liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 
 //definicje bitów konfiguracji PID
 #define PID_MASKA_FILTRA_D		0x3F

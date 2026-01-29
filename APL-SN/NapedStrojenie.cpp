@@ -56,7 +56,6 @@ END_MESSAGE_MAP()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL NapedStrojenie::OnInitDialog()
 {
-	float fDane[ROZMIAR_DRAZKOW];
 	uint8_t chDane[2*ROZMIAR_PWM];
 	uint8_t chErr;
 
