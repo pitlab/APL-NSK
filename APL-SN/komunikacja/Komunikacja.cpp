@@ -1306,37 +1306,39 @@ uint8_t CKomunikacja::RekonfigurujWeWyRC()
 uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t chIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, uint8_t chStalaCzasowaFiltraD)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[3 + 4 * ROZMIAR_ROZNE_FLOAT];
+	uint8_t chDaneWychodzace[ROZMIAR_PID_FLOAT * sizeof(float)];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chDaneWychodzace[0] = chIndeksRegulatora;
 	chDaneWychodzace[1] = chStalaCzasowaFiltraD;
+	chDaneWychodzace[2] = 0;	//wolny
+	chDaneWychodzace[3] = 0;	//wolny
 	
 	m_unia8_32.daneFloat = fKp;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[2 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[4 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fTi;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[6 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[8 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fTd;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[10 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[12 + i] = m_unia8_32.dane8[i];
 
 	m_unia8_32.daneFloat = fLimitCalki;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[14 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[16 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fMinPid;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[18 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[20 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fMaxPid;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[22 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[24 + i] = m_unia8_32.dane8[i];
 	
 	m_unia8_32.daneFloat = fSkalaWZadanej;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[26 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[28 + i] = m_unia8_32.dane8[i];
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, 30, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, ROZMIAR_PID_FLOAT *sizeof(float), chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_KONFIG_PID)
@@ -1495,16 +1497,16 @@ uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin,
 uint8_t CKomunikacja::ZapiszTrybRegulacji(uint8_t *chTrybRegulacji)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[4 * sizeof(uint16_t)];
+	uint8_t chDaneWychodzace[LICZBA_REG_PARAM];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
-	for (int n = 0; n < LICZBA_DRAZKOW; n++)
+	for (int n = 0; n < LICZBA_REG_PARAM; n++)
 	{
 		chDaneWychodzace[n] = chTrybRegulacji[n];
 	}
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_TRYB_REG, chDaneWychodzace, LICZBA_DRAZKOW, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_TRYB_REG, chDaneWychodzace, LICZBA_REG_PARAM, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_TRYB_REG)

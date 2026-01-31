@@ -170,7 +170,6 @@ BOOL KonfigPID::OnInitDialog()
 		}
 	}
 	
-
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_REG_PARAM, FA_TRYB_REG);
 	if (chErr == ERR_OK)
 	{
@@ -181,10 +180,8 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctlSlidPOdstCzasuFiltraD1.SetRange(0, 64);
 	m_ctlSlidPOdstCzasuFiltraD2.SetRange(0, 64);
 	UpdateData(FALSE);
-
 	UstawKontrolki(m_nBiezacyParametr);
-	WylaczStab(m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony);
-	WylaczAkro(m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony);	
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
@@ -195,24 +192,26 @@ BOOL KonfigPID::OnInitDialog()
 // Zmienia stan włączenia kontrolek okna dialogowego
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch)
+void KonfigPID::WlaczKontrolki(uint8_t chTrybPracyRegulatora)
 {
-	GetDlgItem(IDC_EDIT_KP1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_EDIT_TI1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_EDIT_TD1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(!bRegGlow);
-	GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(!bRegGlow);
+	GetDlgItem(IDC_EDIT_KP1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_TI1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_TD1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
+	GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_STAB)->EnableWindow(chTrybPracyRegulatora >= REG_STAB);
 
-	GetDlgItem(IDC_EDIT_KP2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_EDIT_TI2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_EDIT_TD2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(!bRegPoch);
-	GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(!bRegPoch);
+	GetDlgItem(IDC_EDIT_KP2)->EnableWindow(chTrybPracyRegulatora >= REG_AKRO);
+	GetDlgItem(IDC_EDIT_TI2)->EnableWindow(chTrybPracyRegulatora >= REG_AKRO);
+	GetDlgItem(IDC_EDIT_TD2)->EnableWindow(chTrybPracyRegulatora >= REG_AKRO);
+	GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(chTrybPracyRegulatora >= REG_RECZNA);
+	GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(chTrybPracyRegulatora >= REG_RECZNA);
+	GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(chTrybPracyRegulatora >= REG_AKRO);
+	GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(chTrybPracyRegulatora >= REG_AKRO);
+	GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_AKRO)->EnableWindow(chTrybPracyRegulatora >= REG_RECZNA);
 }
 
 
@@ -227,11 +226,11 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	int nRegGlow = 2 * nParametr + 0;
 	int nRegPoch = 2 * nParametr + 1;
 
-	WlaczKontrolki(m_stPID[nRegGlow].bWylaczony, m_stPID[nRegPoch].bWylaczony);
+	WlaczKontrolki(m_chTrybRegulacji[nParametr]);
 
-	m_strKP1.Format(_T("%.4f"), m_stPID[nRegGlow].fKp);
+	m_strKP1.Format(_T("%.2f"), m_stPID[nRegGlow].fKp);
 	m_strKP1.Replace(_T('.'), _T(','));
-	m_strKP2.Format(_T("%.4f"), m_stPID[nRegPoch].fKp);
+	m_strKP2.Format(_T("%.2f"), m_stPID[nRegPoch].fKp);
 	m_strKP2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fTi);
@@ -244,19 +243,19 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
 	m_strTD2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strOgrCalki1.Format(_T("%.4f"), m_stPID[nRegGlow].fOgrCalki);
+	m_strOgrCalki1.Format(_T("%.0f"), m_stPID[nRegGlow].fOgrCalki);
 	m_strOgrCalki1.Replace(_T('.'), _T(','));
-	m_strOgrCalki2.Format(_T("%.4f"), m_stPID[nRegPoch].fOgrCalki);
+	m_strOgrCalki2.Format(_T("%.0f"), m_stPID[nRegPoch].fOgrCalki);
 	m_strOgrCalki2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strMinWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMinWyj);
+	m_strMinWyj1.Format(_T("%.0f"), m_stPID[nRegGlow].fMinWyj);
 	m_strMinWyj1.Replace(_T('.'), _T(','));
-	m_strMinWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMinWyj);
+	m_strMinWyj2.Format(_T("%.0f"), m_stPID[nRegPoch].fMinWyj);
 	m_strMinWyj2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strMaxWyj1.Format(_T("%.4f"), m_stPID[nRegGlow].fMaxWyj);
+	m_strMaxWyj1.Format(_T("%.0f"), m_stPID[nRegGlow].fMaxWyj);
 	m_strMaxWyj1.Replace(_T('.'), _T(','));
-	m_strMaxWyj2.Format(_T("%.4f"), m_stPID[nRegPoch].fMaxWyj);
+	m_strMaxWyj2.Format(_T("%.0f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_strSkalaWartZadanejStab.Format(_T("%.4f"), m_stPID[nRegGlow].fSkalaWartZadanej);
@@ -330,7 +329,7 @@ void KonfigPID::OnBnClickedOk()
 
 	if (chErr != ERR_OK)
 	{
-		strKomunikat.Format(_T("Błąd zapisu konfiguracji nr %d"), chErr);
+		strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
 		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
 	}
 	CDialogEx::OnOK();
@@ -348,10 +347,11 @@ void KonfigPID::OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult)
 	UpdateData(TRUE);
 	m_nBiezacyParametr = m_ctrlKanalPID.GetCurSel();
 	UstawKontrolki(m_nBiezacyParametr);
-	WylaczStab(m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony);
-	WylaczAkro(m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony);
+	//WylaczStab(m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony);
+	//WylaczAkro(m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 
-	WylaczTrybRegulacji(m_nBiezacyParametr >= POZN);	//wybór trybu jest niemożliwy dla regulatora pozycji - zawsze jest AUTO
+	//WylaczTrybRegulacji(m_nBiezacyParametr >= POZN);	//wybór trybu jest niemożliwy dla regulatora pozycji - zawsze jest AUTO
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -656,175 +656,76 @@ void KonfigPID::OnBnClickedCheckKatowy()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Wyłączenie wszystkich kontrolek regulatora parametru głównego
+// obsługa nacisniecia radiobuttona "Wyłacz"
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::WylaczStab(BOOL bWylacz)
-{
-	m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony = bWylacz;
-	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;	
-	if (bWylacz)
-	{
-		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_STAB)->EnableWindow(FALSE);
-	}
-	else
-	{
-		GetDlgItem(IDC_EDIT_KP1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TI1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TD1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_STAB)->EnableWindow(TRUE);
-	}
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Wyłączenie wszystkich kontrolek regulatora pochodnej
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::WylaczAkro(BOOL bWylacz)
-{
-	m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony = bWylacz;
-	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
-	if (bWylacz)
-	{
-		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(FALSE);		
-		GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_AKRO)->EnableWindow(FALSE);
-	}
-	else
-	{
-		GetDlgItem(IDC_EDIT_KP2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TI2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_TD2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_LIMIT_CALKI2)->EnableWindow(TRUE);
-		GetDlgItem(IDC_EDIT_SKALA_WART_ZAD_AKRO)->EnableWindow(TRUE);
-	}
-	UpdateData(FALSE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Wyłączenie wszystkich kontrolek wybory trybu regulacji
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::WylaczTrybRegulacji(BOOL bWylacz)
-{
-	GetDlgItem(IDC_RADIO_REG_WYLACZ)->EnableWindow(!bWylacz);
-	GetDlgItem(IDC_RADIO_REG_RECZNY)->EnableWindow(!bWylacz);
-	GetDlgItem(IDC_RADIO_REG_AKRO)->EnableWindow(!bWylacz);
-	GetDlgItem(IDC_RADIO_REG_STAB)->EnableWindow(!bWylacz);
-	GetDlgItem(IDC_RADIO_REG_AUTO)->EnableWindow(!bWylacz);
-	UpdateData(FALSE);
-}
-
-
-
 void KonfigPID::OnBnClickedRadioRegWylacz()
 {
-	/*int nIndeksRegulatora;
-	if (m_nBiezacyParametr < LICZBA_DRAZKOW)
-		nIndeksRegulatora = m_nBiezacyParametr;
-	else
-		nIndeksRegulatora = LICZBA_DRAZKOW - 1;*/
-
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_WYLACZ;		//regultor wyłączony
 	m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony = TRUE;
 	m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony = TRUE;
 	UstawTrybRegulacji(m_nBiezacyParametr);
-	WylaczStab(TRUE);
-	WylaczAkro(TRUE);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa nacisniecia radiobuttona "Reczny"
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedRadioRegReczny()
 {
-	/*int nIndeksRegulatora;
-	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
-		nIndeksRegulatora = m_nBiezacyParametr;
-	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
-
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_RECZNA;		//regulacja ręczna, bezpośrednio z drążków aparatury	
 	UstawTrybRegulacji(m_nBiezacyParametr);
-	WylaczStab(TRUE);
-	WylaczAkro(TRUE);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa nacisniecia radiobuttona "Akro"
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedRadioRegAkro()
 {
-	/*int nIndeksRegulatora;
-	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
-		nIndeksRegulatora = m_nBiezacyParametr;
-	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
-
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_AKRO;	//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
 	UstawTrybRegulacji(m_nBiezacyParametr);
-	WylaczStab(TRUE);
-	WylaczAkro(FALSE);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa nacisniecia radiobuttona "Stab"
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedRadioRegStab()
 {
-	/*int nIndeksRegulatora;
-	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
-		nIndeksRegulatora = m_nBiezacyParametr;
-	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
-
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_STAB;	//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
 	UstawTrybRegulacji(m_nBiezacyParametr);
-	WylaczStab(FALSE);
-	WylaczAkro(FALSE);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa nacisniecia radiobuttona "Auto"
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedRadioRegAuto()
 {
-	/*int nIndeksRegulatora;
-	if (m_nBiezacyParametr < ROZMIAR_DRAZKOW)
-		nIndeksRegulatora = m_nBiezacyParametr;
-	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
-
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_AUTO;	//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
 	UstawTrybRegulacji(m_nBiezacyParametr);
-	WylaczStab(FALSE);
-	WylaczAkro(FALSE);
+	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }

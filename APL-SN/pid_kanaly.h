@@ -32,15 +32,24 @@
 #define PID_PRE_E	11 	//regulator sterowania prędkością w kierunku wschodnim
 
 #define LICZBA_PID  (2 * LICZBA_REG_PARAM)	//liczba regulatorów
-
+#define ROZMIAR_PID_FLOAT	8
 
 //definicje trybów pracy regulatora
-#define REG_OFF           0   //wyłączony regulator
-#define REG_MAN           1   //regulacja ręczna prosto z drążka
-#define REG_ACRO          2   //regulacja pierwszej pochodnej parametru (prędkość katowa, prędkość wznoszenia)
-#define REG_STAB          3   //regulacja parametru właściwego (kąt , wysokość)
-#define REG_GPS_SPEED     4   //regulacja prędkości liniowej w osiach XYZ
-#define REG_GPS_POS       5   //regulacja prędkości liniowej w osiach XYZ ze stabilizacją położenia
+#define REG_WYLACZ		0	//regultor wyłączony
+#define REG_RECZNA		1	//regulacja ręczna, bezpośrednio z drążków aparatury
+#define REG_AKRO		2	//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
+#define REG_STAB		3	//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
+#define REG_AUTO		4	//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
+#define REG_GPS_SPEED   4   //regulacja prędkości liniowej w osiach XYZ
+#define REG_GPS_POS     5   //regulacja prędkości liniowej w osiach XYZ ze stabilizacją położenia
+//definicje trybów regulacji
+
+
+
+
+
+
+
 
 //definicje trybów regulacji
 #define REG_WYLACZ		0		//regultor wyłączony
@@ -54,5 +63,5 @@
 
 //definicje bitów konfiguracji PID
 #define PID_MASKA_FILTRA_D		0x3F
-#define PID_WLACZONY			0x40
+//#define PID_WLACZONY			0x40
 #define PID_KATOWY				0x80

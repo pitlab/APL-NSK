@@ -47,10 +47,7 @@ protected:
 	void UstawKontrolki(int nParametr);
 	void UstawTrybRegulacji(int nParametr);
 	float ZamienStrNaFloat(CString str);
-	void WlaczKontrolki(BOOL bRegGlow, BOOL bRegPoch);
-	void WylaczAkro(BOOL bWylacz);
-	void WylaczStab(BOOL bWylacz);
-	void WylaczTrybRegulacji(BOOL bWylacz);
+	void WlaczKontrolki(uint8_t chTrybPracyRegulatora);
 
 	DECLARE_MESSAGE_MAP()
 public:
