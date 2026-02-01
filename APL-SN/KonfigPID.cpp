@@ -264,9 +264,9 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strMaxWyj2.Format(_T("%.0f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strSkalaWartZadanejStab.Format(_T("%.4f"), m_stPID[nRegGlow].fSkalaWartZadanej);
+	m_strSkalaWartZadanejStab.Format(_T("%.6f"), m_stPID[nRegGlow].fSkalaWartZadanej);
 	m_strSkalaWartZadanejStab.Replace(_T('.'), _T(','));
-	m_strSkalaWartZadanejAkro.Format(_T("%.4f"), m_stPID[nRegPoch].fSkalaWartZadanej);
+	m_strSkalaWartZadanejAkro.Format(_T("%.6f"), m_stPID[nRegPoch].fSkalaWartZadanej);
 	m_strSkalaWartZadanejAkro.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_ctlSlidPOdstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].chPodstFiltraD);
@@ -396,19 +396,19 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 	m_stPID[PID_WARIO].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku północnym
-	m_stPID[PID_NAW_N].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_NAW_N].fSkalaWartZadanej = 0.1f * DEG2RAD;
 	m_stPID[PID_NAW_N].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku północnym
-	m_stPID[PID_PRE_N].fSkalaWartZadanej = 0.001f;
+	m_stPID[PID_PRE_N].fSkalaWartZadanej = 0.01f * DEG2RAD;
 	m_stPID[PID_PRE_N].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku wschodnim
-	m_stPID[PID_NAW_E].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_NAW_E].fSkalaWartZadanej = 0.1f * DEG2RAD;
 	m_stPID[PID_NAW_E].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku wschodnim
-	m_stPID[PID_PRE_E].fSkalaWartZadanej = 0.001f;
+	m_stPID[PID_PRE_E].fSkalaWartZadanej = 0.01f * DEG2RAD;
 	m_stPID[PID_PRE_E].bKatowy = FALSE;
 
 	//tryby regulacji

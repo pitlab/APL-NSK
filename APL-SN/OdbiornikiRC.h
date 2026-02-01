@@ -1,6 +1,25 @@
 ﻿#pragma once
 #include "Komunikacja/Komunikacja.h"
 #define CZESTOTLIWOSC_ODSWIEZANIA	10	//[Hz]
+
+#define PPM_MIN			1000    //wartość minimalna sygnału -125%
+#define PPM_M100    	1100    //-100%
+#define PPM_M90     	1140    //-90%
+#define PPM_JALOWY  	1200    //obroty jałowe silników
+#define PPM_M75     	1200    //-75%
+#define PPM_M50     	1300    //-50%
+#define PPM_M25     	1400    //-25%
+#define PPM_M20     	1420    //-20%
+#define PPM_NEUTR   	1500    //neutrum 1500us
+#define PPM_P20     	1580    //+20%
+#define PPM_P25     	1600    //+25%
+#define PPM_P50     	1700    //+50%
+#define PPM_P75     	1800    //+75%
+#define PPM_P90     	1860    //+90%
+#define PPM_P100    	1900    //+100%
+#define PPM_MAX			2000    //wartość maksymalna sygnału +125%
+
+
 // Okno dialogowe OdbiornikiRC
 
 class OdbiornikiRC : public CDialogEx
@@ -19,6 +38,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	uint8_t WstawDaneKanalow();
+	void UstawMinMax();
 	uint16_t m_sBackupOkresuTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	BOOL m_bZmodyfikowanoTelemetrie;
 
@@ -71,7 +91,14 @@ public:
 	CComboBox m_ctlTypWyjscia8;
 	CComboBox m_ctlTypWyjscia9_16;
 
+	struct {
+		CString strMinMax;
+		uint16_t sMin;
+		uint16_t sMax;
+		BOOL bZmieniono;
+	} m_stEkstrema[16];
 	BOOL m_bZmienionoUstawienie;
+	BOOL m_bZmienionoMinMax;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboRc1();
 	afx_msg void OnCbnSelchangeComboRc2();

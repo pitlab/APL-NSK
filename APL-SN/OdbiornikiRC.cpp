@@ -83,6 +83,23 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_SERWO9, m_ctlTypWyjscia9_16);
 	DDX_Control(pDX, IDC_COMBO_RC1, m_ctlOdbiornikRC1);
 	DDX_Control(pDX, IDC_COMBO_RC2, m_ctlOdbiornikRC2);
+
+	DDX_Text(pDX, IDC_STAT_MIN_MAX01, m_stEkstrema[0].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX02, m_stEkstrema[1].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX03, m_stEkstrema[2].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX04, m_stEkstrema[3].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX05, m_stEkstrema[4].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX06, m_stEkstrema[5].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX07, m_stEkstrema[6].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX08, m_stEkstrema[7].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX09, m_stEkstrema[8].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX10, m_stEkstrema[9].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX11, m_stEkstrema[10].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX12, m_stEkstrema[11].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX13, m_stEkstrema[12].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX14, m_stEkstrema[13].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX15, m_stEkstrema[14].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX16, m_stEkstrema[15].strMinMax);
 }
 
 
@@ -136,7 +153,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 		}	
 
 		//zapisz do APL telemetrię wysyłająca kanały odbiorników i serwa
-		uint8_t chErr = getKomunikacja().ZapiszOkresTelemetrii(sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+		chErr = getKomunikacja().ZapiszOkresTelemetrii(sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 		if (chErr)
 		{
 			CString strKomunikat;
@@ -147,6 +164,9 @@ BOOL OdbiornikiRC::OnInitDialog()
 		}
 		else
 			m_bZmodyfikowanoTelemetrie = TRUE;
+
+		//włącz zbieranie ekstremów RC w CM4. W aplikacji dane są tylko w celach poglądowych
+		chErr = getKomunikacja().ZbierajEkstremaWejscRC();
 	}
 
 	//definiuj zakres kanalów
@@ -192,7 +212,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia1.InsertString(0, _T("Port I/O PB9"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia1.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia1.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia1.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia1.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia1.InsertString(5, _T("-"));				//wyjście PWM 100Hz
 	m_ctlTypWyjscia1.InsertString(6, _T("-"));				//wyjście PWM 200Hz
@@ -205,7 +225,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia2.InsertString(0, _T("Port I/O PB10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia2.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia2.InsertString(3, _T("CS QSPI"));		//fukcja alternatywna
+	m_ctlTypWyjscia2.InsertString(3, _T("CS QSPI"));		//funkcja alternatywna
 	m_ctlTypWyjscia2.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia2.InsertString(5, _T("-"));				//wyjście PWM 100Hz
 	m_ctlTypWyjscia2.InsertString(6, _T("-"));				//wyjście PWM 200Hz
@@ -218,7 +238,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia3.InsertString(0, _T("Port I/O PA15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia3.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia3.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia3.InsertString(3, _T("CS QSPI"));		//fukcja alternatywna
+	m_ctlTypWyjscia3.InsertString(3, _T("CS QSPI"));		//funkcja alternatywna
 	m_ctlTypWyjscia3.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia3.InsertString(5, _T("-"));				
 	m_ctlTypWyjscia3.InsertString(6, _T("-"));				
@@ -231,7 +251,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia4.InsertString(0, _T("Port I/O PB0"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia4.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia4.InsertString(2, _T("ADC1_INP9"));		//wejście ADC
-	m_ctlTypWyjscia4.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia4.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia4.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia4.InsertString(5, _T("-"));
 	m_ctlTypWyjscia4.InsertString(6, _T("-"));
@@ -244,7 +264,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia5.InsertString(0, _T("Port I/O PB1"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia5.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia5.InsertString(2, _T("ADC1_INP5"));		//wejście ADC
-	m_ctlTypWyjscia5.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia5.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia5.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia5.InsertString(5, _T("-"));
 	m_ctlTypWyjscia5.InsertString(6, _T("-"));
@@ -257,7 +277,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia6.InsertString(0, _T("Port I/O PI5"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia6.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia6.InsertString(2, _T("ADC1_INP2"));		//wejście ADC
-	m_ctlTypWyjscia6.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia6.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia6.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia6.InsertString(5, _T("-"));
 	m_ctlTypWyjscia6.InsertString(6, _T("-"));
@@ -270,7 +290,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia7.InsertString(0, _T("Port I/O PI10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia7.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia7.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia7.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia7.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia7.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia7.InsertString(5, _T("-"));
 	m_ctlTypWyjscia7.InsertString(6, _T("-"));
@@ -283,7 +303,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia8.InsertString(0, _T("Port I/O PH15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia8.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
 	m_ctlTypWyjscia8.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia8.InsertString(3, _T("-"));				//fukcja alternatywna
+	m_ctlTypWyjscia8.InsertString(3, _T("-"));				//funkcja alternatywna
 	m_ctlTypWyjscia8.InsertString(4, _T("Serwo1 50Hz"));
 	m_ctlTypWyjscia8.InsertString(5, _T("-"));
 	m_ctlTypWyjscia8.InsertString(6, _T("-"));
@@ -296,7 +316,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia9_16.InsertString(0, _T("-"));			//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia9_16.InsertString(1, _T("-"));			//wyjście S-Bus
 	m_ctlTypWyjscia9_16.InsertString(2, _T("-"));			//wejście ADC
-	m_ctlTypWyjscia9_16.InsertString(3, _T("-"));			//fukcja alternatywna
+	m_ctlTypWyjscia9_16.InsertString(3, _T("-"));			//funkcja alternatywna
 	m_ctlTypWyjscia9_16.InsertString(4, _T("Serwa 9-16 50Hz"));
 	m_ctlTypWyjscia9_16.InsertString(5, _T("ESC 9-12 100Hz"));	//wyjście PWM 100Hz
 	m_ctlTypWyjscia9_16.InsertString(6, _T("ESC 9-10 200Hz"));	//wyjście PWM 200Hz
@@ -335,6 +355,15 @@ BOOL OdbiornikiRC::OnInitDialog()
 		m_ctlTypWyjscia9_16.SetCurSel(chDane[5]);
 	}
 		
+	//inicjuj
+	m_bZmienionoMinMax = FALSE;
+	for (uint8_t n = 0; n < 16; n++)
+	{
+		m_stEkstrema[n].bZmieniono = FALSE;
+		m_stEkstrema[n].sMin = PPM_MAX;
+		m_stEkstrema[n].sMax = PPM_MIN;
+	}
+
 	SetTimer(IDT_TIMER_RC, 100, (TIMERPROC)NULL);
 	WstawDaneKanalow();
 
@@ -350,6 +379,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t OdbiornikiRC::WstawDaneKanalow()
 {
+	int nWartoscRC;
 	int nIndeksTele = (int)getProtokol().m_vDaneTelemetryczne.size();
 	if (nIndeksTele == 0)
 		return ERR_NO_DATA_RECEIVED;
@@ -371,6 +401,25 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	m_ctlRC1Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN14]);
 	m_ctlRC1Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN15]);
 	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN16]);
+
+	//aktualizuj wartości min i max
+	for (int n = 0; n < 16; n++)
+	{
+		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
+		if (nWartoscRC < m_stEkstrema[n].sMin)
+		{
+			m_stEkstrema[n].sMin = nWartoscRC;
+			m_stEkstrema[n].bZmieniono = TRUE;
+		}
+		if (nWartoscRC > m_stEkstrema[n].sMax)
+		{
+			m_stEkstrema[n].sMax = nWartoscRC;
+			m_stEkstrema[n].bZmieniono = TRUE;			
+		}
+		//przynajmniej w jednym kanale musi być ustawiony pełen zakres aby zapisało takie nastawy
+		if ((m_stEkstrema[n].sMin < PPM_M90) && (m_stEkstrema[n].sMax > PPM_P90))
+			m_bZmienionoMinMax = TRUE;
+	}
 
 	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1]);
 	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO2]);
@@ -398,10 +447,30 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 // Reakcja na upływ czasu timera powodująca odświeżenia pasków kanałówRC w oknie
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::UstawMinMax()
+{
+	for (uint8_t n = 0; n < 16; n++)
+	{
+		if (m_stEkstrema[n].bZmieniono)
+		{
+			m_stEkstrema[n].strMinMax.Format(_T("%d-%d"), m_stEkstrema[n].sMin, m_stEkstrema[n].sMax);
+			m_stEkstrema[n].bZmieniono = FALSE;
+		}
+		UpdateData(FALSE);
+	}	
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na upływ czasu timera powodująca odświeżenia pasków kanałówRC w oknie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	WstawDaneKanalow();
+	UstawMinMax();
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -414,6 +483,7 @@ void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 void OdbiornikiRC::OnBnClickedOk()
 {
 	uint8_t chErr, chDane[6];
+	CString strKomunikat;
 
 	KillTimer(IDT_TIMER_RC);
 	if (m_bZmienionoUstawienie)
@@ -427,6 +497,22 @@ void OdbiornikiRC::OnBnClickedOk()
 		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
 
 		chErr = getKomunikacja().RekonfigurujWeWyRC();	//przeładuj konfigurację
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+	}
+
+	if (m_bZmienionoMinMax)
+	{
+		chErr = getKomunikacja().ZapiszEkstremaWejscRC();
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		}
 	}
 	CDialogEx::OnOK();
 }

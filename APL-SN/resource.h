@@ -296,15 +296,32 @@
 #define IDC_CHECK_WYLACZ2               1234
 #define IDC_STAT_JEDNOSTKA_STAB         1234
 #define IDC_STAT_JEDNOSTKA_AKRO         1235
+#define IDC_STAT_MIN_MAX01              1236
+#define IDC_STAT_MIN_MAX02              1237
+#define IDC_STAT_MIN_MAX03              1238
+#define IDC_STAT_MIN_MAX04              1239
 #define IDC_EDIT_OBR_JALOWE             1240
+#define IDC_STAT_MIN_MAX05              1240
 #define IDC_EDIT_OBR_MIN                1241
+#define IDC_STAT_MIN_MAX06              1241
 #define IDC_EDIT_OBR_ZAWIS              1242
+#define IDC_STAT_MIN_MAX07              1242
 #define IDC_EDIT_OBR_MAX                1243
+#define IDC_STAT_MIN_MAX08              1243
 #define IDC_RADIO_REG_WYLACZ            1244
+#define IDC_STAT_MIN_MAX09              1244
 #define IDC_RADIO_REG_RECZNY            1245
+#define IDC_STAT_MIN_MAX10              1245
 #define IDC_RADIO_REG_AKRO              1246
+#define IDC_STAT_MIN_MAX11              1246
 #define IDC_RADIO_REG_STAB              1247
+#define IDC_STAT_MIN_MAX12              1247
 #define IDC_RADIO_REG_AUTO              1248
+#define IDC_STAT_MIN_MAX13              1248
+#define IDC_STAT_MIN_MAX14              1249
+#define IDC_STAT_MIN_MAX105             1250
+#define IDC_STAT_MIN_MAX15              1250
+#define IDC_STAT_MIN_MAX16              1251
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -346,7 +363,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32823
-#define _APS_NEXT_CONTROL_VALUE         1236
+#define _APS_NEXT_CONTROL_VALUE         1252
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
