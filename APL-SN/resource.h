@@ -176,7 +176,7 @@
 #define IDC_EDIT_NUMER                  1098
 #define IDC_IPADDRESS_DEFINICJE         1099
 #define IDC_BUT_KOLOR                   1102
-#define IDC_BUTTON2                     1103
+#define IDC_BUT_USTAW_DOMYSLNE          1103
 #define IDC_MFCCOLOR                    1104
 #define IDC_EDIT_KAT1                   1105
 #define IDC_EDIT_KAT2                   1106
@@ -272,8 +272,6 @@
 #define IDC_LIST_ZMIENNE_TELE           1206
 #define IDC_TREE_WYKRESOW               1207
 #define IDC_LISTA_DANYCH                1208
-
-
 #define IDC_TAB_KANAL_PID               1210
 #define IDC_EDIT_KP1                    1211
 #define IDC_EDIT_TI1                    1212
@@ -286,7 +284,6 @@
 #define IDC_STATIC_FILTR_D1             1219
 #define IDC_CHECK_KATOWY1               1220
 #define IDC_CHECK_WYLACZ1               1222
-
 #define IDC_EDIT_KP2                    1225
 #define IDC_EDIT_TI2                    1226
 #define IDC_EDIT_TD2                    1227
@@ -297,19 +294,17 @@
 #define IDC_SLIDER_FILTR_D2             1232
 #define IDC_STATIC_FILTR_D2             1233
 #define IDC_CHECK_WYLACZ2               1234
-
+#define IDC_STAT_JEDNOSTKA_STAB         1234
+#define IDC_STAT_JEDNOSTKA_AKRO         1235
 #define IDC_EDIT_OBR_JALOWE             1240
 #define IDC_EDIT_OBR_MIN                1241
 #define IDC_EDIT_OBR_ZAWIS              1242
 #define IDC_EDIT_OBR_MAX                1243
-
 #define IDC_RADIO_REG_WYLACZ            1244
 #define IDC_RADIO_REG_RECZNY            1245
 #define IDC_RADIO_REG_AKRO              1246
 #define IDC_RADIO_REG_STAB              1247
 #define IDC_RADIO_REG_AUTO              1248
-
-
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -351,7 +346,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32823
-#define _APS_NEXT_CONTROL_VALUE         1229
+#define _APS_NEXT_CONTROL_VALUE         1236
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

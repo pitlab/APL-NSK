@@ -48,6 +48,7 @@ protected:
 	void UstawTrybRegulacji(int nParametr);
 	float ZamienStrNaFloat(CString str);
 	void WlaczKontrolki(uint8_t chTrybPracyRegulatora);
+	void UstawJednostke(int nParametr);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -85,6 +86,8 @@ private:
 	BOOL m_bTrybRegulacjiAuto;
 	CString m_strSkalaWartZadanejStab;
 	CString m_strSkalaWartZadanejAkro;
+	CString m_strJednostkaStab;
+	CString m_strJednostkaAkro;
 
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
@@ -112,4 +115,5 @@ public:
 	afx_msg void OnBnClickedRadioRegAuto();
 	afx_msg void OnEnChangeEditSkalaWartZadStab();
 	afx_msg void OnEnChangeEditSkalaWartZadAkro();
+	afx_msg void OnBnClickedButUstawDomyslne();
 };

@@ -41,6 +41,8 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_bTrybRegulacjiAkro(FALSE)
 	, m_bTrybRegulacjiStab(FALSE)
 	, m_bTrybRegulacjiAuto(FALSE)
+	, m_strJednostkaStab(_T(""))
+	, m_strJednostkaAkro(_T(""))
 {
 
 }
@@ -77,6 +79,9 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_RADIO_REG_AKRO, m_bTrybRegulacjiAkro);
 	DDX_Check(pDX, IDC_RADIO_REG_STAB, m_bTrybRegulacjiStab);
 	DDX_Check(pDX, IDC_RADIO_REG_AUTO, m_bTrybRegulacjiAuto);
+	DDX_Text(pDX, IDC_STAT_JEDNOSTKA_STAB, m_strJednostkaStab);
+	DDX_Text(pDX, IDC_STAT_JEDNOSTKA_AKRO, m_strJednostkaAkro);
+
 }
 
 
@@ -107,6 +112,7 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_REG_AKRO, &KonfigPID::OnBnClickedRadioRegAkro)
 	ON_BN_CLICKED(IDC_RADIO_REG_STAB, &KonfigPID::OnBnClickedRadioRegStab)
 	ON_BN_CLICKED(IDC_RADIO_REG_AUTO, &KonfigPID::OnBnClickedRadioRegAuto)
+	ON_BN_CLICKED(IDC_BUT_USTAW_DOMYSLNE, &KonfigPID::OnBnClickedButUstawDomyslne)
 END_MESSAGE_MAP()
 
 
@@ -268,6 +274,7 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_bKatowy = m_stPID[nRegGlow].bKatowy;
 	UpdateData(FALSE);
 
+	UstawJednostke(nParametr);
 	UstawTrybRegulacji(nParametr);
 }
 
@@ -333,6 +340,113 @@ void KonfigPID::OnBnClickedOk()
 		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
 	}
 	CDialogEx::OnOK();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa nacisniecia przycisku "Ustaw domyślne"
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnBnClickedButUstawDomyslne()
+{
+	//nastawy wspólne dla wszystkich regulatorów
+	for (int n = 0; n < LICZBA_PID; n++)
+	{
+		m_stPID[n].fKp = 1.0f;
+		m_stPID[n].fTi = 0.1f;
+		m_stPID[n].fTd = 0.01f;
+		m_stPID[n].fOgrCalki = 20.0f;
+		m_stPID[n].fMinWyj = -100.0f;
+		m_stPID[n].fMaxWyj = 100.0f;
+		m_stPID[n].bZmieniony = TRUE;
+		m_stPID[n].chPodstFiltraD = 8;
+	}
+
+	//regulator sterowania przechyleniem (lotkami w samolocie)
+	m_stPID[PID_PRZE].fSkalaWartZadanej = 30.0f * DEG2RAD;
+	m_stPID[PID_PRZE].bKatowy = TRUE;
+
+	//regulator sterowania prędkością kątową przechylenia (żyroskop P)
+	m_stPID[PID_PK_PRZE].fSkalaWartZadanej = 60.0f * DEG2RAD;
+	m_stPID[PID_PK_PRZE].bKatowy = FALSE;
+
+	//regulator sterowania pochyleniem (sterem wysokości)
+	m_stPID[PID_POCH].fSkalaWartZadanej = 30.0f * DEG2RAD;
+	m_stPID[PID_POCH].bKatowy = TRUE;
+
+	//regulator sterowania prędkością kątową pochylenia (żyroskop Q)
+	m_stPID[PID_PK_POCH].fSkalaWartZadanej = 60.0f * DEG2RAD;
+	m_stPID[PID_PK_POCH].bKatowy = FALSE;
+
+	//regulator sterowania odchyleniem (sterem kierunku)
+	m_stPID[PID_ODCH].fSkalaWartZadanej = 180.0f * DEG2RAD;
+	m_stPID[PID_ODCH].bKatowy = TRUE;
+
+	//regulator sterowania prędkością kątową odchylenia (żyroskop R)
+	m_stPID[PID_PK_ODCH].fSkalaWartZadanej = 20.0f * DEG2RAD;	//[rad/s]
+	m_stPID[PID_PK_ODCH].bKatowy = FALSE;
+
+	//regulator sterowania wysokością
+	m_stPID[PID_WYSO].fSkalaWartZadanej = 20.0f;	//[m]
+	m_stPID[PID_WYSO].bKatowy = FALSE;
+
+	//regulator sterowani prędkością wznoszenia (wario)
+	m_stPID[PID_WARIO].fSkalaWartZadanej = 5.0f;	//[m/s]
+	m_stPID[PID_WARIO].bKatowy = FALSE;
+
+	//regulator sterowania nawigacją w kierunku północnym
+	m_stPID[PID_NAW_N].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_NAW_N].bKatowy = TRUE;
+
+	//regulator sterowania prędkością w kierunku północnym
+	m_stPID[PID_PRE_N].fSkalaWartZadanej = 0.001f;
+	m_stPID[PID_PRE_N].bKatowy = FALSE;
+
+	//regulator sterowania nawigacją w kierunku wschodnim
+	m_stPID[PID_NAW_E].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_NAW_E].bKatowy = TRUE;
+
+	//regulator sterowania prędkością w kierunku wschodnim
+	m_stPID[PID_PRE_E].fSkalaWartZadanej = 0.001f;
+	m_stPID[PID_PRE_E].bKatowy = FALSE;
+
+	//tryby regulacji
+	m_chTrybRegulacji[PRZE] = REG_STAB;		//regulator sterowania przechyleniem (lotkami w samolocie)    
+	m_chTrybRegulacji[POCH] = REG_STAB;		//regulator sterowania pochyleniem (sterem wysokości)
+	m_chTrybRegulacji[ODCH] = REG_STAB;     //regulator sterowania obrotem (sterem kierunku)
+	m_chTrybRegulacji[WYSO] = REG_AKRO;		//regulator sterowania wysokością
+	m_chTrybRegulacji[POZN] = REG_AUTO;		//regulator sterowania prędkością i położeniem północnym
+	m_chTrybRegulacji[POZE] = REG_AUTO;		//regulator sterowania prędkością i położeniem wschodnim
+	m_bZmienionyTrybRegulacji = TRUE;
+	OnBnClickedOk();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Ustawia nazwę jednostki wartości zadanej
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::UstawJednostke(int nParametr)
+{
+	switch (nParametr)
+	{
+	case PRZE:
+	case POCH:
+	case ODCH:
+	case POZN:
+	case POZE:
+		m_strJednostkaStab = _T("[rad]");
+		m_strJednostkaAkro = _T("[rad/s]");
+		break;
+
+	case WYSO:
+		m_strJednostkaStab = _T("[m]");
+		m_strJednostkaAkro = _T("[m/s]");
+		break;
+	}
+	UpdateData(FALSE);
 }
 
 
@@ -729,7 +843,6 @@ void KonfigPID::OnBnClickedRadioRegAuto()
 	m_bZmienionyTrybRegulacji = TRUE;
 	UpdateData(FALSE);
 }
-
 
 
 

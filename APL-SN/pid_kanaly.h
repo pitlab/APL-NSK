@@ -1,5 +1,10 @@
 //#define NUM_AXIS  6 //liczba regulowanych osi: pochylenie, przechylenie, odchylenie, wysokość, prędkość + rezerwa
 //#define FRAM_FLOAT_SIZE     4   //rozmiar liczby float
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#define DEG2RAD	(M_PI/180)
+#define RAD2DEG	(180/M_PI)
 
 
 //Rodzaj regulatora
