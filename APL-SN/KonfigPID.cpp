@@ -176,7 +176,7 @@ BOOL KonfigPID::OnInitDialog()
 		}
 	}
 	
-	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_REG_PARAM, FA_TRYB_REG);
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_REG_PARAM, FAU_TRYB_REG);
 	if (chErr == ERR_OK)
 	{
 		for (uint8_t n = 0; n < LICZBA_REG_PARAM; n++)

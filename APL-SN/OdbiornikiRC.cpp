@@ -8,7 +8,7 @@
 #include "sys_def_wspolny.h"
 #include "konfig_fram.h"
 #include "Errors.h"
-
+#include "pid_kanaly.h"
 
 
 // Okno dialogowe OdbiornikiRC
@@ -18,6 +18,9 @@ IMPLEMENT_DYNAMIC(OdbiornikiRC, CDialogEx)
 OdbiornikiRC::OdbiornikiRC(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ODBIORNIKI_RC, pParent)
 	, m_bZmienionoUstawienie(FALSE)
+	, m_bZmienionoKanalDrazkow(FALSE)
+	, m_bZmienionoMinMax(FALSE)
+	, m_bZmienionoFunkcjeKanalow(FALSE)
 {
 
 }
@@ -100,6 +103,22 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STAT_MIN_MAX14, m_stEkstrema[13].strMinMax);
 	DDX_Text(pDX, IDC_STAT_MIN_MAX15, m_stEkstrema[14].strMinMax);
 	DDX_Text(pDX, IDC_STAT_MIN_MAX16, m_stEkstrema[15].strMinMax);
+	DDX_Control(pDX, IDC_COMBO_KAN_PRZE, m_ctlKanalPrzechylenia);
+	DDX_Control(pDX, IDC_COMBO_KAN_POCH1, m_ctlKanalPochylenia);
+	DDX_Control(pDX, IDC_COMBO_KAN_ODCH, m_ctlKanalOdchylenia);
+	DDX_Control(pDX, IDC_COMBO_KAN_WYSO, m_ctlKanalWysokosci);
+	DDX_Control(pDX, IDC_COMBO_KAN5, m_ctlFunkcjaKanalu5);
+	DDX_Control(pDX, IDC_COMBO_KAN6, m_ctlFunkcjaKanalu6);
+	DDX_Control(pDX, IDC_COMBO_KAN7, m_ctlFunkcjaKanalu7);
+	DDX_Control(pDX, IDC_COMBO_KAN8, m_ctlFunkcjaKanalu8);
+	DDX_Control(pDX, IDC_COMBO_KAN9, m_ctlFunkcjaKanalu9);
+	DDX_Control(pDX, IDC_COMBO_KAN10, m_ctlFunkcjaKanalu10);
+	DDX_Control(pDX, IDC_COMBO_KAN11, m_ctlFunkcjaKanalu11);
+	DDX_Control(pDX, IDC_COMBO_KAN12, m_ctlFunkcjaKanalu12);
+	DDX_Control(pDX, IDC_COMBO_KAN13, m_ctlFunkcjaKanalu13);
+	DDX_Control(pDX, IDC_COMBO_KAN14, m_ctlFunkcjaKanalu14);
+	DDX_Control(pDX, IDC_COMBO_KAN15, m_ctlFunkcjaKanalu15);
+	DDX_Control(pDX, IDC_COMBO_KAN16, m_ctlFunkcjaKanalu16);
 }
 
 
@@ -118,6 +137,22 @@ BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDOK, &OdbiornikiRC::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &OdbiornikiRC::OnBnClickedCancel)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN_PRZE, &OdbiornikiRC::OnCbnSelchangeComboKanPrze)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN_POCH1, &OdbiornikiRC::OnCbnSelchangeComboKanPoch1)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN_ODCH, &OdbiornikiRC::OnCbnSelchangeComboKanOdch)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN_WYSO, &OdbiornikiRC::OnCbnSelchangeComboKanWyso)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN5, &OdbiornikiRC::OnCbnSelchangeComboKan5)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN6, &OdbiornikiRC::OnCbnSelchangeComboKan6)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN7, &OdbiornikiRC::OnCbnSelchangeComboKan7)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN8, &OdbiornikiRC::OnCbnSelchangeComboKan8)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN9, &OdbiornikiRC::OnCbnSelchangeComboKan9)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN10, &OdbiornikiRC::OnCbnSelchangeComboKan10)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN11, &OdbiornikiRC::OnCbnSelchangeComboKan11)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN12, &OdbiornikiRC::OnCbnSelchangeComboKan12)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN13, &OdbiornikiRC::OnCbnSelchangeComboKan13)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN14, &OdbiornikiRC::OnCbnSelchangeComboKan14)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN15, &OdbiornikiRC::OnCbnSelchangeComboKan15)
+	ON_CBN_SELCHANGE(IDC_COMBO_KAN16, &OdbiornikiRC::OnCbnSelchangeComboKan16)
 END_MESSAGE_MAP()
 
 
@@ -130,9 +165,10 @@ END_MESSAGE_MAP()
 BOOL OdbiornikiRC::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	uint8_t chErr, chDane[6];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
+	uint8_t chErr, chDane[KANALY_FUNKCYJNE];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
 	int nIndeksDronaWRoju;
 	uint16_t sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	CString strNapis;
 
 	//Odczytaj z roju liste telemetrii i zachowaj ją jako backup do odtworzenia przy wyjściu
 	if (getKomunikacja().m_cRoj.vWron.size())
@@ -326,6 +362,40 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia9_16.InsertString(10, _T("-"));
 	m_ctlTypWyjscia9_16.InsertString(11, _T("-"));
 
+	for (int n = 0; n < 4; n++)
+	{
+		strNapis.Format(_T("Kanał %d"), n+1);
+		m_ctlKanalPrzechylenia.InsertString(n, strNapis);
+		m_ctlKanalPochylenia.InsertString(n, strNapis);
+		m_ctlKanalOdchylenia.InsertString(n, strNapis);
+		m_ctlKanalWysokosci.InsertString(n, strNapis);
+	}
+
+	//wypełnij comboboxy funkcji wejść RC
+	for (int n = 0; n < 4; n++)
+	{
+		switch (n)
+		{
+		case 0: strNapis.Format(_T("Wyjście OD1")); break;
+		case 1: strNapis.Format(_T("Wyjście OD2")); break;
+		case 2: strNapis.Format(_T("Mów komunikat 1")); break;
+		case 3: strNapis.Format(_T("Mów komunikat 2")); break;
+		}
+		m_ctlFunkcjaKanalu5.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu6.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu7.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu8.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu9.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu10.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu11.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu12.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu13.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu14.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu15.InsertString(n, strNapis);
+		m_ctlFunkcjaKanalu16.InsertString(n, strNapis);
+	}
+
+
 
 	//odczytaj konfigurację wejść odbiorników i wyjść serw.
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
@@ -353,6 +423,34 @@ BOOL OdbiornikiRC::OnInitDialog()
 
 		//1U konfiguracja wyjść:  0=wyjścia 9..16 PWM 50Hz, 1=wyjścia 9..12 PWM 100Hz, 2=wyjścia 9..10 PWM 200Hz, 3=wyjście 9 PWM 400Hz
 		m_ctlTypWyjscia9_16.SetCurSel(chDane[5]);
+	}
+
+	//odczytaj konfigurację wejść odbiorników i wyjść serw.
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_DRAZKOW, FAU_KAN_DRAZKA_RC);
+	if (chErr == ERR_OK)
+	{
+		m_ctlKanalPrzechylenia.SetCurSel(chDane[0]);
+		m_ctlKanalPochylenia.SetCurSel(chDane[1]);
+		m_ctlKanalOdchylenia.SetCurSel(chDane[2]);
+		m_ctlKanalWysokosci.SetCurSel(chDane[3]);
+	}
+
+	//odczytaj konfigurację wejść odbiorników i wyjść serw.
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
+	if (chErr == ERR_OK)
+	{
+		m_ctlFunkcjaKanalu5.SetCurSel(chDane[0]);
+		m_ctlFunkcjaKanalu6.SetCurSel(chDane[1]);
+		m_ctlFunkcjaKanalu7.SetCurSel(chDane[2]);
+		m_ctlFunkcjaKanalu8.SetCurSel(chDane[3]);
+		m_ctlFunkcjaKanalu9.SetCurSel(chDane[4]);
+		m_ctlFunkcjaKanalu10.SetCurSel(chDane[5]);
+		m_ctlFunkcjaKanalu11.SetCurSel(chDane[6]);
+		m_ctlFunkcjaKanalu12.SetCurSel(chDane[7]);
+		m_ctlFunkcjaKanalu13.SetCurSel(chDane[8]);
+		m_ctlFunkcjaKanalu14.SetCurSel(chDane[9]);
+		m_ctlFunkcjaKanalu15.SetCurSel(chDane[10]);
+		m_ctlFunkcjaKanalu16.SetCurSel(chDane[11]);
 	}
 		
 	//inicjuj
@@ -482,7 +580,7 @@ void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedOk()
 {
-	uint8_t chErr, chDane[6];
+	uint8_t chErr, chDane[KANALY_FUNKCYJNE];
 	CString strKomunikat;
 
 	KillTimer(IDT_TIMER_RC);
@@ -512,6 +610,46 @@ void OdbiornikiRC::OnBnClickedOk()
 		{
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
 			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+	}
+
+	if (m_bZmienionoKanalDrazkow)
+	{
+		chDane[0] = m_ctlKanalPrzechylenia.GetCurSel();
+		chDane[1] = m_ctlKanalPochylenia.GetCurSel();
+		chDane[2] = m_ctlKanalOdchylenia.GetCurSel();
+		chDane[3] = m_ctlKanalWysokosci.GetCurSel();
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, LICZBA_DRAZKOW, FAU_KAN_DRAZKA_RC);
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+	}
+
+	if (m_bZmienionoFunkcjeKanalow)
+	{
+		chDane[0] = m_ctlFunkcjaKanalu5.GetCurSel();
+		chDane[1] = m_ctlFunkcjaKanalu6.GetCurSel();
+		chDane[2] = m_ctlFunkcjaKanalu7.GetCurSel();
+		chDane[3] = m_ctlFunkcjaKanalu8.GetCurSel();
+		chDane[4] = m_ctlFunkcjaKanalu9.GetCurSel();
+		chDane[5] = m_ctlFunkcjaKanalu10.GetCurSel();
+		chDane[6] = m_ctlFunkcjaKanalu11.GetCurSel();
+		chDane[7] = m_ctlFunkcjaKanalu12.GetCurSel();
+		chDane[8] = m_ctlFunkcjaKanalu13.GetCurSel();
+		chDane[9] = m_ctlFunkcjaKanalu14.GetCurSel();
+		chDane[10] = m_ctlFunkcjaKanalu15.GetCurSel();
+		chDane[11] = m_ctlFunkcjaKanalu16.GetCurSel();
+
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
 		}
 	}
 	CDialogEx::OnOK();
@@ -648,4 +786,125 @@ void OdbiornikiRC::OnCbnSelchangeComboRc1()
 void OdbiornikiRC::OnCbnSelchangeComboRc2()
 {
 	m_bZmienionoUstawienie = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę numeru kanału dla funkcji: Przechylenie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboKanPrze()
+{
+	m_bZmienionoKanalDrazkow = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę numeru kanału dla funkcji: Pochylenie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboKanPoch1()
+{
+	m_bZmienionoKanalDrazkow = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę numeru kanału dla funkcji: Odchylenie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboKanOdch()
+{
+	m_bZmienionoKanalDrazkow = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę numeru kanału dla funkcji: Wysokość
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboKanWyso()
+{
+	m_bZmienionoKanalDrazkow = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę numeru funkcji dla kanałów 5..16
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnCbnSelchangeComboKan5()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan6()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan7()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan8()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan9()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan10()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan11()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan12()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan13()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan14()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan15()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboKan16()
+{
+	m_bZmienionoFunkcjeKanalow = TRUE;
 }
