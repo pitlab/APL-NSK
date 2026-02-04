@@ -72,6 +72,7 @@ public:
 	uint8_t ZapiszTrybRegulacji(uint8_t *chTrybRegulacji);
 	uint8_t ZbierajEkstremaWejscRC();
 	uint8_t ZapiszEkstremaWejscRC();
+	uint8_t ResetujCM4();
 
 	Roj m_cRoj;
 	Wron m_cWron;

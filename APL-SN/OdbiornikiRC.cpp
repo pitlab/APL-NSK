@@ -650,6 +650,27 @@ void OdbiornikiRC::OnBnClickedOk()
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
 			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
 			CDialogEx::OnOK();
+		}	
+	}
+
+	//sprawdź czy była zmiana i czy należy zresetować CM4
+	if (m_bZmienionoUstawienie | m_bZmienionoMinMax | m_bZmienionoKanalDrazkow | m_bZmienionoKanalDrazkow | m_bZmienionoFunkcjeKanalow)
+	{
+		//wyświetl okno z pytaniem czy resetować CM4
+		int nRet = MessageBoxExW(this->m_hWnd, _T("Nastąpiła zmiana konfiguracji. \nCzy wykonać reset rdzenia CM4?"), _T("Potrzebny reset aby zmiana przyniosła efekt"), MB_ICONWARNING + MB_YESNO, 0);
+		if (nRet == IDYES)
+		{
+			chErr = getKomunikacja().ResetujCM4();
+			if (chErr != ERR_OK)
+			{
+				if (chErr == 8)	//BLAD_ODMOWA_WYKONANIA
+					strKomunikat.Format(_T("Odmowa wykonania resetu ze względów bezpieczeństwa"));
+				else
+					strKomunikat.Format(_T("Błąd nr %d wykonania polecenia"), chErr);
+				MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+				CDialogEx::OnOK();
+			}
+			chErr = getKomunikacja().WyslijOK();	//wyłącz polecenie resetujące
 		}
 	}
 	CDialogEx::OnOK();

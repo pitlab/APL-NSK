@@ -1480,3 +1480,26 @@ uint8_t CKomunikacja::ZapiszEkstremaWejscRC()
 
 	return chErr;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie resetu rdzenia CM4, zwykle po zmianie konfiguracji.
+// parametry: brak
+// zwraca: kod b³êdu: OK lub odmowa wykonania je¿eli silniki s¹ uzbrojone
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ResetujCM4()
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_RESETUJ_CM4, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano == 2))
+	{
+		if (chDanePrzychodzace[1] == PK_RESETUJ_CM4)
+			if (chDanePrzychodzace[0] != ERR_OK)
+				chErr = chDanePrzychodzace[0];			
+	}
+	return chErr;
+}
