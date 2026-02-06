@@ -1503,3 +1503,21 @@ uint8_t CKomunikacja::ResetujCM4()
 	}
 	return chErr;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie zatrzymania telemetrii
+// parametry: chPrzerwa - wartoœæ niezerowa wstrzumuje telemetriê, zerowa wznawia wysy³kê
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::WstrzymajTelemetrie(uint8_t chPrzerwa)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chPrzerwa;
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WSTRZYMAJ_TELEMETRIE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}

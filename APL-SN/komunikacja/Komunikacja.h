@@ -73,6 +73,7 @@ public:
 	uint8_t ZbierajEkstremaWejscRC();
 	uint8_t ZapiszEkstremaWejscRC();
 	uint8_t ResetujCM4();
+	uint8_t WstrzymajTelemetrie(uint8_t chPrzerwa);
 
 	Roj m_cRoj;
 	Wron m_cWron;

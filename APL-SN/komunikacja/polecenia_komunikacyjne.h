@@ -80,8 +80,10 @@
 #define PK_ZAPISZ_WYSTER_NAPEDU	29	//zapsuje nastawy wysterowania napędu dla wartości jałowej, minimalnej, zawisu i maksymalnej
 #define PK_ZAPISZ_TRYB_REG		30	//zapisuje we FRAM i w zmiannych roboczych rodzaj podstawowych 4 regulacji
 #define PK_RESETUJ_CM4			31	//wykinuje reset CM4 po zmianie krytycznej konfiguracji
+#define PK_WSTRZYMAJ_TELEMETRIE	32	//wstrzymuje lub wznawia wysyłnie telemetrii na czas transmisji innych danych
 
-#define PK_ILOSC_POLECEN		32	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
+
+#define PK_ILOSC_POLECEN		33	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 
 #define PK_TELEMETRIA1			96	//ramka telemetryczna 1
 #define PK_TELEMETRIA2			97	//ramka telemetryczna 2
@@ -89,6 +91,9 @@
 #define PK_TELEMETRIA4			99	//ramka telemetryczna 4 - na razie nie używane
 
 
+//polecenia ramki PK_WSTRZYMAJ_TELEMETRIE służące do zarządzania strumieniem telemetrii
+#define WSTRZYMAJ_TELEMETRIE	1
+#define WZNOW_TELEMETRIE		0
 
 
 //Status gotowośco wykonania zdjęcia

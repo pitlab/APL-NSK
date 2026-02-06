@@ -17,11 +17,11 @@ IMPLEMENT_DYNAMIC(CDaneFlash, CDialogEx)
 CDaneFlash::CDaneFlash(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ZAPISZ_FLASH, pParent)
 {
-	getKomunikacja().m_chAdresAutopilota = 2;
 }
 
 CDaneFlash::~CDaneFlash()
 {
+	getKomunikacja().WstrzymajTelemetrie(WZNOW_TELEMETRIE);
 }
 
 void CDaneFlash::DoDataExchange(CDataExchange* pDX)
@@ -42,6 +42,20 @@ END_MESSAGE_MAP()
 
 
 // Procedury obsługi komunikatów CDaneFlash
+
+BOOL CDaneFlash::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  Dodaj tutaj dodatkową inicjację
+	GetDlgItem(IDC_PROGRESS1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUT_ZAPISZ_FLASH)->EnableWindow(FALSE);
+
+	getKomunikacja().WstrzymajTelemetrie(WSTRZYMAJ_TELEMETRIE);
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Oczytuje plik i umieszcza go na liście
@@ -367,20 +381,6 @@ void CDaneFlash::OnBnClickedButCzytajFlash()
 	}
 	m_ctlPasekPostepu.SetPos(0);
 	UpdateData(FALSE);
-}
-
-
-BOOL CDaneFlash::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-
-	// TODO:  Dodaj tutaj dodatkową inicjację
-	GetDlgItem(IDC_PROGRESS1)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUT_ZAPISZ_FLASH)->EnableWindow(FALSE);
-	
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
 
 

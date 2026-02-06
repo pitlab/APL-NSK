@@ -371,13 +371,14 @@
 #define ID_BUT_POLACZ_COM               32818
 #define ID_POLACZ_ETH                   32819
 #define ID_USTAWIENIA_NA                32822
+#define ID_USTAWIENIA_ZAPISZSAMPLEAUDIO 32823
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
-#define _APS_NEXT_COMMAND_VALUE         32823
+#define _APS_NEXT_COMMAND_VALUE         32824
 #define _APS_NEXT_CONTROL_VALUE         1282
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

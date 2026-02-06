@@ -60,6 +60,8 @@ public:
 	afx_msg void OnUpdateUstawieniaNaped(CCmdUI* pCmdUI);
 	afx_msg void OnUstawParkamery();
 	afx_msg void OnUpdateUstawParkamery(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaZapiszsampleaudio();
+	afx_msg void OnUpdateUstawieniaZapiszSampleAudio(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

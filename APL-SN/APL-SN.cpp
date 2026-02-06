@@ -47,6 +47,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_NA, &CAPLSNApp::OnUpdateUstawieniaNaped)
 	ON_COMMAND(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUstawParkamery)
 	ON_UPDATE_COMMAND_UI(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUpdateUstawParkamery)
+	ON_COMMAND(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUstawieniaZapiszsampleaudio)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUpdateUstawieniaZapiszSampleAudio)
 END_MESSAGE_MAP()
 
 
@@ -455,6 +457,7 @@ void CAPLSNApp::OnUpdateUstawieniaNaped(CCmdUI* pCmdUI)
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Okno dialogowe z ustawieniami kamery
 // Zwraca: nic
@@ -466,11 +469,39 @@ void CAPLSNApp::OnUstawParkamery()
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Definiuje dostępność polecenia menu Konfiguracja -> Ustawienia kamery...
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawParkamery(CCmdUI* pCmdUI)
+{
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Okno dialogowe z zapisam próbek audio do flash
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaZapiszsampleaudio()
+{
+	CDaneFlash dlg;
+
+	dlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Ustawienia kamery...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaZapiszSampleAudio(CCmdUI* pCmdUI)
 {
 	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
