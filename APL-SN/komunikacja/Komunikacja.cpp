@@ -132,6 +132,7 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC0] = "Ekran dotyk. ADC[0]";
 	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC1] = "Ekran dotyk. ADC[1]";
 	m_strNazwyZmiennychTele[TELEID_DOTYK_ADC2] = "Ekran dotyk. ADC[2]";
+	m_strNazwyZmiennychTele[TELEID_CZAS_PETLI] = "Czas pêtli g³ównej [us]";
 
 
 	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";	//wartoœæ zadana regulatora sterowania przechyleniem
