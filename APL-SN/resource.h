@@ -337,6 +337,8 @@
 #define IDC_COMBO_KAN14                 1274
 #define IDC_COMBO_KAN15                 1275
 #define IDC_COMBO_KAN16                 1276
+#define IDC_EDIT_WYKRES_MIN             1282
+#define IDC_EDIT_WYKRES_MAX             1283
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -379,7 +381,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1282
+#define _APS_NEXT_CONTROL_VALUE         1284
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

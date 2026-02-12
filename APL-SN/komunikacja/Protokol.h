@@ -34,8 +34,8 @@ public:
 	static int m_LicznikInstancji;
 	struct stEkstremaTelemetrii_t
 	{
-		float fMin = 0;
-		float fMax = 0;
+		float fMin = WARTOSC_MAX;
+		float fMax = WARTOSC_MIN;
 	} m_stEkstremaTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	
 	

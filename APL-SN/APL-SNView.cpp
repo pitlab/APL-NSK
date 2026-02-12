@@ -277,14 +277,18 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		OknoWykresu.top = MIEJSCE_MIEDZY_WYKRESAMI;
 		for (int g = 0; g < nLiczbaGrupWykresow; g++)
 		{
-			fMinLewy = fMaxLewy = fPoziomZeraLewy = fMinPrawy = fMaxPrawy = fPoziomZeraPrawy = 0.0f;;
+			fMinLewy = fMinPrawy = WARTOSC_MAX;
+			fMaxLewy = fMaxPrawy = WARTOSC_MIN;
+			fPoziomZeraLewy = fPoziomZeraPrawy = 0.0f;
+
 			fStartLegendy = (float)(OknoWykresu.left + 5);	//wspólrzędne x początku legendy, będą zwiększane w każdej iteracji aby opisy nie nachodziły na siebie
 			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;			
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
 			{
 				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
 				nLiczbaWykresow = (int)m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
-				fMinWykresu = fMaxWykresu = 0.0f;
+				fMinWykresu = WARTOSC_MAX;
+				fMaxWykresu = WARTOSC_MIN;
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
@@ -305,9 +309,10 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 				fMinLewy = fMinPrawy = fMinWykresu;
 				fMaxLewy = fMaxPrawy = fMaxWykresu;
-				if ((fMinWykresu == 0.0) && (fMaxWykresu == 0.0f))
+				if ((fMinWykresu == WARTOSC_MAX) && (fMaxWykresu == WARTOSC_MIN))	//jeżeli wartość nie jest zmieniona od czasu inicjalizacji
 					return FALSE;
-				fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+				//fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+				fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMaxWykresu) - fabsf(fMinWykresu));
 				fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
@@ -429,7 +434,7 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float
 // Parametry:
 //  okno - obszar rysowania
 //  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
-//  fVpos - przesuniecie środka wykresu w pionie po to aby upchnąc wiele wykresów w oknie
+//  fVzera - przesuniecie poziomu zerowej wykresu w pionie 
 //  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
 //  vRamkaTele - wektor zmiennych telemetrycznych z którego trzeba wyłuskać potrzebna dane
 //  nIndeksZmiennej - indeks zmiennej do wyświetlenia

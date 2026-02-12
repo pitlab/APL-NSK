@@ -49,6 +49,8 @@ protected:
 	BOOL m_bKursorPrzeciaganie{ FALSE };
 	CPoint m_cpPozycjaMyszy;	
 	CImageList m_ObrazkiDrzewa;
+	float m_fZakresMinWykresu;
+	float m_fZakresMaxWykresu;
 
 public:
 	CListCtrl m_cListaDanych;
@@ -56,4 +58,8 @@ public:
 	COleDropTarget m_DropTarget;
 	CMFCColorButton m_ctrlKolor;
 	BOOL m_bZawieraLog;
+	CString m_strZakresMinWykresu;
+	CString m_strZakresMaxWykresu;
+	afx_msg void OnEnChangeEditWykresMin();
+	afx_msg void OnEnChangeEditWykresMax();
 };

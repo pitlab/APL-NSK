@@ -14,6 +14,8 @@ IMPLEMENT_DYNAMIC(KonfiguracjaWyresow, CDialogEx)
 KonfiguracjaWyresow::KonfiguracjaWyresow(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_KONFIG_WYKRESOW, pParent)
 	, m_bZawieraLog(FALSE)
+	, m_strZakresMinWykresu(_T(""))
+	, m_strZakresMaxWykresu(_T(""))
 {
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
@@ -35,6 +37,8 @@ void KonfiguracjaWyresow::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LISTA_DANYCH, m_cListaDanych);
 	DDX_Control(pDX, IDC_TREE_WYKRESOW, m_cDrzewoWykresow);
 	DDX_Control(pDX, IDC_MFCCOLOR, m_ctrlKolor);
+	DDX_Text(pDX, IDC_EDIT_WYKRES_MIN, m_strZakresMinWykresu);
+	DDX_Text(pDX, IDC_EDIT_WYKRES_MAX, m_strZakresMaxWykresu);
 }
 
 
@@ -54,6 +58,8 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnSelchangedTreeWykresow)
 	ON_NOTIFY(TVN_SELCHANGING, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnTvnSelchangingTreeWykresow)
 	ON_NOTIFY(NM_CLICK, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnNMClickTreeWykresow)
+	ON_EN_CHANGE(IDC_EDIT_WYKRES_MIN, &KonfiguracjaWyresow::OnEnChangeEditWykresMin)
+	ON_EN_CHANGE(IDC_EDIT_WYKRES_MAX, &KonfiguracjaWyresow::OnEnChangeEditWykresMax)
 END_MESSAGE_MAP()
 
 
@@ -461,4 +467,31 @@ void KonfiguracjaWyresow::OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 	UpdateData(FALSE);
 	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Ręczne wprowadzenie dolnego zakresu wykresu
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnEnChangeEditWykresMin()
+{
+	UpdateData(TRUE);
+	m_strZakresMinWykresu.Replace(_T(','), _T('.'));
+	m_fZakresMinWykresu = (float)_wtof(m_strZakresMinWykresu);
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Ręczne wprowadzenie górnego zakresu wykresu
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnEnChangeEditWykresMax()
+{
+	UpdateData(TRUE);
+	m_strZakresMaxWykresu.Replace(_T(','), _T('.'));
+	m_fZakresMaxWykresu = (float)_wtof(m_strZakresMaxWykresu);
 }

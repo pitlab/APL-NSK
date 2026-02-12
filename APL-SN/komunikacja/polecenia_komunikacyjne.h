@@ -111,7 +111,9 @@
 #define FUK1_OBR_POZ	0x02	//odwróć obraz w poziomie
 #define FUK1_OBR_PION	0x04	//odwróć obraz w pionie
 
-
+//definicja wstępych wartości danych telemetrycznych w celu znamezienia zakresu jego zmienności
+#define WARTOSC_MAX		1000.0f
+#define WARTOSC_MIN		-1000.0f
 
 //definicje zmiennych telemetrycznych
 //zmienne IMU
