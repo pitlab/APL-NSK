@@ -14,6 +14,7 @@
 #define MIEJSCE_MIEDZY_WYKRESAMI	8
 #define MIEJSCE_PRZED_WYKRESEM		40
 #define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 40
+#define MIN_POZPIETOSC_WYKRESU		0.1f
 
 class CAPLSNView : public CView
 
@@ -60,7 +61,7 @@ protected:
 	KonfiguracjaWyresow m_cKonfiguracjaWykresow;
 	CKonfigTelemetrii m_cKonfigTelemetrii;
 	KonfigRejestratora m_cKonfigRejestratora;
-
+	BOOL m_bWykresZawieraZero;
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
@@ -96,9 +97,9 @@ public:
 	uint32_t m_nNumerPortuEth;
 	CString m_strAdresIP;
 
-	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
+	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, float fMinZmiennej, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
-	void RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, float fMin1, float fMax1, float fMin2, float fMax2, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
+	void RysujOknoGrupyWykresow(CRect okno, float fZeroL, float fZeroP, float fMinL, float fMaxL, float fMinP, float fMaxP, float fSkalaLewaY, float fSkalaPrawaY, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 private:
 	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
 

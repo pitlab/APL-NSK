@@ -79,6 +79,7 @@ CAPLSNView::CAPLSNView() noexcept
 , m_fZoomPoziomo(1.0f)
 , m_nVscroll(0)
 , m_bOknoGotowe(FALSE)
+, m_bWykresZawieraZero(TRUE)
 , m_nIloscDanychWykresu(0)
 , m_nMaxScrollPoziomo(0)
 , m_nBiezacyScrollPoziomo(0)
@@ -205,6 +206,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	float fStartLegendy;
 	float fMinWykresu = 0.0f, fMaxWykresu = 0.0f;
 	float fMinLewy, fMinPrawy, fMaxLewy, fMaxPrawy;	//ekstrema dwóch pierwszych wykresów
+	float fSkalaY, fSkalaLewaY, fSkalaPrawaY;
+	float fRozpietoscWykresu;
 	CRect oknoGrupy, OknoWykresu;
 	GetClientRect(oknoGrupy);
 	OknoWykresu = oknoGrupy;
@@ -212,7 +215,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 	pRenderTarget->FillRectangle(oknoGrupy, m_pLinearGradientBrush);
 	float fSkalaX = m_fZoomPoziomo;
-	float fSkalaY = (float)OknoWykresu.bottom / 40.0f * m_fZoomPionowo;
+	fSkalaY = fSkalaLewaY = fSkalaPrawaY = (float)OknoWykresu.bottom / 40.0f * m_fZoomPionowo;
 	float fPoziomZera, fPoziomZeraLewy, fPoziomZeraPrawy;
 
 	//wyświetl obraz z kamery
@@ -282,7 +285,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			fPoziomZeraLewy = fPoziomZeraPrawy = 0.0f;
 
 			fStartLegendy = (float)(OknoWykresu.left + 5);	//wspólrzędne x początku legendy, będą zwiększane w każdej iteracji aby opisy nie nachodziły na siebie
-			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;			
+			OknoWykresu.bottom = (g + 1) * oknoGrupy.bottom / nLiczbaGrupWykresow - MIEJSCE_MIEDZY_WYKRESAMI / 2;	
+
 			if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
 			{
 				//znajdź globalne ekstrema w grupie wykresów o wspólnej skali
@@ -311,15 +315,28 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				fMaxLewy = fMaxPrawy = fMaxWykresu;
 				if ((fMinWykresu == WARTOSC_MAX) && (fMaxWykresu == WARTOSC_MIN))	//jeżeli wartość nie jest zmieniona od czasu inicjalizacji
 					return FALSE;
-				//fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
-				fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMaxWykresu) - fabsf(fMinWykresu));
-				fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
+				
+				if ((fMinWykresu < 0.0f) && (fMaxWykresu > 0.0f))
+					fRozpietoscWykresu = (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+				else
+					fRozpietoscWykresu = fMaxWykresu - fMinWykresu;
+
+				if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
+					fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
+
+				fSkalaY = fSkalaLewaY = fSkalaPrawaY = (OknoWykresu.bottom - OknoWykresu.top) / fRozpietoscWykresu;
+				
+
+				if ((fMinWykresu < 0.0f) && (fMaxWykresu > 0.0f))
+					fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
+				else
+					fPoziomZeraLewy = fPoziomZeraPrawy = fPoziomZera = (float)OknoWykresu.bottom;
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
+						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, fMinWykresu , &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
 						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
@@ -349,23 +366,34 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 							fMaxWykresu = pDoc->m_vLog[nIdZmiennej].fMax;
 					}
 						
-					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					if ((fMinWykresu < 0.0f) && (fMaxWykresu > 0.0f))
+						fRozpietoscWykresu = (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					else
+						fRozpietoscWykresu = fMaxWykresu - fMinWykresu;
+
+					if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
+						fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
+
+					//fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / (fabsf(fMinWykresu) + fabsf(fMaxWykresu));
+					fSkalaY = (OknoWykresu.bottom - OknoWykresu.top) / fRozpietoscWykresu;
 					fPoziomZera = (float)OknoWykresu.bottom - (fSkalaY * (float)fabsf(fMinWykresu));					
 					if (w == 0)	//skala lewa dla wykresu 1
 					{
+						fSkalaLewaY = fSkalaY;
 						fMinLewy = fMinWykresu;
 						fMaxLewy = fMaxWykresu;
 						fPoziomZeraLewy = fPoziomZera;
 					}
 					if (w == 1)	//skala prawa dla wykresu 2
 					{
+						fSkalaPrawaY = fSkalaY;
 						fMinPrawy = fMinWykresu;
 						fMaxPrawy = fMaxWykresu;
 						fPoziomZeraPrawy = fPoziomZera;
 					}					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
+						RysujWykresTelemetrii(OknoWykresu, (float)m_nBiezacyScrollPoziomo, fPoziomZera, fSkalaX, fSkalaY, fMinWykresu, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu, &fStartLegendy);
 					else
 					{
 						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
@@ -374,7 +402,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 			}
 			fPoziomZera = (float)OknoWykresu.bottom - fSkalaY * (float)fabsf(fMinWykresu);
-			RysujOknoGrupyWykresow(OknoWykresu, fPoziomZeraLewy, fPoziomZeraPrawy, fMinLewy, fMaxLewy, fMinPrawy, fMaxPrawy, pRenderTarget, m_pBrushOsiWykresu);
+			RysujOknoGrupyWykresow(OknoWykresu, fPoziomZeraLewy, fPoziomZeraPrawy, fMinLewy, fMaxLewy, fMinPrawy, fMaxPrawy, fSkalaLewaY, fSkalaPrawaY, pRenderTarget, m_pBrushOsiWykresu);
 			OknoWykresu.top = OknoWykresu.bottom + MIEJSCE_MIEDZY_WYKRESAMI;
 		}		
 	}
@@ -434,7 +462,7 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float
 // Parametry:
 //  okno - obszar rysowania
 //  fHscroll - przesunięcie danych w poziomie podpięte do poziomego paska przewijania
-//  fVzera - przesuniecie poziomu zerowej wykresu w pionie 
+//  fVzera - przesuniecie poziomu zerowej (osi X) wykresu w pionie 
 //  fSkalaX, fSkalaY - wspólczynniki skalowania danych w poziomie i pionie sterowane kólkiem myszy (X) i kólkiem z Shift (Y)
 //  vRamkaTele - wektor zmiennych telemetrycznych z którego trzeba wyłuskać potrzebna dane
 //  nIndeksZmiennej - indeks zmiennej do wyświetlenia
@@ -442,7 +470,7 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy)
+void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, float fMinZmiennej, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy)
 {
 	float fZmienna;
 	long lLiczbaRamek = (long)vDaneTele->size();
@@ -481,7 +509,10 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 	if (vDaneTele->size() > m_nIloscDanychWykresu)
 		m_nIloscDanychWykresu = (int)vDaneTele->size();
 
-	pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
+	//if (m_bWykresZawieraZero)
+		//pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
+	//else
+		pktfPoczatek.y = fVzera - ((fZmienna - fMinZmiennej) * fSkalaY);
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
@@ -489,7 +520,7 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 		if (fZmienna)
 		{
 			pktfKoniec.x += fSkalaX;
-			pktfKoniec.y = fVzera - (fZmienna * fSkalaY);
+			pktfKoniec.y = fVzera - ((fZmienna - fMinZmiennej) * fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
 			pktfPoczatek = pktfKoniec;
 		}
@@ -498,23 +529,24 @@ void CAPLSNView::RysujWykresTelemetrii(CRect okno, float fHscroll, float fVzera,
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Rysuje oś układu wspórzędnych dla grupy wykresów
 // Parametry: 
 //  okno - współrzedne okna wszystkich grup wykresów
-//  nGora, nDol - współrzedne Y góry i dołu grupy wykresów
+//  fZero1, fZero2 - współrzędne Y osi zera dla lewej i prawej strony wykresu
+//  fMinL, fMinP - minimalne wartości dla lewej i prawej strony wykresu
+//  fMaxL, fMaxP - maksymalne wartości dla lewej i prawej strony wykresu
 //  pRenderTarget - narzędzie rysujące
 //  pBrush - parametry pędzla rysujacego osie
 // zwraca: komunkat systemowy
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, float fMin1, float fMax1, float fMin2, float fMax2, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZeroL, float fZeroP, float fMinL, float fMaxL, float fMinP, float fMaxP, float fSkalaLewaY, float fSkalaPrawaY, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
 	CD2DRectF rectWartosciOsi;
 	CString strNazwa;
 	float fSkokPodzialki;
-	float fSkalaY;
+	float fWartosc;
 	int nPodzPonizejZera;
 	int nPodzPowyzejZera;
 
@@ -534,14 +566,14 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 	pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.4f);
 
 	//lewa strona osi Y: Min1 i Max1, rysuj podziałki dla zera i powyżej
-	fSkalaY = (okno.bottom - okno.top) / (fabsf(fMin1) + fabsf(fMax1));
-	fSkokPodzialki = ZnajdzPodzialke(okno, fMin1, fMax1);
-	nPodzPowyzejZera = (int)round(fabs(fMax1) / fSkokPodzialki);
+	//fSkalaY = (okno.bottom - okno.top) / (fabsf(fMin1) + fabsf(fMax1));
+	fSkokPodzialki = ZnajdzPodzialke(okno, fMinL, fMaxL);
+	nPodzPowyzejZera = (int)round(fabs(fMaxL) / fSkokPodzialki);
 	for (int n = 0; n <= nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
 		pktfKoniec.x = (float)(okno.right);
-		pktfPoczatek.y = pktfKoniec.y = fZero1 - n* fSkokPodzialki * fSkalaY;
+		pktfPoczatek.y = pktfKoniec.y = fZeroL - n* fSkokPodzialki * fSkalaLewaY;
 		if (n==0)
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.5f);	//linie zera rysuj grubszą
 		else
@@ -551,24 +583,25 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = 0;
 		rectWartosciOsi.right = MIEJSCE_PRZED_WYKRESEM;
+		fWartosc = fMinL + n * fSkokPodzialki;
 		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.3f"), fWartosc);
 		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.2f"), fWartosc);
 		else if (n * fSkokPodzialki < 100.f)
-			strNazwa.Format(_T("%.1f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.1f"), fWartosc);
 		else
-			strNazwa.Format(_T("%.0f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.0f"), fWartosc);
 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 	//lewa strona, podzialki ponizej zera
-	nPodzPonizejZera = (int)round(fabs(fMin1) / fSkokPodzialki);
+	nPodzPonizejZera = (int)round(fabs(fMinL) / fSkokPodzialki);
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
 		pktfKoniec.x = (float)(okno.right);
-		pktfPoczatek.y = pktfKoniec.y = fZero1 + n * fSkokPodzialki * fSkalaY;
+		pktfPoczatek.y = pktfKoniec.y = fZeroL + n * fSkokPodzialki * fSkalaLewaY;
 		if (pktfPoczatek.y < okno.bottom)	//nie rysuj poniżej okna
 		{
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.1f);
@@ -576,27 +609,28 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 			rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 			rectWartosciOsi.left = 0;
 			rectWartosciOsi.right = MIEJSCE_PRZED_WYKRESEM;
+			fWartosc = fMinL + n * -fSkokPodzialki;
 			if (n * fSkokPodzialki < 1)
-				strNazwa.Format(_T("%.3f"), n * -fSkokPodzialki);
+				strNazwa.Format(_T("%.3f"), fWartosc);
 			else if (n * fSkokPodzialki < 10)
-				strNazwa.Format(_T("%.2f"), n * -fSkokPodzialki);
+				strNazwa.Format(_T("%.2f"), fWartosc);
 			else if (n * fSkokPodzialki < 100.f)
-				strNazwa.Format(_T("%.1f"), n * -fSkokPodzialki);
+				strNazwa.Format(_T("%.1f"), fWartosc);
 			else
-				strNazwa.Format(_T("%.0f"), n * -fSkokPodzialki);
+				strNazwa.Format(_T("%.0f"), fWartosc);
 			pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 		}
 	}
 
 	//prawa strona osi Y: Min2 i Max2, rysuj podziałki dla zera i powyżej
-	fSkalaY = (okno.bottom - okno.top) / (fabsf(fMin2) + fabsf(fMax2));
-	fSkokPodzialki = ZnajdzPodzialke(okno, fMin2, fMax2);
-	nPodzPowyzejZera = (int)round(fabs(fMax2) / fSkokPodzialki);
+	//fSkalaPrawaY = (okno.bottom - okno.top) / (fabsf(fMin2) + fabsf(fMax2));
+	fSkokPodzialki = ZnajdzPodzialke(okno, fMinP, fMaxP);
+	nPodzPowyzejZera = (int)round(fabs(fMaxP) / fSkokPodzialki);
 	for (int n = 0; n <= nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
 		pktfKoniec.x = (float)(okno.right);
-		pktfPoczatek.y = pktfKoniec.y = fZero2 - n * fSkokPodzialki * fSkalaY;
+		pktfPoczatek.y = pktfKoniec.y = fZeroP - n * fSkokPodzialki * fSkalaPrawaY;
 		if (n == 0)
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.5f);	//linie zera rysuj grubszą
 		else
@@ -606,37 +640,39 @@ void CAPLSNView::RysujOknoGrupyWykresow(CRect okno, float fZero1, float fZero2, 
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = (float)okno.right;
 		rectWartosciOsi.right = (float)(okno.right + MIEJSCE_PRZED_WYKRESEM);
+		fWartosc = fMinP + n * fSkokPodzialki;
 		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.3f"), fWartosc);
 		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.2f"), fWartosc);
 		else if (n * fSkokPodzialki < 100)
-			strNazwa.Format(_T("%.1f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.1f"), fWartosc);
 		else
-			strNazwa.Format(_T("%.0f"), n * fSkokPodzialki);
+			strNazwa.Format(_T("%.0f"), fWartosc);
 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 	//prawa strona, podzialki ponizej zera
-	nPodzPonizejZera = (int)round(fabs(fMin2) / fSkokPodzialki);
+	nPodzPonizejZera = (int)round(fabs(fMinP) / fSkokPodzialki);
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(okno.left);;
 		pktfKoniec.x = (float)(okno.right);
-		pktfPoczatek.y = pktfKoniec.y = fZero2 + n * fSkokPodzialki * fSkalaY;
+		pktfPoczatek.y = pktfKoniec.y = fZeroP + n * fSkokPodzialki * fSkalaPrawaY;
 		pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.1f);
 		rectWartosciOsi.top = pktfPoczatek.y - 10;
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = (float)okno.right;;
 		rectWartosciOsi.right = (float)(okno.right + MIEJSCE_PRZED_WYKRESEM);
+		fWartosc = fMinP + n * -fSkokPodzialki;
 		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), n * -fSkokPodzialki);
+			strNazwa.Format(_T("%.3f"), fWartosc);
 		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), n * -fSkokPodzialki);
+			strNazwa.Format(_T("%.2f"), fWartosc);
 		else if (n * fSkokPodzialki < 100)
-			strNazwa.Format(_T("%.1f"), n * -fSkokPodzialki);
+			strNazwa.Format(_T("%.1f"), fWartosc);
 		else
-			strNazwa.Format(_T("%.0f"), n * -fSkokPodzialki);
+			strNazwa.Format(_T("%.0f"), fWartosc);
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 }
@@ -654,10 +690,17 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 {
 	//okno dzielę na  odcinki po n pixeli, tam może zmieścić się opis skali
 	int nProponowanaLiczbaPodzialek = (okno.bottom - okno.top) / ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI;
-	float fZakresWskazan = fabsf(fMax) + fabsf(fMin);
-	float fPierwotnySkokPodzialki = fZakresWskazan / nProponowanaLiczbaPodzialek;
-	float fFinalnySkokPodzialki = fPierwotnySkokPodzialki;
+	float fZakresWskazan;
+	float fPierwotnySkokPodzialki;
+	float fFinalnySkokPodzialki;
 	int nMnoznik = 1;
+
+	if ((fMin < 0.0f) && (fMax > 0.0f))
+		fZakresWskazan = (fabsf(fMin) + fabsf(fMax));
+	else
+		fZakresWskazan = fMax - fMin;
+
+	fPierwotnySkokPodzialki = fFinalnySkokPodzialki = fZakresWskazan / nProponowanaLiczbaPodzialek;
 	if (fPierwotnySkokPodzialki)
 	{
 		while (round(fFinalnySkokPodzialki) < 100)	//potrzeba 3 miejsc znaczących
@@ -669,6 +712,7 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;
 	return fFinalnySkokPodzialki;
 }
+
 
 
 // Drukowanie obiektu CAPLSNView
