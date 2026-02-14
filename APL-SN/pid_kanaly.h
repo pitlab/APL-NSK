@@ -65,7 +65,8 @@
 
 #define NUM_REG_MOD       6   //liczba trybów regulatora
 
-#define KANALY_SERW			16	//liczba sterowanych kanałów serw
+//#define KANALY_SERW			16	//liczba sterowanych kanałów serw
+#define KANALY_WYJSC_RC		16	//liczba sterowanych kanałów serw
 #define KANALY_ODB_RC		16	//liczba odbieranych kanałów na każdym z dwu wejść odbiorników RC
 #define KANALY_MIKSERA		8	//liczba kanałów wyjściowych, które mogą wchodzić do miksera
 #define KANALY_FUNKCYJNE	(KANALY_ODB_RC - LICZBA_DRAZKOW)	//liczba kanałów mogących uruchamiać funkcje autopilota

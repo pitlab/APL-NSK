@@ -19,6 +19,31 @@
 #define PPM_P100    	1900    //+100%
 #define PPM_MAX			2000    //wartość maksymalna sygnału +125%
 
+//definicje funkcji wyjść RC
+#define FSER_SILNIK1			0	//steruj silnikiem 1
+#define FSER_SILNIK2			1
+#define FSER_SILNIK3			2
+#define FSER_SILNIK4			3
+#define FSER_SILNIK5			4
+#define FSER_SILNIK6			5
+#define FSER_SILNIK7			6
+#define FSER_SILNIK8			7
+#define FSER_WE_RC1				8
+#define FSER_WE_RC2				9
+#define FSER_WE_RC3				10
+#define FSER_WE_RC4				11
+#define FSER_WE_RC5				12
+#define FSER_WE_RC6				13
+#define FSER_WE_RC7				14
+#define FSER_WE_RC8				15
+#define FSER_WE_RC9				16
+#define FSER_WE_RC10			17
+#define FSER_WE_RC11			18
+#define FSER_WE_RC12			19
+#define FSER_WE_RC13			20
+#define FSER_WE_RC14			21
+#define FSER_WE_RC15			22
+#define FSER_WE_RC16			23
 
 // Okno dialogowe OdbiornikiRC
 
@@ -101,6 +126,7 @@ public:
 	BOOL m_bZmienionoMinMax;
 	BOOL m_bZmienionoKanalDrazkow;
 	BOOL m_bZmienionoFunkcjeKanalow;
+	BOOL m_bZmienionoFunkcjeWyjscRC;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboRc1();
 	afx_msg void OnCbnSelchangeComboRc2();
@@ -147,4 +173,36 @@ public:
 	afx_msg void OnCbnSelchangeComboKan14();
 	afx_msg void OnCbnSelchangeComboKan15();
 	afx_msg void OnCbnSelchangeComboKan16();
+	CComboBox m_ctlFunkcjaWyjscia1;
+	CComboBox m_ctlFunkcjaWyjscia2;
+	CComboBox m_ctlFunkcjaWyjscia3;
+	CComboBox m_ctlFunkcjaWyjscia4;
+	CComboBox m_ctlFunkcjaWyjscia5;
+	CComboBox m_ctlFunkcjaWyjscia6;
+	CComboBox m_ctlFunkcjaWyjscia7;
+	CComboBox m_ctlFunkcjaWyjscia8;
+	CComboBox m_ctlFunkcjaWyjscia9;
+	CComboBox m_ctlFunkcjaWyjscia10;
+	CComboBox m_ctlFunkcjaWyjscia11;
+	CComboBox m_ctlFunkcjaWyjscia12;
+	CComboBox m_ctlFunkcjaWyjscia13;
+	CComboBox m_ctlFunkcjaWyjscia14;
+	CComboBox m_ctlFunkcjaWyjscia15;
+	CComboBox m_ctlFunkcjaWyjscia16;
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa1();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa2();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa3();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa4();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa5();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa6();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa7();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa8();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa9();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa10();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa11();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa12();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa13();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa14();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa15();
+	afx_msg void OnCbnSelchangeComboFunkcjaSerwa16();
 };

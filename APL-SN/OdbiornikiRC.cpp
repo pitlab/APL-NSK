@@ -21,6 +21,7 @@ OdbiornikiRC::OdbiornikiRC(CWnd* pParent /*=nullptr*/)
 	, m_bZmienionoKanalDrazkow(FALSE)
 	, m_bZmienionoMinMax(FALSE)
 	, m_bZmienionoFunkcjeKanalow(FALSE)
+	, m_bZmienionoFunkcjeWyjscRC(FALSE)
 {
 
 }
@@ -119,6 +120,22 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_KAN14, m_ctlFunkcjaKanalu14);
 	DDX_Control(pDX, IDC_COMBO_KAN15, m_ctlFunkcjaKanalu15);
 	DDX_Control(pDX, IDC_COMBO_KAN16, m_ctlFunkcjaKanalu16);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA1, m_ctlFunkcjaWyjscia1);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA2, m_ctlFunkcjaWyjscia2);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA3, m_ctlFunkcjaWyjscia3);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA4, m_ctlFunkcjaWyjscia4);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA5, m_ctlFunkcjaWyjscia5);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA6, m_ctlFunkcjaWyjscia6);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA7, m_ctlFunkcjaWyjscia7);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA8, m_ctlFunkcjaWyjscia8);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA9, m_ctlFunkcjaWyjscia9);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA10, m_ctlFunkcjaWyjscia10);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA11, m_ctlFunkcjaWyjscia11);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA12, m_ctlFunkcjaWyjscia12);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA13, m_ctlFunkcjaWyjscia13);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA14, m_ctlFunkcjaWyjscia14);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA15, m_ctlFunkcjaWyjscia15);
+	DDX_Control(pDX, IDC_COMBO_FUNKCJA_SERWA16, m_ctlFunkcjaWyjscia16);
 }
 
 
@@ -153,6 +170,22 @@ BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_KAN14, &OdbiornikiRC::OnCbnSelchangeComboKan14)
 	ON_CBN_SELCHANGE(IDC_COMBO_KAN15, &OdbiornikiRC::OnCbnSelchangeComboKan15)
 	ON_CBN_SELCHANGE(IDC_COMBO_KAN16, &OdbiornikiRC::OnCbnSelchangeComboKan16)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA1, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa1)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA2, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa2)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA3, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa3)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA4, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa4)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA5, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa5)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA6, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa6)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA7, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa7)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA8, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa8)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA9, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa9)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA10, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa10)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA11, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa11)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA12, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa12)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA13, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa13)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA14, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa14)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA15, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa15)
+	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA16, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa16)
 END_MESSAGE_MAP()
 
 
@@ -165,7 +198,7 @@ END_MESSAGE_MAP()
 BOOL OdbiornikiRC::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	uint8_t chErr, chDane[KANALY_FUNKCYJNE];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
+	uint8_t chErr, chDane[KANALY_WYJSC_RC];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
 	int nIndeksDronaWRoju;
 	uint16_t sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	CString strNapis;
@@ -462,6 +495,71 @@ BOOL OdbiornikiRC::OnInitDialog()
 		m_stEkstrema[n].sMax = PPM_MIN;
 	}
 
+	//ustaw napisy okreslające funkcje wyjść RC
+	for (int n = FSER_SILNIK1; n <= FSER_SILNIK8; n++)
+	{
+		strNapis.Format(_T("Silnik %d"), n + 1);
+		m_ctlFunkcjaWyjscia1.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia2.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia3.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia4.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia5.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia6.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia7.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia8.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia9.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia10.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia11.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia12.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia13.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia14.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia15.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia16.InsertString(n, strNapis);
+	}
+
+	for (int n = FSER_WE_RC1; n <= FSER_WE_RC16; n++)
+	{
+		strNapis.Format(_T("Wejście RC %d"), n - FSER_WE_RC1 + 1);
+		m_ctlFunkcjaWyjscia1.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia2.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia3.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia4.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia5.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia6.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia7.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia8.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia9.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia10.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia11.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia12.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia13.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia14.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia15.InsertString(n, strNapis);
+		m_ctlFunkcjaWyjscia16.InsertString(n, strNapis);
+	}
+
+	//odczytaj funkcję wyjścia
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_WYJSC_RC, FAU_FUNKCJA_WY_RC);
+	if (chErr == ERR_OK)
+	{
+		m_ctlFunkcjaWyjscia1.SetCurSel(chDane[0]);
+		m_ctlFunkcjaWyjscia2.SetCurSel(chDane[1]);
+		m_ctlFunkcjaWyjscia3.SetCurSel(chDane[2]);
+		m_ctlFunkcjaWyjscia4.SetCurSel(chDane[3]);
+		m_ctlFunkcjaWyjscia5.SetCurSel(chDane[4]);
+		m_ctlFunkcjaWyjscia6.SetCurSel(chDane[5]);
+		m_ctlFunkcjaWyjscia7.SetCurSel(chDane[6]);
+		m_ctlFunkcjaWyjscia8.SetCurSel(chDane[7]);
+		m_ctlFunkcjaWyjscia9.SetCurSel(chDane[8]);
+		m_ctlFunkcjaWyjscia10.SetCurSel(chDane[9]);
+		m_ctlFunkcjaWyjscia11.SetCurSel(chDane[10]);
+		m_ctlFunkcjaWyjscia12.SetCurSel(chDane[11]);
+		m_ctlFunkcjaWyjscia13.SetCurSel(chDane[12]);
+		m_ctlFunkcjaWyjscia14.SetCurSel(chDane[13]);
+		m_ctlFunkcjaWyjscia15.SetCurSel(chDane[14]);
+		m_ctlFunkcjaWyjscia16.SetCurSel(chDane[15]);
+	}
+
 	SetTimer(IDT_TIMER_RC, 100, (TIMERPROC)NULL);
 	WstawDaneKanalow();
 
@@ -580,7 +678,7 @@ void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void OdbiornikiRC::OnBnClickedOk()
 {
-	uint8_t chErr, chDane[KANALY_FUNKCYJNE];
+	uint8_t chErr, chDane[KANALY_WYJSC_RC];
 	CString strKomunikat;
 
 	KillTimer(IDT_TIMER_RC);
@@ -653,6 +751,34 @@ void OdbiornikiRC::OnBnClickedOk()
 		}	
 	}
 
+	if (m_bZmienionoFunkcjeWyjscRC)
+	{
+		chDane[0] = m_ctlFunkcjaWyjscia1.GetCurSel();
+		chDane[1] = m_ctlFunkcjaWyjscia2.GetCurSel();
+		chDane[2] = m_ctlFunkcjaWyjscia3.GetCurSel();
+		chDane[3] = m_ctlFunkcjaWyjscia4.GetCurSel();
+		chDane[4] = m_ctlFunkcjaWyjscia5.GetCurSel();
+		chDane[5] = m_ctlFunkcjaWyjscia6.GetCurSel();
+		chDane[6] = m_ctlFunkcjaWyjscia7.GetCurSel();
+		chDane[7] = m_ctlFunkcjaWyjscia8.GetCurSel();
+		chDane[8] = m_ctlFunkcjaWyjscia9.GetCurSel();
+		chDane[9] = m_ctlFunkcjaWyjscia10.GetCurSel();
+		chDane[10] = m_ctlFunkcjaWyjscia11.GetCurSel();
+		chDane[11] = m_ctlFunkcjaWyjscia12.GetCurSel();
+		chDane[12] = m_ctlFunkcjaWyjscia13.GetCurSel();
+		chDane[13] = m_ctlFunkcjaWyjscia14.GetCurSel();
+		chDane[14] = m_ctlFunkcjaWyjscia15.GetCurSel();
+		chDane[15] = m_ctlFunkcjaWyjscia16.GetCurSel();
+
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_WYJSC_RC, FAU_FUNKCJA_WY_RC);
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+	}
+
 	//sprawdź czy była zmiana i czy należy zresetować CM4
 	if (m_bZmienionoUstawienie | m_bZmienionoMinMax | m_bZmienionoKanalDrazkow | m_bZmienionoKanalDrazkow | m_bZmienionoFunkcjeKanalow)
 	{
@@ -673,6 +799,8 @@ void OdbiornikiRC::OnBnClickedOk()
 			chErr = getKomunikacja().WyslijOK();	//wyłącz polecenie resetujące
 		}
 	}
+
+
 	CDialogEx::OnOK();
 }
 
@@ -928,4 +1056,102 @@ void OdbiornikiRC::OnCbnSelchangeComboKan15()
 void OdbiornikiRC::OnCbnSelchangeComboKan16()
 {
 	m_bZmienionoFunkcjeKanalow = TRUE;
+}
+
+
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa1()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa2()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa3()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa4()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa5()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa6()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa7()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa8()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa9()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa10()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa11()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa12()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa13()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa14()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa15()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa16()
+{
+	m_bZmienionoFunkcjeWyjscRC = TRUE;
 }

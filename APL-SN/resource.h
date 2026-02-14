@@ -339,6 +339,22 @@
 #define IDC_COMBO_KAN16                 1276
 #define IDC_EDIT_WYKRES_MIN             1282
 #define IDC_EDIT_WYKRES_MAX             1283
+#define IDC_COMBO_FUNKCJA_SERWA1        1284
+#define IDC_COMBO_FUNKCJA_SERWA2        1285
+#define IDC_COMBO_FUNKCJA_SERWA3        1286
+#define IDC_COMBO_FUNKCJA_SERWA4        1287
+#define IDC_COMBO_FUNKCJA_SERWA5        1290
+#define IDC_COMBO_FUNKCJA_SERWA6        1291
+#define IDC_COMBO_FUNKCJA_SERWA7        1294
+#define IDC_COMBO_FUNKCJA_SERWA8        1295
+#define IDC_COMBO_FUNKCJA_SERWA9        1296
+#define IDC_COMBO_FUNKCJA_SERWA10       1297
+#define IDC_COMBO_FUNKCJA_SERWA11       1298
+#define IDC_COMBO_FUNKCJA_SERWA12       1299
+#define IDC_COMBO_FUNKCJA_SERWA13       1306
+#define IDC_COMBO_FUNKCJA_SERWA14       1307
+#define IDC_COMBO_FUNKCJA_SERWA15       1308
+#define IDC_COMBO_FUNKCJA_SERWA16       1309
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -381,7 +397,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1284
+#define _APS_NEXT_CONTROL_VALUE         1286
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
