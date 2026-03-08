@@ -343,6 +343,8 @@
 #define IDC_COMBO_FUNKCJA_SERWA2        1285
 #define IDC_COMBO_FUNKCJA_SERWA3        1286
 #define IDC_COMBO_FUNKCJA_SERWA4        1287
+#define IDC_BUTTON2                     1288
+#define IDC_BUT_NORMALIZUJ              1288
 #define IDC_COMBO_FUNKCJA_SERWA5        1290
 #define IDC_COMBO_FUNKCJA_SERWA6        1291
 #define IDC_COMBO_FUNKCJA_SERWA7        1294
@@ -397,7 +399,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1286
+#define _APS_NEXT_CONTROL_VALUE         1289
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

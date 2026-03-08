@@ -72,6 +72,7 @@ public:
 	uint8_t ZapiszTrybRegulacji(uint8_t *chTrybRegulacji);
 	uint8_t ZbierajEkstremaWejscRC();
 	uint8_t ZapiszEkstremaWejscRC();
+	uint8_t Wy³aczWykonywaniePoleceniaCM4();
 	uint8_t ResetujCM4();
 	uint8_t WstrzymajTelemetrie(uint8_t chPrzerwa);
 

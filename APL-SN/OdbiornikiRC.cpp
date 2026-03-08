@@ -186,6 +186,7 @@ BEGIN_MESSAGE_MAP(OdbiornikiRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA14, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa14)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA15, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa15)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_SERWA16, &OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa16)
+	ON_BN_CLICKED(IDC_BUT_NORMALIZUJ, &OdbiornikiRC::OnBnClickedButNormalizuj)
 END_MESSAGE_MAP()
 
 
@@ -233,28 +234,25 @@ BOOL OdbiornikiRC::OnInitDialog()
 		}
 		else
 			m_bZmodyfikowanoTelemetrie = TRUE;
-
-		//włącz zbieranie ekstremów RC w CM4. W aplikacji dane są tylko w celach poglądowych
-		chErr = getKomunikacja().ZbierajEkstremaWejscRC();
 	}
 
 	//definiuj zakres kanalów
-	m_ctlRC1Kan1.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan2.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan3.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan4.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan5.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan6.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan7.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan8.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan9.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan10.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan11.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan12.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan13.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan14.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan15.SetRange(PPM_MIN, PPM_MAX);
-	m_ctlRC1Kan16.SetRange(PPM_MIN, PPM_MAX);
+	m_ctlRC1Kan1.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan2.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan3.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan4.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan5.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan6.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan7.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan8.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan9.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan10.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan11.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan12.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan13.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan14.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan15.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan16.SetRange(0, ZAKRES_RC_MAX);
 
 	m_ctlSerwo1.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo2.SetRange(PPM_MIN, PPM_MAX);
@@ -409,10 +407,12 @@ BOOL OdbiornikiRC::OnInitDialog()
 	{
 		switch (n)
 		{
-		case 0: strNapis.Format(_T("Wyjście OD1")); break;
-		case 1: strNapis.Format(_T("Wyjście OD2")); break;
-		case 2: strNapis.Format(_T("Mów komunikat 1")); break;
-		case 3: strNapis.Format(_T("Mów komunikat 2")); break;
+		case 0:	strNapis.Format(_T("Nie rób nic")); break;
+		case 1: strNapis.Format(_T("Wyjście OD1")); break;
+		case 2: strNapis.Format(_T("Wyjście OD2")); break;
+		case 3: strNapis.Format(_T("Mów komunikat 1")); break;
+		case 4: strNapis.Format(_T("Mów komunikat 2")); break;
+		default:strNapis.Format(_T("Błędna wartość")); break;
 		}
 		m_ctlFunkcjaKanalu5.InsertString(n, strNapis);
 		m_ctlFunkcjaKanalu6.InsertString(n, strNapis);
@@ -491,8 +491,8 @@ BOOL OdbiornikiRC::OnInitDialog()
 	for (uint8_t n = 0; n < 16; n++)
 	{
 		m_stEkstrema[n].bZmieniono = FALSE;
-		m_stEkstrema[n].sMin = PPM_MAX;
-		m_stEkstrema[n].sMax = PPM_MIN;
+		m_stEkstrema[n].sMin = ZAKRES_RC_MAX;
+		m_stEkstrema[n].sMax = 0;
 	}
 
 	//ustaw napisy okreslające funkcje wyjść RC
@@ -602,7 +602,7 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	for (int n = 0; n < 16; n++)
 	{
 		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
-		if (nWartoscRC < m_stEkstrema[n].sMin)
+		/*if (nWartoscRC < m_stEkstrema[n].sMin)
 		{
 			m_stEkstrema[n].sMin = nWartoscRC;
 			m_stEkstrema[n].bZmieniono = TRUE;
@@ -613,8 +613,11 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 			m_stEkstrema[n].bZmieniono = TRUE;			
 		}
 		//przynajmniej w jednym kanale musi być ustawiony pełen zakres aby zapisało takie nastawy
-		if ((m_stEkstrema[n].sMin < PPM_M90) && (m_stEkstrema[n].sMax > PPM_P90))
-			m_bZmienionoMinMax = TRUE;
+		if ((m_stEkstrema[n].sMin < ZAKRES_RC_MAX / 2) && (m_stEkstrema[n].sMax > ZAKRES_RC_MAX / 2))
+			m_bZmienionoMinMax = TRUE;*/
+
+		m_stEkstrema[n].strMinMax.Format(_T("%d"), nWartoscRC);
+		m_stEkstrema[n].bZmieniono = FALSE;
 	}
 
 	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1]);
@@ -666,7 +669,7 @@ void OdbiornikiRC::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	WstawDaneKanalow();
-	UstawMinMax();
+	//UstawMinMax();
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -1154,4 +1157,42 @@ void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa15()
 void OdbiornikiRC::OnCbnSelchangeComboFunkcjaSerwa16()
 {
 	m_bZmienionoFunkcjeWyjscRC = TRUE;
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku Normalizuje wejście
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::OnBnClickedButNormalizuj()
+{
+	uint8_t chBłąd;
+	int nBłąd;
+	CString strKomunikat;
+
+	//włącz zbieranie ekstremów RC w CM4. W aplikacji dane są tylko w celach poglądowych
+	chBłąd = getKomunikacja().ZbierajEkstremaWejscRC();
+	if (chBłąd != ERR_OK)
+	{
+		strKomunikat.Format(_T("Błąd nr %d włączenia zbierania ekstremów RC"), chBłąd);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		return;
+	}
+	chBłąd = getKomunikacja().WyłaczWykonywaniePoleceniaCM4();	//wyłącza cykliczne polecenie właczenia zbierania ekstremów RC. Zbieranie trwa nadal.
+
+	strKomunikat.Format(_T("Poruszaj wszystkimi drążkami, potencjometrami i przełącznikami do obu wartosci skrajnych\n Gdy zakończysz naciśnij OK"));
+	nBłąd = MessageBoxExW(this->m_hWnd, strKomunikat, _T("Normalizacja wejść RC!"), MB_OK, 0);
+	if (nBłąd == IDOK)
+	{
+		chBłąd = getKomunikacja().ZapiszEkstremaWejscRC();
+		if (chBłąd != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu ekstremów RC"), chBłąd);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			return;
+		}
+	}
+	
 }

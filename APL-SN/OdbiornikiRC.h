@@ -205,4 +205,5 @@ public:
 	afx_msg void OnCbnSelchangeComboFunkcjaSerwa14();
 	afx_msg void OnCbnSelchangeComboFunkcjaSerwa15();
 	afx_msg void OnCbnSelchangeComboFunkcjaSerwa16();
+	afx_msg void OnBnClickedButNormalizuj();
 };

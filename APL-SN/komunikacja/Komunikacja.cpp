@@ -1485,6 +1485,27 @@ uint8_t CKomunikacja::ZapiszEkstremaWejscRC()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie nie robienia niczego, zatrzymuj¹c cykliczne wykonywanie poprzedniego polecenia dla CM4
+// parametry: brak
+// zwraca: kod b³êdu: OK lub odmowa wykonania je¿eli silniki s¹ uzbrojone
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::Wy³aczWykonywaniePoleceniaCM4()
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WYLACZ_POLECENIE_CM4, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+	if (chOdebrano != 2)
+		chErr = ERR_BRAK_POTWIERDZ;
+
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wysy³a polecenie resetu rdzenia CM4, zwykle po zmianie konfiguracji.
 // parametry: brak
 // zwraca: kod b³êdu: OK lub odmowa wykonania je¿eli silniki s¹ uzbrojone
@@ -1522,3 +1543,4 @@ uint8_t CKomunikacja::WstrzymajTelemetrie(uint8_t chPrzerwa)
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_WSTRZYMAJ_TELEMETRIE, chDaneWychodzace, 1, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
+
