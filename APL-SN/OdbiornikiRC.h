@@ -1,23 +1,8 @@
 ﻿#pragma once
 #include "Komunikacja/Komunikacja.h"
+#include "sys_def_wspolny.h"
 #define CZESTOTLIWOSC_ODSWIEZANIA	10	//[Hz]
 
-#define PPM_MIN			1000    //wartość minimalna sygnału -125%
-#define PPM_M100    	1100    //-100%
-#define PPM_M90     	1140    //-90%
-#define PPM_JALOWY  	1200    //obroty jałowe silników
-#define PPM_M75     	1200    //-75%
-#define PPM_M50     	1300    //-50%
-#define PPM_M25     	1400    //-25%
-#define PPM_M20     	1420    //-20%
-#define PPM_NEUTR   	1500    //neutrum 1500us
-#define PPM_P20     	1580    //+20%
-#define PPM_P25     	1600    //+25%
-#define PPM_P50     	1700    //+50%
-#define PPM_P75     	1800    //+75%
-#define PPM_P90     	1860    //+90%
-#define PPM_P100    	1900    //+100%
-#define PPM_MAX			2000    //wartość maksymalna sygnału +125%
 
 //definicje funkcji wyjść RC
 #define FSER_SILNIK1			0	//steruj silnikiem 1
@@ -116,14 +101,10 @@ public:
 	CComboBox m_ctlTypWyjscia8;
 	CComboBox m_ctlTypWyjscia9_16;
 
-	struct {
-		CString strMinMax;
-		uint16_t sMin;
-		uint16_t sMax;
-		BOOL bZmieniono;
-	} m_stEkstrema[16];
+	CString strWejscie[KANALY_ODB_RC];
+	CString strWyjscie[KANALY_SERW];
 	BOOL m_bZmienionoUstawienie;
-	BOOL m_bZmienionoMinMax;
+	//BOOL m_bZmienionoMinMax;
 	BOOL m_bZmienionoKanalDrazkow;
 	BOOL m_bZmienionoFunkcjeKanalow;
 	BOOL m_bZmienionoFunkcjeWyjscRC;

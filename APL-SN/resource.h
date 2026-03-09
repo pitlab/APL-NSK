@@ -343,20 +343,36 @@
 #define IDC_COMBO_FUNKCJA_SERWA2        1285
 #define IDC_COMBO_FUNKCJA_SERWA3        1286
 #define IDC_COMBO_FUNKCJA_SERWA4        1287
-#define IDC_BUTTON2                     1288
 #define IDC_BUT_NORMALIZUJ              1288
+#define IDC_STAT_WY1                    1289
 #define IDC_COMBO_FUNKCJA_SERWA5        1290
 #define IDC_COMBO_FUNKCJA_SERWA6        1291
+#define IDC_STAT_WY2                    1292
+#define IDC_STAT_WY3                    1293
 #define IDC_COMBO_FUNKCJA_SERWA7        1294
 #define IDC_COMBO_FUNKCJA_SERWA8        1295
 #define IDC_COMBO_FUNKCJA_SERWA9        1296
 #define IDC_COMBO_FUNKCJA_SERWA10       1297
 #define IDC_COMBO_FUNKCJA_SERWA11       1298
 #define IDC_COMBO_FUNKCJA_SERWA12       1299
+#define IDC_STAT_WY4                    1300
+#define IDC_STAT_WY5                    1301
+#define IDC_STAT_WY6                    1302
+#define IDC_STAT_WY7                    1303
+#define IDC_STAT_WY8                    1304
+#define IDC_STAT_WY9                    1305
 #define IDC_COMBO_FUNKCJA_SERWA13       1306
 #define IDC_COMBO_FUNKCJA_SERWA14       1307
 #define IDC_COMBO_FUNKCJA_SERWA15       1308
 #define IDC_COMBO_FUNKCJA_SERWA16       1309
+#define IDC_STAT_WY10                   1310
+#define IDC_STAT_WY11                   1311
+#define IDC_STAT_WY12                   1312
+#define IDC_STAT_WY13                   1313
+#define IDC_STAT_WY14                   1314
+#define IDC_STAT_WY15                   1315
+#define IDC_STAT_16                     1316
+#define IDC_STAT_WY16                   1316
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -399,7 +415,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1289
+#define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

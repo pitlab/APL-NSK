@@ -5,7 +5,6 @@
 #include "APL-SN.h"
 #include "OdbiornikiRC.h"
 #include "afxdialogex.h"
-#include "sys_def_wspolny.h"
 #include "konfig_fram.h"
 #include "Errors.h"
 #include "pid_kanaly.h"
@@ -19,7 +18,6 @@ OdbiornikiRC::OdbiornikiRC(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ODBIORNIKI_RC, pParent)
 	, m_bZmienionoUstawienie(FALSE)
 	, m_bZmienionoKanalDrazkow(FALSE)
-	, m_bZmienionoMinMax(FALSE)
 	, m_bZmienionoFunkcjeKanalow(FALSE)
 	, m_bZmienionoFunkcjeWyjscRC(FALSE)
 {
@@ -88,22 +86,40 @@ void OdbiornikiRC::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_RC1, m_ctlOdbiornikRC1);
 	DDX_Control(pDX, IDC_COMBO_RC2, m_ctlOdbiornikRC2);
 
-	DDX_Text(pDX, IDC_STAT_MIN_MAX01, m_stEkstrema[0].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX02, m_stEkstrema[1].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX03, m_stEkstrema[2].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX04, m_stEkstrema[3].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX05, m_stEkstrema[4].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX06, m_stEkstrema[5].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX07, m_stEkstrema[6].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX08, m_stEkstrema[7].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX09, m_stEkstrema[8].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX10, m_stEkstrema[9].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX11, m_stEkstrema[10].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX12, m_stEkstrema[11].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX13, m_stEkstrema[12].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX14, m_stEkstrema[13].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX15, m_stEkstrema[14].strMinMax);
-	DDX_Text(pDX, IDC_STAT_MIN_MAX16, m_stEkstrema[15].strMinMax);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX01, strWejscie[0]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX02, strWejscie[1]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX03, strWejscie[2]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX04, strWejscie[3]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX05, strWejscie[4]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX06, strWejscie[5]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX07, strWejscie[6]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX08, strWejscie[7]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX09, strWejscie[8]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX10, strWejscie[9]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX11, strWejscie[10]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX12, strWejscie[11]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX13, strWejscie[12]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX14, strWejscie[13]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX15, strWejscie[14]);
+	DDX_Text(pDX, IDC_STAT_MIN_MAX16, strWejscie[15]);
+
+	DDX_Text(pDX, IDC_STAT_WY1, strWyjscie[0]);
+	DDX_Text(pDX, IDC_STAT_WY2, strWyjscie[1]);
+	DDX_Text(pDX, IDC_STAT_WY3, strWyjscie[2]);
+	DDX_Text(pDX, IDC_STAT_WY4, strWyjscie[3]);
+	DDX_Text(pDX, IDC_STAT_WY5, strWyjscie[4]);
+	DDX_Text(pDX, IDC_STAT_WY6, strWyjscie[5]);
+	DDX_Text(pDX, IDC_STAT_WY7, strWyjscie[6]);
+	DDX_Text(pDX, IDC_STAT_WY8, strWyjscie[7]);
+	DDX_Text(pDX, IDC_STAT_WY9, strWyjscie[8]);
+	DDX_Text(pDX, IDC_STAT_WY10, strWyjscie[9]);
+	DDX_Text(pDX, IDC_STAT_WY11, strWyjscie[10]);
+	DDX_Text(pDX, IDC_STAT_WY12, strWyjscie[11]);
+	DDX_Text(pDX, IDC_STAT_WY13, strWyjscie[12]);
+	DDX_Text(pDX, IDC_STAT_WY14, strWyjscie[13]);
+	DDX_Text(pDX, IDC_STAT_WY15, strWyjscie[14]);
+	DDX_Text(pDX, IDC_STAT_WY16, strWyjscie[15]);
+
 	DDX_Control(pDX, IDC_COMBO_KAN_PRZE, m_ctlKanalPrzechylenia);
 	DDX_Control(pDX, IDC_COMBO_KAN_POCH1, m_ctlKanalPochylenia);
 	DDX_Control(pDX, IDC_COMBO_KAN_ODCH, m_ctlKanalOdchylenia);
@@ -486,15 +502,6 @@ BOOL OdbiornikiRC::OnInitDialog()
 		m_ctlFunkcjaKanalu16.SetCurSel(chDane[11]);
 	}
 		
-	//inicjuj
-	m_bZmienionoMinMax = FALSE;
-	for (uint8_t n = 0; n < 16; n++)
-	{
-		m_stEkstrema[n].bZmieniono = FALSE;
-		m_stEkstrema[n].sMin = ZAKRES_RC_MAX;
-		m_stEkstrema[n].sMax = 0;
-	}
-
 	//ustaw napisy okreslające funkcje wyjść RC
 	for (int n = FSER_SILNIK1; n <= FSER_SILNIK8; n++)
 	{
@@ -599,26 +606,18 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN16]);
 
 	//aktualizuj wartości min i max
-	for (int n = 0; n < 16; n++)
+	for (int n = 0; n < KANALY_ODB_RC; n++)
 	{
 		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
-		/*if (nWartoscRC < m_stEkstrema[n].sMin)
-		{
-			m_stEkstrema[n].sMin = nWartoscRC;
-			m_stEkstrema[n].bZmieniono = TRUE;
-		}
-		if (nWartoscRC > m_stEkstrema[n].sMax)
-		{
-			m_stEkstrema[n].sMax = nWartoscRC;
-			m_stEkstrema[n].bZmieniono = TRUE;			
-		}
-		//przynajmniej w jednym kanale musi być ustawiony pełen zakres aby zapisało takie nastawy
-		if ((m_stEkstrema[n].sMin < ZAKRES_RC_MAX / 2) && (m_stEkstrema[n].sMax > ZAKRES_RC_MAX / 2))
-			m_bZmienionoMinMax = TRUE;*/
-
-		m_stEkstrema[n].strMinMax.Format(_T("%d"), nWartoscRC);
-		m_stEkstrema[n].bZmieniono = FALSE;
+		strWejscie[n].Format(_T("%d"), nWartoscRC);
 	}
+
+	for (int n = 0; n < KANALY_SERW; n++)
+	{
+		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1 + n];
+		strWyjscie[n].Format(_T("%d"), nWartoscRC);
+	}
+		
 
 	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1]);
 	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO2]);
@@ -638,25 +637,6 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	m_ctlSerwo16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO16]);
 	UpdateData(FALSE);
 	return ERR_OK;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na upływ czasu timera powodująca odświeżenia pasków kanałówRC w oknie
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void OdbiornikiRC::UstawMinMax()
-{
-	for (uint8_t n = 0; n < 16; n++)
-	{
-		if (m_stEkstrema[n].bZmieniono)
-		{
-			m_stEkstrema[n].strMinMax.Format(_T("%d-%d"), m_stEkstrema[n].sMin, m_stEkstrema[n].sMax);
-			m_stEkstrema[n].bZmieniono = FALSE;
-		}
-		UpdateData(FALSE);
-	}	
 }
 
 
@@ -696,17 +676,6 @@ void OdbiornikiRC::OnBnClickedOk()
 		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
 
 		chErr = getKomunikacja().RekonfigurujWeWyRC();	//przeładuj konfigurację
-		if (chErr != ERR_OK)
-		{
-			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
-			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
-			CDialogEx::OnOK();
-		}
-	}
-
-	if (m_bZmienionoMinMax)
-	{
-		chErr = getKomunikacja().ZapiszEkstremaWejscRC();
 		if (chErr != ERR_OK)
 		{
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
@@ -783,7 +752,7 @@ void OdbiornikiRC::OnBnClickedOk()
 	}
 
 	//sprawdź czy była zmiana i czy należy zresetować CM4
-	if (m_bZmienionoUstawienie | m_bZmienionoMinMax | m_bZmienionoKanalDrazkow | m_bZmienionoKanalDrazkow | m_bZmienionoFunkcjeKanalow)
+	if (m_bZmienionoUstawienie | m_bZmienionoKanalDrazkow | m_bZmienionoKanalDrazkow | m_bZmienionoFunkcjeKanalow)
 	{
 		//wyświetl okno z pytaniem czy resetować CM4
 		int nRet = MessageBoxExW(this->m_hWnd, _T("Nastąpiła zmiana konfiguracji. \nCzy wykonać reset rdzenia CM4?"), _T("Potrzebny reset aby zmiana przyniosła efekt"), MB_ICONWARNING + MB_YESNO, 0);
