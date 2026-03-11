@@ -89,6 +89,25 @@ protected:
 	int m_nSzerokoscKamery;
 	int m_nWysokoscKamery;
 
+private:
+	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
+	typedef struct
+	{
+		CRect rOknoWykresu;
+		float fHscroll;
+		float fPoziomZeraLewy;
+		float fPoziomZeraPrawy;
+		float fMinLewy;
+		float fMaxLewy;
+		float fMinPrawy;
+		float fMaxPrawy;
+		float fSkalaX;
+		float fSkalaLewaY;
+		float fSkalaPrawaY;
+		int nIndeksZmiennej;
+		float fStartLegendy;
+	} stKonfigWykresu_t;
+
 public:
 	uint32_t m_nNumerPortuCom;
 	uint32_t m_nTypPolaczenia;	//0=UART, 1=ETH
@@ -97,11 +116,12 @@ public:
 	uint32_t m_nNumerPortuEth;
 	CString m_strAdresIP;
 
-	void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, float fMinZmiennej, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
+	//void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, float fMinZmiennej, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
+	void RysujWykresTelemetrii(stKonfigWykresu_t *stKonfig, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 	void RysujOknoGrupyWykresow(CRect okno, float fZeroL, float fZeroP, float fMinL, float fMaxL, float fMinP, float fMaxP, float fSkalaLewaY, float fSkalaPrawaY, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-private:
-	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
+
+
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
