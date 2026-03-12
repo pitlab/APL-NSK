@@ -304,6 +304,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia1.InsertString(9, _T("DShot300"));		//wyjście DShot300
 	m_ctlTypWyjscia1.InsertString(10, _T("DShot600"));		//wyjście DShot600
 	m_ctlTypWyjscia1.InsertString(11, _T("DShot1200"));		//wyjście DShot1200		
+	m_ctlTypWyjscia1.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia2.InsertString(0, _T("Port I/O PB10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -317,6 +318,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia2.InsertString(9, _T("DShot300"));		//wyjście DShot300
 	m_ctlTypWyjscia2.InsertString(10, _T("DShot600"));		//wyjście DShot600
 	m_ctlTypWyjscia2.InsertString(11, _T("DShot1200"));		//wyjście DShot1200
+	m_ctlTypWyjscia2.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia3.InsertString(0, _T("Port I/O PA15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia3.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -330,6 +332,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia3.InsertString(9, _T("DShot300"));		
 	m_ctlTypWyjscia3.InsertString(10, _T("DShot600"));		
 	m_ctlTypWyjscia3.InsertString(11, _T("DShot1200"));		
+	m_ctlTypWyjscia3.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia4.InsertString(0, _T("Port I/O PB0"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia4.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -343,6 +346,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia4.InsertString(9, _T("DShot300"));
 	m_ctlTypWyjscia4.InsertString(10, _T("DShot600"));
 	m_ctlTypWyjscia4.InsertString(11, _T("DShot1200"));
+	m_ctlTypWyjscia4.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia5.InsertString(0, _T("Port I/O PB1"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia5.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -356,6 +360,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia5.InsertString(9, _T("DShot300"));
 	m_ctlTypWyjscia5.InsertString(10, _T("DShot600"));
 	m_ctlTypWyjscia5.InsertString(11, _T("DShot1200"));
+	m_ctlTypWyjscia5.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia6.InsertString(0, _T("Port I/O PI5"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia6.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -369,19 +374,9 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia6.InsertString(9, _T("DShot300"));
 	m_ctlTypWyjscia6.InsertString(10, _T("DShot600"));
 	m_ctlTypWyjscia6.InsertString(11, _T("DShot1200"));
+	m_ctlTypWyjscia6.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia7.InsertString(0, _T("Port I/O PI10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
-	m_ctlTypWyjscia7.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
-	m_ctlTypWyjscia7.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia7.InsertString(3, _T("-"));				//funkcja alternatywna
-	m_ctlTypWyjscia7.InsertString(4, _T("Serwo1 50Hz"));
-	m_ctlTypWyjscia7.InsertString(5, _T("-"));
-	m_ctlTypWyjscia7.InsertString(6, _T("-"));
-	m_ctlTypWyjscia7.InsertString(7, _T("ESC7 400Hz"));
-	m_ctlTypWyjscia7.InsertString(8, _T("DShot150"));
-	m_ctlTypWyjscia7.InsertString(9, _T("DShot300"));
-	m_ctlTypWyjscia7.InsertString(10, _T("DShot600"));
-	m_ctlTypWyjscia7.InsertString(11, _T("DShot1200"));
 
 	m_ctlTypWyjscia8.InsertString(0, _T("Port I/O PH15"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia8.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -395,6 +390,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	m_ctlTypWyjscia8.InsertString(9, _T("DShot300"));
 	m_ctlTypWyjscia8.InsertString(10, _T("DShot600"));
 	m_ctlTypWyjscia8.InsertString(11, _T("DShot1200"));
+	m_ctlTypWyjscia8.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia9_16.InsertString(0, _T("-"));			//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia9_16.InsertString(1, _T("-"));			//wyjście S-Bus
