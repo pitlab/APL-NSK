@@ -541,6 +541,10 @@ BOOL OdbiornikiRC::OnInitDialog()
 		m_ctlFunkcjaWyjscia16.InsertString(n, strNapis);
 	}
 
+	//włącz lub wyłącz funkcje wyjść
+	for (int n = 0; n < KANALY_SERW; n++)
+		AktywujComboFunkcjiWyjscia(n);
+
 	//odczytaj funkcję wyjścia
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_WYJSC_RC, FAU_FUNKCJA_WY_RC);
 	if (chErr == ERR_OK)
@@ -870,6 +874,7 @@ void OdbiornikiRC::OnCbnSelchangeCombo7()
 void OdbiornikiRC::OnCbnSelchangeCombo8()
 {
 	m_bZmienionoUstawienie = TRUE;
+	AktywujComboFunkcjiWyjscia(8);
 }
 
 
@@ -1160,4 +1165,37 @@ void OdbiornikiRC::OnBnClickedButNormalizuj()
 		}
 	}
 	
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wlącza lub wyłącza na szaro combo box definiujący funkcję wyjścia
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void OdbiornikiRC::AktywujComboFunkcjiWyjscia(int NrWyjscia)
+{
+	switch (NrWyjscia)
+	{
+	case 0: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA1)->EnableWindow((m_ctlTypWyjscia1.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia1.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 1: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA2)->EnableWindow((m_ctlTypWyjscia2.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia2.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 2: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA3)->EnableWindow((m_ctlTypWyjscia3.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia3.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 3: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA4)->EnableWindow((m_ctlTypWyjscia4.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia4.GetCurSel() <= TWY_DSHOT_1200));	break;
+
+	case 4: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA5)->EnableWindow((m_ctlTypWyjscia5.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia5.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 5: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA6)->EnableWindow((m_ctlTypWyjscia6.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia6.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 6: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA7)->EnableWindow((m_ctlTypWyjscia7.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia7.GetCurSel() <= TWY_DSHOT_1200));	break;
+	case 7: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA8)->EnableWindow((m_ctlTypWyjscia8.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia8.GetCurSel() <= TWY_DSHOT_1200));	break;
+
+	case 8:  GetDlgItem(IDC_COMBO_FUNKCJA_SERWA9)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_400HZ));	break;
+	case 9:  GetDlgItem(IDC_COMBO_FUNKCJA_SERWA10)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_200HZ));	break;
+	case 10: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA11)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_100HZ));	break;
+	case 11: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA12)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+
+	case 12: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA12)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+	case 13: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA13)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+	case 14: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA14)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+	case 15: GetDlgItem(IDC_COMBO_FUNKCJA_SERWA15)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+	default: break;
+	}
 }

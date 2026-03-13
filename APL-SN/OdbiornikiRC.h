@@ -30,6 +30,23 @@
 #define FSER_WE_RC15			22
 #define FSER_WE_RC16			23
 
+
+//definicje typów wyjść
+#define TWY_IO					0	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
+#define TWY_SBUS				1	//wyjście S-Bus
+#define TWY_ADC					2	//wejście ADC
+#define TWY_ALTER				3	//funkcja alternatywna
+#define TWY_SERWO_50HZ			4	//wyjście PWM 50Hz typowe dla serw
+#define TWY_PWM_100HZ			5	//wyjście PWM 100Hz
+#define TWY_PWM_200HZ			6	//wyjście PWM 200Hz
+#define TWY_PWM_400HZ			7	//wyjście PWM 400Hz	
+#define TWY_DSHOT_150			8	//wyjście DShot150
+#define TWY_DSHOT_300			9	//wyjście DShot300
+#define TWY_DSHOT_600			10	//wyjście DShot600
+#define TWY_DSHOT_1200			11	//wyjście DShot1200
+#define TWY_WS281X				12 //obsługa programowalnego LED RGB
+// 
+// 
 // Okno dialogowe OdbiornikiRC
 
 class OdbiornikiRC : public CDialogEx
@@ -49,6 +66,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	uint8_t WstawDaneKanalow();
 	void UstawMinMax();
+	void AktywujComboFunkcjiWyjscia(int NrWyjscia);
 	uint16_t m_sBackupOkresuTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	BOOL m_bZmodyfikowanoTelemetrie;
 
