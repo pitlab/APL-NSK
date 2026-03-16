@@ -93,6 +93,7 @@
 #define IDI_ICON1                       343
 #define IDI_POLACZ_ETH                  343
 #define IDD_NAPED_I_STROJENIE           346
+#define IDD_WSKAZNIK_LED                348
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -373,6 +374,22 @@
 #define IDC_STAT_WY15                   1315
 #define IDC_STAT_16                     1316
 #define IDC_STAT_WY16                   1316
+#define IDC_EDIT_LICZBA_LED             1317
+#define IDC_COMBO_ZMIENNA               1318
+#define IDC_EDIT_ZMIENNA_MIN            1319
+#define IDC_EDIT_ZMIENNA_MAX            1320
+#define IDC_SLIDER_SZEROKOSC_PUNKTU     1321
+#define IDC_SLIDER_JASNOSC_TLA          1322
+#define IDC_RADIO_WS2811                1323
+#define IDC_RADIO_WS2813                1324
+#define IDC_EDIT_MIN_CZERWONY           1325
+#define IDC_EDIT_MAX_CZERWONY           1326
+#define IDC_MIN_ZIELONY                 1327
+#define IDC_EDIT_MAX_ZIELONY            1328
+#define IDC_EDITMIN_NIEBIESKI           1329
+#define IDC_EDIT_MAX_NIEBIESKI          1330
+#define IDC_STATIC_SZEROKOSC_PUNKTU     1331
+#define IDC_STATIC_JASNOSC_TLA          1332
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -408,14 +425,16 @@
 #define ID_POLACZ_ETH                   32819
 #define ID_USTAWIENIA_NA                32822
 #define ID_USTAWIENIA_ZAPISZSAMPLEAUDIO 32823
+#define ID_USTAWIENIA_WSKA32824         32824
+#define ID_USTAWIENIA_WSK_LED           32825
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        348
-#define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1317
+#define _APS_NEXT_RESOURCE_VALUE        350
+#define _APS_NEXT_COMMAND_VALUE         32826
+#define _APS_NEXT_CONTROL_VALUE         1333
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
