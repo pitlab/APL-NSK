@@ -380,7 +380,8 @@
 #define IDC_EDIT_ZMIENNA_MIN            1320
 #define IDC_EDIT_ZMIENNA_MAX            1321
 #define IDC_SLIDER_JASNOSC_TLA          1322
-#define IDC_SLIDER_SZER_WSKAZN	        1323
+#define IDC_SLIDER_SZER_WSKAZN          1323
+#define IDC_SLID_SZER_WSKAZN            1323
 #define IDC_EDIT_MIN_CZERWONY           1324
 #define IDC_EDIT_MAX_CZERWONY           1325
 #define IDC_EDIT_MIN_ZIELONY            1326
@@ -390,6 +391,7 @@
 #define IDC_STATIC_SZEROKOSC_WSKAZNIKA  1330
 #define IDC_STATIC_JASNOSC_TLA          1331
 #define IDC_TAB_NR_WSKAZNIKA            1332
+#define IDC_SLIDER1                     1335
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -433,7 +435,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        350
 #define _APS_NEXT_COMMAND_VALUE         32826
-#define _APS_NEXT_CONTROL_VALUE         1335
+#define _APS_NEXT_CONTROL_VALUE         1336
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

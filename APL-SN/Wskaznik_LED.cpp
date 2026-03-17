@@ -23,7 +23,7 @@ Wskaznik_LED::Wskaznik_LED(CWnd* pParent /*=nullptr*/)
 	, m_strMinZmiennej(_T(""))
 	, m_strMaxZmiennej(_T(""))
 	, m_strSzerokoscWskaznika(_T(""))
-	, m_strJasnoscTla(_T(""))
+	, m_strKontrastTla(_T(""))
 {
 
 }
@@ -36,8 +36,8 @@ void Wskaznik_LED::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_LICZBA_LED, m_strLiczbaLED);
-	DDX_Slider(pDX, IDC_SLIDER_SZER_WSKAZN, (int&)m_stWskaznikLED[m_nIndeksWskaznikaLed].chSzerWskaznika);
-	DDX_Slider(pDX, IDC_SLIDER_JASNOSC_TLA, (int&)m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla);
+	//DDX_Slider(pDX, IDC_SLIDER_SZER_WSKAZN, (int&)m_stWskaznikLED[m_nIndeksWskaznikaLed].chSzerWskaznika);
+	//DDX_Slider(pDX, IDC_SLIDER_JASNOSC_TLA, (int&)m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla);
 	DDX_Text(pDX, IDC_EDIT_MIN_CZERWONY, m_strMinCzerwony);
 	DDX_Text(pDX, IDC_EDIT_MAX_CZERWONY, m_strMaxCzerwony);
 	DDX_Text(pDX, IDC_EDIT_MIN_ZIELONY, m_strMinZielony);
@@ -47,12 +47,13 @@ void Wskaznik_LED::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_ZMIENNA, m_ctlZmienna);
 	DDX_Text(pDX, IDC_EDIT_ZMIENNA_MIN, m_strMinZmiennej);
 	DDX_Text(pDX, IDC_EDIT_ZMIENNA_MAX, m_strMaxZmiennej);
-	DDX_Control(pDX, IDC_SLIDER_SZER_WSKAZN, m_ctlSzerokoscWskaznika);
+	DDX_Control(pDX, IDC_SLID_SZER_WSKAZN, m_ctlSzerWskazn);
 	DDX_Control(pDX, IDC_SLIDER_JASNOSC_TLA, m_ctlKontrastTla);
 	DDX_Text(pDX, IDC_STATIC_SZEROKOSC_WSKAZNIKA, m_strSzerokoscWskaznika);
-	DDX_Text(pDX, IDC_STATIC_JASNOSC_TLA, m_strJasnoscTla);
+	DDX_Text(pDX, IDC_STATIC_JASNOSC_TLA, m_strKontrastTla);
 	DDX_Control(pDX, IDC_TAB_NR_WSKAZNIKA, m_ctlIndeksWskaznika);
 	DDX_Control(pDX, IDC_COMBO_TYP_LED, m_ctlTypLed);
+	
 }
 
 
@@ -69,9 +70,9 @@ BEGIN_MESSAGE_MAP(Wskaznik_LED, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_TYP_LED, &Wskaznik_LED::OnCbnSelchangeComboTypLed)
 	ON_EN_CHANGE(IDC_EDIT_ZMIENNA_MIN, &Wskaznik_LED::OnEnChangeEditZmiennaMin)
 	ON_EN_CHANGE(IDC_EDIT_ZMIENNA_MAX, &Wskaznik_LED::OnEnChangeEditZmiennaMax)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_SZER_WSKAZN, &Wskaznik_LED::OnNMCustomdrawSliderSzerWskazn)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_JASNOSC_TLA, &Wskaznik_LED::OnNMCustomdrawSliderJasnoscTla)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_NR_WSKAZNIKA, &Wskaznik_LED::OnTcnSelchangeTabNrWskaznika)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_SZER_WSKAZN, &Wskaznik_LED::OnNMCustomdrawSlidSzerWskazn)
 END_MESSAGE_MAP()
 
 
@@ -90,11 +91,13 @@ BOOL Wskaznik_LED::OnInitDialog()
 	m_ctlZmienna.InsertString(3, _T("BSP.Wysokosc AGL"));
 	m_ctlZmienna.InsertString(4, _T("Napiecie zasilania"));
 
-	m_ctlSzerokoscWskaznika.SetRangeMin(1);
-	m_ctlSzerokoscWskaznika.SetRangeMax(20);
+	m_ctlSzerWskazn.SetRangeMin(1);
+	m_ctlSzerWskazn.SetRangeMax(6);
+	UpdateData(FALSE);
 
 	m_ctlKontrastTla.SetRangeMin(2);
 	m_ctlKontrastTla.SetRangeMax(20);
+	UpdateData(FALSE);
 
 	m_ctlIndeksWskaznika.InsertItem(0, _T("Wskaźnik lewy"));
 	m_ctlIndeksWskaznika.InsertItem(1, _T("Wskaźnik prawy"));
@@ -109,8 +112,8 @@ BOOL Wskaznik_LED::OnInitDialog()
 		m_nTypLed = chDane[0];		
 		m_bBylaZmianaTypuLed = FALSE;
 	}
-	//else
-		//return FALSE;
+	else
+		return FALSE;
 
 	m_ctlTypLed.SetCurSel(m_nTypLed);
 	UpdateData(FALSE);
@@ -127,8 +130,8 @@ BOOL Wskaznik_LED::OnInitDialog()
 			m_stWskaznikLED[n].fMaxZmiennej = fDane[1];
 			m_bBylaZmianaLiczbFloat[n] = FALSE;
 		}
-		//else
-			//return FALSE;
+		else
+			return FALSE;
 
 		chBłąd = getKomunikacja().CzytajU8FRAM(chDane, 10, FAU_WSKLED1_NUM_ZMIENNEJ + n * ROZMIAR_WSKAZNIKA_LED);
 		if (chBłąd == ERR_OK)
@@ -145,13 +148,10 @@ BOOL Wskaznik_LED::OnInitDialog()
 			m_stWskaznikLED[n].chLiczbaLed = chDane[9];
 			m_bBylaZmianaLiczbUint8[n] = FALSE;
 		}
-		//else
-			//return FALSE;
-		
-		m_stWskaznikLED[0].chSzerWskaznika = 3;
-
-		WstawDaneDoKontrolek(m_stWskaznikLED, m_nIndeksWskaznikaLed);			
+		else
+			return FALSE;
 	}
+	WstawDaneDoKontrolek(m_stWskaznikLED, m_nIndeksWskaznikaLed);
 	return TRUE;  
 }
 
@@ -164,8 +164,6 @@ BOOL Wskaznik_LED::OnInitDialog()
 void Wskaznik_LED::WstawDaneDoKontrolek(stWskaznikLED_t *WskLed, int nIndeks)
 {
 	m_strLiczbaLED.Format(_T("%d"), WskLed[nIndeks].chLiczbaLed);
-	m_strSzerokoscWskaznika.Format(_T("%d"), WskLed[nIndeks].chSzerWskaznika);
-	m_strJasnoscTla.Format(_T("% d"), WskLed[nIndeks].chKontrastTla);
 	m_strMinCzerwony.Format(_T("%d"), WskLed[nIndeks].chMinCzer);
 	m_strMaxCzerwony.Format(_T("%d"), WskLed[nIndeks].chMaxCzer);
 	m_strMinZielony.Format(_T("%d"), WskLed[nIndeks].chMinZiel);
@@ -174,10 +172,14 @@ void Wskaznik_LED::WstawDaneDoKontrolek(stWskaznikLED_t *WskLed, int nIndeks)
 	m_strMaxNiebieski.Format(_T("%d"), WskLed[nIndeks].chMaxNieb);
 	m_strMinZmiennej.Format(_T("%.4f"), WskLed[nIndeks].fMinZmiennej);
 	m_strMaxZmiennej.Format(_T("%.4f"), WskLed[nIndeks].fMaxZmiennej);
-
-	m_ctlSzerokoscWskaznika.SetPos(WskLed[nIndeks].chSzerWskaznika);
+	UpdateData(FALSE);
+	m_ctlSzerWskazn.SetPos(WskLed[nIndeks].chSzerWskaznika);
 	m_ctlKontrastTla.SetPos(WskLed[nIndeks].chKontrastTla);
+	UpdateData(FALSE);
 	m_ctlZmienna.SetCurSel(WskLed[nIndeks].chNumZmiennej);
+	UpdateData(FALSE);
+	m_strSzerokoscWskaznika.Format(_T("Szerokość wskaźn: %d"), WskLed[nIndeks].chSzerWskaznika);
+	m_strKontrastTla.Format(_T("Kontrast tła: %d"), WskLed[nIndeks].chKontrastTla);
 	UpdateData(FALSE);
 }
 
@@ -254,7 +256,7 @@ void Wskaznik_LED::OnBnClickedOk()
 void Wskaznik_LED::OnEnChangeEditLiczbaLed()
 {
 	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chLiczbaLed = (int)_wtoi(m_strLiczbaLED);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chLiczbaLed = (uint8_t)(_wtoi(m_strLiczbaLED) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -265,17 +267,16 @@ void Wskaznik_LED::OnEnChangeEditLiczbaLed()
 // Reakcja na przesunięcie suwaka szerokości świecącego punktu
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Wskaznik_LED::OnNMCustomdrawSliderSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult)
+void Wskaznik_LED::OnNMCustomdrawSlidSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	
+
 	UpdateData(TRUE);
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chSzerWskaznika = m_ctlSzerokoscWskaznika.GetPos();
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chSzerWskaznika = (uint8_t)(m_ctlSzerWskazn.GetPos() & 0xFF);
 	m_strSzerokoscWskaznika.Format(_T("Szerokość wskaźn: %d"), m_stWskaznikLED[m_nIndeksWskaznikaLed].chSzerWskaznika);
 	UpdateData(FALSE);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
-	*pResult = 0;
+	* pResult = 0;
 }
 
 
@@ -289,8 +290,8 @@ void Wskaznik_LED::OnNMCustomdrawSliderJasnoscTla(NMHDR* pNMHDR, LRESULT* pResul
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	
 	UpdateData(TRUE);
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla = m_ctlKontrastTla.GetPos();
-	m_strJasnoscTla.Format(_T("Kontrast tła: %d"), m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla = (uint8_t)(m_ctlKontrastTla.GetPos() & 0xFF);
+	m_strKontrastTla.Format(_T("Kontrast tła: %d"), m_stWskaznikLED[m_nIndeksWskaznikaLed].chKontrastTla);
 	UpdateData(FALSE);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	*pResult = 0;
@@ -300,8 +301,8 @@ void Wskaznik_LED::OnNMCustomdrawSliderJasnoscTla(NMHDR* pNMHDR, LRESULT* pResul
 
 void Wskaznik_LED::OnEnChangeEditMinCzerwony()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinCzer = (int)_wtoi(m_strMinCzerwony);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinCzer = (uint8_t)(_wtoi(m_strMinCzerwony) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -309,8 +310,8 @@ void Wskaznik_LED::OnEnChangeEditMinCzerwony()
 
 void Wskaznik_LED::OnEnChangeEditMaxCzerwony()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxCzer = (int)_wtoi(m_strMaxCzerwony);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxCzer = (uint8_t)(_wtoi(m_strMaxCzerwony) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -318,8 +319,8 @@ void Wskaznik_LED::OnEnChangeEditMaxCzerwony()
 
 void Wskaznik_LED::OnEnChangeMinZielony()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinZiel = (int)_wtoi(m_strMinZielony);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinZiel = (uint8_t)(_wtoi(m_strMinZielony) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -327,8 +328,8 @@ void Wskaznik_LED::OnEnChangeMinZielony()
 
 void Wskaznik_LED::OnEnChangeEditMaxZielony()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxZiel = (int)_wtoi(m_strMaxZielony);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxZiel = (uint8_t)(_wtoi(m_strMaxZielony) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -336,8 +337,8 @@ void Wskaznik_LED::OnEnChangeEditMaxZielony()
 
 void Wskaznik_LED::OnEnChangeEditminNiebieski()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinNieb = (int)_wtoi(m_strMinNiebieski);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMinNieb = (uint8_t)(_wtoi(m_strMinNiebieski) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
@@ -345,28 +346,37 @@ void Wskaznik_LED::OnEnChangeEditminNiebieski()
 
 void Wskaznik_LED::OnEnChangeEditMaxNiebieski()
 {
-	UpdateData();
-	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxNieb = (int)_wtoi(m_strMaxNiebieski);
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chMaxNieb = (uint8_t)(_wtoi(m_strMaxNiebieski) & 0xFF);
 	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę comboBox zawerajacej typ zmiennej uzywanej do wizualizacji
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnCbnSelchangeComboZmienna()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
+	UpdateData(TRUE);
+	m_stWskaznikLED[m_nIndeksWskaznikaLed].chNumZmiennej = (uint8_t)(m_ctlZmienna.GetCurSel() & 0xFF);
+	m_bBylaZmianaLiczbUint8[m_nIndeksWskaznikaLed] = TRUE;
+	Invalidate();
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na edycję strongu minimalnej zmiennej
+// Reakcja na edycję stringu minimalnej zmiennej
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnEnChangeEditZmiennaMin()
 {
 
-	UpdateData();
+	UpdateData(TRUE);
+	m_strMinZmiennej.Replace(_T(','), _T('.'));
 	m_stWskaznikLED[m_nIndeksWskaznikaLed].fMinZmiennej = (float)_ttof(m_strMinZmiennej);
 	m_bBylaZmianaLiczbFloat[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
@@ -375,12 +385,13 @@ void Wskaznik_LED::OnEnChangeEditZmiennaMin()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na edycję strongu maksymalnej zmiennej
+// Reakcja na edycję stringu maksymalnej zmiennej
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnEnChangeEditZmiennaMax()
 {
-	UpdateData();
+	UpdateData(TRUE);
+	m_strMaxZmiennej.Replace(_T(','), _T('.'));
 	m_stWskaznikLED[m_nIndeksWskaznikaLed].fMaxZmiennej = (float)_ttof(m_strMaxZmiennej);
 	m_bBylaZmianaLiczbFloat[m_nIndeksWskaznikaLed] = TRUE;
 	Invalidate();
@@ -394,17 +405,24 @@ void Wskaznik_LED::OnEnChangeEditZmiennaMax()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnTcnSelchangeTabNrWskaznika(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	UpdateData();
+	UpdateData(TRUE);
 	m_nIndeksWskaznikaLed = m_ctlIndeksWskaznika.GetCurSel();
 	WstawDaneDoKontrolek(m_stWskaznikLED, m_nIndeksWskaznikaLed);
-	UpdateData(FALSE);	
+	//UpdateData(FALSE);	
 	*pResult = 0;
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę ComboBox z typem LED-ów
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnCbnSelchangeComboTypLed()
 {
-	UpdateData();
+	UpdateData(TRUE);
 	m_nTypLed = m_ctlTypLed.GetCurSel();	
 	m_bBylaZmianaTypuLed = TRUE;
 }
+
+

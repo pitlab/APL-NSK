@@ -532,8 +532,8 @@ void CAPLSNApp::OnUstawieniaWskLed()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaWskLed(CCmdUI* pCmdUI)
 {
-	//if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
-	//else
-		//pCmdUI->Enable(FALSE);
+	else
+		pCmdUI->Enable(FALSE);
 }

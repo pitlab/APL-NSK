@@ -56,7 +56,7 @@ public:
 	CComboBox m_ctlTypLed;
 	CString m_strMinZmiennej;
 	CString m_strMaxZmiennej;
-	CSliderCtrl m_ctlSzerokoscWskaznika;
+	CSliderCtrl m_ctlSzerWskazn;
 	CSliderCtrl m_ctlKontrastTla;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnChangeEditLiczbaLed();
@@ -72,11 +72,13 @@ public:
 	afx_msg void OnNMCustomdrawSliderSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSliderJasnoscTla(NMHDR* pNMHDR, LRESULT* pResult);
 	CString m_strSzerokoscWskaznika;
-	CString m_strJasnoscTla;
+	CString m_strKontrastTla;
 	stWskaznikLED_t m_stWskaznikLED[LICZBA_WSKAZNIKOW_LED];
 	CTabCtrl m_ctlIndeksWskaznika;
 	int m_nIndeksWskaznikaLed;
 	afx_msg void OnTcnSelchangeTabNrWskaznika(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnCbnSelchangeComboTypLed();
 	int m_nTypLed;	
+	
+	afx_msg void OnNMCustomdrawSlidSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult);
 };
