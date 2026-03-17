@@ -17,6 +17,7 @@
 #include "OdbiornikiRC.h"
 #include "NapedStrojenie.h"
 #include "UstawieniaKameryDlg.h"
+#include "Wskaznik_LED.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,6 +50,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUpdateUstawParkamery)
 	ON_COMMAND(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUstawieniaZapiszsampleaudio)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUpdateUstawieniaZapiszSampleAudio)
+	ON_COMMAND(ID_USTAWIENIA_WSK_LED, &CAPLSNApp::OnUstawieniaWskLed)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WSK_LED, &CAPLSNApp::OnUpdateUstawieniaWskLed)
 END_MESSAGE_MAP()
 
 
@@ -507,4 +510,30 @@ void CAPLSNApp::OnUpdateUstawieniaZapiszSampleAudio(CCmdUI* pCmdUI)
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Okno dialogowe konfiguracji LEDów WS281x
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaWskLed()
+{
+	Wskaznik_LED dlg;
+	dlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Wskaźnik LED...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaWskLed(CCmdUI* pCmdUI)
+{
+	//if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	//else
+		//pCmdUI->Enable(FALSE);
 }
