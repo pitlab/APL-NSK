@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "konfig_fram.h"
 
 // Okno dialogowe Wskaznik_LED
 
@@ -11,6 +11,22 @@ public:
 	Wskaznik_LED(CWnd* pParent = nullptr);   // konstruktor standardowy
 	virtual ~Wskaznik_LED();
 
+	typedef struct
+	{
+		float fMinZmiennej;
+		float fMaxZmiennej;
+		uint8_t chNumZmiennej;
+		uint8_t chSzerWskaznika;
+		uint8_t chKontrastTla;
+		uint8_t chMinCzer;
+		uint8_t chMaxCzer;
+		uint8_t chMinZiel;
+		uint8_t chMaxZiel;
+		uint8_t chMinNieb;
+		uint8_t chMaxNieb;
+		uint8_t chLiczbaLed;
+	} stWskaznikLED_t;
+
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_WSKAZNIK_LED };
@@ -21,21 +37,15 @@ protected:
 
 
 private:
-	BOOL m_bBylaZmianaLiczbyLed;
-	BOOL m_bBylaZmianaKolorow;
+	BOOL m_bBylaZmianaLiczbFloat[LICZBA_WSKAZNIKOW_LED];
+	BOOL m_bBylaZmianaLiczbUint8[LICZBA_WSKAZNIKOW_LED];
+	BOOL m_bBylaZmianaTypuLed;
+	void WstawDaneDoKontrolek(stWskaznikLED_t *WskLed, int nIndeks);
 
 	DECLARE_MESSAGE_MAP()
 public:
+	virtual BOOL OnInitDialog();
 	CString m_strLiczbaLED;
-	int m_nSzerokoscPunktu;
-	int m_nJasnoscTla;
-	int m_nLiczbaLED;
-	int m_nMinCzerwony;
-	int m_nMaxCzerwony;
-	int m_nMinZielony;
-	int m_nMaxZielony;
-	int m_nMinNiebieski;
-	int m_nMaxNiebieski;
 	CString m_strMinCzerwony;
 	CString m_strMaxCzerwony;
 	CString m_strMinZielony;
@@ -43,14 +53,13 @@ public:
 	CString m_strMinNiebieski;
 	CString m_strMaxNiebieski;
 	CComboBox m_ctlZmienna;
+	CComboBox m_ctlTypLed;
 	CString m_strMinZmiennej;
 	CString m_strMaxZmiennej;
+	CSliderCtrl m_ctlSzerokoscWskaznika;
+	CSliderCtrl m_ctlKontrastTla;
 	afx_msg void OnBnClickedOk();
-	virtual BOOL OnInitDialog();
-	CSliderCtrl m_ctlSzerokoscPunktu;
-	CSliderCtrl m_ctlJasnoscTla;
 	afx_msg void OnEnChangeEditLiczbaLed();
-	afx_msg void OnNMCustomdrawSlider1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditMinCzerwony();
 	afx_msg void OnEnChangeEditMaxCzerwony();
 	afx_msg void OnEnChangeMinZielony();
@@ -60,8 +69,14 @@ public:
 	afx_msg void OnCbnSelchangeComboZmienna();
 	afx_msg void OnEnChangeEditZmiennaMin();
 	afx_msg void OnEnChangeEditZmiennaMax();
-	afx_msg void OnNMCustomdrawSliderSzerokoscPunktu(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSliderSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSliderJasnoscTla(NMHDR* pNMHDR, LRESULT* pResult);
-	CString m_strSzerokoscPunktu;
+	CString m_strSzerokoscWskaznika;
 	CString m_strJasnoscTla;
+	stWskaznikLED_t m_stWskaznikLED[LICZBA_WSKAZNIKOW_LED];
+	CTabCtrl m_ctlIndeksWskaznika;
+	int m_nIndeksWskaznikaLed;
+	afx_msg void OnTcnSelchangeTabNrWskaznika(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnCbnSelchangeComboTypLed();
+	int m_nTypLed;	
 };
