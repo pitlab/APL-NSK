@@ -90,14 +90,17 @@ BOOL Wskaznik_LED::OnInitDialog()
 	m_ctlZmienna.InsertString(1, _T("BSP.Przechylenie"));
 	m_ctlZmienna.InsertString(2, _T("BSP.Odchylenie"));
 	m_ctlZmienna.InsertString(3, _T("BSP.Wysokosc AGL"));
-	m_ctlZmienna.InsertString(4, _T("Napiecie baterii"));
+	m_ctlZmienna.InsertString(4, _T("BSP.Wysokosc GPS"));
+	m_ctlZmienna.InsertString(5, _T("BSP.Prędkość IAS"));
+	m_ctlZmienna.InsertString(6, _T("BSP.Prędkość GPS"));
+	m_ctlZmienna.InsertString(7, _T("Napiecie baterii"));
 
 	m_ctlSzerWskazn.SetRangeMin(1);
-	m_ctlSzerWskazn.SetRangeMax(6);
+	m_ctlSzerWskazn.SetRangeMax(8);
 	UpdateData(FALSE);
 
-	m_ctlKontrastTla.SetRangeMin(2);
-	m_ctlKontrastTla.SetRangeMax(20);
+	m_ctlKontrastTla.SetRangeMin(5);
+	m_ctlKontrastTla.SetRangeMax(30);
 	UpdateData(FALSE);
 
 	m_ctlIndeksWskaznika.InsertItem(0, _T("Wskaźnik lewy"));
