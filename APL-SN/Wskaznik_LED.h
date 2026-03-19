@@ -81,4 +81,5 @@ public:
 	int m_nTypLed;	
 	
 	afx_msg void OnNMCustomdrawSlidSzerWskazn(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedButWyslij();
 };

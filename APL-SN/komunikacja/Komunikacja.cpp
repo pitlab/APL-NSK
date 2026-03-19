@@ -1544,3 +1544,19 @@ uint8_t CKomunikacja::WstrzymajTelemetrie(uint8_t chPrzerwa)
 	return chErr;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wysy³a polecenie do CM4 prze³adowania konfigurcji wskaŸników LED po zmianie konfiguracji
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::PrzeladujWskaznikiLed()
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_PRZELADUJ_WSKAZN_LED, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}

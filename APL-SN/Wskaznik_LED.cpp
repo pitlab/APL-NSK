@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(Wskaznik_LED, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_JASNOSC_TLA, &Wskaznik_LED::OnNMCustomdrawSliderJasnoscTla)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_NR_WSKAZNIKA, &Wskaznik_LED::OnTcnSelchangeTabNrWskaznika)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_SZER_WSKAZN, &Wskaznik_LED::OnNMCustomdrawSlidSzerWskazn)
+	ON_BN_CLICKED(IDC_BUT_WYSLIJ, &Wskaznik_LED::OnBnClickedButWyslij)
 END_MESSAGE_MAP()
 
 
@@ -89,7 +90,7 @@ BOOL Wskaznik_LED::OnInitDialog()
 	m_ctlZmienna.InsertString(1, _T("BSP.Przechylenie"));
 	m_ctlZmienna.InsertString(2, _T("BSP.Odchylenie"));
 	m_ctlZmienna.InsertString(3, _T("BSP.Wysokosc AGL"));
-	m_ctlZmienna.InsertString(4, _T("Napiecie zasilania"));
+	m_ctlZmienna.InsertString(4, _T("Napiecie baterii"));
 
 	m_ctlSzerWskazn.SetRangeMin(1);
 	m_ctlSzerWskazn.SetRangeMax(6);
@@ -191,6 +192,18 @@ void Wskaznik_LED::WstawDaneDoKontrolek(stWskaznikLED_t *WskLed, int nIndeks)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void Wskaznik_LED::OnBnClickedOk()
 {
+	OnBnClickedButWyslij();	//zapisz i przeładuj konfigurację	
+	CDialogEx::OnOK();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku wyślij. Zapisuje konfigurację wskaźników do FRAM i przeładowuje dane do zmiennych roboczych
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void Wskaznik_LED::OnBnClickedButWyslij()
+{
 	uint8_t chBłąd;
 	uint8_t chDane[ROZMIAR_WSKAZNIKA_LED - 8];
 	float fDane[2];
@@ -244,7 +257,43 @@ void Wskaznik_LED::OnBnClickedOk()
 			}
 		}
 	}
-	CDialogEx::OnOK();
+
+	//jeżeli cokolwiek uległo zmianie to sprowadź  to do jednego bitu: m_bBylaZmianaTypuLed, resztę deaktywuj
+	for (int n = 0; n < LICZBA_WSKAZNIKOW_LED; n++)
+	{
+		if (m_bBylaZmianaLiczbUint8[n])
+		{
+			m_bBylaZmianaTypuLed = TRUE;
+			m_bBylaZmianaLiczbUint8[n] = FALSE;
+		}
+		if (m_bBylaZmianaLiczbFloat[n])
+		{
+			m_bBylaZmianaTypuLed = TRUE;
+			m_bBylaZmianaLiczbFloat[n] = FALSE;
+		}
+	}
+
+	//przeaduj konfigurację jeżeli była zmiana
+	if (m_bBylaZmianaTypuLed)
+	{
+		m_bBylaZmianaTypuLed = FALSE;
+		chBłąd = getKomunikacja().PrzeladujWskaznikiLed();
+		if (chBłąd)
+		{
+			strKomunikat.Format(_T("Błąd nr %d przeładowania konfiguracji"), chBłąd);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+
+		//ponieważ polecenie dla CM4 jest wykonywane okresowo więc zakończ go poleceniem neutralnym
+		chBłąd = getKomunikacja().WyłaczWykonywaniePoleceniaCM4();
+		if (chBłąd)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zatrzymania polecenie CM4"), chBłąd);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
+		}
+	}
 }
 
 
@@ -424,5 +473,6 @@ void Wskaznik_LED::OnCbnSelchangeComboTypLed()
 	m_nTypLed = m_ctlTypLed.GetCurSel();	
 	m_bBylaZmianaTypuLed = TRUE;
 }
+
 
 

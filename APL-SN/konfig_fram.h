@@ -126,6 +126,8 @@
 #define FAU_WSKLED2_MAX_NIEB		FAU_WSKLED2+16	//1U definiuje poziom składowej niebieskiej na końcu skali1
 #define FAU_WSKLED2_LICZBA_LED		FAU_WSKLED2+17	//1U liczba LED-ów z których zbudowany jest wskaźnik
 
+//#define FAU_WSKLED3			FAU_WSKLED2 + ROZMIAR_WSKAZNIKA_LED
+//#define FAU_WSKLED3_NUM_ZMIENNEJ	FAU_WSKLED3+8	//1U indeks wizualizowanej zmiennej 2
 #define FAU_				FAU_WSKLED1 + LICZBA_WSKAZNIKOW_LED * ROZMIAR_WSKAZNIKA_LED
 
 

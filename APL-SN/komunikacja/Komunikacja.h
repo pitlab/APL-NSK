@@ -75,6 +75,7 @@ public:
 	uint8_t Wy³aczWykonywaniePoleceniaCM4();
 	uint8_t ResetujCM4();
 	uint8_t WstrzymajTelemetrie(uint8_t chPrzerwa);
+	uint8_t PrzeladujWskaznikiLed();
 
 	Roj m_cRoj;
 	Wron m_cWron;
