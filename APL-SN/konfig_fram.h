@@ -84,12 +84,6 @@
 #define FAU_VOLT_DROP_COMP  0x031E		//4F współczynnik kompensacji spadku napięcia pakietu
 #define FAU_LANDING_SPD     0x0322		//4F prędkość lądowania
 
-
-#define FAU_LOW_VOLT_WARN   0x0306  	//4F próg ostrzezenia o niskim napięciu
-#define FAU_LOW_VOLT_ALARM  0x030A 		//4F próg alarmu niskiego napięcia
-#define FAU_VOLT_DROP_COMP  0x030E		//4F współczynnik kompensacji spadku napięcia pakietu
-#define FAU_LANDING_SPD     0x0312		//4F prędkość lądowania
-
 //wzmocnienia drążków aparatury dla poszczególnych trybów pracy regulatorów
 #define FAU_ZADANA_AKRO     0x0316		//4x4F wartość zadana z drążków aparatury dla regulatora Akro
 #define FAU_ZADANA_STAB     0x0326		//4x4F wartość zadana z drążków aparatury dla regulatora Stab
