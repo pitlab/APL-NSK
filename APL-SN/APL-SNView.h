@@ -107,6 +107,7 @@ private:
 		float fSkalaLewaY;
 		float fSkalaPrawaY;
 		float fStartLegendy;
+		BOOL bWykresPrzechodziPrzezZero;
 	} stKonfigWykresu_t;
 
 public:

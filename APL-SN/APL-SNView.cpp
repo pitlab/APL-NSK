@@ -319,9 +319,16 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				
 				//czy zero jest na wykresie?
 				if ((stKonfig.fMinLewy < 0.0f) && (stKonfig.fMaxLewy > 0.0f))
+				{
 					stKonfig.fPoziomZeraLewy = stKonfig.fPoziomZeraPrawy = (float)stKonfig.rOknoWykresu.bottom - stKonfig.fSkalaLewaY * (float)fabsf(stKonfig.fMinLewy);
+					stKonfig.bWykresPrzechodziPrzezZero = TRUE;
+				}
 				else
+				{
 					stKonfig.fPoziomZeraLewy = stKonfig.fPoziomZeraPrawy = (float)stKonfig.rOknoWykresu.bottom;
+					stKonfig.bWykresPrzechodziPrzezZero = FALSE;
+				}
+
 				for (int w = 0; w < nLiczbaWykresow; w++)
 				{
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
@@ -359,22 +366,30 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 							stKonfig.fMaxWykresu = pDoc->m_vLog[nIdZmiennej].fMax;
 					}
 						
-					fRozpietoscWykresu = (fabsf(stKonfig.fMinLewy) + fabsf(stKonfig.fMaxLewy));
-					if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
-						fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
-
-					stKonfig.fSkalaLewaY = stKonfig.fSkalaPrawaY = (stKonfig.rOknoWykresu.bottom - stKonfig.rOknoWykresu.top) / fRozpietoscWykresu;
-					stKonfig.fPoziomZeraLewy = (float)stKonfig.rOknoWykresu.bottom - (stKonfig.fSkalaLewaY * (float)fabsf(stKonfig.fMinLewy));
+					
 					if (w == 0)	//skala lewa dla wykresu 1
 					{
 						stKonfig.fMinLewy = stKonfig.fMinWykresu;
 						stKonfig.fMaxLewy = stKonfig.fMaxWykresu;
+
+						fRozpietoscWykresu = (fabsf(stKonfig.fMinLewy) + fabsf(stKonfig.fMaxLewy));
+						if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
+							fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
+						stKonfig.fSkalaLewaY = (stKonfig.rOknoWykresu.bottom - stKonfig.rOknoWykresu.top) / fRozpietoscWykresu;
+						stKonfig.fPoziomZeraLewy = (float)stKonfig.rOknoWykresu.bottom - (stKonfig.fSkalaLewaY * (float)fabsf(stKonfig.fMinLewy));
+						
 					}
 					if (w == 1)	//skala prawa dla wykresu 2
 					{
 						stKonfig.fMinPrawy = stKonfig.fMinWykresu;
 						stKonfig.fMaxPrawy = stKonfig.fMaxWykresu;
-					}					
+						fRozpietoscWykresu = (fabsf(stKonfig.fMinPrawy) + fabsf(stKonfig.fMaxPrawy));
+						if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
+							fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
+						stKonfig.fSkalaPrawaY = (stKonfig.rOknoWykresu.bottom - stKonfig.rOknoWykresu.top) / fRozpietoscWykresu;
+						stKonfig.fPoziomZeraPrawy = (float)stKonfig.rOknoWykresu.bottom - (stKonfig.fSkalaPrawaY * (float)fabsf(stKonfig.fMinPrawy));
+					}	
+
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
 					{
@@ -487,16 +502,14 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t *stKonfig, std::vector<
 	if (!fZmienna && nIndexRamki)
 		return;
 	
-
 	//Znajdź najwiekszy rozmiar wykresu potrzebny do ustawienia poziomego scrollbara
 	if (vDaneTele->size() > m_nIloscDanychWykresu)
 		m_nIloscDanychWykresu = (int)vDaneTele->size();
 
-	//if (m_bWykresZawieraZero)
-		//pktfPoczatek.y = fVzera - (fZmienna * fSkalaY);
-	//else
-		//pktfPoczatek.y = stKonfig->fPoziomZeraLewy - ((fZmienna - stKonfig->fMinLewy) * stKonfig->fSkalaLewaY);
-	pktfPoczatek.y = stKonfig->fPoziomZeraLewy - ((fZmienna) * stKonfig->fSkalaLewaY);
+	if (stKonfig->bWykresPrzechodziPrzezZero)
+		pktfPoczatek.y = stKonfig->fPoziomZeraLewy - (fZmienna * stKonfig->fSkalaLewaY);
+	else
+		pktfPoczatek.y = stKonfig->fPoziomZeraLewy - ((fZmienna - stKonfig->fMinLewy) * stKonfig->fSkalaLewaY);
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
@@ -504,8 +517,11 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t *stKonfig, std::vector<
 		if (fZmienna)
 		{
 			pktfKoniec.x += stKonfig->fSkalaX;
-			//pktfKoniec.y = stKonfig->fPoziomZeraLewy - ((fZmienna - stKonfig->fMinLewy) * stKonfig->fSkalaLewaY);
-			pktfKoniec.y = stKonfig->fPoziomZeraLewy - ((fZmienna) * stKonfig->fSkalaLewaY);
+			if (stKonfig->bWykresPrzechodziPrzezZero)
+				pktfKoniec.y = stKonfig->fPoziomZeraLewy - (fZmienna * stKonfig->fSkalaLewaY);
+			else
+				pktfKoniec.y = stKonfig->fPoziomZeraLewy - ((fZmienna - stKonfig->fMinLewy) * stKonfig->fSkalaLewaY);
+
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
 			pktfPoczatek = pktfKoniec;
 		}
