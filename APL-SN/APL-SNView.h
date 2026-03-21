@@ -122,6 +122,7 @@ private:
 		float fSkalaY;
 		float fStartLegendy;
 		BOOL bWykresPrzechodziPrzezZero;
+		BOOL bStronaPrawa;	//0=wykres ze skalą po lewej, 1=wykres ze skalą po prawej
 	} stKonfigWykresu_t;
 
 public:
