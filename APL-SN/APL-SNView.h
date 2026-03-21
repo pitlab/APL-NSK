@@ -12,7 +12,8 @@
 #include <memory>
 
 #define MIEJSCE_MIEDZY_WYKRESAMI	8
-#define MIEJSCE_PRZED_WYKRESEM		40
+//#define MIEJSCE_PRZED_WYKRESEM		40
+#define MIEJSCE_NA_LEGENDE			40
 #define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 40
 #define MIN_POZPIETOSC_WYKRESU		0.001f
 
@@ -108,6 +109,19 @@ private:
 		float fSkalaPrawaY;
 		float fStartLegendy;
 		BOOL bWykresPrzechodziPrzezZero;
+	} stKonfigWykresu2_t;
+
+	typedef struct
+	{
+		CRect rOknoWykresu;
+		float fHscroll;
+		float fPoziomZera;
+		float fMinWykresu;
+		float fMaxWykresu;
+		float fSkalaX;
+		float fSkalaY;
+		float fStartLegendy;
+		BOOL bWykresPrzechodziPrzezZero;
 	} stKonfigWykresu_t;
 
 public:
@@ -118,13 +132,9 @@ public:
 	uint32_t m_nNumerPortuEth;
 	CString m_strAdresIP;
 
-	//void RysujWykresTelemetrii(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, float fMinZmiennej, std::vector<stTelemetria_t> *vRamkaTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush, float *fStartLegendy);
 	void RysujWykresTelemetrii(stKonfigWykresu_t *stKonfig, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
-	//void RysujOknoGrupyWykresow(CRect okno, float fZeroL, float fZeroP, float fMinL, float fMaxL, float fMinP, float fMaxP, float fSkalaLewaY, float fSkalaPrawaY, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfig, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-
-
+	void RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfigWykresu_t* stKonfigPrawy, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 
 // Wygenerowano funkcje mapy komunikatów
 protected:
