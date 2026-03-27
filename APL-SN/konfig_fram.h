@@ -69,7 +69,8 @@
 //12 regulatorów zajmuje 336 bajtów - 0x180
 #define FAU_TRYB_REG	    0x0280		//4*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków
 #define FAU_KAN_DRAZKA_RC	0x0286		//4*1U Numer kanału przypisany do funkcji drążka aparatury: przechylenia, pochylenia, odchylenia i wysokości
-#define FAU_FUNKCJA_KAN_RC	0x028A		//12*1U Numer funkcji przypisanej do kanału RC (5..16)
+//#define FAU_FUNKCJA_KAN_RC	0x028A		//12*1U Numer funkcji przypisanej do kanału RC (5..16)
+//wolne 12 bajtów
 
 //konfiguracja odbiorników RC i wyjść serw/ESC zdefiniowane w sys_def_wspolnych.h
 #define FAU_KONF_ODB_RC		0x0300		//1U konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus
@@ -123,7 +124,10 @@
 //#define FAU_WSKLED3			FAU_WSKLED2 + ROZMIAR_WSKAZNIKA_LED
 //#define FAU_WSKLED3_NUM_ZMIENNEJ	FAU_WSKLED3+8	//1U indeks wizualizowanej zmiennej 2
 #define FAU_				FAU_WSKLED1 + LICZBA_WSKAZNIKOW_LED * ROZMIAR_WSKAZNIKA_LED
+//miejsce na trzeci wskaźnik
 
+#define FAU_FUNKCJA_MIN_KAN_RC		0x036C		//12*1U Numer funkcji przypisanej do kanału RC (5..16) przełączonego na minimum
+#define FAU_FUNKCJA_MAX_KAN_RC		0x0378		//12*1U Numer funkcji przypisanej do kanału RC (5..16) przełączonego na maksimum
 
 
 #define FA_SYS_VAR	    	0x0400	    //zmienne systemowe i dynamiczne

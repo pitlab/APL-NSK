@@ -94,6 +94,7 @@
 #define IDI_POLACZ_ETH                  343
 #define IDD_NAPED_I_STROJENIE           346
 #define IDD_WSKAZNIK_LED                348
+#define IDD_PARAMETRY_FFT               350
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -392,6 +393,17 @@
 #define IDC_STATIC_JASNOSC_TLA          1331
 #define IDC_TAB_NR_WSKAZNIKA            1332
 #define IDC_BUT_WYSLIJ                  1336
+#define IDC_SLID_ROZDZIELCZOSC_FFT      1337
+#define IDC_STAT_ROZDZIELCZOSC_FFT      1338
+#define IDC_CHECK_SILNIK2               1341
+#define IDC_CHECK_SILNIK4               1342
+#define IDC_CHECK_SILNIK5               1343
+#define IDC_CHECK_SILNIK3               1344
+#define IDC_CHECK_SILNIK6               1345
+#define IDC_CHECK_SILNIK1               1346
+#define IDC_EDIT2                       1347
+#define IDC_EDIT_WYSTEROWANIE           1347
+#define IDC_COMBO_RODZAJ_OKNA           1351
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -428,14 +440,15 @@
 #define ID_USTAWIENIA_NA                32822
 #define ID_USTAWIENIA_ZAPISZSAMPLEAUDIO 32823
 #define ID_USTAWIENIA_WSK_LED           32824
+#define ID_USTAWIENIA_KONFIGURACJAFFT   32826
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        350
-#define _APS_NEXT_COMMAND_VALUE         32826
-#define _APS_NEXT_CONTROL_VALUE         1337
+#define _APS_NEXT_RESOURCE_VALUE        352
+#define _APS_NEXT_COMMAND_VALUE         32827
+#define _APS_NEXT_CONTROL_VALUE         1352
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

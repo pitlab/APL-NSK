@@ -18,6 +18,7 @@
 #include "NapedStrojenie.h"
 #include "UstawieniaKameryDlg.h"
 #include "Wskaznik_LED.h"
+#include "KonfiguracjaFFT.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -52,6 +53,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUpdateUstawieniaZapiszSampleAudio)
 	ON_COMMAND(ID_USTAWIENIA_WSK_LED, &CAPLSNApp::OnUstawieniaWskLed)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WSK_LED, &CAPLSNApp::OnUpdateUstawieniaWskLed)
+	ON_COMMAND(ID_USTAWIENIA_KONFIGURACJAFFT, &CAPLSNApp::OnUstawieniaKonfiguracjafft)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_KONFIGURACJAFFT, &CAPLSNApp::OnUpdateUstawieniaKonfiguracjafft)
 END_MESSAGE_MAP()
 
 
@@ -531,6 +534,32 @@ void CAPLSNApp::OnUstawieniaWskLed()
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaWskLed(CCmdUI* pCmdUI)
+{
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Okno dialogowe konfiguracji FFT
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaKonfiguracjafft()
+{
+	KonfiguracjaFFT dlg;
+	dlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Konfiguracja FFT...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaKonfiguracjafft(CCmdUI* pCmdUI)
 {
 	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);

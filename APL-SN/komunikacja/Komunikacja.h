@@ -76,6 +76,10 @@ public:
 	uint8_t ResetujCM4();
 	uint8_t WstrzymajTelemetrie(uint8_t chPrzerwa);
 	uint8_t PrzeladujWskaznikiLed();
+	uint8_t CzytajParametryFFT(uint8_t *chWykladnikPotegi, uint8_t *chRodzajOkna, uint8_t *chAktywnSilniki, uint16_t *sMaxWysterowanie);
+	uint8_t ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRodzajOkna, uint8_t chAktywnSilniki, uint16_t sMaxWysterowanie);
+	uint8_t CzytajWynikiFFT(uint8_t chTypZmiennej, uint16_t sIndeksWyniku, uint8_t chIndeksPomiaru, float* fWyniki, uint8_t chRozmiar);
+
 
 	Roj m_cRoj;
 	Wron m_cWron;

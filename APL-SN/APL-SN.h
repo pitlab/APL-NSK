@@ -64,6 +64,8 @@ public:
 	afx_msg void OnUpdateUstawieniaZapiszSampleAudio(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaWskLed();
 	afx_msg void OnUpdateUstawieniaWskLed(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaKonfiguracjafft();
+	afx_msg void OnUpdateUstawieniaKonfiguracjafft(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

@@ -45,6 +45,16 @@
 #define TWY_DSHOT_600			10	//wyjście DShot600
 #define TWY_DSHOT_1200			11	//wyjście DShot1200
 #define TWY_WS281X				12 //obsługa programowalnego LED RGB
+
+//definicje funkcji uruchamianych rozszerzonymi kanałami RC przechowywane w zmiennej chFunkcjaMinKanaluRC[] i chFunkcjaMaxKanaluRC[]
+#define FRC_NIE_TOB_NIC			0
+#define FRC_WLACZ_OD1			1	//aktywuj wyjście otwarty dren 1
+#define FRC_WLACZ_OD2			2	//aktywuj wyjście otwarty dren 2
+#define FRC_MOW_KOMUNIKAT1		3	//mów komunikat 1
+#define FRC_MOW_KOMUNIKAT2		4
+#define FRC_MOW_KOMUNIKAT3		5
+#define LICZBA_FUNKCJI_RC		6	//liczba dostępnych funkcji
+
 // 
 // 
 // Okno dialogowe OdbiornikiRC

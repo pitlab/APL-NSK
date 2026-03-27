@@ -1560,3 +1560,99 @@ uint8_t CKomunikacja::PrzeladujWskaznikiLed()
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_PRZELADUJ_WSKAZN_LED, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje konfiguracjê FFT
+// parametry: 
+//  *chWykladnikPotegi - liczba 2 do tej potêgi tworzy rozmiar FFT
+//  *chRodzajOkna - indeks rodzaju okna filtrujacego dane
+//  *chAktywnSilniki - pole bitowe definiujace które silniki bêd¹ aktywne w trakcie testu
+//  *sMaxWysterowanie - maksymalna wartoœæ do jakiej wysterowane bêd¹ silniki
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajParametryFFT(uint8_t *chWykladnikPotegi, uint8_t *chRodzajOkna, uint8_t *chAktywnSilniki, uint16_t *sMaxWysterowanie)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[2];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_PARAMETRY_FFT, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano == 5))
+	{
+		*chWykladnikPotegi = chDanePrzychodzace[0];
+		*chRodzajOkna = chDanePrzychodzace[1];
+		*chAktywnSilniki = chDanePrzychodzace[2];
+		m_unia8_32.dane8[0] = chDanePrzychodzace[3];
+		m_unia8_32.dane8[1] = chDanePrzychodzace[4];
+		*sMaxWysterowanie = m_unia8_32.dane16[0];
+	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje konfiguracjê FFT
+// parametry: 
+//  chWykladnikPotegi - liczba 2 do tej potêgi tworzy rozmiar FFT
+//  chRodzajOkna - indeks rodzaju okna filtrujacego dane
+//  chAktywnSilniki - pole bitowe definiujace które silniki bêd¹ aktywne w trakcie testu
+//  sMaxWysterowanie - maksymalna wartoœæ do jakiej wysterowane bêd¹ silniki
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRodzajOkna, uint8_t chAktywnSilniki, uint16_t sMaxWysterowanie)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chWykladnikPotegi;
+	chDaneWychodzace[1] = chRodzajOkna;
+	chDaneWychodzace[2] = chAktywnSilniki;
+	m_unia8_32.dane16[0] = sMaxWysterowanie;
+	chDaneWychodzace[3] = m_unia8_32.dane8[0];
+	chDaneWychodzace[4] = m_unia8_32.dane8[1];
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_PARAMETRY_FFT, chDaneWychodzace, 5, chDanePrzychodzace, &chOdebrano);
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Odczytuje konfiguracjê FFT
+// parametry: 
+//  chTypZmiennej - indeks odczytywanej zmiennej
+//  sIndeksWyniku - indeks wyniku w ramach jednego pomiaru
+//  chIndeksPomiaru - indeks kolejnego pomiaru
+//  *fWyniki - wskaŸnik na zwracane wyniki FFT
+//  chRozmiar - liczba pomiarów do odczytu
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::CzytajWynikiFFT(uint8_t chTypZmiennej, uint16_t sIndeksWyniku, uint8_t chIndeksPomiaru, float *fWyniki, uint8_t chRozmiar)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chDaneWychodzace[0] = chTypZmiennej;
+	m_unia8_32.dane16[0] = sIndeksWyniku;
+	chDaneWychodzace[1] = m_unia8_32.dane8[0];
+	chDaneWychodzace[2] = m_unia8_32.dane8[1];
+	chDaneWychodzace[3] = chIndeksPomiaru;
+	chDaneWychodzace[4] = chRozmiar;
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_WYNIKI_FFT, chDaneWychodzace, 5, chDanePrzychodzace, &chOdebrano);
+	if ((chErr == ERR_OK) && (chOdebrano == chRozmiar * 4))
+	{
+		for (uint8_t n = 0; n < chRozmiar; n++)
+		{
+			m_unia8_32.dane8[0] = chDanePrzychodzace[n * 4 + 0];
+			m_unia8_32.dane8[1] = chDanePrzychodzace[n * 4 + 1];
+			m_unia8_32.dane8[2] = chDanePrzychodzace[n * 4 + 2];
+			m_unia8_32.dane8[3] = chDanePrzychodzace[n * 4 + 3];
+			*(fWyniki + n) = m_unia8_32.daneFloat;
+		}
+	}
+	return chErr;
+}

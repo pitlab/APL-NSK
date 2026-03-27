@@ -415,17 +415,19 @@ BOOL OdbiornikiRC::OnInitDialog()
 	}
 
 	//wypełnij comboboxy funkcji wejść RC
-	for (int n = 0; n < 4; n++)
+	for (int n = 0; n < LICZBA_FUNKCJI_RC; n++)
 	{
 		switch (n)
 		{
-		case 0:	strNapis.Format(_T("Nie rób nic")); break;
-		case 1: strNapis.Format(_T("Wyjście OD1")); break;
-		case 2: strNapis.Format(_T("Wyjście OD2")); break;
-		case 3: strNapis.Format(_T("Mów komunikat 1")); break;
-		case 4: strNapis.Format(_T("Mów komunikat 2")); break;
-		default:strNapis.Format(_T("Błędna wartość")); break;
+		case FRC_NIE_TOB_NIC:		strNapis.Format(_T("Nie rób nic")); break;
+		case FRC_WLACZ_OD1:			strNapis.Format(_T("Wyjście OD1")); break;		//aktuwuj wyjście otwarty dren 1
+		case FRC_WLACZ_OD2:			strNapis.Format(_T("Wyjście OD2")); break;
+		case FRC_MOW_KOMUNIKAT1:	strNapis.Format(_T("Mów komunikat 1")); break;
+		case FRC_MOW_KOMUNIKAT2:	strNapis.Format(_T("Mów komunikat 2")); break;
+		case FRC_MOW_KOMUNIKAT3:	strNapis.Format(_T("Mów komunikat 3")); break;
+		default:					strNapis.Format(_T("Błędna wartość")); break;
 		}
+
 		m_ctlFunkcjaKanalu5.InsertString(n, strNapis);
 		m_ctlFunkcjaKanalu6.InsertString(n, strNapis);
 		m_ctlFunkcjaKanalu7.InsertString(n, strNapis);
@@ -439,8 +441,6 @@ BOOL OdbiornikiRC::OnInitDialog()
 		m_ctlFunkcjaKanalu15.InsertString(n, strNapis);
 		m_ctlFunkcjaKanalu16.InsertString(n, strNapis);
 	}
-
-
 
 	//odczytaj konfigurację wejść odbiorników i wyjść serw.
 	chErr = getKomunikacja().CzytajU8FRAM(chDane, 6, FAU_KONF_ODB_RC);
@@ -481,7 +481,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	}
 
 	//odczytaj konfigurację wejść odbiorników i wyjść serw.
-	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_MIN_KAN_RC);
 	if (chErr == ERR_OK)
 	{
 		m_ctlFunkcjaKanalu5.SetCurSel(chDane[0]);
@@ -714,7 +714,7 @@ void OdbiornikiRC::OnBnClickedOk()
 		chDane[10] = m_ctlFunkcjaKanalu15.GetCurSel();
 		chDane[11] = m_ctlFunkcjaKanalu16.GetCurSel();
 
-		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_MIN_KAN_RC);
 		if (chErr != ERR_OK)
 		{
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
