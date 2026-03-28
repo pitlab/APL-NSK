@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnKonfigRejestratora)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnUpdateKonfigRejestratora)
 
+	ON_COMMAND(ID_BUT_POBIERZ_FFT, &CAPLSNView::OnButPobierzFft)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -89,6 +90,8 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nSzerokoscWykresu(0)
 , pWskWatkuPaskaPostepu(0)
 , pWskWatkuOdswiezaniaTelemetrii(0)
+, m_nSzerokoscKamery(0)
+, m_nWysokoscKamery(0)
 {
 	getKomunikacja().m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 	// Enable D2D support for this window:
@@ -212,7 +215,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	pRenderTarget->FillRectangle(oknoGrupy, m_pLinearGradientBrush);
 	stKonfigLewy.fSkalaX = stKonfigPrawy.fSkalaX = m_fZoomPoziomo;
 	stKonfigLewy.fSkalaY = stKonfigPrawy.fSkalaY = (float)stKonfigLewy.rOknoWykresu.bottom / 40.0f * m_fZoomPionowo;
-	stKonfigLewy.fHscroll = stKonfigPrawy.fHscroll = m_nBiezacyScrollPoziomo;
+	stKonfigLewy.fHscroll = stKonfigPrawy.fHscroll = (float)m_nBiezacyScrollPoziomo;
 
 	//wyświetl obraz z kamery
 	uint8_t chKolor[3];
@@ -1382,3 +1385,50 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 	
 }
 
+
+
+void CAPLSNView::OnButPobierzFft()
+{
+	uint8_t chBłąd;
+	int nIndeksPomiaru, nRozmiarFFT;
+	uint8_t chWykładnikPotęgi, chRodzajOkna, chAktywneSilniki;
+	uint16_t sMaxWysterowanie;
+	CAPLSNDoc* pDoc = GetDocument();
+
+	/*uint32_t rozmiar = sizeof(pDoc->m_sZdjecieRGB565);
+	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
+	m_bKoniecWatkuPaskaPostepu = FALSE;
+	pWskWatkuPaskaPostepu = AfxBeginThread((AFX_THREADPROC)WatekRysujPasekPostepu, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+
+	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
+	m_sBiezacyStanPaskaPostepu = 0;*/
+
+
+	chBłąd = getKomunikacja().CzytajParametryFFT(&chWykładnikPotęgi, &chRodzajOkna, &chAktywneSilniki, &sMaxWysterowanie);
+	if (chBłąd)
+		return;
+	nRozmiarFFT = (int)powf(2.0f, (float)chWykładnikPotęgi);
+
+	for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
+	{
+		for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
+		{
+			for (int nRamkaPomiaru = 0; nRamkaPomiaru < ((nRozmiarFFT / 2) / LICZB_FLOAT_WRAMCE); nRamkaPomiaru++)
+			{
+				chBłąd = getKomunikacja().CzytajWynikiFFT(nTestu, nZmienna, nRamkaPomiaru, &pDoc->m_fWynikFFT[nTestu][nZmienna][nRamkaPomiaru * LICZB_FLOAT_WRAMCE], LICZB_FLOAT_WRAMCE);
+				if (chBłąd)
+					return;
+			}
+		}
+	}
+
+
+	pDoc->m_bFFTGotowe = TRUE;
+
+	/*if (chErr == ERR_OK)
+	{
+		pDoc->m_bZdjecieGotowe = TRUE;
+		m_bKoniecWatkuPaskaPostepu = TRUE;
+		Invalidate();
+	}*/
+}

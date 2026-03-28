@@ -1,6 +1,7 @@
 ﻿
 // APL-SNDoc.h: interfejs klasy CAPLSNDoc
 #include "AnalizatorLogu.h"
+#include "sys_def_wspolny.h"
 //
 
 #pragma once
@@ -18,7 +19,9 @@ public:
 // Operacje
 public:
 	uint16_t m_sZdjecieRGB565[480 * 320];
-	bool m_bZdjecieGotowe;
+	BOOL m_bZdjecieGotowe;
+	BOOL m_bFFTGotowe;
+	float m_fWynikFFT[LICZBA_TESTOW_FFT][LICZBA_ZMIENNYCH_FFT][FFT_MAX_ROZMIAR / 2];	//wartość sygnału wyjściowego
 
 // Przesłania
 public:

@@ -1630,19 +1630,17 @@ uint8_t CKomunikacja::ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRo
 //  chRozmiar - liczba pomiarów do odczytu
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajWynikiFFT(uint8_t chTypZmiennej, uint16_t sIndeksWyniku, uint8_t chIndeksPomiaru, float *fWyniki, uint8_t chRozmiar)
+uint8_t CKomunikacja::CzytajWynikiFFT(uint8_t chLiniaWodospadu, uint8_t chTypZmiennej, uint8_t chIndeksWyniku, float *fWyniki, uint8_t chRozmiar)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[5];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
-	chDaneWychodzace[0] = chTypZmiennej;
-	m_unia8_32.dane16[0] = sIndeksWyniku;
-	chDaneWychodzace[1] = m_unia8_32.dane8[0];
-	chDaneWychodzace[2] = m_unia8_32.dane8[1];
-	chDaneWychodzace[3] = chIndeksPomiaru;
-	chDaneWychodzace[4] = chRozmiar;
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_WYNIKI_FFT, chDaneWychodzace, 5, chDanePrzychodzace, &chOdebrano);
+	chDaneWychodzace[0] = chRozmiar;			//liczba wyników FFT typu float w ramce (32)
+	chDaneWychodzace[1] = chIndeksWyniku;		//wskazuje na ramkê danych w ramach jednego FFT [0..63] =[(32/32)-1..(2048/32)-1]
+	chDaneWychodzace[2] = chTypZmiennej;		//indeks kolejnej zmiennej [0..5]
+	chDaneWychodzace[3] = chLiniaWodospadu;		//numer kolejnego FFT tworz¹cego wodospad [0..99]
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_WYNIKI_FFT, chDaneWychodzace, 4, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano == chRozmiar * 4))
 	{
 		for (uint8_t n = 0; n < chRozmiar; n++)

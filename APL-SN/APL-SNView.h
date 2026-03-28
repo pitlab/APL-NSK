@@ -167,6 +167,7 @@ public:
 	afx_msg void OnUpdateKonfigTelemetrii(CCmdUI* pCmdUI);
 	afx_msg void OnKonfigRejestratora();
 	afx_msg void OnUpdateKonfigRejestratora(CCmdUI* pCmdUI);
+	afx_msg void OnButPobierzFft();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

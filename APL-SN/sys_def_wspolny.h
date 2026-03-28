@@ -177,3 +177,12 @@
 
 //definicje flag trybu lotu dotyczących zmiennej stWymianyCM4.chFlagiLotu
 #define WL_TRWA_LOT			0x01
+
+//definicje FFT
+#define FFT_WYKLADNIK_MIN	6		//najmniejszy wykładnik FFT 2^6 = 64
+#define FFT_WYKLADNIK_MAX	12		//największy wykładnik FFT 2^12 = 4096
+#define FFT_MAX_ROZMIAR		4096	//największy rozmiar danych do liczenia FFT
+#define LICZBA_TESTOW_FFT	100		//liczba warunków pracy dla których zdeto komplet FFT np, różnych wysterowań silników
+#define LICZBA_WYKRESOW_FFT	3
+#define LICZBA_ZMIENNYCH_FFT	6
+#define LICZB_FLOAT_WRAMCE	32

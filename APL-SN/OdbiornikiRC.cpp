@@ -608,13 +608,13 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 	//aktualizuj wartości min i max
 	for (int n = 0; n < KANALY_ODB_RC; n++)
 	{
-		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
+		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
 		strWejscie[n].Format(_T("%d"), nWartoscRC);
 	}
 
 	for (int n = 0; n < KANALY_SERW; n++)
 	{
-		nWartoscRC = getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1 + n];
+		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1 + n];
 		strWyjscie[n].Format(_T("%d"), nWartoscRC);
 	}
 		
