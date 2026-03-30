@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 
 CAPLSNDoc::CAPLSNDoc() noexcept
 	: m_bZdjecieGotowe(FALSE)
-	
+	, m_bFFTGotowe(FALSE)
 {
 	// TODO: tutaj dodaj jednorazowy kod konstruowania
 	//m_sZdjecie[0] = 0;

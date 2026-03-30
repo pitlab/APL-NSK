@@ -168,6 +168,7 @@ public:
 	afx_msg void OnKonfigRejestratora();
 	afx_msg void OnUpdateKonfigRejestratora(CCmdUI* pCmdUI);
 	afx_msg void OnButPobierzFft();
+	afx_msg void OnUpdateButPobierzFft(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

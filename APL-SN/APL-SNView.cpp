@@ -61,6 +61,7 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnUpdateKonfigRejestratora)
 
 	ON_COMMAND(ID_BUT_POBIERZ_FFT, &CAPLSNView::OnButPobierzFft)
+	ON_UPDATE_COMMAND_UI(ID_BUT_POBIERZ_FFT, &CAPLSNView::OnUpdateButPobierzFft)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -265,6 +266,54 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)m_nSzerokoscKamery, (FLOAT)m_nWysokoscKamery));
 		}
 	}
+
+	//wodospady 6 FFT
+	if (pDoc->m_bFFTGotowe)
+	{
+		m_nSzerokoscKamery = 512;
+		m_nWysokoscKamery = LICZBA_TESTOW_FFT;
+		size_t Indeks;
+		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
+		size_t bufferSize = static_cast<size_t>(m_nSzerokoscKamery) * static_cast<size_t>(m_nWysokoscKamery * LICZBA_WYKRESOW_FFT) * 4;
+		std::vector<uint8_t> bgraBuffer(bufferSize);
+		
+		//for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
+		for (int t = 0; t < LICZBA_WYKRESOW_FFT; t++)
+		{			
+			for (int y = 0; y < m_nWysokoscKamery; y++)
+			{
+				for (int x = 0; x < m_nSzerokoscKamery; x++)
+				{
+					Indeks = (t * m_nWysokoscKamery * m_nSzerokoscKamery + y * m_nSzerokoscKamery + x) * 4;
+
+					for (int b=0; b<3; b++)
+						bgraBuffer[Indeks + b] = 0;		//wyczyść składowe RGB
+					
+					switch (t)
+					{
+					case 0: bgraBuffer[Indeks + 0] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//B
+					case 1: bgraBuffer[Indeks + 1] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//G
+					case 2: bgraBuffer[Indeks + 2] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//R						
+					}
+					bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
+				}
+			}
+		}
+
+		D2D1_SIZE_U size = D2D1::SizeU(m_nSzerokoscKamery, m_nWysokoscKamery * LICZBA_WYKRESOW_FFT);
+		D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+		m_spCameraBitmap.Release();
+
+		ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
+		HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nSzerokoscKamery * 4, &props, &m_spCameraBitmap);
+
+		if (m_spCameraBitmap)
+		{
+			pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)m_nSzerokoscKamery, (FLOAT)m_nWysokoscKamery * LICZBA_WYKRESOW_FFT));
+		}
+	}
+
 
 	//rysowanie wykresów telemetrii
 	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)	//czy są dane telemetryczne lub wczytany z pliku log
@@ -1386,7 +1435,11 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Pobiera wyniki FFT po naciśnięciu przycisku w pasku narzedziowym
+// Parametry: brak
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnButPobierzFft()
 {
 	uint8_t chBłąd;
@@ -1395,15 +1448,6 @@ void CAPLSNView::OnButPobierzFft()
 	uint16_t sMaxWysterowanie;
 	CAPLSNDoc* pDoc = GetDocument();
 
-	/*uint32_t rozmiar = sizeof(pDoc->m_sZdjecieRGB565);
-	//uruchom wątek aktualizujący pasek postępu pobierania zdjęcia
-	m_bKoniecWatkuPaskaPostepu = FALSE;
-	pWskWatkuPaskaPostepu = AfxBeginThread((AFX_THREADPROC)WatekRysujPasekPostepu, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
-
-	m_sLiczbaFragmentowPaskaPostepu = rozmiar / ROZM_DANYCH_UART;
-	m_sBiezacyStanPaskaPostepu = 0;*/
-
-
 	chBłąd = getKomunikacja().CzytajParametryFFT(&chWykładnikPotęgi, &chRodzajOkna, &chAktywneSilniki, &sMaxWysterowanie);
 	if (chBłąd)
 		return;
@@ -1411,24 +1455,29 @@ void CAPLSNView::OnButPobierzFft()
 
 	for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
 	{
-		for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
+		//for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
+		for (int nZmienna = 0; nZmienna < LICZBA_WYKRESOW_FFT; nZmienna++)		
 		{
 			for (int nRamkaPomiaru = 0; nRamkaPomiaru < ((nRozmiarFFT / 2) / LICZB_FLOAT_WRAMCE); nRamkaPomiaru++)
 			{
 				chBłąd = getKomunikacja().CzytajWynikiFFT(nTestu, nZmienna, nRamkaPomiaru, &pDoc->m_fWynikFFT[nTestu][nZmienna][nRamkaPomiaru * LICZB_FLOAT_WRAMCE], LICZB_FLOAT_WRAMCE);
 				if (chBłąd)
 					return;
+				pDoc->m_bFFTGotowe = TRUE;
 			}
 		}
 	}
 
 
 	pDoc->m_bFFTGotowe = TRUE;
+}
 
-	/*if (chErr == ERR_OK)
-	{
-		pDoc->m_bZdjecieGotowe = TRUE;
-		m_bKoniecWatkuPaskaPostepu = TRUE;
-		Invalidate();
-	}*/
+
+// aktualizacja dostepnosci polecenia w zależności od stanu połączenia
+void CAPLSNView::OnUpdateButPobierzFft(CCmdUI* pCmdUI)
+{
+	if (m_bPolaczono)
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
 }
