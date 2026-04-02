@@ -34,7 +34,7 @@ public:
 	afx_msg void OnEnChangeEditWysterowanie();
 	uint8_t m_chWykładnikPotęgi;
 	uint8_t m_chRodzajOkna;
-	uint16_t m_sWysterowanie;
+	uint8_t m_chWysterowanieMaxProcent;
 	uint8_t m_chAktywneSilniki;
 	BOOL m_bZmienionoDane;
 	afx_msg void OnBnClickedOk();
@@ -55,4 +55,5 @@ public:
 	afx_msg void OnBnClickedCheckSilnik6();
 	afx_msg void OnBnClickedButPobierzDane();
 	int m_nRozmiarFFT;
+	afx_msg void OnBnClickedButRozpocznijDiagnostyke();
 };

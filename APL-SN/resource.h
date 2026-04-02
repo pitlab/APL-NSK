@@ -443,7 +443,6 @@
 #define ID_USTAWIENIA_ZAPISZSAMPLEAUDIO 32823
 #define ID_USTAWIENIA_WSK_LED           32824
 #define ID_USTAWIENIA_KONFIGURACJAFFT   32826
-#define ID_BUTTON32827                  32827
 #define ID_BUT_POBIERZ_FFT              32827
 
 // Next default values for new objects

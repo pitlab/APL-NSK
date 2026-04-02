@@ -1435,6 +1435,7 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Pobiera wyniki FFT po naciśnięciu przycisku w pasku narzedziowym
 // Parametry: brak
@@ -1445,10 +1446,10 @@ void CAPLSNView::OnButPobierzFft()
 	uint8_t chBłąd;
 	int nIndeksPomiaru, nRozmiarFFT;
 	uint8_t chWykładnikPotęgi, chRodzajOkna, chAktywneSilniki;
-	uint16_t sMaxWysterowanie;
+	uint8_t chMaxWysterowanie;
 	CAPLSNDoc* pDoc = GetDocument();
 
-	chBłąd = getKomunikacja().CzytajParametryFFT(&chWykładnikPotęgi, &chRodzajOkna, &chAktywneSilniki, &sMaxWysterowanie);
+	chBłąd = getKomunikacja().CzytajParametryFFT(&chWykładnikPotęgi, &chRodzajOkna, &chAktywneSilniki, &chMaxWysterowanie);
 	if (chBłąd)
 		return;
 	nRozmiarFFT = (int)powf(2.0f, (float)chWykładnikPotęgi);

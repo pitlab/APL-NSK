@@ -24,7 +24,7 @@ KonfiguracjaFFT::KonfiguracjaFFT(CWnd* pParent /*=nullptr*/)
 	, m_bSilnik6(FALSE)
 	, m_chWykładnikPotęgi(0)
 	, m_chRodzajOkna(0)
-	, m_sWysterowanie(0)
+	, m_chWysterowanieMaxProcent(0)
 	, m_chAktywneSilniki(0)
 	, m_nRozmiarFFT(0)
 {
@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(KonfiguracjaFFT, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_SILNIK5, &KonfiguracjaFFT::OnBnClickedCheckSilnik5)
 	ON_BN_CLICKED(IDC_CHECK_SILNIK6, &KonfiguracjaFFT::OnBnClickedCheckSilnik6)
 	ON_BN_CLICKED(IDC_BUT_POBIERZ_DANE, &KonfiguracjaFFT::OnBnClickedButPobierzDane)
+	ON_BN_CLICKED(IDC_BUT_ROZPOCZNIJ_DIAGNOSTYKE, &KonfiguracjaFFT::OnBnClickedButRozpocznijDiagnostyke)
 END_MESSAGE_MAP()
 
 
@@ -75,10 +76,8 @@ BOOL KonfiguracjaFFT::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	uint8_t chBłąd;
-	int nProcentWysterowania;
 
-
-	chBłąd = getKomunikacja().CzytajParametryFFT(&m_chWykładnikPotęgi, &m_chRodzajOkna, &m_chAktywneSilniki, &m_sWysterowanie);
+	chBłąd = getKomunikacja().CzytajParametryFFT(&m_chWykładnikPotęgi, &m_chRodzajOkna, &m_chAktywneSilniki, &m_chWysterowanieMaxProcent);
 	if (chBłąd)
 	{
 		CString strKomunikat;
@@ -100,8 +99,7 @@ BOOL KonfiguracjaFFT::OnInitDialog()
 
 	m_ctlZakresWysterowania.SetRangeMin(0);
 	m_ctlZakresWysterowania.SetRangeMax(100);
-	nProcentWysterowania = 100 * (m_sWysterowanie - PPM_MIN )/ (PPM_MAX - PPM_MIN);
-	m_ctlZakresWysterowania.SetPos(nProcentWysterowania);
+	m_ctlZakresWysterowania.SetPos((int)m_chWysterowanieMaxProcent);
 
 	m_bSilnik1 = (m_chAktywneSilniki & 0x01) == 0x01;
 	m_bSilnik2 = (m_chAktywneSilniki & 0x02) == 0x02;
@@ -129,7 +127,7 @@ void KonfiguracjaFFT::OnBnClickedOk()
 	if (m_bZmienionoDane)
 	{
 		 m_chAktywneSilniki = m_bSilnik1 * 0x01 + m_bSilnik2 * 0x02 + m_bSilnik3 * 0x04 + m_bSilnik4 * 0x08 + m_bSilnik5 * 0x10 + m_bSilnik6 * 0x20;
-		chBłąd = getKomunikacja().ZapiszParametryFFT(m_chWykładnikPotęgi, m_chRodzajOkna, m_chAktywneSilniki, m_sWysterowanie);
+		chBłąd = getKomunikacja().ZapiszParametryFFT(m_chWykładnikPotęgi, m_chRodzajOkna, m_chAktywneSilniki, m_chWysterowanieMaxProcent);
 		if (chBłąd)
 		{
 			CString strKomunikat;
@@ -170,12 +168,10 @@ void KonfiguracjaFFT::OnNMCustomdrawSlidRozdzielczoscFft(NMHDR* pNMHDR, LRESULT*
 void KonfiguracjaFFT::OnNMCustomdrawSlidZakresWysterowania(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	int nProcentWysterowania;
 
 	UpdateData(TRUE);
-	nProcentWysterowania = m_ctlZakresWysterowania.GetPos();
-	m_strWysterowanie.Format(_T("Zakres wyster. silników: %d %%"), nProcentWysterowania);
-	m_sWysterowanie = PPM_MIN + (nProcentWysterowania * (PPM_MAX - PPM_MIN)) / 100;
+	m_chWysterowanieMaxProcent = (uint8_t)m_ctlZakresWysterowania.GetPos();
+	m_strWysterowanie.Format(_T("Zakres wyster. silników: %d %%"), m_chWysterowanieMaxProcent);
 	m_bZmienionoDane = TRUE;
 	*pResult = 0;
 	UpdateData(FALSE);
@@ -277,5 +273,26 @@ void KonfiguracjaFFT::OnBnClickedButPobierzDane()
 				}
 			}
 		}
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku Rozpocznij diagnostykę
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaFFT::OnBnClickedButRozpocznijDiagnostyke()
+{
+	uint8_t chBłąd;
+
+	chBłąd = getKomunikacja().RozpocznijDiagnostykeRezoanansu();
+	if (chBłąd)
+	{
+		CString strKomunikat;
+		strKomunikat.Format(_T("Nie można wysłać polecenia! \nKod błędu: %d"), chBłąd);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+		CDialogEx::OnCancel();
+		return;
 	}
 }

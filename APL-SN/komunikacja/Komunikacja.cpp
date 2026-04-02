@@ -1572,21 +1572,19 @@ uint8_t CKomunikacja::PrzeladujWskaznikiLed()
 //  *sMaxWysterowanie - maksymalna wartoœæ do jakiej wysterowane bêd¹ silniki
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::CzytajParametryFFT(uint8_t *chWykladnikPotegi, uint8_t *chRodzajOkna, uint8_t *chAktywnSilniki, uint16_t *sMaxWysterowanie)
+uint8_t CKomunikacja::CzytajParametryFFT(uint8_t *chWykladnikPotegi, uint8_t *chRodzajOkna, uint8_t *chAktywnSilniki, uint8_t *chMaxWysterowanie)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[2];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_PARAMETRY_FFT, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
-	if ((chErr == ERR_OK) && (chOdebrano == 5))
+	if ((chErr == ERR_OK) && (chOdebrano == 4))
 	{
 		*chWykladnikPotegi = chDanePrzychodzace[0];
 		*chRodzajOkna = chDanePrzychodzace[1];
 		*chAktywnSilniki = chDanePrzychodzace[2];
-		m_unia8_32.dane8[0] = chDanePrzychodzace[3];
-		m_unia8_32.dane8[1] = chDanePrzychodzace[4];
-		*sMaxWysterowanie = m_unia8_32.dane16[0];
+		*chMaxWysterowanie = chDanePrzychodzace[3];
 	}
 	return chErr;
 }
@@ -1602,7 +1600,7 @@ uint8_t CKomunikacja::CzytajParametryFFT(uint8_t *chWykladnikPotegi, uint8_t *ch
 //  sMaxWysterowanie - maksymalna wartoœæ do jakiej wysterowane bêd¹ silniki
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRodzajOkna, uint8_t chAktywnSilniki, uint16_t sMaxWysterowanie)
+uint8_t CKomunikacja::ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRodzajOkna, uint8_t chAktywnSilniki, uint8_t chMaxWysterowanie)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[5];
@@ -1611,10 +1609,8 @@ uint8_t CKomunikacja::ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRo
 	chDaneWychodzace[0] = chWykladnikPotegi;
 	chDaneWychodzace[1] = chRodzajOkna;
 	chDaneWychodzace[2] = chAktywnSilniki;
-	m_unia8_32.dane16[0] = sMaxWysterowanie;
-	chDaneWychodzace[3] = m_unia8_32.dane8[0];
-	chDaneWychodzace[4] = m_unia8_32.dane8[1];
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_PARAMETRY_FFT, chDaneWychodzace, 5, chDanePrzychodzace, &chOdebrano);
+	chDaneWychodzace[3] = chMaxWysterowanie;
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_PARAMETRY_FFT, chDaneWychodzace, 4, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
 
@@ -1652,5 +1648,22 @@ uint8_t CKomunikacja::CzytajWynikiFFT(uint8_t chLiniaWodospadu, uint8_t chTypZmi
 			*(fWyniki + n) = m_unia8_32.daneFloat;
 		}
 	}
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rozpoczyna diagnostykê rezonansu ramy
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::RozpocznijDiagnostykeRezoanansu(void)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ROZP_ANALIZE_DRGAN, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
