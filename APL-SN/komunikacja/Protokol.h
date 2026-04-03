@@ -37,7 +37,7 @@ public:
 		float fMin = WARTOSC_MAX;
 		float fMax = WARTOSC_MIN;
 	} m_stEkstremaTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
-	
+	float Char2Float16(uint8_t* chDane);
 	
 
 private:
@@ -45,10 +45,8 @@ private:
 	static UINT WatekSluchajPortuEth(LPVOID pParam);
 	void AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano);
 	uint8_t AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu, uint8_t* chAdresNadawcy, uint8_t* chZnakCzasu, uint8_t* chPolecenie, uint8_t* chRozmiarDanychWy, uint8_t* chWskOdbDanej, uint8_t* chDaneWy, uint16_t* sCRC16);
-	uint8_t CzyscBuforPortu(uint8_t chTypPortu);
-	float Char2Float16(uint8_t* chDane);
+	uint8_t CzyscBuforPortu(uint8_t chTypPortu);	
 	clock_t m_Koniec;
-	
 
 private:
 	uint8_t	m_chTypPortu;		//rodzaj nawi¹zanego po³¹czenia

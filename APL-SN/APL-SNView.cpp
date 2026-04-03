@@ -273,44 +273,48 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		m_nSzerokoscKamery = 512;
 		m_nWysokoscKamery = LICZBA_TESTOW_FFT;
 		size_t Indeks;
+		int8_t chWartosc;
+		int16_t sKolorR, sKolorB;
 		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-		size_t bufferSize = static_cast<size_t>(m_nSzerokoscKamery) * static_cast<size_t>(m_nWysokoscKamery * LICZBA_WYKRESOW_FFT) * 4;
+		size_t bufferSize = static_cast<size_t>(m_nSzerokoscKamery * m_nWysokoscKamery * 4);
 		std::vector<uint8_t> bgraBuffer(bufferSize);
 		
-		//for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
-		for (int t = 0; t < LICZBA_WYKRESOW_FFT; t++)
-		{			
+		for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
+		{
 			for (int y = 0; y < m_nWysokoscKamery; y++)
 			{
 				for (int x = 0; x < m_nSzerokoscKamery; x++)
 				{
-					Indeks = (t * m_nWysokoscKamery * m_nSzerokoscKamery + y * m_nSzerokoscKamery + x) * 4;
+					Indeks = (y * (int)m_nSzerokoscKamery + x) * 4;
 
-					for (int b=0; b<3; b++)
-						bgraBuffer[Indeks + b] = 0;		//wyczyść składowe RGB
-					
-					switch (t)
-					{
-					case 0: bgraBuffer[Indeks + 0] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//B
-					case 1: bgraBuffer[Indeks + 1] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//G
-					case 2: bgraBuffer[Indeks + 2] = (uint8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);		break;	//R						
-					}
+					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
+					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
+					sKolorR = 128 + chWartosc;
+					if (sKolorR > 255)
+						sKolorR = 255;
+					sKolorB = 128 - chWartosc;
+					if (sKolorB < 0)
+						sKolorB = 0;
+					bgraBuffer[Indeks + 0] = (uint8_t)sKolorB;	//B
+					bgraBuffer[Indeks + 1] = 0;
+					bgraBuffer[Indeks + 2] = (uint8_t)sKolorR;	//R
 					bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
 				}
 			}
-		}
 
-		D2D1_SIZE_U size = D2D1::SizeU(m_nSzerokoscKamery, m_nWysokoscKamery * LICZBA_WYKRESOW_FFT);
-		D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+			D2D1_SIZE_U size = D2D1::SizeU(m_nSzerokoscKamery, m_nWysokoscKamery);
+			D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
 
-		m_spCameraBitmap.Release();
+			m_spCameraBitmap.Release();
 
-		ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
-		HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nSzerokoscKamery * 4, &props, &m_spCameraBitmap);
+			ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
+			HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nSzerokoscKamery * 4, &props, &m_spCameraBitmap);
 
-		if (m_spCameraBitmap)
-		{
-			pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)m_nSzerokoscKamery, (FLOAT)m_nWysokoscKamery * LICZBA_WYKRESOW_FFT));
+			if (m_spCameraBitmap)
+			{
+				float y = (FLOAT)(t * (m_nWysokoscKamery + MIEJSCE_MIEDZY_WODOSPADAMI));
+				pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, y, (FLOAT)m_nSzerokoscKamery, y + m_nWysokoscKamery));
+			}
 		}
 	}
 
@@ -1444,7 +1448,7 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 void CAPLSNView::OnButPobierzFft()
 {
 	uint8_t chBłąd;
-	int nIndeksPomiaru, nRozmiarFFT;
+	int nRozmiarFFT;
 	uint8_t chWykładnikPotęgi, chRodzajOkna, chAktywneSilniki;
 	uint8_t chMaxWysterowanie;
 	CAPLSNDoc* pDoc = GetDocument();
@@ -1456,8 +1460,8 @@ void CAPLSNView::OnButPobierzFft()
 
 	for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
 	{
-		//for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
-		for (int nZmienna = 0; nZmienna < LICZBA_WYKRESOW_FFT; nZmienna++)		
+		for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
+		//for (int nZmienna = 0; nZmienna < LICZBA_WYKRESOW_FFT; nZmienna++)		
 		{
 			for (int nRamkaPomiaru = 0; nRamkaPomiaru < ((nRozmiarFFT / 2) / LICZB_FLOAT_WRAMCE); nRamkaPomiaru++)
 			{
@@ -1466,6 +1470,7 @@ void CAPLSNView::OnButPobierzFft()
 					return;
 				pDoc->m_bFFTGotowe = TRUE;
 			}
+			Invalidate(1);
 		}
 	}
 

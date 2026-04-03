@@ -1637,15 +1637,16 @@ uint8_t CKomunikacja::CzytajWynikiFFT(uint8_t chLiniaWodospadu, uint8_t chTypZmi
 	chDaneWychodzace[2] = chTypZmiennej;		//indeks kolejnej zmiennej [0..5]
 	chDaneWychodzace[3] = chLiniaWodospadu;		//numer kolejnego FFT tworz¹cego wodospad [0..99]
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_WYNIKI_FFT, chDaneWychodzace, 4, chDanePrzychodzace, &chOdebrano);
-	if ((chErr == ERR_OK) && (chOdebrano == chRozmiar * 4))
+	if ((chErr == ERR_OK) && (chOdebrano == chRozmiar * 2))
 	{
 		for (uint8_t n = 0; n < chRozmiar; n++)
 		{
-			m_unia8_32.dane8[0] = chDanePrzychodzace[n * 4 + 0];
+			/*m_unia8_32.dane8[0] = chDanePrzychodzace[n * 4 + 0];
 			m_unia8_32.dane8[1] = chDanePrzychodzace[n * 4 + 1];
 			m_unia8_32.dane8[2] = chDanePrzychodzace[n * 4 + 2];
 			m_unia8_32.dane8[3] = chDanePrzychodzace[n * 4 + 3];
-			*(fWyniki + n) = m_unia8_32.daneFloat;
+			*(fWyniki + n) = m_unia8_32.daneFloat;*/
+			*(fWyniki + n) = getProtokol().Char2Float16(&chDanePrzychodzace[n * 2 + 0]);
 		}
 	}
 	return chErr;

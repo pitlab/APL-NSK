@@ -185,5 +185,5 @@
 #define LICZBA_TESTOW_FFT	100		//liczba warunków pracy dla których zdeto komplet FFT np, różnych wysterowań silników
 #define LICZBA_WYKRESOW_FFT	3
 #define LICZBA_ZMIENNYCH_FFT	6
-#define LICZB_FLOAT_WRAMCE	32
-#define WODOSPAD_SKALA_KOLORU	20
+#define LICZB_FLOAT_WRAMCE		96
+#define WODOSPAD_SKALA_KOLORU	30.0f
