@@ -75,8 +75,10 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nNumerPortuEth(0)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
+, m_bRysujFFT(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_bKoniecWatkuPaskaPostepu(FALSE)
+, m_bKoniecWatkuOdswiezaniaFFT(FALSE)
 , m_fZoomPionowo(1.0f)
 , m_fZoomPoziomo(1.0f)
 , m_nVscroll(0)
@@ -91,6 +93,7 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nSzerokoscWykresu(0)
 , pWskWatkuPaskaPostepu(0)
 , pWskWatkuOdswiezaniaTelemetrii(0)
+, pWskWatkuOdswiezaniaFFT(0)
 , m_nSzerokoscKamery(0)
 , m_nWysokoscKamery(0)
 {
@@ -268,26 +271,27 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	}
 
 	//wodospady 6 FFT
+	//if (m_bRysujFFT)
 	if (pDoc->m_bFFTGotowe)
 	{
-		m_nSzerokoscKamery = 512;
-		m_nWysokoscKamery = LICZBA_TESTOW_FFT;
+		m_nRozmiarWykresuFFT = 512;
 		size_t Indeks;
 		int8_t chWartosc;
 		int16_t sKolorR, sKolorB;
 		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-		size_t bufferSize = static_cast<size_t>(m_nSzerokoscKamery * m_nWysokoscKamery * 4);
+		size_t bufferSize = static_cast<size_t>(m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * 4);
 		std::vector<uint8_t> bgraBuffer(bufferSize);
 		
 		for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
 		{
-			for (int y = 0; y < m_nWysokoscKamery; y++)
+			for (int y = 0; y < LICZBA_TESTOW_FFT; y++)
 			{
-				for (int x = 0; x < m_nSzerokoscKamery; x++)
+				for (int x = 0; x < m_nRozmiarWykresuFFT; x++)
 				{
-					Indeks = (y * (int)m_nSzerokoscKamery + x) * 4;
+					Indeks = (y * (int)m_nRozmiarWykresuFFT + x) * 4;
 
 					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
+					//chWartosc = getProtokol().m_stRamkaFFT[t].vfAkcelX[x] * WODOSPAD_SKALA_KOLORU;
 					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
 					sKolorR = 128 + chWartosc;
 					if (sKolorR > 255)
@@ -302,18 +306,18 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			D2D1_SIZE_U size = D2D1::SizeU(m_nSzerokoscKamery, m_nWysokoscKamery);
+			D2D1_SIZE_U size = D2D1::SizeU(m_nRozmiarWykresuFFT, LICZBA_TESTOW_FFT);
 			D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
 
 			m_spCameraBitmap.Release();
 
 			ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
-			HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nSzerokoscKamery * 4, &props, &m_spCameraBitmap);
+			HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nRozmiarWykresuFFT * 4, &props, &m_spCameraBitmap);
 
 			if (m_spCameraBitmap)
 			{
-				float y = (FLOAT)(t * (m_nWysokoscKamery + MIEJSCE_MIEDZY_WODOSPADAMI));
-				pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, y, (FLOAT)m_nSzerokoscKamery, y + m_nWysokoscKamery));
+				float y = (FLOAT)(t * (LICZBA_TESTOW_FFT + MIEJSCE_MIEDZY_WODOSPADAMI));
+				pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, y, (FLOAT)m_nRozmiarWykresuFFT, y + LICZBA_TESTOW_FFT));
 			}
 		}
 	}
@@ -1016,7 +1020,8 @@ void CAPLSNView::OnPolaczCom()
 		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
 		{
 			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
-			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+			pWskWatkuOdswiezaniaTelemetrii = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresTelemetrii, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);	//THREAD_PRIORITY_BELOW_NORMAL, THREAD_PRIORITY_NORMAL
+			pWskWatkuOdswiezaniaFFT = AfxBeginThread((AFX_THREADPROC)WatekInvalidujWytkresFFT, this, THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
 		}
 	}
 }
@@ -1154,6 +1159,65 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresTelemetrii()
 			if (nErr != WAIT_TIMEOUT)
 			{
 				m_bRysujTelemetrie = TRUE;
+				Invalidate();
+			}
+		}
+	}
+	return ERR_OK;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wywołuje wątek odświeżający rysowanie FFT
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WatekInvalidujWytkresFFT(LPVOID pParam)
+{
+	return reinterpret_cast<CAPLSNView*>(pParam)->WlasciwyWatekInvalidujWytkresFFT();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Wątek uruchamiający odświezanie wykresu FFT przyjściu nowych danych 
+// Zwraca: kod błędu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresFFT()
+{
+	while (!m_bKoniecWatkuOdswiezaniaFFT)
+	{
+		if (m_bOknoGotowe)
+		{
+			CAPLSNDoc* pDoc = GetDocument();
+
+			uint32_t nErr = WaitForSingleObject(getProtokol().m_hZdarzenieRamkaFFTGotowa, INFINITE);
+			if (nErr != WAIT_TIMEOUT)
+			{
+
+				//przenieś zawartość struktury wektorów z danymi FFT do klasy dokumentu
+				for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
+				{
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelX.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][0][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelX[sDanych];
+
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelY.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][1][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelY[sDanych];
+
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelZ.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][2][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelZ[sDanych];
+
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroX.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][3][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroX[sDanych];
+
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroY.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][4][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroY[sDanych];
+
+					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroZ.size(); sDanych++)
+						pDoc->m_fWynikFFT[nTestu][5][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroZ[sDanych];
+				}				
+				pDoc->m_bFFTGotowe = TRUE;
+				m_bRysujFFT = TRUE;
 				Invalidate();
 			}
 		}

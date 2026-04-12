@@ -4,21 +4,22 @@
 #include <queue>
 #include "KomunikatySieci.h"
 #include "polecenia_komunikacyjne.h"
+#include "../sys_def_wspolny.h"
 
 #define PK_UST_ROZD_KAMERY	5
 
-//polecenia typu broadcast, bez odpowiedzi
 
-
-class CProtokol //: public CAsyncSocket
+class CProtokol 
 {
 public:
-	CProtokol();	//noexcept;
+	CProtokol();	
 	virtual ~CProtokol();
-	static std::vector <stTelemetria_t> m_vDaneTelemetryczne;	//posortowane dane telemetryczne
+	static std::vector <stTelemetria_t> m_vDaneTelemetryczne;	
 	static std::vector <stRamka_t> m_vRamkaPolecenia;
+	stSzybkaRamkaFFT_t m_stRamkaFFT[LICZBA_TESTOW_FFT];
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
+	static HANDLE m_hZdarzenieRamkaFFTGotowa;
 	uint8_t PolaczPort(uint8_t chTypPortu, int nNumerPortu, int nPredkosc, CString strAdres, CView* pWnd);
 	uint8_t ZamknijPort(uint8_t chTypPortu);
 	 BOOL CzyPolaczonoEth();
@@ -66,6 +67,8 @@ private:
 	int	m_iLecznikWejRamekZwyklych;
 	static CRITICAL_SECTION m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 	static CRITICAL_SECTION m_SekcjaKrytycznaTelemetrii;	//Sekcja chroni¹ca dostêp do wektora danych telemetrycznych
+	static CRITICAL_SECTION m_SekcjaKrytycznaFFT;			//Sekcja chroni¹ca dostêp do wektora danych FFT
+	
 	uint8_t	m_chBuforOdbiorczyETH[ROZM_DANYCH_ETH];		//bufor odbiorczy ethernetu
 	uint32_t m_iOdebranoETH;		//iloœæ odebranych danych przez ethernet
 	BOOL m_bWyslanoETH;		//potwierdzenie wys³ania danych przez ethernet

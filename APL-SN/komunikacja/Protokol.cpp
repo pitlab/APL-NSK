@@ -4,6 +4,7 @@
 #include "../multithreading.h"
 #include <chrono>
 #include <thread>
+#include "../sys_def_wspolny.h"
 
 /*Struktura ramki komunikacyjnej
 0xAA - Nag³ówek.Strumieñ danych wejœciowych analizujemy pod k¹tem obecnoœci preambu³y.
@@ -25,6 +26,7 @@ Ramki wystêpuj¹ w dwu typach identyfikowanych najstarszym bitem pola POLECENIE:
 //inicjuj zmienne statyczny u¿ywane w¹tkach odbiorczych
 HANDLE			CProtokol::m_hZdarzenieRamkaPolecenGotowa = NULL;
 HANDLE			CProtokol::m_hZdarzenieRamkaTelemetriiGotowa = NULL;
+HANDLE			CProtokol::m_hZdarzenieRamkaFFTGotowa = NULL;
 CGniazdoSieci	CProtokol::m_cGniazdoSluchajace;
 CGniazdoSieci	CProtokol::m_cGniazdoPolaczenia;
 BOOL			CProtokol::m_bKoniecWatkuUart = FALSE;
@@ -32,6 +34,7 @@ BOOL			CProtokol::m_bKoniecWatkuEth = FALSE;
 BOOL			CProtokol::m_bPolaczonoEth = FALSE;
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaPolecen;		//Sekcja chroni¹ca dostêp do wektora danych poleceñ
 CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaTelemetrii;
+CRITICAL_SECTION CProtokol::m_SekcjaKrytycznaFFT;
 std::vector <stRamka_t> CProtokol::m_vRamkaPolecenia;
 std::vector <stTelemetria_t> CProtokol::m_vDaneTelemetryczne;
 int				CProtokol::m_LicznikInstancji = 0;
@@ -57,8 +60,11 @@ CProtokol::CProtokol()
 	m_wskaznikInstancji = m_LicznikInstancji++;
 	InitializeCriticalSection(&m_SekcjaKrytycznaPolecen);
 	InitializeCriticalSection(&m_SekcjaKrytycznaTelemetrii);
+	InitializeCriticalSection(&m_SekcjaKrytycznaFFT);
 	m_hZdarzenieRamkaPolecenGotowa = CreateEvent(NULL, false, false, _T("RamPol")); // auto-reset event, non-signalled state
 	m_hZdarzenieRamkaTelemetriiGotowa = CreateEvent(NULL, false, false, _T("RamTel")); // auto-reset event, non-signalled state
+	m_hZdarzenieRamkaFFTGotowa = CreateEvent(NULL, false, false, _T("RamFFT")); // auto-reset event, non-signalled state
+	
 }
 
 
@@ -80,8 +86,15 @@ CProtokol::~CProtokol()
 		CloseHandle(m_hZdarzenieRamkaTelemetriiGotowa);
 		m_hZdarzenieRamkaTelemetriiGotowa = NULL;
 	}
+	if (m_hZdarzenieRamkaFFTGotowa)
+	{
+		CloseHandle(m_hZdarzenieRamkaFFTGotowa);
+		m_hZdarzenieRamkaFFTGotowa = NULL;
+	}
+	
 	DeleteCriticalSection(&m_SekcjaKrytycznaPolecen);
 	DeleteCriticalSection(&m_SekcjaKrytycznaTelemetrii);
+	DeleteCriticalSection(&m_SekcjaKrytycznaFFT);	
 }
 
 
@@ -373,39 +386,36 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuEth()
 
 void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 {
-	unsigned int x, y, n;
 	int nIndeksZmiennej;		//indeks zmiennej liczony z bitów obecnoœci zmiennej w ramce
 	int nNumerZmiennejwRamce;	//para bajtów przenosz¹ca wartoœæ zmiennej
 	uint8_t chBity,  chErr;
 	uint8_t chZnakCzasuPoprzedniejRamki = 0;
-	BOOL bRamkaTelemetrii;
 	stRamka_t stRamka;
 	stTelemetria_t stDaneTele;
+
 	float fZmienna;
 
-	//TRACE("odczytano %d\n", iOdczytano);
-	for (n = 0; n < iOdczytano; n++)
+	for (uint32_t n = 0; n < iOdczytano; n++)
 	{		
 		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
 		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
-			bRamkaTelemetrii = (BOOL)((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4));
-			if (bRamkaTelemetrii)
+			//obs³uga ramek telemetrii
+			if ((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4))
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaTelemetrii);				
-				//zbierz dane ramki do uporz¹dkowanej struktury
-				for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
-					stDaneTele.dane[x] = 0;	//wyczyœæ tablicê przed wstawieniem danych
+				for (uint16_t t = 0; t< LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; t++)
+					stDaneTele.dane[t] = 0;	//wyczyœæ tablicê przed wstawieniem danych
 				nNumerZmiennejwRamce = 0;
 				stDaneTele.chSubSekunda = m_chZnakCzasu;
-				for (x = 0; x < LICZBA_BAJTOW_ID_TELEMETRII; x++)
+				for (uint8_t t = 0; t < LICZBA_BAJTOW_ID_TELEMETRII; t++)
 				{
-					chBity = m_chDaneWy[x];
-					for (y = 0; y < 8; y++)	//iteracja po bitach bajtu ID telemetrii
+					chBity = m_chDaneWy[t];
+					for (uint8_t b = 0; b < 8; b++)	//iteracja po bitach bajtu ID telemetrii
 					{
 						//indeks zmiennej jest zdefiniowany przez numer ustawionego bitu identyfikacyjnego oraz offset wynikaj¹cy z numeru ramki, która definiuje jedna z MAX_INDEKSOW_TELEMETR_W_RAMCE (128) zmiennych
-						nIndeksZmiennej = y + x * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
-						if (chBity & (0x01 << y))
+						nIndeksZmiennej = b + t * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
+						if (chBity & (0x01 << b))
 						{
 							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
 							stDaneTele.dane[nIndeksZmiennej] = fZmienna;
@@ -423,10 +433,10 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 				{
 					size_t nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
-					for (x = 0; x < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; x++)
+					for (uint16_t t = 0; t < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; t++)
 					{
-						if (stDaneTele.dane[x] != 0.0f)
-							m_vDaneTelemetryczne[nIndeksWektora].dane[x] = stDaneTele.dane[x];
+						if (stDaneTele.dane[t] != 0.0f)
+							m_vDaneTelemetryczne[nIndeksWektora].dane[t] = stDaneTele.dane[t];
 					}
 				}
 				else
@@ -438,6 +448,40 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				//TRACE("SetEvent: Telemetria\n");	
 			}
 			else
+
+
+			//obs³uga nietypowej ramki nios¹cej wyniki FFT
+			if (m_chPolecenie == PK_TELEM_FFT)
+			{
+				EnterCriticalSection(&m_SekcjaKrytycznaFFT);
+				uint8_t chNumerTestu = m_chDaneWy[1];
+				if (chNumerTestu < LICZBA_TESTOW_FFT)	//sprawdzenie jest potrzebne bo chNumerTestu przybiera wartoœæ == LICZBA_TESTOW_FFT (w celu wykrycia koñca procesu) a to przepe³nia zmienn¹
+				{
+					for (uint8_t d = 0; d < ((m_chIloscDanychRamki - 4) / 12); d++)
+					{
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 4]);
+						m_stRamkaFFT[chNumerTestu].vfAkcelX.push_back(fZmienna);
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 6]);
+						m_stRamkaFFT[chNumerTestu].vfAkcelY.push_back(fZmienna);
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 8]);
+						m_stRamkaFFT[chNumerTestu].vfAkcelZ.push_back(fZmienna);
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 10]);
+						m_stRamkaFFT[chNumerTestu].vfZyroX.push_back(fZmienna);
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 12]);
+						m_stRamkaFFT[chNumerTestu].vfZyroY.push_back(fZmienna);
+						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 14]);
+						m_stRamkaFFT[chNumerTestu].vfZyroZ.push_back(fZmienna);
+					}
+				}
+				LeaveCriticalSection(&m_SekcjaKrytycznaFFT);
+				m_Koniec = clock();
+				SetEvent(m_hZdarzenieRamkaFFTGotowa);
+				TRACE("SetEvent: FFT[%d]\n", chNumerTestu);
+			}
+			else
+
+
+			//ramka komunikacyjna wymagaj¹ca potwierdzenia
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaPolecen);
 				if (!m_chIloscDanychRamki)	//wykrzacza siê na zerowych ramkach typu OK, wiêc zrób niezerowy rozmiar danych
@@ -447,8 +491,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				stRamka.chZnakCzasu = m_chZnakCzasu;
 				stRamka.chRozmiar = m_chIloscDanychRamki;
 				stRamka.chAdrNadawcy = m_chAdresNadawcy;
-				for (x = 0; x < m_chIloscDanychRamki; x++)
-					stRamka.dane.push_back(m_chDaneWy[x]);
+				for (uint8_t d = 0; d < m_chIloscDanychRamki; d++)
+					stRamka.dane.push_back(m_chDaneWy[d]);
 				m_vRamkaPolecenia.push_back(stRamka);	//wstaw strukturê do wektora
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();

@@ -29,9 +29,13 @@ protected: // utwórz tylko na podstawie serializacji
 public:
 	CAPLSNDoc* GetDocument() const;
 	static uint8_t WatekRysujPasekPostepu(LPVOID pParam);
-	static uint8_t WatekInvalidujWytkresTelemetrii(LPVOID pParam);
 	uint8_t WlasciwyWatekRysujPasekPostepu();
+
+	static uint8_t WatekInvalidujWytkresTelemetrii(LPVOID pParam);	
 	uint8_t WlasciwyWatekInvalidujWytkresTelemetrii();
+
+	static uint8_t WatekInvalidujWytkresFFT(LPVOID pParam);
+	uint8_t WlasciwyWatekInvalidujWytkresFFT();
 
 // Operacje
 public:
@@ -46,6 +50,7 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	CWinThread* pWskWatkuPaskaPostepu;
 	CWinThread* pWskWatkuOdswiezaniaTelemetrii;
+	CWinThread* pWskWatkuOdswiezaniaFFT;
 	static int m_LicznikInstancji;
 	std::unique_ptr<CD2DBitmap> m_pCameraBitmap;  // bitmapa do rysowania
 
@@ -67,8 +72,10 @@ protected:
 	BOOL m_bPolaczono;
 	BOOL m_bKoniecWatkuPaskaPostepu;
 	BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
+	BOOL m_bKoniecWatkuOdswiezaniaFFT;
 	BOOL m_bRysujPasekPostepu;
 	BOOL m_bRysujTelemetrie;
+	BOOL m_bRysujFFT;
 	BOOL m_bOknoGotowe;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
@@ -90,6 +97,7 @@ protected:
 	int m_nBiezacyScrollPoziomo;
 	int m_nSzerokoscKamery;
 	int m_nWysokoscKamery;
+	int m_nRozmiarWykresuFFT;
 
 private:
 	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);

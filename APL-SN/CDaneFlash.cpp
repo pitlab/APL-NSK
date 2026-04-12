@@ -21,7 +21,7 @@ CDaneFlash::CDaneFlash(CWnd* pParent /*=nullptr*/)
 
 CDaneFlash::~CDaneFlash()
 {
-	getKomunikacja().WstrzymajTelemetrie(WZNOW_TELEMETRIE);
+	getKomunikacja().WstrzymajTelemetrie(TELEM_WZNOW);
 }
 
 void CDaneFlash::DoDataExchange(CDataExchange* pDX)
@@ -51,7 +51,7 @@ BOOL CDaneFlash::OnInitDialog()
 	GetDlgItem(IDC_PROGRESS1)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUT_ZAPISZ_FLASH)->EnableWindow(FALSE);
 
-	getKomunikacja().WstrzymajTelemetrie(WSTRZYMAJ_TELEMETRIE);
+	getKomunikacja().WstrzymajTelemetrie(TELEM_WSTRZYMAJ);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }

@@ -364,27 +364,27 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 	}
 
 	//regulator sterowania przechyleniem (lotkami w samolocie)
-	m_stPID[PID_PRZE].fSkalaWartZadanej = 30.0f * DEG2RAD;
+	m_stPID[PID_PRZE].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
 	m_stPID[PID_PRZE].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową przechylenia (żyroskop P)
-	m_stPID[PID_PK_PRZE].fSkalaWartZadanej = 60.0f * DEG2RAD;
+	m_stPID[PID_PK_PRZE].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
 	m_stPID[PID_PK_PRZE].bKatowy = FALSE;
 
 	//regulator sterowania pochyleniem (sterem wysokości)
-	m_stPID[PID_POCH].fSkalaWartZadanej = 30.0f * DEG2RAD;
+	m_stPID[PID_POCH].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
 	m_stPID[PID_POCH].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową pochylenia (żyroskop Q)
-	m_stPID[PID_PK_POCH].fSkalaWartZadanej = 60.0f * DEG2RAD;
+	m_stPID[PID_PK_POCH].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
 	m_stPID[PID_PK_POCH].bKatowy = FALSE;
 
 	//regulator sterowania odchyleniem (sterem kierunku)
-	m_stPID[PID_ODCH].fSkalaWartZadanej = 180.0f * DEG2RAD;
+	m_stPID[PID_ODCH].fSkalaWartZadanej = (float)(180.0f * DEG2RAD);
 	m_stPID[PID_ODCH].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową odchylenia (żyroskop R)
-	m_stPID[PID_PK_ODCH].fSkalaWartZadanej = 20.0f * DEG2RAD;	//[rad/s]
+	m_stPID[PID_PK_ODCH].fSkalaWartZadanej = (float)(20.0f * DEG2RAD);	//[rad/s]
 	m_stPID[PID_PK_ODCH].bKatowy = FALSE;
 
 	//regulator sterowania wysokością
@@ -396,19 +396,19 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 	m_stPID[PID_WARIO].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku północnym
-	m_stPID[PID_NAW_N].fSkalaWartZadanej = 0.1f * DEG2RAD;
+	m_stPID[PID_NAW_N].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
 	m_stPID[PID_NAW_N].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku północnym
-	m_stPID[PID_PRE_N].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_PRE_N].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
 	m_stPID[PID_PRE_N].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku wschodnim
-	m_stPID[PID_NAW_E].fSkalaWartZadanej = 0.1f * DEG2RAD;
+	m_stPID[PID_NAW_E].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
 	m_stPID[PID_NAW_E].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku wschodnim
-	m_stPID[PID_PRE_E].fSkalaWartZadanej = 0.01f * DEG2RAD;
+	m_stPID[PID_PRE_E].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
 	m_stPID[PID_PRE_E].bKatowy = FALSE;
 
 	//tryby regulacji

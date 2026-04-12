@@ -32,7 +32,6 @@ struct stRamka_t
 };
 
 
-//struct _TelemetriaUporzadkowana
 struct stTelemetria_t
 {
 	uint8_t chSubSekunda = 0;		//1/256 czêœæ sekundy z RTC
@@ -40,3 +39,13 @@ struct stTelemetria_t
 	float dane[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH] = {0};
 };
 
+
+struct stSzybkaRamkaFFT_t
+{
+	std::vector <float> vfAkcelX;
+	std::vector <float> vfAkcelY;
+	std::vector <float> vfAkcelZ;
+	std::vector <float> vfZyroX;
+	std::vector <float> vfZyroY;
+	std::vector <float> vfZyroZ;
+};

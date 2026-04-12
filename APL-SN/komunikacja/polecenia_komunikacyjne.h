@@ -90,6 +90,7 @@
 
 #define PK_ILOSC_POLECEN		39	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 
+#define PK_TELEM_FFT			95	//szybka ramka telemetryczna do przesyłania wyników FFT
 #define PK_TELEMETRIA1			96	//ramka telemetryczna 1
 #define PK_TELEMETRIA2			97	//ramka telemetryczna 2
 #define PK_TELEMETRIA3			98	//ramka telemetryczna 3 - na razie nie używane
@@ -97,8 +98,9 @@
 
 
 //polecenia ramki PK_WSTRZYMAJ_TELEMETRIE służące do zarządzania strumieniem telemetrii
-#define WSTRZYMAJ_TELEMETRIE	1
-#define WZNOW_TELEMETRIE		0
+#define TELEM_SZYBKA	2	//ma być transmitowana szybka ramka telemetryczna z wynikami FFT
+#define TELEM_WSTRZYMAJ	1	//zatrzymaj wysyłanie telemetrii
+#define TELEM_WZNOW		0	//wznów wysyłanie telemetrii
 
 
 //Status gotowośco wykonania zdjęcia
