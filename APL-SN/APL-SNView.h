@@ -75,7 +75,6 @@ protected:
 	BOOL m_bKoniecWatkuOdswiezaniaFFT;
 	BOOL m_bRysujPasekPostepu;
 	BOOL m_bRysujTelemetrie;
-	BOOL m_bRysujFFT;
 	BOOL m_bOknoGotowe;
 	uint16_t m_sLiczbaFragmentowPaskaPostepu;
 	uint16_t m_sBiezacyStanPaskaPostepu;
@@ -176,8 +175,6 @@ public:
 	afx_msg void OnUpdateKonfigTelemetrii(CCmdUI* pCmdUI);
 	afx_msg void OnKonfigRejestratora();
 	afx_msg void OnUpdateKonfigRejestratora(CCmdUI* pCmdUI);
-	afx_msg void OnButPobierzFft();
-	afx_msg void OnUpdateButPobierzFft(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie APL-SNView.cpp

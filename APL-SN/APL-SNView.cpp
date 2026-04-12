@@ -59,9 +59,6 @@ BEGIN_MESSAGE_MAP(CAPLSNView, CView)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_TELEMETRII, &CAPLSNView::OnUpdateKonfigTelemetrii)
 	ON_COMMAND(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnKonfigRejestratora)
 	ON_UPDATE_COMMAND_UI(ID_KONFIG_REJESTRATORA, &CAPLSNView::OnUpdateKonfigRejestratora)
-
-	ON_COMMAND(ID_BUT_POBIERZ_FFT, &CAPLSNView::OnButPobierzFft)
-	ON_UPDATE_COMMAND_UI(ID_BUT_POBIERZ_FFT, &CAPLSNView::OnUpdateButPobierzFft)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CAPLSNView
@@ -75,7 +72,6 @@ CAPLSNView::CAPLSNView() noexcept
 , m_nNumerPortuEth(0)
 , m_bRysujPasekPostepu(FALSE)
 , m_bRysujTelemetrie(FALSE)
-, m_bRysujFFT(FALSE)
 , m_bKoniecWatkuOdswiezaniaTelemtrii(TRUE)
 , m_bKoniecWatkuPaskaPostepu(FALSE)
 , m_bKoniecWatkuOdswiezaniaFFT(FALSE)
@@ -271,7 +267,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	}
 
 	//wodospady 6 FFT
-	//if (m_bRysujFFT)
 	if (pDoc->m_bFFTGotowe)
 	{
 		m_nRozmiarWykresuFFT = 512;
@@ -291,7 +286,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					Indeks = (y * (int)m_nRozmiarWykresuFFT + x) * 4;
 
 					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
-					//chWartosc = getProtokol().m_stRamkaFFT[t].vfAkcelX[x] * WODOSPAD_SKALA_KOLORU;
 					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
 					sKolorR = 128 + chWartosc;
 					if (sKolorR > 255)
@@ -1185,6 +1179,7 @@ uint8_t CAPLSNView::WatekInvalidujWytkresFFT(LPVOID pParam)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresFFT()
 {
+	uint16_t sRozmiarFFT;
 	while (!m_bKoniecWatkuOdswiezaniaFFT)
 	{
 		if (m_bOknoGotowe)
@@ -1194,30 +1189,17 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresFFT()
 			uint32_t nErr = WaitForSingleObject(getProtokol().m_hZdarzenieRamkaFFTGotowa, INFINITE);
 			if (nErr != WAIT_TIMEOUT)
 			{
-
-				//przenieś zawartość struktury wektorów z danymi FFT do klasy dokumentu
+				//przenieś zawartość tablicy wektorów z danymi FFT do klasy dokumentu
 				for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
 				{
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelX.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][0][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelX[sDanych];
-
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelY.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][1][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelY[sDanych];
-
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfAkcelZ.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][2][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfAkcelZ[sDanych];
-
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroX.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][3][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroX[sDanych];
-
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroY.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][4][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroY[sDanych];
-
-					for (uint16_t sDanych = 0; sDanych < getProtokol().m_stRamkaFFT[nTestu].vfZyroZ.size(); sDanych++)
-						pDoc->m_fWynikFFT[nTestu][5][sDanych] = getProtokol().m_stRamkaFFT[nTestu].vfZyroZ[sDanych];
+					for (uint8_t chIndeksZmiennej = 0; chIndeksZmiennej < LICZBA_ZMIENNYCH_FFT; chIndeksZmiennej++)
+					{
+						sRozmiarFFT = (uint16_t)getProtokol().m_vDaneFFT[nTestu][chIndeksZmiennej].size();
+						for (uint16_t sDanych = 0; sDanych < sRozmiarFFT; sDanych++)
+							pDoc->m_fWynikFFT[nTestu][chIndeksZmiennej][sDanych] = getProtokol().m_vDaneFFT[nTestu][chIndeksZmiennej][sDanych];
+					}					
 				}				
 				pDoc->m_bFFTGotowe = TRUE;
-				m_bRysujFFT = TRUE;
 				Invalidate();
 			}
 		}
@@ -1502,52 +1484,3 @@ void CAPLSNView::OnUpdateKonfigRejestratora(CCmdUI* pCmdUI)
 	
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Pobiera wyniki FFT po naciśnięciu przycisku w pasku narzedziowym
-// Parametry: brak
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::OnButPobierzFft()
-{
-	uint8_t chBłąd;
-	int nRozmiarFFT;
-	uint8_t chWykładnikPotęgi, chRodzajOkna, chAktywneSilniki;
-	uint8_t chMaxWysterowanie;
-	CAPLSNDoc* pDoc = GetDocument();
-
-	chBłąd = getKomunikacja().CzytajParametryFFT(&chWykładnikPotęgi, &chRodzajOkna, &chAktywneSilniki, &chMaxWysterowanie);
-	if (chBłąd)
-		return;
-	nRozmiarFFT = (int)powf(2.0f, (float)chWykładnikPotęgi);
-
-	for (int nTestu = 0; nTestu < LICZBA_TESTOW_FFT; nTestu++)
-	{
-		for (int nZmienna = 0; nZmienna < LICZBA_ZMIENNYCH_FFT; nZmienna++)
-		//for (int nZmienna = 0; nZmienna < LICZBA_WYKRESOW_FFT; nZmienna++)		
-		{
-			for (int nRamkaPomiaru = 0; nRamkaPomiaru < ((nRozmiarFFT / 2) / LICZB_FLOAT_WRAMCE); nRamkaPomiaru++)
-			{
-				chBłąd = getKomunikacja().CzytajWynikiFFT(nTestu, nZmienna, nRamkaPomiaru, &pDoc->m_fWynikFFT[nTestu][nZmienna][nRamkaPomiaru * LICZB_FLOAT_WRAMCE], LICZB_FLOAT_WRAMCE);
-				if (chBłąd)
-					return;
-				pDoc->m_bFFTGotowe = TRUE;
-			}
-			Invalidate(1);
-		}
-	}
-
-
-	pDoc->m_bFFTGotowe = TRUE;
-}
-
-
-// aktualizacja dostepnosci polecenia w zależności od stanu połączenia
-void CAPLSNView::OnUpdateButPobierzFft(CCmdUI* pCmdUI)
-{
-	if (m_bPolaczono)
-		pCmdUI->Enable(TRUE);
-	else
-		pCmdUI->Enable(FALSE);
-}

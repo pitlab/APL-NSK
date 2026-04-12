@@ -16,7 +16,7 @@ public:
 	virtual ~CProtokol();
 	static std::vector <stTelemetria_t> m_vDaneTelemetryczne;	
 	static std::vector <stRamka_t> m_vRamkaPolecenia;
-	stSzybkaRamkaFFT_t m_stRamkaFFT[LICZBA_TESTOW_FFT];
+	std::vector <float> m_vDaneFFT[LICZBA_TESTOW_FFT][LICZBA_ZMIENNYCH_FFT];
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	static HANDLE m_hZdarzenieRamkaFFTGotowa;
@@ -39,7 +39,13 @@ public:
 		float fMax = WARTOSC_MIN;
 	} m_stEkstremaTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	float Char2Float16(uint8_t* chDane);
-	
+	union _un8_32
+	{
+		float daneFloat;
+		uint32_t dane32;
+		uint16_t dane16[2];
+		uint8_t dane8[4];
+	} m_unia8_32;
 
 private:
 	static UINT WatekSluchajPortuCom(LPVOID pParam);

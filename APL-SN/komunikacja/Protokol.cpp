@@ -454,29 +454,31 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 			if (m_chPolecenie == PK_TELEM_FFT)
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaFFT);
-				uint8_t chNumerTestu = m_chDaneWy[1];
-				if (chNumerTestu < LICZBA_TESTOW_FFT)	//sprawdzenie jest potrzebne bo chNumerTestu przybiera wartoœæ == LICZBA_TESTOW_FFT (w celu wykrycia koñca procesu) a to przepe³nia zmienn¹
+				uint8_t chBityZmiennych = m_chDaneWy[0];
+				uint8_t chIndeksTestu = m_chDaneWy[1];
+				m_unia8_32.dane8[0] = m_chDaneWy[2];
+				m_unia8_32.dane8[1] = m_chDaneWy[3];
+				uint16_t sIndeksFFT = m_unia8_32.dane16[0];
+
+				if (chIndeksTestu < LICZBA_TESTOW_FFT)	//sprawdzenie jest potrzebne bo chNumerTestu przybiera wartoœæ == LICZBA_TESTOW_FFT (w celu wykrycia koñca procesu) a to przepe³nia zmienn¹
 				{
 					for (uint8_t d = 0; d < ((m_chIloscDanychRamki - 4) / 12); d++)
 					{
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 4]);
-						m_stRamkaFFT[chNumerTestu].vfAkcelX.push_back(fZmienna);
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 6]);
-						m_stRamkaFFT[chNumerTestu].vfAkcelY.push_back(fZmienna);
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 8]);
-						m_stRamkaFFT[chNumerTestu].vfAkcelZ.push_back(fZmienna);
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 10]);
-						m_stRamkaFFT[chNumerTestu].vfZyroX.push_back(fZmienna);
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 12]);
-						m_stRamkaFFT[chNumerTestu].vfZyroY.push_back(fZmienna);
-						fZmienna = Char2Float16(&m_chDaneWy[12 * d + 14]);
-						m_stRamkaFFT[chNumerTestu].vfZyroZ.push_back(fZmienna);
+
+						for (uint8_t z = 0; z < LICZBA_ZMIENNYCH_FFT; z++)
+						{
+							//if (chBityZmiennych & (1 < z))
+							{
+								fZmienna = Char2Float16(&m_chDaneWy[(12 * d) + (z * 2) + 4]);
+								m_vDaneFFT[chIndeksTestu][z].push_back(fZmienna);
+							}
+						}
 					}
 				}
 				LeaveCriticalSection(&m_SekcjaKrytycznaFFT);
 				m_Koniec = clock();
 				SetEvent(m_hZdarzenieRamkaFFTGotowa);
-				TRACE("SetEvent: FFT[%d]\n", chNumerTestu);
+				TRACE("SetEvent: FFT[%d, %d]\n", chIndeksTestu, sIndeksFFT);
 			}
 			else
 

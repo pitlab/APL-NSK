@@ -7,6 +7,8 @@
 #define ON_CLOSE	5
 #include <queue>
 #include "polecenia_komunikacyjne.h"
+#include "../sys_def_wspolny.h"
+#include <vector>
 
 struct BinaryFrame
 {
