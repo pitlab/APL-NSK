@@ -269,12 +269,12 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	//wodospady 6 FFT
 	if (pDoc->m_bFFTGotowe)
 	{
-		m_nRozmiarWykresuFFT = 512;
+		m_nRozmiarWykresuFFT = 1 << (getKomunikacja().m_chWykładnikPotęgi - 1);
 		size_t Indeks;
 		int8_t chWartosc;
 		int16_t sKolorR, sKolorB;
 		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-		size_t bufferSize = static_cast<size_t>(m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * 4);
+		size_t bufferSize = static_cast<size_t>(m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * sizeof(float));
 		std::vector<uint8_t> bgraBuffer(bufferSize);
 		
 		for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
@@ -283,7 +283,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			{
 				for (int x = 0; x < m_nRozmiarWykresuFFT; x++)
 				{
-					Indeks = (y * (int)m_nRozmiarWykresuFFT + x) * 4;
+					Indeks = (y * (int)m_nRozmiarWykresuFFT + x) * sizeof(float);
 
 					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
 					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
@@ -1199,7 +1199,7 @@ uint8_t CAPLSNView::WlasciwyWatekInvalidujWytkresFFT()
 							pDoc->m_fWynikFFT[nTestu][chIndeksZmiennej][sDanych] = getProtokol().m_vDaneFFT[nTestu][chIndeksZmiennej][sDanych];
 					}					
 				}				
-				pDoc->m_bFFTGotowe = TRUE;
+				pDoc->m_bFFTGotowe = TRUE;			
 				Invalidate();
 			}
 		}

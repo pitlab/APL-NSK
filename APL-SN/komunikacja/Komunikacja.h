@@ -80,6 +80,7 @@ public:
 	uint8_t ZapiszParametryFFT(uint8_t chWykladnikPotegi, uint8_t chRodzajOkna, uint8_t chAktywnSilniki, uint8_t chMaxWysterowanie);
 	uint8_t CzytajWynikiFFT(uint8_t chLiniaWodospadu, uint8_t chTypZmiennej, uint8_t chIndeksWyniku, float* fWyniki, uint8_t chRozmiar);
 	uint8_t RozpocznijDiagnostykeRezoanansu(void);
+	uint8_t ZatrzymajSilniki(void);
 
 	Roj m_cRoj;
 	Wron m_cWron;
@@ -92,6 +93,10 @@ public:
 		uint8_t dane8[4];
 	} m_unia8_32;
 	CString m_strNazwyZmiennychTele[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
+	uint8_t m_chWyk³adnikPotêgi;
+	uint8_t m_chRodzajOkna;
+	uint8_t m_chAktywneSilniki;
+	uint8_t m_chWysterowanieMaxProcent;
 
 private:
 	static uint8_t WatekDekodujRamkiPolecen(LPVOID pParam);

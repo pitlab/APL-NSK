@@ -27,6 +27,7 @@ KonfiguracjaFFT::KonfiguracjaFFT(CWnd* pParent /*=nullptr*/)
 	, m_chWysterowanieMaxProcent(0)
 	, m_chAktywneSilniki(0)
 	, m_nRozmiarFFT(0)
+	, m_strRozmiarFFT(_T(""))
 {
 
 }
@@ -48,6 +49,7 @@ void KonfiguracjaFFT::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_SILNIK4, m_bSilnik4);
 	DDX_Check(pDX, IDC_CHECK_SILNIK5, m_bSilnik5);
 	DDX_Check(pDX, IDC_CHECK_SILNIK6, m_bSilnik6);
+	DDX_Text(pDX, IDC_STAT_ROZMIAR_FFT, m_strRozmiarFFT);
 }
 
 
@@ -63,6 +65,9 @@ BEGIN_MESSAGE_MAP(KonfiguracjaFFT, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_SILNIK6, &KonfiguracjaFFT::OnBnClickedCheckSilnik6)
 	ON_BN_CLICKED(IDC_BUT_POBIERZ_DANE, &KonfiguracjaFFT::OnBnClickedButPobierzDane)
 	ON_BN_CLICKED(IDC_BUT_ROZPOCZNIJ_DIAGNOSTYKE, &KonfiguracjaFFT::OnBnClickedButRozpocznijDiagnostyke)
+	ON_BN_CLICKED(IDC_BUT_ZATRZYMAJ, &KonfiguracjaFFT::OnBnClickedButZatrzymaj)
+	ON_BN_CLICKED(IDC_BUT_ZAPISZ_KONFIG, &KonfiguracjaFFT::OnBnClickedButZapiszKonfig)
+	ON_CBN_SELCHANGE(IDC_COMBO_RODZAJ_OKNA, &KonfiguracjaFFT::OnCbnSelchangeComboRodzajOkna)
 END_MESSAGE_MAP()
 
 
@@ -91,10 +96,10 @@ BOOL KonfiguracjaFFT::OnInitDialog()
 	m_ctlRozdzielczoscFFT.SetRangeMax(FFT_WYKLADNIK_MAX);
 	m_ctlRozdzielczoscFFT.SetPos(m_chWykładnikPotęgi);
 
-	m_ctlRodzajOkna.InsertString(0, _T("Okno prostokątne"));
-	m_ctlRodzajOkna.InsertString(1, _T("Okno Hamminga"));
-	m_ctlRodzajOkna.InsertString(2, _T("Okno Hana"));
-	m_ctlRodzajOkna.InsertString(3, _T("Okno Blackmana-Harrisa"));
+	m_ctlRodzajOkna.InsertString(0, _T("Prostokątne"));
+	m_ctlRodzajOkna.InsertString(1, _T("Hamminga"));
+	m_ctlRodzajOkna.InsertString(2, _T("Hana"));
+	m_ctlRodzajOkna.InsertString(3, _T("Blackmana-Harrisa"));
 	m_ctlRodzajOkna.SetCurSel(m_chRodzajOkna);
 
 	m_ctlZakresWysterowania.SetRangeMin(0);
@@ -107,8 +112,10 @@ BOOL KonfiguracjaFFT::OnInitDialog()
 	m_bSilnik4 = (m_chAktywneSilniki & 0x08) == 0x08;
 	m_bSilnik5 = (m_chAktywneSilniki & 0x10) == 0x10;
 	m_bSilnik6 = (m_chAktywneSilniki & 0x20) == 0x20;
+
 	UpdateData(FALSE);
 	m_bZmienionoDane = FALSE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
@@ -153,7 +160,8 @@ void KonfiguracjaFFT::OnNMCustomdrawSlidRozdzielczoscFft(NMHDR* pNMHDR, LRESULT*
 	UpdateData();
 	m_chWykładnikPotęgi = m_ctlRozdzielczoscFFT.GetPos();
 	m_nRozmiarFFT = (int)pow(2.0f, m_chWykładnikPotęgi);
-	m_strRozdzielczośćFFT.Format(_T("Rozmiar FFT: %d"), m_nRozmiarFFT);
+	m_strRozmiarFFT.Format(_T("Rozmiar FFT: %d"), m_nRozmiarFFT);
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 	UpdateData(FALSE);
 	m_bZmienionoDane = TRUE;
 	*pResult = 0;
@@ -173,6 +181,7 @@ void KonfiguracjaFFT::OnNMCustomdrawSlidZakresWysterowania(NMHDR* pNMHDR, LRESUL
 	m_chWysterowanieMaxProcent = (uint8_t)m_ctlZakresWysterowania.GetPos();
 	m_strWysterowanie.Format(_T("Zakres wyster. silników: %d %%"), m_chWysterowanieMaxProcent);
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 	*pResult = 0;
 	UpdateData(FALSE);
 }
@@ -191,6 +200,7 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik1()
 	else
 		m_chAktywneSilniki &= ~0x01;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 
@@ -202,6 +212,7 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik2()
 	else
 		m_chAktywneSilniki &= ~0x02;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 
@@ -213,6 +224,7 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik3()
 	else
 		m_chAktywneSilniki &= ~0x04;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 
@@ -224,6 +236,7 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik4()
 	else
 		m_chAktywneSilniki &= ~0x08;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 
@@ -235,6 +248,7 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik5()
 	else
 		m_chAktywneSilniki &= ~0x10;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 void KonfiguracjaFFT::OnBnClickedCheckSilnik6()
@@ -245,6 +259,21 @@ void KonfiguracjaFFT::OnBnClickedCheckSilnik6()
 	else
 		m_chAktywneSilniki &= ~0x20;
 	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę typu okna
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaFFT::OnCbnSelchangeComboRodzajOkna()
+{
+	UpdateData(TRUE);
+	m_chRodzajOkna = (uint8_t)m_ctlRodzajOkna.GetCurSel();
+	m_bZmienionoDane = TRUE;
+	GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
 }
 
 
@@ -296,3 +325,54 @@ void KonfiguracjaFFT::OnBnClickedButRozpocznijDiagnostyke()
 		return;
 	}
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku Zatrzymaj silniki
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaFFT::OnBnClickedButZatrzymaj()
+{
+	uint8_t chBłąd;
+
+	chBłąd = getKomunikacja().ZatrzymajSilniki();
+	if (chBłąd)
+	{
+		CString strKomunikat;
+		strKomunikat.Format(_T("Nie można wysłać polecenia! \nKod błędu: %d"), chBłąd);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+		CDialogEx::OnCancel();
+		return;
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na naciśnięcie przycisku Zapisz konfigurację
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaFFT::OnBnClickedButZapiszKonfig()
+{
+	uint8_t chBłąd;
+
+	UpdateData(TRUE);
+	m_chAktywneSilniki = m_bSilnik1 * 0x01 + m_bSilnik2 * 0x02 + m_bSilnik3 * 0x04 + m_bSilnik4 * 0x08 + m_bSilnik5 * 0x10 + m_bSilnik6 * 0x20;
+	chBłąd = getKomunikacja().ZapiszParametryFFT(m_chWykładnikPotęgi, m_chRodzajOkna, m_chAktywneSilniki, m_chWysterowanieMaxProcent);
+	if (chBłąd)
+	{
+		CString strKomunikat;
+		strKomunikat.Format(_T("Nie można zapisać konfiguracji FFT! \nKod błędu: %d"), chBłąd);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojojoj!"), MB_ICONEXCLAMATION, 0);
+		return;
+	}
+	else
+	{
+		m_bZmienionoDane = FALSE;
+		GetDlgItem(IDC_BUT_ZAPISZ_KONFIG)->EnableWindow(m_bZmienionoDane);
+	}		
+}
+
+
+

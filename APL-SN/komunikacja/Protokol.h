@@ -17,6 +17,7 @@ public:
 	static std::vector <stTelemetria_t> m_vDaneTelemetryczne;	
 	static std::vector <stRamka_t> m_vRamkaPolecenia;
 	std::vector <float> m_vDaneFFT[LICZBA_TESTOW_FFT][LICZBA_ZMIENNYCH_FFT];
+	uint16_t m_sSzerokoscFFT;
 	static HANDLE m_hZdarzenieRamkaPolecenGotowa;
 	static HANDLE m_hZdarzenieRamkaTelemetriiGotowa;
 	static HANDLE m_hZdarzenieRamkaFFTGotowa;

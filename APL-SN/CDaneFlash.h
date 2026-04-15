@@ -68,4 +68,5 @@ public:
 	afx_msg void OnBnClickedButCzytajFlash();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedOk();
 };

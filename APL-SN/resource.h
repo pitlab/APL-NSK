@@ -406,6 +406,8 @@
 #define IDC_STATIC_WYSTEROWANIE         1353
 #define IDC_BUT_POBIERZ_DANE            1354
 #define IDC_BUT_ROZPOCZNIJ_DIAGNOSTYKE  1355
+#define IDC_BUT_ZATRZYMAJ               1356
+#define IDC_BUT_ZAPISZ_KONFIG           1357
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -451,7 +453,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        352
 #define _APS_NEXT_COMMAND_VALUE         32828
-#define _APS_NEXT_CONTROL_VALUE         1356
+#define _APS_NEXT_CONTROL_VALUE         1358
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

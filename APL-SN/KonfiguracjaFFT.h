@@ -56,4 +56,8 @@ public:
 	afx_msg void OnBnClickedButPobierzDane();
 	int m_nRozmiarFFT;
 	afx_msg void OnBnClickedButRozpocznijDiagnostyke();
+	CString m_strRozmiarFFT;
+	afx_msg void OnBnClickedButZatrzymaj();
+	afx_msg void OnBnClickedButZapiszKonfig();
+	afx_msg void OnCbnSelchangeComboRodzajOkna();
 };
