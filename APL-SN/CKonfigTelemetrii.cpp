@@ -86,7 +86,7 @@ BOOL CKonfigTelemetrii::OnInitDialog()
 	}
 
 	//wstaw listę zmiennych telemetrycznych
-	m_ctlOkresTelemetrii.InsertColumn(0, _T("Nazwa zmiennej"), 0, 120);
+	m_ctlOkresTelemetrii.InsertColumn(0, _T("Nazwa zmiennej"), 0, 130);
 	m_ctlOkresTelemetrii.InsertColumn(1, _T("Częstotliwość"), 0, 80);
 
 	//Odczytaj z roju liste telemetrii

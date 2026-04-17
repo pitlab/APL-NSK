@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 //#include "Protokol.h"
 #include "polecenia_komunikacyjne.h"

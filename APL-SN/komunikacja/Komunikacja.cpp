@@ -135,65 +135,101 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_CZAS_PETLI] = "Czas pêtli g³ównej [us]";
 
 
-	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";	//wartoœæ zadana regulatora sterowania przechyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WYJ]		= "Wy PID przechyl";	//wyjœcie regulatora sterowania przechyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_P]		= "Wy P przechylenia";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_I]		= "Wy I przechylenia";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_D]		= "Wy D przechylenia";	//wyjœcie cz³onu D
-	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WYJ]		= "Wy PID pr.k¹t.prze";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ przechylenia
-	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_P]	= "Wy P pr.k¹t.prze";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_I]	= "Wy I pr.k¹t.prze";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_D]	= "Wy D pr.k¹t.prze";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WZAD]		= "Wart.zadana przech";		//wartoœæ zadana regulatora sterowania przechyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WE_D]		= "We filtr D przech";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_CALK]		= "Ca³ka przechylenia";		//wartoœæ ca³ki cz³onu I przechylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WYJ]		= "Wy PID przechylenia";	//wyjœcie regulatora sterowania przechyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_P]		= "Wy P przechylenia";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_I]		= "Wy I przechylenia";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PRZE_WY_D]		= "Wy D przechylenia";		//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_POCH_WZAD]		= "Wart.zadana poch";	//wartoœæ zadana regulatora sterowania pochyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_POCH_WYJ]		= "Wy PID pochylenia";	//wyjœcie regulatora sterowania pochyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_P]		= "Wy P pochylenia";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_I]		= "Wy I pochylenia";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_D]		= "Wy D pochylenia";	//wyjœcie cz³onu D
-	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WYJ]		= "Wy PID pr.k¹t.poch";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ pochylenia
-	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_P]	= "Wy P pr.k¹t.poch";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_I]	= "Wy I pr.k¹t.poch";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_D]	= "Wy D pr.k¹t.poch";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WZAD]	= "Wart.zadana pr.k¹t.prze";//wartoœæ zadana regulatora prêdkoœci¹ k¹towej przechylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WE_D]	= "We filtr D pr.k¹t.prze";	//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_CALK]	= "Ca³ka pr.k¹t.prze";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ k¹towej przechylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WYJ]		= "Wy PID pr.k¹t.prze";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ przechylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_P]	= "Wy P pr.k¹t.prze";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_I]	= "Wy I pr.k¹t.prze";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_PRZE_WY_D]	= "Wy D pr.k¹t.prze";		//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WZAD]		= "Wart.zadana odch";	//wartoœæ zadana regulatora sterowania odchyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WYJ]		= "Wy PID odchylenia";	//wyjœcie regulatora sterowania odchyleniem
-	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_P]		= "Wy P odchylenia";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_I]		= "Wy I odchylenia";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_D]		= "Wy D odchylenia";	//wyjœcie cz³onu D
-	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WYJ]		= "Wy PID pr.k¹t.odch";	//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ odchylenia
-	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_P]	= "Wy P pr.k¹t.odch";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_I]	= "Wy I pr.k¹t.odch";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_D]	= "Wy D pr.k¹t.odch";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WZAD]		= "Wart.zadana poch";		//wartoœæ zadana regulatora sterowania pochyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WE_D]		= "We filtr D poch";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_CALK]		= "Ca³ka pochylenia";		//wartoœæ ca³ki cz³onu I pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WYJ]		= "Wy PID pochylenia";		//wyjœcie regulatora sterowania pochyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_P]		= "Wy P pochylenia";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_I]		= "Wy I pochylenia";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_POCH_WY_D]		= "Wy D pochylenia";		//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WZAD]		= "Wart.zadana wysoko";	//wartoœæ zadana regulatora sterowania wysokoœci¹
-	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WYJ]		= "Wy PID wysokoœci";	//wyjœcie regulatora sterowania wysokoœci¹
-	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_P]		= "Wy P wysokoœci";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_I]		= "Wy I wysokoœci";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_D]		= "Wy D wysokoœci";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WZAD]	= "Wart.zadana pr.k¹t.poch";//wartoœæ zadana regulatora prêdkoœci¹ k¹towej pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WE_D]	= "We filtr D pr.k¹t.poch";	//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_CALK]	= "Ca³ka pr.k¹t.poch";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ k¹towej pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WYJ]		= "Wy PID pr.k¹t.poch";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_P]	= "Wy P pr.k¹t.poch";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_I]	= "Wy I pr.k¹t.poch";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_POCH_WY_D]	= "Wy D pr.k¹t.poch";		//wyjœcie cz³onu D
+	
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WZAD]		= "Wart.zadana odch";		//wartoœæ zadana regulatora sterowania odchyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WE_D]		= "We filtr D odch";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_CALK]		= "Ca³ka odchylenia";		//wartoœæ ca³ki cz³onu I odchylenia
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WYJ]		= "Wy PID odchylenia";		//wyjœcie regulatora sterowania odchyleniem
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_P]		= "Wy P odchylenia";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_I]		= "Wy I odchylenia";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_ODCH_WY_D]		= "Wy D odchylenia";		//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WZAD]	= "Wart.zadana pr.k¹t.odch";//wartoœæ zadana regulatora prêdkoœci¹ k¹towej pochylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WE_D]	= "We filtr D pr.k¹t.odch";	//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_CALK]	= "Ca³ka pr.k¹t.odch";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ k¹towej odchylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WYJ]		= "Wy PID pr.k¹t.odch";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ odchylenia
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_P]	= "Wy P pr.k¹t.odch";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_I]	= "Wy I pr.k¹t.odch";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PK_ODCH_WY_D]	= "Wy D pr.k¹t.odch";		//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WZAD]		= "Wart.zadana wysoko";		//wartoœæ zadana regulatora sterowania wysokoœci¹
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WE_D]		= "We filtr D wysoko";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_CALK]		= "Ca³ka wysokoœci";		//wartoœæ ca³ki cz³onu I 
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WYJ]		= "Wy PID wysokoœci";		//wyjœcie regulatora sterowania wysokoœci¹
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_P]		= "Wy P wysokoœci";			//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_I]		= "Wy I wysokoœci";			//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_WYSO_WY_D]		= "Wy D wysokoœci";			//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WZAD]	= "Wart.zad. pr.zm.wysoko";//wartoœæ zadana regulatora prêdkoœci zmiany wysokoœci
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WE_D]	= "We filtr D pr.zm.wysoko";//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_CALK]	= "Ca³ka pr.zm.wysoko";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ zmiany wysokoœci
 	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WYJ]		= "Wy PID pr.zm.wysoko";	//wyjœcie regulatora sterowania prêdkoœci¹ zmiany wysokoœci
-	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_P]	= "Wy P pr.zm.wysoko";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_I]	= "Wy I pr.zm.wysoko";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_D]	= "Wy D pr.zm.wysoko";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_P]	= "Wy P pr.zm.wysoko";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_I]	= "Wy I pr.zm.wysoko";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_WYSO_WY_D]	= "Wy D pr.zm.wysoko";		//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WZAD]		= "Wart.zad.naw. N";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WYJ]		= "Wy PID nawig. N";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_P]		= "Wy P nawigacji N";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_I]		= "Wy I nawigacji N";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_D]		= "Wy D nawigacji N";	//wyjœcie cz³onu D
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WYJ]		= "Wy PID pr.nawig.N";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku pó³nocnym
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_P]	= "Wy P prêd.nawig.N";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_I]	= "Wy I prêd.nawig.N";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_D]	= "Wy D prêd.nawig.N";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WZAD]		= "Wart.zadana naw. N";		//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WE_D]		= "We filtr D naw. N";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_CALK]		= "Ca³ka nawigacji N";		//wartoœæ ca³ki cz³onu I 
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WYJ]		= "Wy PID nawig. N";		//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_P]		= "Wy P nawigacji N";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_I]		= "Wy I nawigacji N";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWN_WY_D]		= "Wy D nawigacji N";		//wyjœcie cz³onu D
 
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WZAD]		= "Wart.zad.naw. E";	//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WYJ]		= "Wy PID nawig. E";	//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_P]		= "Wy P nawigacji E";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_I]		= "Wy I nawigacji E";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_D]		= "Wy D nawigacji E";	//wyjœcie cz³onu D
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WYJ]		= "Wy PID pr.nawig.E";	//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku wschodnim
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";	//wyjœcie cz³onu P
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";	//wyjœcie cz³onu I
-	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_D]	= "Wy D prêd.nawig.E";	//wyjœcie cz³onu D
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WZAD]	= "Wart.zadana pr.naw.N";	//wartoœæ zadana prêdkoœci w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WE_D]	= "We filtr D pr.nawig.N";	//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_CALK]	= "Ca³ka prêd.nawig.N";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ zmiany wysokoœcim_strNazwyZmiennychTele
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WYJ]		= "Wy PID pr.nawig.N";		//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku pó³nocnym
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_P]	= "Wy P prêd.nawig.N";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_I]	= "Wy I prêd.nawig.N";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWN_WY_D]	= "Wy D prêd.nawig.N";		//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WZAD]		= "Wart.zad.naw. E";		//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WE_D]		= "We filtr D naw. E";		//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_CALK]		= "Ca³ka nawigacji E";		//wartoœæ ca³ki cz³onu I 
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WYJ]		= "Wy PID nawig. E";		//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_P]		= "Wy P nawigacji E";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_I]		= "Wy I nawigacji E";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_NAWE_WY_D]		= "Wy D nawigacji E";		//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WZAD]	= "Wart.zadana pr.naw.E";	//wartoœæ zadana prêdkoœci w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WE_D]	= "We filtr D pr.nawig.E";	//wartoœæ wejsciowa cz³onu D po filtrze
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_CALK]	= "Ca³ka prêd.nawig.E";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ zmiany prêdkoœci w kierunku wschodnime
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WYJ]		= "Wy PID pr.nawig.E";		//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku wschodnim
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";		//wyjœcie cz³onu P
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";		//wyjœcie cz³onu I
+	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_D]	= "Wy D prêd.nawig.E";		//wyjœcie cz³onu D
 }
 
 
