@@ -43,6 +43,13 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_bTrybRegulacjiAuto(FALSE)
 	, m_strJednostkaStab(_T(""))
 	, m_strJednostkaAkro(_T(""))
+	, m_strWartoscMinParametru1(_T(""))
+	, m_strWartoscMaxParametru1(_T(""))
+	, m_strWartoscMinParametru2(_T(""))
+	, m_strWartoscMaxParametru2(_T(""))
+	, m_bZmienionyTrybRegulacji(FALSE)
+	, m_bZmienioneParametryStrojenia(FALSE)
+	, m_bZmienioneWartościStrojenia(FALSE)
 {
 
 }
@@ -81,8 +88,13 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_RADIO_REG_AUTO, m_bTrybRegulacjiAuto);
 	DDX_Text(pDX, IDC_STAT_JEDNOSTKA_STAB, m_strJednostkaStab);
 	DDX_Text(pDX, IDC_STAT_JEDNOSTKA_AKRO, m_strJednostkaAkro);
-
-}
+	DDX_Control(pDX, IDC_COMBO_STROJONY_PARAMETR1, m_ctlStrojonyParametr1);
+	DDX_Control(pDX, IDC_COMBO_STROJONY_PARAMETR2, m_ctlStrojonyParametr2);
+	DDX_Text(pDX, IDC_EDIT_PARAMETR_MIN1, m_strWartoscMinParametru1);
+	DDX_Text(pDX, IDC_EDIT_PARAMETR_MIN2, m_strWartoscMinParametru2);
+	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX1, m_strWartoscMaxParametru1);
+	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX2, m_strWartoscMaxParametru2);	
+}	
 
 
 BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
@@ -113,6 +125,12 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_REG_STAB, &KonfigPID::OnBnClickedRadioRegStab)
 	ON_BN_CLICKED(IDC_RADIO_REG_AUTO, &KonfigPID::OnBnClickedRadioRegAuto)
 	ON_BN_CLICKED(IDC_BUT_USTAW_DOMYSLNE, &KonfigPID::OnBnClickedButUstawDomyslne)
+	ON_CBN_SELCHANGE(IDC_COMBO_STROJONY_PARAMETR1, &KonfigPID::OnCbnSelchangeComboStrojonyParametr1)
+	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MIN1, &KonfigPID::OnEnChangeEditParametrMin1)
+	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MAX1, &KonfigPID::OnEnChangeEditParametrMax1)
+	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MIN2, &KonfigPID::OnEnChangeEditParametrMin2)
+	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MAX2, &KonfigPID::OnEnChangeEditParametrMax2)
+	ON_CBN_SELCHANGE(IDC_COMBO_STROJONY_PARAMETR2, &KonfigPID::OnCbnSelchangeComboStrojonyParametr2)
 END_MESSAGE_MAP()
 
 
@@ -129,7 +147,7 @@ BOOL KonfigPID::OnInitDialog()
 	float fDane[ROZMIAR_REG_PID / 4];
 	uint8_t chDane[LICZBA_REG_PARAM];
 	uint8_t chErr;
-	CString strKomunikat;
+	CString strKomunikat, strParametr;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(PRZE, _T("Przechylenie"));	//regulator sterowania przechyleniem (lotkami w samolocie)
@@ -185,7 +203,145 @@ BOOL KonfigPID::OnInitDialog()
 	}
 	m_ctlSlidPOdstCzasuFiltraD1.SetRange(0, 64);
 	m_ctlSlidPOdstCzasuFiltraD2.SetRange(0, 64);
+
+	//inicjalizacja strojenia parametrów PID
+	strParametr.Format(_T("Strojenie wyłączone"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NIC, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NIC, strParametr);
+	strParametr.Format(_T("KP kąta przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_KP, strParametr);
+	strParametr.Format(_T("TI kąta przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_TI, strParametr);
+	strParametr.Format(_T("TD kąta przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_TD, strParametr);
+	strParametr.Format(_T("KP prędk.kąt. przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_KP, strParametr);
+	strParametr.Format(_T("TI prędk.kąt. przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_TI, strParametr);
+	strParametr.Format(_T("TD prędk.kąt. przechylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_TD, strParametr);
+	strParametr.Format(_T("KP kąta pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_KP, strParametr);
+	strParametr.Format(_T("TI kąta pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_TI, strParametr);
+	strParametr.Format(_T("TD kąta pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_TD, strParametr);
+	strParametr.Format(_T("KP prędk.kąt. pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_KP, strParametr);
+	strParametr.Format(_T("TI prędk.kąt. pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_TI, strParametr);
+	strParametr.Format(_T("TD prędk.kąt. pochylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_TD, strParametr);
+	strParametr.Format(_T("KP kąta odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_KP, strParametr);
+	strParametr.Format(_T("TI kąta odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_TI, strParametr);
+	strParametr.Format(_T("TD kąta odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_TD, strParametr);
+
+	strParametr.Format(_T("KP prędk.kąt. odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_KP, strParametr);
+	strParametr.Format(_T("TI prędk.kąt. odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_TI, strParametr);
+	strParametr.Format(_T("TD prędk.kąt. odchylenia"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_TD, strParametr);
+
+	strParametr.Format(_T("KP wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WYSOK_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WYSOK_KP, strParametr);
+	strParametr.Format(_T("TI wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WYSOK_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WYSOK_TI, strParametr);
+	strParametr.Format(_T("TD wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WYSOK_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WYSOK_TD, strParametr);
+
+	strParametr.Format(_T("KP zmiany wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WARIO_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WARIO_KP, strParametr);
+	strParametr.Format(_T("TI zmiany wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WARIO_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WARIO_TI, strParametr);
+	strParametr.Format(_T("TD zmiany wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WARIO_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WARIO_TD, strParametr);
+
+	strParametr.Format(_T("KP nawigacji N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_N_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_N_KP, strParametr);
+	strParametr.Format(_T("TI nawigacji N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_N_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_N_TI, strParametr);
+	strParametr.Format(_T("TD nawigacji N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_N_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_N_TD, strParametr);
+
+	strParametr.Format(_T("KP prędkości N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_N_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_N_KP, strParametr);
+	strParametr.Format(_T("TI prędkości N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_N_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_N_TI, strParametr);
+	strParametr.Format(_T("TD prędkości N"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_N_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_N_TD, strParametr);
+
+	strParametr.Format(_T("KP nawigacji E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_E_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_E_KP, strParametr);
+	strParametr.Format(_T("TI nawigacji E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_E_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_E_TI, strParametr);
+	strParametr.Format(_T("TD nawigacji E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_NAWI_E_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_NAWI_E_TD, strParametr);
+
+	strParametr.Format(_T("KP prędkości E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_E_KP, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_E_KP, strParametr);
+	strParametr.Format(_T("TI prędkości E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_E_TI, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_E_TI, strParametr);
+	strParametr.Format(_T("TD prędkości E"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_E_TD, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_E_TD, strParametr);
+
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_PARAMETR);
+	m_ctlStrojonyParametr1.SetCurSel(chDane[0]);
+	m_ctlStrojonyParametr2.SetCurSel(chDane[1]);
+
+	chErr = getKomunikacja().CzytajFloatFRAM(m_fWartośćMinParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MIN);
+	m_strWartoscMinParametru1.Format(_T("%.2f"), m_fWartośćMinParametru[0]);
+	m_strWartoscMinParametru1.Replace(_T('.'), _T(','));
+	m_strWartoscMinParametru2.Format(_T("%.2f"), m_fWartośćMinParametru[1]);
+	m_strWartoscMinParametru2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
+
+	chErr = getKomunikacja().CzytajFloatFRAM(m_fWartośćMaxParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MAX);
+	m_strWartoscMaxParametru1.Format(_T("%.2f"), m_fWartośćMaxParametru[0]);
+	m_strWartoscMaxParametru1.Replace(_T('.'), _T(','));
+	m_strWartoscMaxParametru2.Format(_T("%.2f"), m_fWartośćMaxParametru[1]);
+	m_strWartoscMaxParametru2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
+
 	UstawKontrolki(m_nBiezacyParametr);
 	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr]);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -317,6 +473,7 @@ void KonfigPID::OnBnClickedOk()
 {
 	uint8_t chPodstawaFiltraiBity;
 	uint8_t chErr = ERR_OK;
+	uint8_t chParametr[LICZBA_KAN_RC_DO_STROJENIA_PID];
 	CString strKomunikat;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
@@ -332,13 +489,26 @@ void KonfigPID::OnBnClickedOk()
 	if (m_bZmienionyTrybRegulacji)
 	{
 		chErr |= getKomunikacja().ZapiszTrybRegulacji(m_chTrybRegulacji);
+		if (chErr != ERR_OK)
+		{
+			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		}
 	}
 
-	if (chErr != ERR_OK)
+	if (m_bZmienioneParametryStrojenia)
 	{
-		strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
-		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		chParametr[0] = (uint8_t)m_ctlStrojonyParametr1.GetCurSel();
+		chParametr[1] = (uint8_t)m_ctlStrojonyParametr2.GetCurSel();
+		chErr |= getKomunikacja().ZapiszDaneU8FRAM(chParametr, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_PARAMETR);
 	}
+
+	if (m_bZmienioneWartościStrojenia)
+	{
+		chErr |= getKomunikacja().ZapiszDaneFloatFRAM(m_fWartośćMinParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MIN);
+		chErr |= getKomunikacja().ZapiszDaneFloatFRAM(m_fWartośćMaxParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MAX);
+	}
+
 	CDialogEx::OnOK();
 }
 
@@ -364,52 +534,52 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 	}
 
 	//regulator sterowania przechyleniem (lotkami w samolocie)
-	m_stPID[PID_PRZE].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
-	m_stPID[PID_PRZE].bKatowy = TRUE;
+	m_stPID[PID_KATA_PRZE].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
+	m_stPID[PID_KATA_PRZE].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową przechylenia (żyroskop P)
-	m_stPID[PID_PK_PRZE].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
-	m_stPID[PID_PK_PRZE].bKatowy = FALSE;
+	m_stPID[PID_PRED_PRZE].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
+	m_stPID[PID_PRED_PRZE].bKatowy = FALSE;
 
 	//regulator sterowania pochyleniem (sterem wysokości)
-	m_stPID[PID_POCH].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
-	m_stPID[PID_POCH].bKatowy = TRUE;
+	m_stPID[PID_KATA_POCH].fSkalaWartZadanej = (float)(30.0f * DEG2RAD);
+	m_stPID[PID_KATA_POCH].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową pochylenia (żyroskop Q)
-	m_stPID[PID_PK_POCH].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
-	m_stPID[PID_PK_POCH].bKatowy = FALSE;
+	m_stPID[PID_PRED_POCH].fSkalaWartZadanej = (float)(60.0f * DEG2RAD);
+	m_stPID[PID_PRED_POCH].bKatowy = FALSE;
 
 	//regulator sterowania odchyleniem (sterem kierunku)
-	m_stPID[PID_ODCH].fSkalaWartZadanej = (float)(180.0f * DEG2RAD);
-	m_stPID[PID_ODCH].bKatowy = TRUE;
+	m_stPID[PID_KATA_ODCH].fSkalaWartZadanej = (float)(180.0f * DEG2RAD);
+	m_stPID[PID_KATA_ODCH].bKatowy = TRUE;
 
 	//regulator sterowania prędkością kątową odchylenia (żyroskop R)
-	m_stPID[PID_PK_ODCH].fSkalaWartZadanej = (float)(20.0f * DEG2RAD);	//[rad/s]
-	m_stPID[PID_PK_ODCH].bKatowy = FALSE;
+	m_stPID[PID_PRED_ODCH].fSkalaWartZadanej = (float)(20.0f * DEG2RAD);	//[rad/s]
+	m_stPID[PID_PRED_ODCH].bKatowy = FALSE;
 
 	//regulator sterowania wysokością
-	m_stPID[PID_WYSO].fSkalaWartZadanej = 20.0f;	//[m]
-	m_stPID[PID_WYSO].bKatowy = FALSE;
+	m_stPID[PID_WYSOKOSCI].fSkalaWartZadanej = 20.0f;	//[m]
+	m_stPID[PID_WYSOKOSCI].bKatowy = FALSE;
 
 	//regulator sterowani prędkością wznoszenia (wario)
 	m_stPID[PID_WARIO].fSkalaWartZadanej = 5.0f;	//[m/s]
 	m_stPID[PID_WARIO].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku północnym
-	m_stPID[PID_NAW_N].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
-	m_stPID[PID_NAW_N].bKatowy = TRUE;
+	m_stPID[PID_NAWIG_N].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
+	m_stPID[PID_NAWIG_N].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku północnym
-	m_stPID[PID_PRE_N].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
-	m_stPID[PID_PRE_N].bKatowy = FALSE;
+	m_stPID[PID_PREDK_N].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
+	m_stPID[PID_PREDK_N].bKatowy = FALSE;
 
 	//regulator sterowania nawigacją w kierunku wschodnim
-	m_stPID[PID_NAW_E].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
-	m_stPID[PID_NAW_E].bKatowy = TRUE;
+	m_stPID[PID_NAWIG_E].fSkalaWartZadanej = (float)(0.1f * DEG2RAD);
+	m_stPID[PID_NAWIG_E].bKatowy = TRUE;
 
 	//regulator sterowania prędkością w kierunku wschodnim
-	m_stPID[PID_PRE_E].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
-	m_stPID[PID_PRE_E].bKatowy = FALSE;
+	m_stPID[PID_PREDK_E].fSkalaWartZadanej = (float)(0.01f * DEG2RAD);
+	m_stPID[PID_PREDK_E].bKatowy = FALSE;
 
 	//tryby regulacji
 	m_chTrybRegulacji[PRZE] = REG_STAB;		//regulator sterowania przechyleniem (lotkami w samolocie)    
@@ -844,5 +1014,79 @@ void KonfigPID::OnBnClickedRadioRegAuto()
 	UpdateData(FALSE);
 }
 
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany combo box z rodzajem strojonego parametru 1
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnCbnSelchangeComboStrojonyParametr1()
+{
+	m_bZmienioneParametryStrojenia = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany combo box z rodzajem strojonego parametru 2
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnCbnSelchangeComboStrojonyParametr2()
+{
+	m_bZmienioneParametryStrojenia = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany edit boxa z minimalną wartoscią parametru 1
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditParametrMin1()
+{
+	UpdateData(TRUE);
+	m_fWartośćMinParametru[0] = ZamienStrNaFloat(m_strWartoscMinParametru1.GetString());
+	m_bZmienioneWartościStrojenia = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany edit boxa z maksymalną wartoscią parametru 1
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditParametrMax1()
+{
+	UpdateData(TRUE);
+	m_fWartośćMaxParametru[0] = ZamienStrNaFloat(m_strWartoscMaxParametru1.GetString());
+	m_bZmienioneWartościStrojenia = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany edit boxa z minimalną wartoscią parametru 2
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditParametrMin2()
+{
+	UpdateData(TRUE);
+	m_fWartośćMinParametru[1] = ZamienStrNaFloat(m_strWartoscMinParametru2.GetString());
+	m_bZmienioneWartościStrojenia = TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// obsługa zmiany edit boxa z maksymalną wartoscią parametru 2
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditParametrMax2()
+{
+	UpdateData(TRUE);
+	m_fWartośćMaxParametru[1] = ZamienStrNaFloat(m_strWartoscMaxParametru2.GetString());
+	m_bZmienioneWartościStrojenia = TRUE;
+}
 
 

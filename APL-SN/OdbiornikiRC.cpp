@@ -422,9 +422,13 @@ BOOL OdbiornikiRC::OnInitDialog()
 		case FRC_NIE_TOB_NIC:		strNapis.Format(_T("Nie rób nic")); break;
 		case FRC_WLACZ_OD1:			strNapis.Format(_T("Wyjście OD1")); break;		//aktuwuj wyjście otwarty dren 1
 		case FRC_WLACZ_OD2:			strNapis.Format(_T("Wyjście OD2")); break;
-		case FRC_MOW_KOMUNIKAT1:	strNapis.Format(_T("Mów komunikat 1")); break;
-		case FRC_MOW_KOMUNIKAT2:	strNapis.Format(_T("Mów komunikat 2")); break;
-		case FRC_MOW_KOMUNIKAT3:	strNapis.Format(_T("Mów komunikat 3")); break;
+		case FRC_STROJ_PID_PARAM1:	strNapis.Format(_T("Strojenie PID param. 1")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+		case FRC_STROJ_PID_PARAM2:	strNapis.Format(_T("Strojenie PID param. 2")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+		case FRC_MOW_WYSOKOSC:		strNapis.Format(_T("Komunikat o wysokości")); break;
+		case FRC_MOW_NAPIECIE:		strNapis.Format(_T("Komunikat o napięciu")); break;
+		case FRC_MOW_TEMPERAT:		strNapis.Format(_T("Komunikat o temperat.")); break;
+		case FRC_MOW_PREDKOSC:		strNapis.Format(_T("Komunikat o prędkości")); break;
+		case FRC_MOW_KIERUNEK:		strNapis.Format(_T("Komunikat o kierunku")); break;
 		default:					strNapis.Format(_T("Błędna wartość")); break;
 		}
 

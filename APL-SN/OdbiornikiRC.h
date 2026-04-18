@@ -48,12 +48,18 @@
 
 //definicje funkcji uruchamianych rozszerzonymi kanałami RC przechowywane w zmiennej chFunkcjaMinKanaluRC[] i chFunkcjaMaxKanaluRC[]
 #define FRC_NIE_TOB_NIC			0
-#define FRC_WLACZ_OD1			1	//aktywuj wyjście otwarty dren 1
-#define FRC_WLACZ_OD2			2	//aktywuj wyjście otwarty dren 2
-#define FRC_MOW_KOMUNIKAT1		3	//mów komunikat 1
-#define FRC_MOW_KOMUNIKAT2		4
-#define FRC_MOW_KOMUNIKAT3		5
-#define LICZBA_FUNKCJI_RC		6	//liczba dostępnych funkcji
+#define FRC_WLACZ_OD1			1	//aktywuj wyjście otwarty dren 1 sterowanie przez CM7
+#define FRC_WLACZ_OD2			2	//aktywuj wyjście otwarty dren 2 sterowanie przez CM7
+#define FRC_STROJ_PID_PARAM1	3	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+#define FRC_STROJ_PID_PARAM2	4	//kanał służy do zmiany wybranego parametru 2 regulatorów PID
+#define FRC_MOW_WYSOKOSC		5	//mów komunikat o wysokości
+#define FRC_MOW_NAPIECIE		6
+#define FRC_MOW_TEMPERAT		7
+#define FRC_MOW_PREDKOSC		8
+#define FRC_MOW_KIERUNEK		9
+#define LICZBA_FUNKCJI_RC		10	//liczba dostępnych funkcji
+
+
 
 // 
 // 

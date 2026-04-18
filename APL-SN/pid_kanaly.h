@@ -23,20 +23,21 @@
 
 
 //definicje nazw regulatorów
-#define PID_PRZE 	0   //regulator sterowania przechyleniem (lotkami w samolocie)
-#define PID_PK_PRZE 1   //regulator sterowania prędkością kątową przechylenia (żyroskop P)
-#define PID_POCH 	2   //regulator sterowania pochyleniem (sterem wysokości)
-#define PID_PK_POCH 3   //regulator sterowania prędkością kątową pochylenia (żyroskop Q)
-#define PID_ODCH 	4  	//regulator sterowania odchyleniem (sterem kierunku)
-#define PID_PK_ODCH	5   //regulator sterowania prędkością kątową odchylenia (żyroskop R)
-#define PID_WYSO 	6   //regulator sterowania wysokością
-#define PID_WARIO 	7   //regulator sterowani prędkością wznoszenia (wario)
-#define PID_NAW_N 	8   //regulator sterowania nawigacją w kierunku północnym
-#define PID_PRE_N	9  	//regulator sterowania prędkością w kierunku północnym
-#define PID_NAW_E 	10  //regulator sterowania nawigacją w kierunku wschodnim
-#define PID_PRE_E	11 	//regulator sterowania prędkością w kierunku wschodnim
+#define PID_KATA_PRZE 	0   //regulator sterowania przechyleniem (lotkami w samolocie)
+#define PID_PRED_PRZE 	1   //regulator sterowania prędkością kątową przechylenia (żyroskop P)
+#define PID_KATA_POCH 	2   //regulator sterowania pochyleniem (sterem wysokości)
+#define PID_PRED_POCH 	3   //regulator sterowania prędkością kątową pochylenia (żyroskop Q)
+#define PID_KATA_ODCH 	4  	//regulator sterowania odchyleniem (sterem kierunku)
+#define PID_PRED_ODCH	5   //regulator sterowania prędkością kątową odchylenia (żyroskop R)
+#define PID_WYSOKOSCI 	6   //regulator sterowania wysokością
+#define PID_WARIO 		7   //regulator sterowani prędkością zmiany wysokości (wario)
+#define PID_NAWIG_N 	8   //regulator sterowania nawigacją w kierunku północnym
+#define PID_PREDK_N		9  	//regulator sterowania prędkością w kierunku północnym
+#define PID_NAWIG_E 	10  //regulator sterowania nawigacją w kierunku wschodnim
+#define PID_PREDK_E		11 	//regulator sterowania prędkością w kierunku wschodnim
 
 #define LICZBA_PID  (2 * LICZBA_REG_PARAM)	//liczba regulatorów
+#define LICZBA_KAN_RC_DO_STROJENIA_PID	2	//tyle kanałów RC jest używanych do strojenia wybranych parametrów PID
 #define ROZMIAR_PID_FLOAT	8
 
 //definicje trybów pracy regulatora
@@ -49,7 +50,46 @@
 #define REG_GPS_POS     5   //regulacja prędkości liniowej w osiach XYZ ze stabilizacją położenia
 //definicje trybów regulacji
 
+//definicje strojonych parametrów regulatorów PID
+#define STRP_NIC				0	//strojenie wyłączone
+#define STRP_KATA_PRZE_KP		1	//strojenie wzmocnienia w regulatorze przechylenia
+#define STRP_KATA_PRZE_TI		2	//strojenie członu całkujacego w regulatorze przechylenia
+#define STRP_KATA_PRZE_TD		3	//strojenie członu różniczkującego w regulatorze przechylenia
+#define STRP_PRED_PRZE_KP		4	//strojenie wzmocnienia w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TI		5	//strojenie członu całkujacego w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TD		6	//strojenie członu różniczkującego w regulatorze prędkości kątowej przechylenia
+#define STRP_KATA_POCH_KP		7	//strojenie wzmocnienia w regulatorze pochylenia
+#define STRP_KATA_POCH_TI		8	//strojenie członu całkujacego w regulatorze pochylenia
+#define STRP_KATA_POCH_TD		9	//strojenie członu różniczkującego w regulatorze pochylenia
+#define STRP_PRED_POCH_KP		10	//strojenie wzmocnienia w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TI		11	//strojenie członu całkujacego w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TD		12	//strojenie członu różniczkującego w regulatorze prędkości kątowej pochylenia
+#define STRP_KATA_ODCH_KP		13	//strojenie wzmocnienia w regulatorze odchylenia
+#define STRP_KATA_ODCH_TI		14	//strojenie członu całkujacego w regulatorze odchylenia
+#define STRP_KATA_ODCH_TD		15	//strojenie członu różniczkującego w regulatorze odchylenia
+#define STRP_PRED_ODCH_KP		16	//strojenie wzmocnienia w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TI		17	//strojenie członu całkujacego w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TD		18	//strojenie członu różniczkującego w regulatorze prędkości kątowej odchylenia
+#define STRP_WYSOK_KP			19	//strojenie wzmocnienia w regulatorze wysokości
+#define STRP_WYSOK_TI			20	//strojenie członu całkujacego w regulatorze wysokości
+#define STRP_WYSOK_TD			21	//strojenie członu różniczkującego w regulatorze wysokości
+#define STRP_WARIO_KP			22	//strojenie wzmocnienia w regulatorze prędkości zmiany wysokości
+#define STRP_WARIO_TI			23	//strojenie członu całkujacego w regulatorze prędkości zmiany wysokości
+#define STRP_WARIO_TD			24	//strojenie członu różniczkującego w regulatorze prędkości zmiany wysokości
+#define STRP_NAWI_N_KP			25	//strojenie wzmocnienia w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_N_TI			26	//strojenie członu całkujacego w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_N_TD			27	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku północnym
+#define STRP_PRED_N_KP			28	//strojenie wzmocnienia w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_N_TI			29	//strojenie członu całkujacego w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_N_TD			30	//strojenie członu różniczkującego w regulatorze prędkości w kierunku północnym
+#define STRP_NAWI_E_KP			31	//strojenie wzmocnienia w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_E_TI			32	//strojenie członu całkujacego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_E_TD			33	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_PRED_E_KP			34	//strojenie wzmocnienia w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_E_TI			35	//strojenie członu całkujacego w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_E_TD			36	//strojenie członu różniczkującego w regulatorze prędkości w kierunku wschodnim
 
+#define LICZBA_STROJONYCH_PARAMETROW_PID	37
 
 
 

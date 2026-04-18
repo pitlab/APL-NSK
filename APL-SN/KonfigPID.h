@@ -37,6 +37,10 @@ public:
 	} m_stPID[LICZBA_PID];
 	uint8_t m_chTrybRegulacji[LICZBA_REG_PARAM];
 	BOOL m_bZmienionyTrybRegulacji;
+	BOOL m_bZmienioneParametryStrojenia;
+	BOOL m_bZmienioneWartościStrojenia;
+	float m_fWartośćMinParametru[LICZBA_KAN_RC_DO_STROJENIA_PID];
+	float m_fWartośćMaxParametru[LICZBA_KAN_RC_DO_STROJENIA_PID];
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_KONFIG_PID };
@@ -72,6 +76,7 @@ private:
 	CString m_strMinWyj2;
 	CString m_strMaxWyj1;	
 	CString m_strMaxWyj2;
+
 	BOOL m_bKatowy;
 	int m_PodstFiltraD1;
 	int m_PodstFiltraD2;
@@ -88,6 +93,12 @@ private:
 	CString m_strSkalaWartZadanejAkro;
 	CString m_strJednostkaStab;
 	CString m_strJednostkaAkro;
+	CComboBox m_ctlStrojonyParametr1;
+	CComboBox m_ctlStrojonyParametr2;
+	CString m_strWartoscMinParametru1;
+	CString m_strWartoscMaxParametru1;
+	CString m_strWartoscMinParametru2;
+	CString m_strWartoscMaxParametru2;
 
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
@@ -116,4 +127,10 @@ public:
 	afx_msg void OnEnChangeEditSkalaWartZadStab();
 	afx_msg void OnEnChangeEditSkalaWartZadAkro();
 	afx_msg void OnBnClickedButUstawDomyslne();
+	afx_msg void OnCbnSelchangeComboStrojonyParametr1();
+	afx_msg void OnEnChangeEditParametrMin1();
+	afx_msg void OnEnChangeEditParametrMax1();
+	afx_msg void OnEnChangeEditParametrMin2();
+	afx_msg void OnEnChangeEditParametrMax2();
+	afx_msg void OnCbnSelchangeComboStrojonyParametr2();
 };
