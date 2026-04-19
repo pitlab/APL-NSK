@@ -253,22 +253,22 @@ BOOL OdbiornikiRC::OnInitDialog()
 	}
 
 	//definiuj zakres kanalów
-	m_ctlRC1Kan1.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan2.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan3.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan4.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan5.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan6.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan7.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan8.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan9.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan10.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan11.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan12.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan13.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan14.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan15.SetRange(0, ZAKRES_RC_MAX);
-	m_ctlRC1Kan16.SetRange(0, ZAKRES_RC_MAX);
+	m_ctlRC1Kan1.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan2.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan3.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan4.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan5.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan6.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan7.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan8.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan9.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan10.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan11.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan12.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan13.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan14.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan15.SetRange(0, WE_RC_MAX);
+	m_ctlRC1Kan16.SetRange(0, WE_RC_MAX);
 
 	m_ctlSerwo1.SetRange(PPM_MIN, PPM_MAX);
 	m_ctlSerwo2.SetRange(PPM_MIN, PPM_MAX);
@@ -485,7 +485,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	}
 
 	//odczytaj konfigurację wejść odbiorników i wyjść serw.
-	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_MIN_KAN_RC);
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
 	if (chErr == ERR_OK)
 	{
 		m_ctlFunkcjaKanalu5.SetCurSel(chDane[0]);
@@ -546,7 +546,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 	}
 
 	//włącz lub wyłącz funkcje wyjść
-	for (int n = 0; n < KANALY_SERW; n++)
+	for (int n = 0; n < KANALY_WYJSC_RC; n++)
 		AktywujComboFunkcjiWyjscia(n);
 
 	//odczytaj funkcję wyjścia
@@ -616,7 +616,7 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 		strWejscie[n].Format(_T("%d"), nWartoscRC);
 	}
 
-	for (int n = 0; n < KANALY_SERW; n++)
+	for (int n = 0; n < KANALY_WYJSC_RC; n++)
 	{
 		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1 + n];
 		strWyjscie[n].Format(_T("%d"), nWartoscRC);
@@ -718,7 +718,7 @@ void OdbiornikiRC::OnBnClickedOk()
 		chDane[10] = m_ctlFunkcjaKanalu15.GetCurSel();
 		chDane[11] = m_ctlFunkcjaKanalu16.GetCurSel();
 
-		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_MIN_KAN_RC);
+		chErr = getKomunikacja().ZapiszDaneU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
 		if (chErr != ERR_OK)
 		{
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);

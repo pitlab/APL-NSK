@@ -212,11 +212,11 @@ void CDaneFlash::OnBnClickedButCzytajPlik()
 			
 			//dodaj adres i długość sampla do spisu komunikatów
 			getKomunikacja().m_unia8_32.dane32 = nAdresPoczatkuSampla;
-			m_vPamiecKomunikatow[nr_sampla * 4 + 0] = getKomunikacja().m_unia8_32.dane16[0];
-			m_vPamiecKomunikatow[nr_sampla * 4 + 1] = getKomunikacja().m_unia8_32.dane16[1];
+			m_vPamiecKomunikatow[4 * nr_sampla + 0] = getKomunikacja().m_unia8_32.dane16[0];
+			m_vPamiecKomunikatow[4 * nr_sampla + 1] = getKomunikacja().m_unia8_32.dane16[1];
 			getKomunikacja().m_unia8_32.dane32 = nRozmiarSampla;
-			m_vPamiecKomunikatow[nr_sampla * 4 + 2] = getKomunikacja().m_unia8_32.dane16[0];
-			m_vPamiecKomunikatow[nr_sampla * 4 + 3] = getKomunikacja().m_unia8_32.dane16[1];
+			m_vPamiecKomunikatow[4 * nr_sampla + 2] = getKomunikacja().m_unia8_32.dane16[0];
+			m_vPamiecKomunikatow[4 * nr_sampla + 3] = getKomunikacja().m_unia8_32.dane16[1];
 
 			//dodaj wpis do listy komunikatów
 			swprintf_s(chNumerIndeksu, _T("%.2d"), nr_sampla);

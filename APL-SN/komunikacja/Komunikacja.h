@@ -81,6 +81,7 @@ public:
 	uint8_t CzytajWynikiFFT(uint8_t chLiniaWodospadu, uint8_t chTypZmiennej, uint8_t chIndeksWyniku, float* fWyniki, uint8_t chRozmiar);
 	uint8_t RozpocznijDiagnostykeRezoanansu(void);
 	uint8_t ZatrzymajSilniki(void);
+	uint8_t Prze³adujKonfiguracjePID(void);
 
 	Roj m_cRoj;
 	Wron m_cWron;

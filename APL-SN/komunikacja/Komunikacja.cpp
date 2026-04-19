@@ -230,6 +230,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";		//wyjœcie cz³onu I
 	m_strNazwyZmiennychTele[TELEID_PID_PR_NAWE_WY_D]	= "Wy D prêd.nawig.E";		//wyjœcie cz³onu D
+
+	m_strNazwyZmiennychTele[TELEID_PID_STROJENIE1]		= "Param. Strojenia 1";		//wartoœæ parametru stroj¹cego 1
+	m_strNazwyZmiennychTele[TELEID_PID_STROJENIE2]		= "Param. Strojenia 2";		//wartoœæ parametru stroj¹cego 2
 }
 
 
@@ -1723,5 +1726,23 @@ uint8_t CKomunikacja::ZatrzymajSilniki(void)
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZATRZYMAJ_SILNIKI, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);	//zatrzymuje silniki w trakcie testu FFT
+	return chErr;
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// PRze³adowuje konfiguracjê PID po zmianie parametru
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::Prze³adujKonfiguracjePID(void)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_PRZELADUJ_KONF_PID, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);	//zatrzymuje silniki w trakcie testu FFT
 	return chErr;
 }

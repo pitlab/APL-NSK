@@ -99,6 +99,8 @@ private:
 	CString m_strWartoscMaxParametru1;
 	CString m_strWartoscMinParametru2;
 	CString m_strWartoscMaxParametru2;
+	CString m_strOpisParametru1;
+	CString m_strOpisParametru2;
 
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);

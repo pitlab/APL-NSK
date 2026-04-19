@@ -88,8 +88,9 @@
 #define PK_CZYTAJ_WYNIKI_FFT	37	//odczytaj z pamiędci DRAM wyniki serii testów FFT dla akcelerometrów i żyroskopów
 #define PK_ROZP_ANALIZE_DRGAN	38	//rozpoczyna proces analizy drgań przez wykonywanie serii pomiarów FFT i coraz szybszym kręceniu silnikami
 #define PK_ZATRZYMAJ_SILNIKI	39	//zatrzymuje silniki w trakcie testu FFT
+#define PK_PRZELADUJ_KONF_PID	40	//przeładuj konfigurację PID po zmianie
 
-#define PK_ILOSC_POLECEN		40	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
+#define PK_ILOSC_POLECEN		41	//liczba poleceń do sprawdzania czy polecenie mieści się w obsługiwanych granicach
 
 #define PK_TELEM_FFT			95	//szybka ramka telemetryczna do przesyłania wyników FFT
 #define PK_TELEMETRIA1			96	//ramka telemetryczna 1
@@ -317,9 +318,11 @@
 #define TELEID_PID_PR_NAWE_WY_I	210	//wyjście członu I
 #define TELEID_PID_PR_NAWE_WY_D	211	//wyjście członu D
 
+#define TELEID_PID_STROJENIE1	212	//wartość parametru strojącego 1
+#define TELEID_PID_STROJENIE2	213	//wartość parametru strojącego 2
 //max do 255
 
-#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	212
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	214
 
 
 //#define MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH2	112

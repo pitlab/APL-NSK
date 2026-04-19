@@ -8,6 +8,7 @@
 #include <math.h>
 #include "Errors.h"
 #include "pid_kanaly.h"
+#include "sys_def_wspolny.h"
 
 // Okno dialogowe KonfigPID
 
@@ -50,6 +51,8 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_bZmienionyTrybRegulacji(FALSE)
 	, m_bZmienioneParametryStrojenia(FALSE)
 	, m_bZmienioneWartościStrojenia(FALSE)
+	, m_strOpisParametru1(_T(""))
+	, m_strOpisParametru2(_T(""))
 {
 
 }
@@ -93,7 +96,9 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PARAMETR_MIN1, m_strWartoscMinParametru1);
 	DDX_Text(pDX, IDC_EDIT_PARAMETR_MIN2, m_strWartoscMinParametru2);
 	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX1, m_strWartoscMaxParametru1);
-	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX2, m_strWartoscMaxParametru2);	
+	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX2, m_strWartoscMaxParametru2);		
+	DDX_Text(pDX, IDC_STATIC_PARAMETR1, m_strOpisParametru1);
+	DDX_Text(pDX, IDC_STATIC_PARAMETR2, m_strOpisParametru2);
 }	
 
 
@@ -145,9 +150,10 @@ BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	float fDane[ROZMIAR_REG_PID / 4];
-	uint8_t chDane[LICZBA_REG_PARAM];
+	uint8_t chDane[KANALY_FUNKCYJNE];
 	uint8_t chErr;
 	CString strKomunikat, strParametr;
+	uint8_t chKanałParametru1 = 0, chKanałParametru2 = 0;
 
 	// TODO:  Dodaj tutaj dodatkową inicjację
 	m_ctrlKanalPID.InsertItem(PRZE, _T("Przechylenie"));	//regulator sterowania przechyleniem (lotkami w samolocie)
@@ -329,17 +335,33 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctlStrojonyParametr2.SetCurSel(chDane[1]);
 
 	chErr = getKomunikacja().CzytajFloatFRAM(m_fWartośćMinParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MIN);
-	m_strWartoscMinParametru1.Format(_T("%.2f"), m_fWartośćMinParametru[0]);
+	m_strWartoscMinParametru1.Format(_T("%.3f"), m_fWartośćMinParametru[0]);
 	m_strWartoscMinParametru1.Replace(_T('.'), _T(','));
-	m_strWartoscMinParametru2.Format(_T("%.2f"), m_fWartośćMinParametru[1]);
+	m_strWartoscMinParametru2.Format(_T("%.3f"), m_fWartośćMinParametru[1]);
 	m_strWartoscMinParametru2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 
 	chErr = getKomunikacja().CzytajFloatFRAM(m_fWartośćMaxParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MAX);
-	m_strWartoscMaxParametru1.Format(_T("%.2f"), m_fWartośćMaxParametru[0]);
+	m_strWartoscMaxParametru1.Format(_T("%.3f"), m_fWartośćMaxParametru[0]);
 	m_strWartoscMaxParametru1.Replace(_T('.'), _T(','));
-	m_strWartoscMaxParametru2.Format(_T("%.2f"), m_fWartośćMaxParametru[1]);
+	m_strWartoscMaxParametru2.Format(_T("%.3f"), m_fWartośćMaxParametru[1]);
 	m_strWartoscMaxParametru2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
+
+	//czytaj funkcje kanałów aby wyświetlić informacje o tym które kanały sterują parametrami PID
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, KANALY_FUNKCYJNE, FAU_FUNKCJA_KAN_RC);
+	if (chErr == ERR_OK)
+	{
+		for (uint8_t n = 0; n < KANALY_FUNKCYJNE; n++)
+		{
+			if (chDane[n] == FRC_STROJ_PID_PARAM1)	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+				chKanałParametru1 = n + 1 + LICZBA_DRAZKOW;
+			if (chDane[n] == FRC_STROJ_PID_PARAM2)	//kanał służy do zmiany wybranego parametru 2 regulatorów PID
+				chKanałParametru2 = n + 1 + LICZBA_DRAZKOW;
+		}
+	}
+	m_strOpisParametru1.Format(_T("Parametr 1 strojony kanałem %d"), chKanałParametru1);
+	m_strOpisParametru2.Format(_T("Parametr 2 strojony kanałem %d"), chKanałParametru2);
 	UpdateData(FALSE);
 
 	UstawKontrolki(m_nBiezacyParametr);
@@ -475,6 +497,7 @@ void KonfigPID::OnBnClickedOk()
 	uint8_t chErr = ERR_OK;
 	uint8_t chParametr[LICZBA_KAN_RC_DO_STROJENIA_PID];
 	CString strKomunikat;
+	BOOL m_bZmienionoKonfigurację = FALSE;
 
 	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	for (int n = 0; n < LICZBA_PID; n++)
@@ -483,6 +506,7 @@ void KonfigPID::OnBnClickedOk()
 		{		
 			chPodstawaFiltraiBity = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
 			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fSkalaWartZadanej, chPodstawaFiltraiBity);
+			m_bZmienionoKonfigurację = TRUE;
 		}
 	}
 
@@ -494,6 +518,7 @@ void KonfigPID::OnBnClickedOk()
 			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
 			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
 		}
+		m_bZmienionoKonfigurację = TRUE;
 	}
 
 	if (m_bZmienioneParametryStrojenia)
@@ -501,12 +526,20 @@ void KonfigPID::OnBnClickedOk()
 		chParametr[0] = (uint8_t)m_ctlStrojonyParametr1.GetCurSel();
 		chParametr[1] = (uint8_t)m_ctlStrojonyParametr2.GetCurSel();
 		chErr |= getKomunikacja().ZapiszDaneU8FRAM(chParametr, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_PARAMETR);
+		m_bZmienionoKonfigurację = TRUE;
 	}
 
 	if (m_bZmienioneWartościStrojenia)
 	{
 		chErr |= getKomunikacja().ZapiszDaneFloatFRAM(m_fWartośćMinParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MIN);
 		chErr |= getKomunikacja().ZapiszDaneFloatFRAM(m_fWartośćMaxParametru, LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MAX);
+		m_bZmienionoKonfigurację = TRUE;
+	}
+
+	if (m_bZmienionoKonfigurację)
+	{
+		getKomunikacja().PrzeładujKonfiguracjePID();
+		getKomunikacja().WyłaczWykonywaniePoleceniaCM4();	//po przeładowaniu zatrzymaj cykliczne przeładowywanie
 	}
 
 	CDialogEx::OnOK();

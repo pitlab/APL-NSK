@@ -244,7 +244,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				chKolor[2] = (sPix & 0x001F) * 8;				//B
 
 
-				Indeks = (y * 480 + x) *4;
+				Indeks = (480 * y + x) *4;
 				bgraBuffer[Indeks + 0] = chKolor[2];	//B
 				bgraBuffer[Indeks + 1] = chKolor[1];	//G
 				bgraBuffer[Indeks + 2] = chKolor[0];	//R
@@ -1280,6 +1280,7 @@ BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		else
 			m_fZoomPoziomo /= 1.1f; 
 	}
+	m_bRysujTelemetrie = TRUE;	
 	UstawScrollOdWidoku();
 	Invalidate();
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
@@ -1338,9 +1339,8 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	case SB_THUMBPOSITION:	m_nVscroll = nPos;	break;	 //Scroll to the absolute position.The current position is provided in nPos.
 	case SB_THUMBTRACK:		m_nVscroll = nPos;	break;	//Drag scroll box to specified position.The current position is provided in nPos.
 	case SB_TOP: m_nVscroll = 0;	break;		//Scroll to top.
-
-
 	};
+	m_bRysujTelemetrie = TRUE;
 	Invalidate();
 	CView::OnVScroll(nSBCode, nPos, pScrollBar);
 }
@@ -1374,7 +1374,7 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	case SB_THUMBPOSITION:	m_nBiezacyScrollPoziomo = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
 	case SB_THUMBTRACK:		m_nBiezacyScrollPoziomo = nPos;	break;	//Drag scroll
 	}
-	
+	m_bRysujTelemetrie = TRUE;
 	CView::OnHScroll(nSBCode, m_nBiezacyScrollPoziomo, pScrollBar);
 	UstawScrollOdWidoku();
 	Invalidate();

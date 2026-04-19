@@ -136,7 +136,7 @@ public:
 	CComboBox m_ctlTypWyjscia9_16;
 
 	CString strWejscie[KANALY_ODB_RC];
-	CString strWyjscie[KANALY_SERW];
+	CString strWyjscie[KANALY_WYJSC_RC];
 	BOOL m_bZmienionoUstawienie;
 	//BOOL m_bZmienionoMinMax;
 	BOOL m_bZmienionoKanalDrazkow;

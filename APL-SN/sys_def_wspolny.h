@@ -1,5 +1,13 @@
-#include <math.h>
-#define _USE_MATH_DEFINES
+#ifndef UNIA8_32
+#define UNIA8_32
+typedef union 		//unia do konwersji między danymi 32, 16 i 8 bit
+{
+	float daneFloat;
+	uint32_t dane32;
+	uint16_t dane16[2];
+	uint8_t dane8[4];
+} unia8_32_t;
+#endif
 
 //flagi inicjalizacji sprzętu CM4
 #define INIT_WYKR_MTK			0x00000001
@@ -23,7 +31,7 @@
 #define INIT_TRWA_KAL_ZYRO_GOR	0x00040000	//trwa kalibracja zera żyroskopu na gorąco
 #define INIT_WYK_KAL_WZM_ZYRO	0x00080000	//wykonano kalibrację wzmocnienia żyroskopu w danej osi
 
-#define M_PI				3.14159265358979323846  /* pi */
+#define TESTY		//włacz testowanie algorytmów, można wyłaczyć dla _nieświadowego_ końcowego użytkownika
 #define RAD2DEG				(180/M_PI)
 #define DEG2RAD				(M_PI/180)
 #define KELVIN				273.15f
@@ -33,22 +41,16 @@
 #define DEKLINACJA_MAG		(6.5f * DEG2RAD)	//deklinacja magnetyczna w radianach. Źródło: https://www.magnetic-declination.com/ lub https://www.ncei.noaa.gov/sites/g/files/anmtlf171/files/inline-images/D.jpg
 #define PROMIEN_ZIEMI		6371008.77f			//promień Ziemi w metrach
 
-#define KANALY_SERW		16		//liczba sterowanych kanałów serw
-#define KANALY_ODB_RC	16		//liczba odbieranych kanałów na każdym z dwu wejść odbiorników RC
-#define KANALY_MIKSERA	8		//liczba kanałów wyjściowych, któe mogą wchodzić do miksera
-
-//definicje kanałów RC
-#define KANRC_POCH		0
-#define KANRC_PRZE		1
-#define KANRC_ODCH		2
-#define KANRC_GAZ		3
-
+#define KANALY_WYJSC_RC		16	//liczba sterowanych kanałów wyjściowych RC
+#define KANALY_ODB_RC		16	//liczba odbieranych kanałów na każdym z dwu wejść odbiorników RC
+#define KANALY_MIKSERA		8	//liczba kanałów wyjściowych, które mogą wchodzić do miksera
+#define KANALY_FUNKCYJNE	(KANALY_ODB_RC - LICZBA_DRAZKOW)	//liczba kanałów mogących uruchamiać funkcje autopilota
+#define LICZBA_DRAZKOW		4	//liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 
 //#define PPM10BIT	//tradycyjne wysterowanie w mikrosekundach z zakresu 1000-2000 z neutrum na 1500 i kroku 1000ns
 #define PPM11BIT	//sterowanie PWM serwami i regulatorami w trybie rozszerzonym o dynamice 11 bitów odpowiadajace wspólczesnym protokołom
 
 #ifdef PPM10BIT	//tradycyjne wysterowanie w mikrosekundach z zakresu 1000-2000 z neutrum na 1500 i kroku 1000ns
-#define ZAKRES_RC_MAX	1000
 //przelicznik liczby mikrosekund sygnału PPM na 1 procent wysterowania kanału RC
 #define PPM1PROC_UNI   8       //1% = 8us unipolarnie, 0%=1,1us 100%=1,9us
 #define PPM1PROC_BIP   4       //1% = 4us bipolarnie, -100%=1,1us 0%=1,5us +100%=1,9us
@@ -76,12 +78,30 @@
 //#define PPM_SPACE   	20     	//odstęp między kolejnymi impulsami PPM [us]
 
 #else 	//poszerzony zakres o dynamice 11 bitów pomiędzy wartościami 2000-4000 z neutrum w 3000 i kroku 500ns
-#define ZAKRES_RC_MAX	2000
-//przelicznik liczby mikrosekund sygnału PPM na 1 procent wysterowania kanału RC
-#define PPM1PROC_UNI   16       //1% = 8us unipolarnie, 0%=1,1us 100%=1,9us
-#define PPM1PROC_BIP   8       //1% = 4us bipolarnie, -100%=1,1us 0%=1,5us +100%=1,9us
 
-//czasy impulsów PPM dla założenia że 1% to 4us
+//przelicznik liczby mikrosekund sygnału PPM na 1 procent wysterowania kanału RC
+#define PPM1PROC_UNI	16       //1% unipolarnie (gaz)
+#define PPM1PROC_BIP	8       //1%  bipolarnie
+
+//definicje zakresów sygnału wejściowego RC
+#define WE_RC_MIN		0    	//wartość minimalna sygnału -125%
+#define WE_RC_M100    	200    //-100%
+#define WE_RC_M90     	280    //-90%
+#define WE_RC_M75     	400    //-75%
+#define WE_RC_M50     	600    //-50%
+#define WE_RC_M25     	800    //-25%
+#define WE_RC_M20     	840    //-20%
+#define WE_RC_NEUTR   	1000    //neutrum
+#define WE_RC_P20     	1160    //+20%
+#define WE_RC_P25     	1200    //+25%
+#define WE_RC_P50     	1400    //+50%
+#define WE_RC_P75     	1600    //+75%
+#define WE_RC_P90     	1720    //+90%
+#define WE_RC_P100    	1800    //+100%
+#define WE_RC_MAX		2000    //wartość maksymalna sygnału +125%
+#define WE_RC_HISTEREZA	10		//histereza do badania stanu przełacznika
+
+//czasy impulsów PPM dla założenia że 1% to PPM1PROC_BIP jednostek
 #define PPM_MIN			2000    //wartość minimalna sygnału -125%
 #define PPM_M100    	2200    //-100%
 #define PPM_M90     	2280    //-90%
@@ -103,20 +123,50 @@
 #define PRZERWA_PPM		3000	//przerwa między paczkami impulsów PPM odbiornika RC
 #endif
 
+//definicje żródła sygnału z odbiorników RC
+#define ODB_RC1			1	//pobieramy dane z odbiornika 1
+#define ODB_RC2			2	//pobieramy dane z odbiornika 2
+#define ODB_OBA			3	//pobieramy dane z obu odbiorników po przeprowadzonej dywersyfikacji
 
 //definicje typów sygnału z odbiornika RC w konfiguracji FRAM FAU_KONF_ODB_RC
+#define ODB_RC_CPPM		0
 #define ODB_RC_SBUS		1
-#define ODB_RC_PPM		2
-#define MASKA_TYPU_RC1	0x03	//te bity definiują rodzaj sygnału z odbiornika RC1
-#define MASKA_TYPU_RC2	0x30	//te bity definiują rodzaj sygnału z odbiornika RC2
+#define ODB_RC_SRSF		2	//crossfire
 
-//definicje typów sygnału 2 pierwszych serw
+#define MASKA_TYPU_RC1	0x0F	//te bity definiują rodzaj sygnału z odbiornika RC1
+#define MASKA_TYPU_RC2	0xF0	//te bity definiują rodzaj sygnału z odbiornika RC2
+
+//definicje typów sygnału wyjściowego RC dla serw i regulatorów silników.
+//Bit 3 oznacza protokół DShot, bit 2 oznacza PWM. Dzięki temu sprawdzając 1 bit można ustawić konfiguracje dla całej grupy protokołów
 #define SERWO_IO		0	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 #define SERWO_SBUS		1	//wyjście S-Bus
-#define SERWO_PWM400	2	//wyjście PWM 400Hz
-#define SERWO_PWM50		3	//wyjście PWM 50Hz
+#define SERWO_ANALOG	2	//wyjście ADC
+#define SERWO_ALTER		3	//fukcja alternatywna
 
+#define SERWO_PWMXXX	4	//bit użycia dowolnego PWM
+#define SERWO_PWM50		4	//wyjście PWM 50Hz
+#define SERWO_PWM100	5	//wyjście PWM 100Hz
+#define SERWO_PWM200	6	//wyjście PWM 200Hz
+#define SERWO_PWM400	7	//wyjście PWM 400Hz
 
+#define SERWO_DSHOTXXX	8	//bit użycia dowolnego DShot
+#define SERWO_DSHOT150	8	//wyjście DShot150
+#define SERWO_DSHOT300	9	//wyjście DShot300
+#define SERWO_DSHOT600	10	//wyjście DShot300
+#define SERWO_DSHOT1200	11	//wyjście DShot1200
+
+#define SERWO_WS281X	12	//wyjscie sterujące LED
+
+//definicje numerów kanałów sygnału wyjściowego
+#define KANAL_RC1	0
+#define KANAL_RC2	1
+#define KANAL_RC3	2
+#define KANAL_RC4	3
+#define KANAL_RC5	4
+#define KANAL_RC6	5
+#define KANAL_RC7	6
+#define KANAL_RC8	7
+#define KANAL_RC916	8	//kanały 9..16
 
 //stany 3-położeniowych przełaczników na kanałach 5, 6 i 7
 #define RC_PRZEL_MIN 0	//minus 100%
@@ -125,6 +175,96 @@
 #define RC_PRZEL_P50 3	//plus 50%
 #define RC_PRZEL_PLU 4	//plus 100%
 
+#define NORMA_SYGNALU	100.0f		//do tej wartosci sa normalizowane wejścia RC, wyjścia regualtorów PID
+
+//definicje funkcji uruchamianych rozszerzonymi kanałami RC przechowywane w zmiennej chFunkcjaMinKanaluRC[] i chFunkcjaMaxKanaluRC[]
+#define FRC_NIE_TOB_NIC			0
+#define FRC_WLACZ_OD1			1	//aktywuj wyjście otwarty dren 1 sterowanie przez CM7
+#define FRC_WLACZ_OD2			2	//aktywuj wyjście otwarty dren 2 sterowanie przez CM7
+#define FRC_STROJ_PID_PARAM1	3	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+#define FRC_STROJ_PID_PARAM2	4	//kanał służy do zmiany wybranego parametru 2 regulatorów PID
+#define FRC_MOW_WYSOKOSC		5	//mów komunikat o wysokości
+#define FRC_MOW_NAPIECIE		6
+#define FRC_MOW_TEMPERAT		7
+#define FRC_MOW_PREDKOSC		8
+#define FRC_MOW_KIERUNEK		9
+#define LICZBA_FUNKCJI_RC		10	//liczba dostępnych funkcji
+
+
+//definicje funkcji realizowanych przez kanały wyjściowe RC przechowywane w zmiennej chFunkcjaSerwa[]
+#define FWYRC_SILNIK1			0	//steruj silnikiem 1
+#define FWYRC_SILNIK2			1
+#define FWYRC_SILNIK3			2
+#define FWYRC_SILNIK4			3
+#define FWYRC_SILNIK5			4
+#define FWYRC_SILNIK6			5
+#define FWYRC_SILNIK7			6
+#define FWYRC_SILNIK8			7
+#define FWYRC_WE_RC1			8
+#define FWYRC_WE_RC2			9
+#define FWYRC_WE_RC3			10
+#define FWYRC_WE_RC4			11
+#define FWYRC_WE_RC5			12
+#define FWYRC_WE_RC6			13
+#define FWYRC_WE_RC7			14
+#define FWYRC_WE_RC8			15
+#define FWYRC_WE_RC9			16
+#define FWYRC_WE_RC10			17
+#define FWYRC_WE_RC11			18
+#define FWYRC_WE_RC12			19
+#define FWYRC_WE_RC13			20
+#define FWYRC_WE_RC14			21
+#define FWYRC_WE_RC15			22
+#define FWYRC_WE_RC16			23
+#define LICZBA_FUNKCJI_KANALOW_WYJSCIOWYCH_RC	24	//liczba dostępnych funkcji realizowanych przez kanały wyjsciowe RC
+
+
+
+//definicje funkcji silnika
+#define FSIL_NAPED				0	//normalna praca silnika jako napęd
+#define FSIL_AN_DRGAN			1	//dane do silników pochodzą z analizatora drgań w rdzeniu CM7. Wytyczne do ich obliczenia są przekazywane przez strukturę unię uRozne
+#define FSIL_ZATRZYMANY			2	//silnik jest zatrzymany
+
+//definicje strojonych parametrów regulatorów PID
+#define STRP_NIC				0	//strojenie wyłączone
+#define STRP_KATA_PRZE_KP		1	//strojenie wzmocnienia w regulatorze przechylenia
+#define STRP_KATA_PRZE_TI		2	//strojenie członu całkujacego w regulatorze przechylenia
+#define STRP_KATA_PRZE_TD		3	//strojenie członu różniczkującego w regulatorze przechylenia
+#define STRP_PRED_PRZE_KP		4	//strojenie wzmocnienia w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TI		5	//strojenie członu całkujacego w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TD		6	//strojenie członu różniczkującego w regulatorze prędkości kątowej przechylenia
+#define STRP_KATA_POCH_KP		7	//strojenie wzmocnienia w regulatorze pochylenia
+#define STRP_KATA_POCH_TI		8	//strojenie członu całkujacego w regulatorze pochylenia
+#define STRP_KATA_POCH_TD		9	//strojenie członu różniczkującego w regulatorze pochylenia
+#define STRP_PRED_POCH_KP		10	//strojenie wzmocnienia w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TI		11	//strojenie członu całkujacego w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TD		12	//strojenie członu różniczkującego w regulatorze prędkości kątowej pochylenia
+#define STRP_KATA_ODCH_KP		13	//strojenie wzmocnienia w regulatorze odchylenia
+#define STRP_KATA_ODCH_TI		14	//strojenie członu całkujacego w regulatorze odchylenia
+#define STRP_KATA_ODCH_TD		15	//strojenie członu różniczkującego w regulatorze odchylenia
+#define STRP_PRED_ODCH_KP		16	//strojenie wzmocnienia w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TI		17	//strojenie członu całkujacego w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TD		18	//strojenie członu różniczkującego w regulatorze prędkości kątowej odchylenia
+#define STRP_WYSOK_KP			19	//strojenie wzmocnienia w regulatorze wysokości
+#define STRP_WYSOK_TI			20	//strojenie członu całkujacego w regulatorze wysokości
+#define STRP_WYSOK_TD			21	//strojenie członu różniczkującego w regulatorze wysokości
+#define STRP_WARIO_KP			22	//strojenie wzmocnienia w regulatorze prędkości zmiany wysokości
+#define STRP_WARIO_TI			23	//strojenie członu całkujacego w regulatorze prędkości zmiany wysokości
+#define STRP_WARIO_TD			24	//strojenie członu różniczkującego w regulatorze prędkości zmiany wysokości
+#define STRP_NAWI_N_KP			25	//strojenie wzmocnienia w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_N_TI			26	//strojenie członu całkujacego w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_N_TD			27	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku północnym
+#define STRP_PRED_N_KP			28	//strojenie wzmocnienia w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_N_TI			29	//strojenie członu całkujacego w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_N_TD			30	//strojenie członu różniczkującego w regulatorze prędkości w kierunku północnym
+#define STRP_NAWI_E_KP			31	//strojenie wzmocnienia w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_E_TI			32	//strojenie członu całkujacego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_E_TD			33	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_PRED_E_KP			34	//strojenie wzmocnienia w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_E_TI			35	//strojenie członu całkujacego w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_E_TD			36	//strojenie członu różniczkującego w regulatorze prędkości w kierunku wschodnim
+
+#define LICZBA_STROJONYCH_PARAMETROW_PID	37
 
 //definicje temperatur kalibracji żyroskopów
 #define TEMP_KAL_ZIMNO		(10.f + KELVIN)
@@ -139,8 +279,8 @@
 #define TEMP_BARO2	1
 #define TEMP_IMU1	2
 #define TEMP_IMU2	3
-#define TEMP_CISR1	4	//czujnik ciśnienia różnicowego
-#define TEMP_CISR2	5	//czujnik ciśnienia różnicowego
+#define TEMP_CISR1	4	//temperatura wewnętrznego czujnika ciśnienia różnicowego np. ND130
+#define TEMP_CISR2	5	//temperatura zewnetrznego czujnika ciśnienia różnicowego np. MS4525
 
 #define CZAS_KALIBRACJI		1000	//obiegów pętli głównej po 5ms
 
@@ -165,25 +305,46 @@
 #define WYSOKOSC10PIETER	27.0f	//wysokość w metrach 10 pięter
 
 
-//definicje trybów lotu
-#define TRLOT_BEZPIECZNY	0	//regulatory i nawigacja wyłączone
-//do wartości 9 tryby naziemne
-#define TRLOT_UZBROJONY		10	//silniki pracują na biegu jałowym
-#define TRLOT_WZNOSZENIE	11	//kopter wznosi się na nominalnej prędkości pionowej
-#define TRLOT_LOT_RECZNY	12	//lot sterowany przez pilota
-#define TRLOT_LOT_AUTO		13	//lot autonomiczny
-#define TRLOT_PODEJ_LAD		14	//podejście do lądowania
-#define TRLOT_LADOWANIE		15	//lądowanie autonomiczne
+//definicje trybów regulacji
+#define REG_WYLACZ		0		//regultor wyłączony
+#define REG_RECZNA		1		//regulacja ręczna, bezpośrednio z drążków aparatury
+#define REG_AKRO		2		//regulacja akrobacyjna, steruje pochodną parametru głównego: prędkością kątową lub prędkości zmiany wysokości
+#define REG_STAB		3		//regulacja stabilizująca, steruje parametrem głównym: kątem lub wysokością
+#define REG_AUTO		4		//regulacja automatyczna, steruje wartością nadrzędną czyli nawigacją po wspołrzędnych geograficznych
 
-//definicje flag trybu lotu dotyczących zmiennej stWymianyCM4.chFlagiLotu
-#define WL_TRWA_LOT			0x01
 
-//definicje FFT
+//definicje głwnych regulowanych parametrów (oprócz tego każdy ma regulator pochodnej parametru głównego)
+#define PRZE	0    //regulator sterowania przechyleniem (lotkami w samolocie)
+#define POCH	1    //regulator sterowania pochyleniem (sterem wysokości)
+#define ODCH    2    //regulator sterowania odchyleniem (sterem kierunku)
+#define WYSO	3    //regulator sterowania wysokością
+#define POZN	4    //regulator sterowania położeniem północnym
+#define POZE	5    //regulator sterowania położeniem wschodnim
+
+#define LICZBA_REG_PARAM  6 //liczba regulowanych parametrów
+
+
+
+//definicje Bitów Trybu Lotu składających się na Tryb Lotu, określających zakres włączonej funkcjonalności
+#define BTR_UZBROJONY		0x80	//bit uzbrojenia silników
+#define BTR_NAWIG_AUTO		0x40	//bit autonomicznej nawigacji
+#define BTR_STAB_KATOW		0x20	//bit stabilizacji PID kątów
+#define BTR_TRWA_LOT		0x10	//bit trwania lotu, czyli kopter wytwarza ciąg potrzebny do zawisu
+
+//definicje Trybów Lotu.
+#define TL_BEZP			0x00	//regulatory i nawigacja wyłączone, silniki zatrzymane
+#define TL_RECZ			BTR_UZBROJONY	//silniki sterowane ręcznie w celach diagnostycznych
+#define TL_AKRO			BTR_UZBROJONY + 1 	//lot akrobacyjny PID steruje tylko prędkościami kątowymi
+#define TL_STAB			BTR_UZBROJONY + BTR_STAB_KATOW 		//lot ze stabilizacją kątów
+#define TL_LAD_STAB		TL_STAB + 1
+#define TL_AUTO			TL_STAB + BTR_NAWIG_AUTO	//lot autonomiczny z nawigają po punktach
+#define TL_LAD_AUTO		TL_AUTO + 1		//lądowanie w trybie autonomicznym
+#define TL_WZN_AUTO		TL_AUTO	+ 2		//kopter wznosi się na nominalnej prędkości pionowej
+
+//analiza rezonansu drgań konstrukcji na bazie FFT
 #define FFT_WYKLADNIK_MIN	6		//najmniejszy wykładnik FFT 2^6 = 64
 #define FFT_WYKLADNIK_MAX	12		//największy wykładnik FFT 2^12 = 4096
 #define FFT_MAX_ROZMIAR		4096	//największy rozmiar danych do liczenia FFT
 #define LICZBA_TESTOW_FFT	100		//liczba warunków pracy dla których zdeto komplet FFT np, różnych wysterowań silników
-#define LICZBA_WYKRESOW_FFT	3
-#define LICZBA_ZMIENNYCH_FFT	6
+#define LICZBA_ZMIENNYCH_FFT	6		//z tylu zmiennych są liczone FFT
 #define LICZB_FLOAT_WRAMCE		96
-#define WODOSPAD_SKALA_KOLORU	30.0f
