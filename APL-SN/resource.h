@@ -285,6 +285,7 @@
 #define IDC_SLIDER_FILTR_D1             1218
 #define IDC_STATIC_FILTR_D1             1219
 #define IDC_CHECK_KATOWY1               1220
+#define IDC_EDIT_PRZESUNIECIE_WYJSCIA1  1221
 #define IDC_CHECK_WYLACZ1               1222
 #define IDC_EDIT_KP2                    1223
 #define IDC_EDIT_TI2                    1224
@@ -296,9 +297,11 @@
 #define IDC_SLIDER_FILTR_D2             1230
 #define IDC_STATIC_FILTR_D2             1231
 #define IDC_CHECK_WYLACZ2               1232
+#define IDC_SLIDER_PROC_WYPRZEDZENIA    1232
 #define IDC_STAT_JEDNOSTKA_STAB         1233
 #define IDC_STAT_JEDNOSTKA_AKRO         1234
 #define IDC_EDIT_OBR_JALOWE             1235
+#define IDC_STATIC_PROC_WYPRZEDZENIA    1235
 #define IDC_EDIT_OBR_MIN                1236
 #define IDC_EDIT_OBR_ZAWIS              1237
 #define IDC_RADIO_REG_WYLACZ            1239

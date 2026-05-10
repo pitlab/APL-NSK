@@ -232,7 +232,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 		//ustaw telemetrię wejść i wyjść RC na CZESTOTLIWOSC_ODSWIEZANIA [Hz], resztę wyłącz
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
-			if ((n >= TELEID_RC_KAN1) && (n <= TELEID_SERWO16))
+			if ((n >= TID_RC_KAN1) && (n <= TID_SERWO16))
 				sOkresTelemetrii[n] = (uint16_t)(MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA);
 			else
 				sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
@@ -422,13 +422,13 @@ BOOL OdbiornikiRC::OnInitDialog()
 		case FRC_NIE_TOB_NIC:		strNapis.Format(_T("Nie rób nic")); break;
 		case FRC_WLACZ_OD1:			strNapis.Format(_T("Wyjście OD1")); break;		//aktuwuj wyjście otwarty dren 1
 		case FRC_WLACZ_OD2:			strNapis.Format(_T("Wyjście OD2")); break;
-		case FRC_STROJ_PID_PARAM1:	strNapis.Format(_T("Strojenie PID param. 1")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
-		case FRC_STROJ_PID_PARAM2:	strNapis.Format(_T("Strojenie PID param. 2")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
-		case FRC_MOW_WYSOKOSC:		strNapis.Format(_T("Komunikat o wysokości")); break;
-		case FRC_MOW_NAPIECIE:		strNapis.Format(_T("Komunikat o napięciu")); break;
-		case FRC_MOW_TEMPERAT:		strNapis.Format(_T("Komunikat o temperat.")); break;
-		case FRC_MOW_PREDKOSC:		strNapis.Format(_T("Komunikat o prędkości")); break;
-		case FRC_MOW_KIERUNEK:		strNapis.Format(_T("Komunikat o kierunku")); break;
+		case FRC_STROJ_PID_PARAM1:	strNapis.Format(_T("Strojenie PID 1")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+		case FRC_STROJ_PID_PARAM2:	strNapis.Format(_T("Strojenie PID 2")); break;	//kanał służy do zmiany wybranego parametru 1 regulatorów PID
+		case FRC_MOW_WYSOKOSC:		strNapis.Format(_T("Kom. o wysokości")); break;
+		case FRC_MOW_NAPIECIE:		strNapis.Format(_T("Kom. o napięciu")); break;
+		case FRC_MOW_TEMPERAT:		strNapis.Format(_T("Kom. o temperat.")); break;
+		case FRC_MOW_PREDKOSC:		strNapis.Format(_T("Kom. o prędkości")); break;
+		case FRC_MOW_KIERUNEK:		strNapis.Format(_T("Kom. o kierunku")); break;
 		default:					strNapis.Format(_T("Błędna wartość")); break;
 		}
 
@@ -592,53 +592,53 @@ uint8_t OdbiornikiRC::WstawDaneKanalow()
 		return ERR_NO_DATA_RECEIVED;
 	else
 		nIndeksTele -= 1;	//indeks jest liczbą danych -1
-	m_ctlRC1Kan1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1]);
-	m_ctlRC1Kan2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN2]);
-	m_ctlRC1Kan3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN3]);
-	m_ctlRC1Kan4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN4]);
-	m_ctlRC1Kan5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN5]);
-	m_ctlRC1Kan6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN6]);
-	m_ctlRC1Kan7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN7]);
-	m_ctlRC1Kan8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN8]);
-	m_ctlRC1Kan9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN9]);
-	m_ctlRC1Kan10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN10]);
-	m_ctlRC1Kan11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN11]);
-	m_ctlRC1Kan12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN12]);
-	m_ctlRC1Kan13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN13]);
-	m_ctlRC1Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN14]);
-	m_ctlRC1Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN15]);
-	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN16]);
+	m_ctlRC1Kan1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN1]);
+	m_ctlRC1Kan2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN2]);
+	m_ctlRC1Kan3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN3]);
+	m_ctlRC1Kan4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN4]);
+	m_ctlRC1Kan5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN5]);
+	m_ctlRC1Kan6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN6]);
+	m_ctlRC1Kan7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN7]);
+	m_ctlRC1Kan8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN8]);
+	m_ctlRC1Kan9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN9]);
+	m_ctlRC1Kan10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN10]);
+	m_ctlRC1Kan11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN11]);
+	m_ctlRC1Kan12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN12]);
+	m_ctlRC1Kan13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN13]);
+	m_ctlRC1Kan14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN14]);
+	m_ctlRC1Kan15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN15]);
+	m_ctlRC1Kan16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN16]);
 
 	//aktualizuj wartości min i max
 	for (int n = 0; n < KANALY_ODB_RC; n++)
 	{
-		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_RC_KAN1 + n];
+		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_RC_KAN1 + n];
 		strWejscie[n].Format(_T("%d"), nWartoscRC);
 	}
 
 	for (int n = 0; n < KANALY_WYJSC_RC; n++)
 	{
-		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1 + n];
+		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO1 + n];
 		strWyjscie[n].Format(_T("%d"), nWartoscRC);
 	}
 		
 
-	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO1]);
-	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO2]);
-	m_ctlSerwo3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO3]);
-	m_ctlSerwo4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO4]);
-	m_ctlSerwo5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO5]);
-	m_ctlSerwo6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO6]);
-	m_ctlSerwo7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO7]);
-	m_ctlSerwo8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO8]);
-	m_ctlSerwo9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO9]);
-	m_ctlSerwo10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO10]);
-	m_ctlSerwo11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO11]);
-	m_ctlSerwo12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO12]);
-	m_ctlSerwo13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO13]);
-	m_ctlSerwo14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO14]);
-	m_ctlSerwo15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO15]);
-	m_ctlSerwo16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TELEID_SERWO16]);
+	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO1]);
+	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO2]);
+	m_ctlSerwo3.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO3]);
+	m_ctlSerwo4.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO4]);
+	m_ctlSerwo5.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO5]);
+	m_ctlSerwo6.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO6]);
+	m_ctlSerwo7.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO7]);
+	m_ctlSerwo8.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO8]);
+	m_ctlSerwo9.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO9]);
+	m_ctlSerwo10.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO10]);
+	m_ctlSerwo11.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO11]);
+	m_ctlSerwo12.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO12]);
+	m_ctlSerwo13.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO13]);
+	m_ctlSerwo14.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO14]);
+	m_ctlSerwo15.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO15]);
+	m_ctlSerwo16.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO16]);
 	UpdateData(FALSE);
 	return ERR_OK;
 }

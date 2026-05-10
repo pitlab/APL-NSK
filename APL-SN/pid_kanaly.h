@@ -38,7 +38,7 @@
 
 #define LICZBA_PID  (2 * LICZBA_REG_PARAM)	//liczba regulatorów
 #define LICZBA_KAN_RC_DO_STROJENIA_PID	2	//tyle kanałów RC jest używanych do strojenia wybranych parametrów PID
-#define ROZMIAR_PID_FLOAT	8
+//#define ROZMIAR_PID_FLOAT	8
 
 //definicje trybów pracy regulatora
 #define REG_WYLACZ		0	//regultor wyłączony

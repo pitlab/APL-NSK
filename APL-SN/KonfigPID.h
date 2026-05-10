@@ -29,8 +29,15 @@ public:
 		float fOgrCalki;	//ograniczenie członu całkujacego
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
-		float fSkalaWartZadanej;
+
+		float fMnożnikWartZadanej;
+		//float fStałeWyprzedzenie;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
+		float fPrzesunięcieWyjścia;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
+		float fWolne1;
+		float fWolne2;
+
 		uint8_t chPodstFiltraD;	//podstawa filtra IIR
+		uint8_t chProcWartZadWyprz;	//procent zmiany wartości zadanej podawany na wejsście wyprzedzające
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
 		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
@@ -76,14 +83,18 @@ private:
 	CString m_strMinWyj2;
 	CString m_strMaxWyj1;	
 	CString m_strMaxWyj2;
+	CString m_strPrzesunięcieWyjścia1;
 
 	BOOL m_bKatowy;
-	int m_PodstFiltraD1;
-	int m_PodstFiltraD2;
+	int m_nPodstFiltraD1;
+	int m_nPodstFiltraD2;
+	int m_nProcWyprzedzenia2;
 	CString m_strPodstFiltraD1;
 	CString m_strPodstFiltraD2;
-	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD1;
-	CSliderCtrl m_ctlSlidPOdstCzasuFiltraD2;
+	CString m_strProcWyprzedzenia;
+	CSliderCtrl m_ctlSlidPodstCzasuFiltraD1;
+	CSliderCtrl m_ctlSlidPodstCzasuFiltraD2;
+	CSliderCtrl m_ctlSlidProcWyprzedzenia2;
 	BOOL m_bTrybRegulacjiWylaczony;
 	BOOL m_bTrybRegulacjiReczny;
 	BOOL m_bTrybRegulacjiAkro;
@@ -135,4 +146,7 @@ public:
 	afx_msg void OnEnChangeEditParametrMin2();
 	afx_msg void OnEnChangeEditParametrMax2();
 	afx_msg void OnCbnSelchangeComboStrojonyParametr2();
+	afx_msg void OnCustomdrawSliderProcWyprzedzenia(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnEnChangeEditPrzesuniecieWyjscia1();
 };
