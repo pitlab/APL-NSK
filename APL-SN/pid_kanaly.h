@@ -12,12 +12,12 @@
 #define REG_LIN     0   //regulator liniowy
 
 //definicje nazw regulowanych parametrów
-#define PRZE	0    //regulator sterowania przechyleniem (lotkami w samolocie)
-#define POCH	1    //regulator sterowania pochyleniem (sterem wysokości)
-#define ODCH    2    //regulator sterowania obrotem (sterem kierunku)
-#define WYSO	3    //regulator sterowania wysokością
-#define POZN	4    //regulator sterowania prędkością i położeniem północnym
-#define POZE	5    //regulator sterowania prędkością i położeniem wschodnim
+#define PRZE		0    //regulator sterowania przechyleniem (lotkami w samolocie)
+#define POCH		1    //regulator sterowania pochyleniem (sterem wysokości)
+#define ODCH	    2    //regulator sterowania obrotem (sterem kierunku)
+#define WYSO		3    //regulator sterowania wysokością
+#define POZN		4    //regulator sterowania prędkością i położeniem północnym
+#define POZE		5    //regulator sterowania prędkością i położeniem wschodnim
 
 #define LICZBA_REG_PARAM  6 //liczba regulowanych parametrów
 
@@ -38,7 +38,7 @@
 
 #define LICZBA_PID  (2 * LICZBA_REG_PARAM)	//liczba regulatorów
 #define LICZBA_KAN_RC_DO_STROJENIA_PID	2	//tyle kanałów RC jest używanych do strojenia wybranych parametrów PID
-#define ROZMIAR_PID_FLOAT	8
+//#define ROZMIAR_PID_FLOAT	8
 
 //definicje trybów pracy regulatora
 #define REG_WYLACZ		0	//regultor wyłączony

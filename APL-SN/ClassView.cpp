@@ -166,7 +166,7 @@ void CClassView::FillClassView()
 			
 		//wstaw do gałezi IMU wszystkie zmienne telemetryczne od akcelerometrów do końca magnetometrów
 		hZmienna = m_wndClassView.InsertItem(_T("IMU"), 2, 2, hZasob);
-		for (uint8_t n = TELEID_AKCEL1X; n <= TELEID_MAGNE3Z; n++)
+		for (uint8_t n = TID_AKCEL1X; n <= TID_MAGNE3Z; n++)
 		{
 			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
 			if (sOkresTele)
@@ -174,7 +174,7 @@ void CClassView::FillClassView()
 		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("AHRS"), 2, 2, hZasob);
-		for (uint8_t n = TELEID_KAT_IMU1X; n <= TELEID_KAT_ZYRO1Z; n++)
+		for (uint8_t n = TID_KAT_IMU1X; n <= TID_KAT_ZYRO1Z; n++)
 		{
 			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
 			if (sOkresTele)
@@ -182,7 +182,7 @@ void CClassView::FillClassView()
 		}
 
 		hZmienna = m_wndClassView.InsertItem(_T("Barometryczne"), 2, 2, hZasob);
-		for (uint8_t n = TELEID_CISBEZW1; n <= TELEID_TEMPCISR2; n++)
+		for (uint8_t n = TID_CISBEZW1; n <= TID_TEMPCISR2; n++)
 		{
 			sOkresTele = getKomunikacja().m_cRoj.vWron[w].m_sOkresTelemetrii[n];
 			if (sOkresTele)

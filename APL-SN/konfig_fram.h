@@ -52,31 +52,22 @@
 
 //regulatory PID
 #define FA_USER_PID	    	0x0100
-#define FAU_PID_P0          FA_USER_PID+0		//4F wzmocnienienie członu P regulatora 0
-#define FAU_PID_I0          FA_USER_PID+4		//4F wzmocnienienie członu I regulatora 0
-#define FAU_PID_D0          FA_USER_PID+8		//4F wzmocnienienie członu D regulatora 0
-#define FAU_PID_OGR_I0      FA_USER_PID+12		//4F ograniczenie wartości całki członu I regulatora 0
-#define FAU_PID_MIN_WY0		FA_USER_PID+16		//4F minimalna wartość wyjścia
-#define FAU_PID_MAX_WY0		FA_USER_PID+20		//4F maksymalna wartość wyjścia
-#define FAU_SKALA_WZADANEJ0 FA_USER_PID+24	//4F skalowanie wartości zadanej
-#define FAU_FILTRD_TYP 		FA_USER_PID+28  //1U Stała czasowa filtru członu różniczkującego (bity 0..5), wyłączony (bit 6), Regulator kątowy (bit 7)
-#define FAU_PID1	        FA_USER_PID+29  //1U nic
-#define FAU_PID2			FA_USER_PID+30	//1U nic
-#define FAU_PID3			FA_USER_PID+31	//1U nic
-#define ROZMIAR_REG_PID		32
+#define FAU_PID_KP          FA_USER_PID+0   //4F wzmocnienienie członu P regulatora 0
+#define FAU_PID_TI          FA_USER_PID+4   //4F wzmocnienienie członu I regulatora 0
+#define FAU_PID_TD          FA_USER_PID+8   //4F wzmocnienienie członu D regulatora 0
+#define FAU_PID_OGR_CALK    FA_USER_PID+12  //4F ograniczenie wartości całki członu I regulatora 0
+#define FAU_PID_MIN_WY		FA_USER_PID+16  //4F minimalna wartość wyjścia
+#define FAU_PID_MAX_WY		FA_USER_PID+20  //4F maksymalna wartość wyjścia
+#define FAU_PID_MNOZN_WZAD 	FA_USER_PID+24	//4F mnożnik wartości zadanej
+#define FAU_PID_STALE_WYPRZ	FA_USER_PID+28 	//4F stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
+#define FAU_PID1			FA_USER_PID+32	//4F wolne
+#define FAU_PID2			FA_USER_PID+36	//4F wolne
+#define FAU_FILTRD_TYP 		FA_USER_PID+40  //1U Stała czasowa filtru członu różniczkującego (bity 0..5), wyłączony (bit 6), Regulator kątowy (bit 7)
+#define FAU_PID_PROC_WYPRZ  FA_USER_PID+41  //1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
+#define ROZMIAR_REG_PID		42
 
 
 //12 regulatorów zajmuje 336 bajtów - 0x180
-#define FAU_TRYB_REG	    0x0280		//6*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków i 2 regulatorów pozycji N i E
-#define FAU_KAN_DRAZKA_RC	0x0286		//4*1U Numer kanału przypisany do funkcji drążka aparatury: przechylenia, pochylenia, odchylenia i wysokości
-#define FAU_STROJ1_PARAMETR	0x028A		//2*1U numer strojonego parametru
-#define FAU_STROJ2_PARAMETR	0x028B
-#define FAU_STROJ1_WART_MIN	0x028C		//2*4F minimalna wartość parametru dla minimalnej wartości kanału
-#define FAU_STROJ2_WART_MIN	0x0290
-#define FAU_STROJ1_WART_MAX	0x0294		//2*4F maksymalna wartość parametru dla maksymalnej wartości kanału
-#define FAU_STROJ2_WART_MAX	0x0298
-//wolne 4 bajty
-
 
 //konfiguracja odbiorników RC i wyjść serw/ESC zdefiniowane w sys_def_wspolnych.h
 #define FAU_KONF_ODB_RC		0x0300		//1U konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus
@@ -136,13 +127,15 @@
 //wolne 12 bajtów
 
 
-#define FA_SYS_VAR	    	0x0400	    //zmienne systemowe i dynamiczne
-#define	FAS_NUMER_SESJI	  	0x0400		//1U Numer sesji
-#define	FAS_ENERGIA1	    0x0401    	//4D energia pobrana z pakietu 1
-#define	FAS_ENERGIA2        0x0405   	//4D energia pobrana z pakietu 2
-#define	FAS_CISN_01	    	0x0409    	//4D ciśnienie zerowe czujnika bezwzględnego 1
-#define	FAS_CISN_02	    	0x040D    	//4D ciśnienie zerowe czujnika bezwzględnego 2
-#define FA_SYS_VAR			0x0400	    //zmienne systemowe i dynamiczne
+#define FAU_TRYB_REG	    		0x0400		//6*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków i 2 regulatorów pozycji N i E
+#define FAU_KAN_DRAZKA_RC			0x0406		//4*1U Numer kanału przypisany do funkcji drążka aparatury: przechylenia, pochylenia, odchylenia i wysokości
+#define FAU_STROJ1_PARAMETR			0x040A		//2*1U numer strojonego parametru
+#define FAU_STROJ2_PARAMETR			0x040B
+#define FAU_STROJ1_WART_MIN			0x040C		//2*4F minimalna wartość parametru dla minimalnej wartości kanału
+#define FAU_STROJ2_WART_MIN			0x0410
+#define FAU_STROJ1_WART_MAX			0x0414		//2*4F maksymalna wartość parametru dla maksymalnej wartości kanału
+#define FAU_STROJ2_WART_MAX			0x0418
+
 
 
 #define FA_HARD_VAR         	0x0500	    //zmienne definiujące parametry sprzętu 0x500 = 1280
@@ -237,6 +230,13 @@
 
 
 
+//zmienne systemowe i dynamiczne
+#define FA_SYS_VAR	    			0x0FF0
+#define	FAS_NUMER_SESJI	  			FA_SYS_VAR		//1U Numer sesji
+#define	FAS_ENERGIA1	    		FA_SYS_VAR+1    //4D energia pobrana z pakietu 1
+#define	FAS_ENERGIA2        		FA_SYS_VAR+5   	//4D energia pobrana z pakietu 2
+#define	FAS_CISN_01	    			FA_SYS_VAR+9    //4D ciśnienie zerowe czujnika bezwzględnego 1
+#define	FAS_CISN_02	    			FA_SYS_VAR+13   //4D ciśnienie zerowe czujnika bezwzględnego 2
 
 
 
