@@ -520,15 +520,20 @@ void KonfigPID::OnBnClickedOk()
 	CString strKomunikat;
 	BOOL m_bZmienionoKonfigurację = FALSE;
 
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
 		{		
 			chPodstawaFiltraiBity = (m_stPID[n].chPodstFiltraD & 0x3F) + (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
 			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, chPodstawaFiltraiBity, m_stPID[n].chProcWartZadWyprz);
-			m_bZmienionoKonfigurację = TRUE;
+			m_bZmienionoKonfigurację = FALSE;	//to polecenie nie wymaga przeładowania całosci, bo oprócz zapisu do FRAM ładuje też do zmiennych
 		}
+	}
+	if (chErr != ERR_OK)
+	{
+		strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji PID"), chErr);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		CDialogEx::OnOK();
 	}
 
 	if (m_bZmienionyTrybRegulacji)
@@ -536,8 +541,9 @@ void KonfigPID::OnBnClickedOk()
 		chErr |= getKomunikacja().ZapiszTrybRegulacji(m_chTrybRegulacji);
 		if (chErr != ERR_OK)
 		{
-			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), chErr);
+			strKomunikat.Format(_T("Błąd nr %d zapisu trybów regulacji"), chErr);
 			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+			CDialogEx::OnOK();
 		}
 		m_bZmienionoKonfigurację = TRUE;
 	}
@@ -555,11 +561,21 @@ void KonfigPID::OnBnClickedOk()
 		chErr |= getKomunikacja().ZapiszDaneFloatFRAM(m_fWartośćParametru, 2 * LICZBA_KAN_RC_DO_STROJENIA_PID, FAU_STROJ1_WART_MIN);
 		m_bZmienionoKonfigurację = TRUE;
 	}
+	if (chErr != ERR_OK)
+	{
+		strKomunikat.Format(_T("Błąd nr %d zapisu parametrów strojenia PID"), chErr);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		CDialogEx::OnOK();
+	}
+
 
 	if (m_bZmienionoKonfigurację)
+		chErr |= getKomunikacja().PrzeładujKonfiguracjePID();
+	
+	if (chErr != ERR_OK)
 	{
-		getKomunikacja().PrzeładujKonfiguracjePID();
-		//getKomunikacja().WyłaczWykonywaniePoleceniaCM4();	//po przeładowaniu zatrzymaj cykliczne przeładowywanie
+		strKomunikat.Format(_T("Błąd nr %d przeładowania konfiguracji PID"), chErr);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
 	}
 
 	CDialogEx::OnOK();
