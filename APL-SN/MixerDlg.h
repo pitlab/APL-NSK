@@ -18,7 +18,7 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_MIKSER };
-	struct Konfiguracja
+	struct stKonfiguracja
 	{
 		float fKat[KANALY_MIKSERA];		//[rad]
 		float fDlug[KANALY_MIKSERA];	//[mm]
@@ -57,7 +57,7 @@ public:
 	float m_fKatRamienia[KANALY_MIKSERA];		//[rad]
 	float m_fDlugoscRamienia[KANALY_MIKSERA];	//[mm]
 	float m_fPromienSmigla;	//[mm]
-	Konfiguracja m_stPredefKonfig[ILOSC_PREDEF_KONF];	//5 konfiguracji
+	stKonfiguracja m_stPredefKonfig[ILOSC_PREDEF_KONF];	//5 konfiguracji
 	int m_nActualSel;
 	BOOL m_bBylaZmianaDlugosci;
 	BOOL m_bBylaZmianaKata;

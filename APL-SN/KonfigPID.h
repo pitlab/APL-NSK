@@ -46,8 +46,6 @@ public:
 	BOOL m_bZmienionyTrybRegulacji;
 	BOOL m_bZmienioneParametryStrojenia;
 	BOOL m_bZmienioneWartościStrojenia;
-	//float m_fWartośćMinParametru[LICZBA_KAN_RC_DO_STROJENIA_PID];
-	//float m_fWartośćMaxParametru[LICZBA_KAN_RC_DO_STROJENIA_PID];
 	float m_fWartośćParametru[2 * LICZBA_KAN_RC_DO_STROJENIA_PID];	//w jednej zmiennej są parametry: min1, min2, max1, max2 aby uprościć zapis i odczyt
 // Dane okna dialogowego
 #ifdef AFX_DESIGN_TIME
