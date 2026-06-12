@@ -15,7 +15,6 @@ IMPLEMENT_DYNAMIC(NapedStrojenie, CDialogEx)
 
 NapedStrojenie::NapedStrojenie(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_NAPED_I_STROJENIE, pParent)
-	, m_strObrotyJalowe(_T(""))
 	, m_strObrotyMin(_T(""))
 	, m_strObrotyMax(_T(""))
 	, m_strObrotyZawis(_T(""))
@@ -31,16 +30,13 @@ NapedStrojenie::~NapedStrojenie()
 void NapedStrojenie::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_OBR_JALOWE, m_strObrotyJalowe);
 	DDX_Text(pDX, IDC_EDIT_OBR_MIN, m_strObrotyMin);
-	DDX_Text(pDX, IDC_EDIT_OBR_ZAWIS, m_strObrotyMax);
 	DDX_Text(pDX, IDC_EDIT_OBR_MAX, m_strObrotyMax);
 	DDX_Text(pDX, IDC_EDIT_OBR_ZAWIS, m_strObrotyZawis);
 }
 
 
 BEGIN_MESSAGE_MAP(NapedStrojenie, CDialogEx)
-	ON_EN_CHANGE(IDC_EDIT_OBR_JALOWE, &NapedStrojenie::OnEnChangeEditObrJalowe)
 	ON_EN_CHANGE(IDC_EDIT_OBR_MIN, &NapedStrojenie::OnEnChangeEditObrMin)
 	ON_EN_CHANGE(IDC_EDIT_OBR_ZAWIS, &NapedStrojenie::OnEnChangeEditObrZawis)
 	ON_EN_CHANGE(IDC_EDIT_OBR_MAX, &NapedStrojenie::OnEnChangeEditObrMax)
@@ -56,24 +52,22 @@ END_MESSAGE_MAP()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL NapedStrojenie::OnInitDialog()
 {
-	uint8_t chDane[2*ROZMIAR_PWM];
+	uint8_t chDane[2* LICZBA_DANYCH_NAPEDU];
 	uint8_t chErr;
 
 	CDialogEx::OnInitDialog();
 	m_bBylaZmianaObrotow = FALSE;
 
 
-	chErr = getKomunikacja().CzytajU8FRAM(chDane, 2*ROZMIAR_PWM, FAU_PWM_JALOWY);
+	chErr = getKomunikacja().CzytajU8FRAM(chDane, 2* LICZBA_DANYCH_NAPEDU, FAU_RC_WY_MIN);
 	if (chErr == ERR_OK)
 	{
-		m_nObrotyJalowe = chDane[0] + chDane[1] * 0x100;
-		m_strObrotyJalowe.Format(_T("%d"), m_nObrotyJalowe);
-		m_nObrotyMin = chDane[2] + chDane[3] * 0x100;
-		m_strObrotyMin.Format(_T("%d"), m_nObrotyMin);
+		m_nObrotyMin = chDane[0] + chDane[1] * 0x100;
+		m_strObrotyMin.Format(_T("%ld"), m_nObrotyMin);
+		m_nObrotyMax = chDane[2] + chDane[3] * 0x100;
+		m_strObrotyMax.Format(_T("%ld"), m_nObrotyMax);
 		m_nObrotyZawis = chDane[4] + chDane[5] * 0x100;
-		m_strObrotyZawis.Format(_T("%d"), m_nObrotyZawis);
-		m_nObrotyMax = chDane[6] + chDane[7] * 0x100;
-		m_strObrotyMax.Format(_T("%d"), m_nObrotyMax);
+		m_strObrotyZawis.Format(_T("%ld"), m_nObrotyZawis);
 	}
 	UpdateData(FALSE);
 
@@ -82,16 +76,6 @@ BOOL NapedStrojenie::OnInitDialog()
 }
 
 
-
-
-
-void NapedStrojenie::OnEnChangeEditObrJalowe()
-{
-	UpdateData();
-	m_nObrotyJalowe = (int)_wtoi(m_strObrotyJalowe);
-	m_bBylaZmianaObrotow = TRUE;
-	Invalidate();
-}
 
 
 void NapedStrojenie::OnEnChangeEditObrMin()
@@ -134,7 +118,7 @@ void NapedStrojenie::OnBnClickedOk()
 
 	if (m_bBylaZmianaObrotow)
 	{
-		chErr = getKomunikacja().ZapiszWysterowanieObrotow(m_nObrotyJalowe, m_nObrotyMin, m_nObrotyZawis, m_nObrotyMax);
+		chErr = getKomunikacja().ZapiszWysterowanieObrotow(m_nObrotyMin, m_nObrotyMax, m_nObrotyZawis);
 		if (chErr != ERR_OK)
 		{
 			strKomunikat.Format(_T("Błąd zapisu konfiguracji wysterowania nr %d"), chErr);

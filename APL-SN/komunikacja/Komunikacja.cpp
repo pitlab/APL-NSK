@@ -134,7 +134,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_DOTYK_ADC2] = "Ekran dotyk. ADC[2]";
 	m_strNazwyZmiennychTele[TID_CZAS_PETLI] = "Czas pêtli g³ównej [us]";
 	m_strNazwyZmiennychTele[TID_ROZNE_F11]	= "Zm. debug. fRozne[11]";
-
+	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC1] = "Jakoœæ up-linku RC1";
+	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC2] = "Jakoœæ up-linku RC2";
+	m_strNazwyZmiennychTele[TID_JAKOSC_DOWN_RC] = "Jakoœæ down-linku RC";
 
 
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WZAD]		= "Wart.zadana przech";		//wartoœæ zadana regulatora sterowania przechyleniem
@@ -1421,27 +1423,25 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp
 //  sMax - wysterowanie dla uzyskania obrotów maksymalnych
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sJalowe, uint16_t sMin, uint16_t sZawis, uint16_t sMax)
+uint8_t CKomunikacja::ZapiszWysterowanieObrotow(uint16_t sMin, uint16_t sMax, uint16_t sZawis)
 {
 	uint8_t chErr, chOdebrano;
-	uint8_t chDaneWychodzace[4 * sizeof(uint16_t)];
+	uint8_t chDaneWychodzace[LICZBA_DANYCH_NAPEDU * sizeof(uint16_t)];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 	uint8_t chLicznikProbPotw = LICZBA_PROB_ZANIM_ZGLOSI_BLAD;
 
-	m_unia8_32.dane16[0] = sJalowe;
+	m_unia8_32.dane16[0] = sMin;
 	for (int i = 0; i < 2; i++)
 		chDaneWychodzace[i + 0] = m_unia8_32.dane8[i];
-	m_unia8_32.dane16[0] = sMin;
+	m_unia8_32.dane16[0] = sMax;
 	for (int i = 0; i < 2; i++)
 		chDaneWychodzace[i + 2] = m_unia8_32.dane8[i];
 	m_unia8_32.dane16[0] = sZawis;
 	for (int i = 0; i < 2; i++)
 		chDaneWychodzace[i + 4] = m_unia8_32.dane8[i];
-	m_unia8_32.dane16[0] = sMax;
-	for (int i = 0; i < 2; i++)
-		chDaneWychodzace[i + 6] = m_unia8_32.dane8[i];
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_WYSTER_NAPEDU, chDaneWychodzace, 4 * sizeof(uint16_t), chDanePrzychodzace, &chOdebrano);
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_WYSTER_NAPEDU, chDaneWychodzace, LICZBA_DANYCH_NAPEDU, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_WYSTER_NAPEDU)

@@ -166,27 +166,27 @@
 //zmienne barametryczne
 #define TID_CISBEZW1		35
 #define TID_CISBEZW2		36
-#define TID_WYSOKOSC1	37
-#define TID_WYSOKOSC2	38
+#define TID_WYSOKOSC1		37
+#define TID_WYSOKOSC2		38
 #define TID_CISROZN1		39
 #define TID_CISROZN2		40
 #define TID_PREDIAS1		41
 #define TID_PREDIAS2		42
-#define TID_TEMPCISB1	43
-#define TID_TEMPCISB2	44
-#define TID_TEMPCISR1	45
-#define TID_TEMPCISR2	46
+#define TID_TEMPCISB1		43
+#define TID_TEMPCISB2		44
+#define TID_TEMPCISR1		45
+#define TID_TEMPCISR2		46
 
 //odbiorniki RC 
-#define TID_RC_KAN1		47
-#define TID_RC_KAN2		48
-#define TID_RC_KAN3		49
-#define TID_RC_KAN4		50
-#define TID_RC_KAN5		51
-#define TID_RC_KAN6		52
-#define TID_RC_KAN7		53
-#define TID_RC_KAN8		54
-#define TID_RC_KAN9		55
+#define TID_RC_KAN1			47
+#define TID_RC_KAN2			48
+#define TID_RC_KAN3			49
+#define TID_RC_KAN4			50
+#define TID_RC_KAN5			51
+#define TID_RC_KAN6			52
+#define TID_RC_KAN7			53
+#define TID_RC_KAN8			54
+#define TID_RC_KAN9			55
 #define TID_RC_KAN10		56
 #define TID_RC_KAN11		57
 #define TID_RC_KAN12		58
@@ -196,28 +196,31 @@
 #define TID_RC_KAN16		62
 
 //serwa
-#define TID_SERWO1		63
-#define TID_SERWO2		64
-#define TID_SERWO3		65
-#define TID_SERWO4		66
-#define TID_SERWO5		67
-#define TID_SERWO6		68
-#define TID_SERWO7		69
-#define TID_SERWO8		70
-#define TID_SERWO9		71
-#define TID_SERWO10		72
-#define TID_SERWO11		73
-#define TID_SERWO12		74
-#define TID_SERWO13		75
-#define TID_SERWO14		76
-#define TID_SERWO15		77
-#define TID_SERWO16		78
+#define TID_SERWO1				63
+#define TID_SERWO2				64
+#define TID_SERWO3				65
+#define TID_SERWO4				66
+#define TID_SERWO5				67
+#define TID_SERWO6				68
+#define TID_SERWO7				69
+#define TID_SERWO8				70
+#define TID_SERWO9				71
+#define TID_SERWO10				72
+#define TID_SERWO11				73
+#define TID_SERWO12				74
+#define TID_SERWO13				75
+#define TID_SERWO14				76
+#define TID_SERWO15				77
+#define TID_SERWO16				78
 
 #define TID_DOTYK_ADC0			79
 #define TID_DOTYK_ADC1			80
 #define TID_DOTYK_ADC2			81
 #define TID_CZAS_PETLI			82	//czas trwania ostatniej petli głównej w us
 #define TID_ROZNE_F11			83	//zmienna debugująca fRóżne[11]
+#define TID_JAKOSC_UP_RC1		84
+#define TID_JAKOSC_UP_RC2		85
+#define TID_JAKOSC_DOWN_RC		86
 //max do 127
 #define TID_FFT_ZYRO_AKCEL		127	//wyniki transformaty Fouriera przesyłane w specyficznej szybkiej ramce
 
@@ -235,7 +238,6 @@
 #define TID_PID_PK_PRZE_CALK	137	//wartość całki członu I
 #define TID_PID_PK_PRZE_WYJ		138	//wyjście regulatora sterowania prędkością kątową przechylenia
 #define TID_PID_PK_PRZE_WY_P	139	//wyjście członu P
-//#define TID_PID_PK_PRZE_WY_I	140	//wyjście członu I
 #define TID_PID_PK_PRZE_WY_D	140	//wyjście członu D
 #define TID_PID_PK_PRZE_WYPRZ	141	//wartość wyprzedzająca
 
@@ -253,7 +255,6 @@
 #define TID_PID_PK_POCH_CALK	151	//wartość całki członu I
 #define TID_PID_PK_POCH_WYJ		152	//wyjście regulatora sterowania prędkością kątową pochylenia
 #define TID_PID_PK_POCH_WY_P	153	//wyjście członu P
-//#define TID_PID_PK_POCH_WY_I	154	//wyjście członu I
 #define TID_PID_PK_POCH_WY_D	154	//wyjście członu D
 #define TID_PID_PK_POCH_WYPRZ	155	//wartość wyprzedzająca
 
@@ -270,7 +271,6 @@
 #define TID_PID_PK_ODCH_CALK	165	//wartość całki członu I
 #define TID_PID_PK_ODCH_WYJ		166	//wyjście regulatora sterowania prędkością kątową odchylenia
 #define TID_PID_PK_ODCH_WY_P	167	//wyjście członu P
-//#define TID_PID_PK_ODCH_WY_I	168	//wyjście członu I
 #define TID_PID_PK_ODCH_WY_D	168	//wyjście członu D
 #define TID_PID_PK_ODCH_WYPRZ	169	//wartość wyprzedzająca
 
@@ -287,7 +287,6 @@
 #define TID_PID_PR_WYSO_CALK	179	//wartość całki członu I
 #define TID_PID_PR_WYSO_WYJ		180	//wyjście regulatora sterowania prędkością zmiany wysokości
 #define TID_PID_PR_WYSO_WY_P	181	//wyjście członu P
-//#define TID_PID_PR_WYSO_WY_I	182	//wyjście członu I
 #define TID_PID_PR_WYSO_WY_D	182	//wyjście członu D
 #define TID_PID_PR_WYSO_WYPRZ	183	//wartość wyprzedzająca
 

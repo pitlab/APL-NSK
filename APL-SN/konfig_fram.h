@@ -32,11 +32,10 @@
 #define FAU_CH7_MAX         0x008D      //4F maksymalna wartość regulowanej zmiennej
 #define FAU_CH7_FUNCT       0x0091      //1U funkcja kanału 7: rodzaj zmiennej do regulacji
 
-#define FAU_PWM_JALOWY      0x0092     	//2U wysterowanie regulatorów na biegu jałowym [us]
-#define FAU_PWM_MIN      	0x0094 		//2U minimalne wysterowanie regulatorów w trakcie lotu [us]
-#define FAU_WPM_ZAWISU      0x0096   	//2U wysterowanie regulatorów w zawisie [us]
-#define FAU_PWM_MAX         0x0098  	//2U maksymalne wysterowanie silników w trakcie lotu [us]
-#define ROZMIAR_PWM			4
+#define FAU_RC_WY_MIN   	0x0092     	//2U minimalne wysterowanie regulatorów w trakcie lotu w jednostkach standardowych 0-2000
+#define FAU_RC_WY_MAX      	0x0094 		//2U maksymalne wysterowanie silników w trakcie lotu w jednostkach standardowych 0-2000
+#define FAU_RC_WY_ZAWISU   	0x0096   	//2U wysterowanie regulatorów w zawisie w jednostkach standardowych 0-2000
+#define LICZBA_DANYCH_NAPEDU	3
 
 #define FAU_TSYNC_MON       0x009A     	//1U miesiąc ostatniej synchronizacji
 #define FAU_TSYNC_DAY       0x009B 		//1U dzień ostatniej synchronizacji
