@@ -331,7 +331,7 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 void CMainFrame::OnButKonfTelemetrii()
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi polecenia
-	CKonfigTelemetrii dlg;
+	KonfigTelemetrii dlg;
 	dlg.DoModal();
 }
 

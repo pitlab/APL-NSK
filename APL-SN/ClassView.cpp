@@ -481,7 +481,7 @@ uint8_t CClassView::WlasciwyWatekCzekajNaZmianePolaczenia()
 /// </summary>
 void CClassView::OnKonfigTelemetrii()
 {
-	CKonfigTelemetrii cKonfigTelemetrii;
+	KonfigTelemetrii cKonfigTelemetrii;
 
 	cKonfigTelemetrii.DoModal();
 }

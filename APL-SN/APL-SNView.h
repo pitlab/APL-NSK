@@ -67,7 +67,7 @@ protected:
 	CKonfigPolacz m_cKonfigPolacz;
 	CDaneFlash m_cDaneFlash;
 	KonfiguracjaWyresow m_cKonfiguracjaWykresow;
-	CKonfigTelemetrii m_cKonfigTelemetrii;
+	KonfigTelemetrii m_cKonfigTelemetrii;
 	KonfigRejestratora m_cKonfigRejestratora;
 	BOOL m_bWykresZawieraZero;
 	BOOL m_bPolaczono;
