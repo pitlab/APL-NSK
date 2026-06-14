@@ -392,7 +392,6 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 	uint8_t chZnakCzasuPoprzedniejRamki = 0;
 	stRamka_t stRamka;
 	stTelemetria_t stDaneTele;
-
 	float fZmienna;
 
 	for (uint32_t n = 0; n < iOdczytano; n++)
@@ -480,10 +479,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				SetEvent(m_hZdarzenieRamkaFFTGotowa);
 				TRACE("SetEvent: FFT[%d, %d]\n", chIndeksTestu, sIndeksFFT);
 			}
-			else
-
-
-			//ramka komunikacyjna wymagaj¹ca potwierdzenia
+			else       //ramka komunikacyjna wymagaj¹ca potwierdzenia			
 			{
 				EnterCriticalSection(&m_SekcjaKrytycznaPolecen);
 				if (!m_chIloscDanychRamki)	//wykrzacza siê na zerowych ramkach typu OK, wiêc zrób niezerowy rozmiar danych

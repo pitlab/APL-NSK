@@ -124,21 +124,6 @@
 #define WARTOSC_MIN		-1000.0f
 
 //definicje zmiennych telemetrycznych
-
-
-
-
-#define TID_DOTYK_ADC0			79
-#define TID_DOTYK_ADC1			80
-#define TID_DOTYK_ADC2			81
-#define TID_CZAS_PETLI			82	//czas trwania ostatniej petli głównej w us
-#define TID_ROZNE_F11			83	//zmienna debugująca fRóżne[11]
-#define TID_JAKOSC_UP_RC1		84
-#define TID_JAKOSC_UP_RC2		85
-#define TID_JAKOSC_DOWN_RC		86
-//max do 127
-
-//definicje zmiennych telemetrycznych
 //zmienne IMU
 #define TID_AKCEL1X				0
 #define TID_AKCEL1Y				1
@@ -240,9 +225,10 @@
 
 #define TID_FFT_ZYRO_AKCEL		127	//wyniki transformaty Fouriera przesyłane w specyficznej szybkiej ramce
 
+
 //zmiene telemetryczne w ramce 2
 #define TID_PID_PRZE_WZAD		128	//wartość zadana regulatora sterowania przechyleniem
-#define TID_PID_PRZE_WE_D		129	//wartość wejsciowa członu D po filtrze
+#define TID_PID_PRZE_FWEJ		129	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_PRZE_CALK		130	//wartość całki członu I
 #define TID_PID_PRZE_WYJ		131	//wyjście regulatora sterowania przechyleniem
 #define TID_PID_PRZE_WY_P		132	//wyjście członu P
@@ -250,16 +236,15 @@
 #define TID_PID_PRZE_WY_D		134	//wyjście członu D
 
 #define TID_PID_PK_PRZE_WZAD	135	//wartość zadana regulatora sterowania prędkością kątową przechylenia
-#define TID_PID_PK_PRZE_WE_D	136	//wartość wejsciowa członu D po filtrze
-#define TID_PID_PK_PRZE_CALK	137	//wartość całki członu I
+#define TID_PID_PK_PRZE_FWEJ	136	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
+#define TID_PID_PK_PRZE_FZAD	137	//przefiltrowana wartość zadana do liczenia wartosci wyprzedzającej
 #define TID_PID_PK_PRZE_WYJ		138	//wyjście regulatora sterowania prędkością kątową przechylenia
 #define TID_PID_PK_PRZE_WY_P	139	//wyjście członu P
 #define TID_PID_PK_PRZE_WY_D	140	//wyjście członu D
-#define TID_PID_PK_PRZE_WYPRZ	141	//wartość wyprzedzająca
-
+#define TID_PID_PK_PRZE_WYPRZ	141	//wyjście akcji wyprzedzającej
 
 #define TID_PID_POCH_WZAD		142	//wartość zadana regulatora sterowania pochyleniem
-#define TID_PID_POCH_WE_D		143	//wartość wejsciowa członu D po filtrze
+#define TID_PID_POCH_FWEJ		143 //przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_POCH_CALK		144	//wartość całki członu I
 #define TID_PID_POCH_WYJ		145	//wyjście regulatora sterowania pochyleniem
 #define TID_PID_POCH_WY_P		146	//wyjście członu P
@@ -267,15 +252,15 @@
 #define TID_PID_POCH_WY_D		148	//wyjście członu D
 
 #define TID_PID_PK_POCH_WZAD	149	//wartość zadana
-#define TID_PID_PK_POCH_WE_D	150	//wartość wejsciowa członu D po filtrze
-#define TID_PID_PK_POCH_CALK	151	//wartość całki członu I
+#define TID_PID_PK_POCH_FWEJ	150	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
+#define TID_PID_PK_POCH_FZAD	151	//przefiltrowana wartość zadana do liczenia wartosci wyprzedzającej
 #define TID_PID_PK_POCH_WYJ		152	//wyjście regulatora sterowania prędkością kątową pochylenia
 #define TID_PID_PK_POCH_WY_P	153	//wyjście członu P
 #define TID_PID_PK_POCH_WY_D	154	//wyjście członu D
-#define TID_PID_PK_POCH_WYPRZ	155	//wartość wyprzedzająca
+#define TID_PID_PK_POCH_WYPRZ	155	//wyjście akcji wyprzedzającej
 
 #define TID_PID_ODCH_WZAD		156	//wartość zadana regulatora sterowania odchyleniem
-#define TID_PID_ODCH_WE_D		157	//wartość wejsciowa członu D po filtrze
+#define TID_PID_ODCH_FWEJ		157	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_ODCH_CALK		158	//wartość całki członu I
 #define TID_PID_ODCH_WYJ		159	//wyjście regulatora sterowania odchyleniem
 #define TID_PID_ODCH_WY_P		160	//wyjście członu P
@@ -283,15 +268,15 @@
 #define TID_PID_ODCH_WY_D		162	//wyjście członu D
 
 #define TID_PID_PK_ODCH_WZAD	163	//wartość zadana
-#define TID_PID_PK_ODCH_WE_D	164	//wartość wejsciowa członu D po filtrze
-#define TID_PID_PK_ODCH_CALK	165	//wartość całki członu I
+#define TID_PID_PK_ODCH_FWEJ	164	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
+#define TID_PID_PK_ODCH_FZAD	165	//przefiltrowana wartość zadana do liczenia wartosci wyprzedzającej
 #define TID_PID_PK_ODCH_WYJ		166	//wyjście regulatora sterowania prędkością kątową odchylenia
 #define TID_PID_PK_ODCH_WY_P	167	//wyjście członu P
 #define TID_PID_PK_ODCH_WY_D	168	//wyjście członu D
-#define TID_PID_PK_ODCH_WYPRZ	169	//wartość wyprzedzająca
+#define TID_PID_PK_ODCH_WYPRZ	169	//wyjście akcji wyprzedzającej
 
 #define TID_PID_WYSO_WZAD		170	//wartość zadana regulatora sterowania wysokością
-#define TID_PID_WYSO_WE_D		171	//wartość wejsciowa członu D po filtrze
+#define TID_PID_WYSO_FWEJ		171	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_WYSO_CALK		172	//wartość całki członu I
 #define TID_PID_WYSO_WYJ		173	//wyjście regulatora sterowania odchyleniem
 #define TID_PID_WYSO_WY_P		174	//wyjście członu P
@@ -299,15 +284,15 @@
 #define TID_PID_WYSO_WY_D		176	//wyjście członu D
 
 #define TID_PID_PR_WYSO_WZAD	177	//wartość zadana
-#define TID_PID_PR_WYSO_WE_D	178	//wartość wejsciowa członu D po filtrze
-#define TID_PID_PR_WYSO_CALK	179	//wartość całki członu I
+#define TID_PID_PR_WYSO_FWEJ	178	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
+#define TID_PID_PR_WYSO_FZAD	179	//przefiltrowana wartość zadana do liczenia wartosci wyprzedzającej
 #define TID_PID_PR_WYSO_WYJ		180	//wyjście regulatora sterowania prędkością zmiany wysokości
 #define TID_PID_PR_WYSO_WY_P	181	//wyjście członu P
 #define TID_PID_PR_WYSO_WY_D	182	//wyjście członu D
-#define TID_PID_PR_WYSO_WYPRZ	183	//wartość wyprzedzająca
+#define TID_PID_PR_WYSO_WYPRZ	183	//wyjście akcji wyprzedzającej
 
 #define TID_PID_NAWN_WZAD		184	//wartość zadana regulatora sterowania nawigacją w kierunku północnym
-#define TID_PID_NAWN_WE_D		185	//wartość wejsciowa członu D po filtrze
+#define TID_PID_NAWN_FWEJ		185	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_NAWN_CALK		186	//wartość całki członu I
 #define TID_PID_NAWN_WYJ		187	//wyjście regulatora sterowania nawigacją w kierunku północnym
 #define TID_PID_NAWN_WY_P		188	//wyjście członu P
@@ -315,15 +300,15 @@
 #define TID_PID_NAWN_WY_D		190	//wyjście członu D
 
 #define TID_PID_PR_NAWN_WZAD	191	//wartość zadana
-#define TID_PID_PR_NAWN_WE_D	192	//wartość wejsciowa członu D po filtrze
-#define TID_PID_PR_NAWN_CALK	193	//wartość całki członu I
-#define TID_PID_PR_NAWN_WYJ		194	//wyjście regulatora sterowania prędkością w kierunku północnym
+#define TID_PID_PR_NAWN_FWEJ	192	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
+#define TID_PID_PR_NAWN_WYJ		193	//wyjście regulatora sterowania prędkością w kierunku północnym
+#define TID_PID_PR_NAWN_CALK	194	//wartość całki członu I
 #define TID_PID_PR_NAWN_WY_P	195	//wyjście członu P
 #define TID_PID_PR_NAWN_WY_I	196	//wyjście członu I
 #define TID_PID_PR_NAWN_WY_D	197	//wyjście członu D
 
 #define TID_PID_NAWE_WZAD		198	//wartość zadana regulatora sterowania nawigacją w kierunku wschodnim
-#define TID_PID_NAWE_WE_D		199	//wartość wejsciowa członu D po filtrze
+#define TID_PID_NAWE_FWEJ		199	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_NAWE_CALK		200	//wartość całki członu I
 #define TID_PID_NAWE_WYJ		201	//wyjście regulatora sterowania nawigacją w kierunku północnym
 #define TID_PID_NAWE_WY_P		202	//wyjście członu P
@@ -331,7 +316,7 @@
 #define TID_PID_NAWE_WY_D		204	//wyjście członu D
 
 #define TID_PID_PR_NAWE_WZAD	205	//wartość zadana
-#define TID_PID_PR_NAWE_WE_D	206	//wartość wejsciowa członu D po filtrze
+#define TID_PID_PR_NAWE_FWEJ	206	//przefiltrowana wartość wejściowa do liczenia akcji różniczkującej
 #define TID_PID_PR_NAWE_CALK	207	//wartość całki członu I
 #define TID_PID_PR_NAWE_WYJ		208	//wyjście regulatora sterowania prędkością w kierunku wschodnim
 #define TID_PID_PR_NAWE_WY_P	209	//wyjście członu P

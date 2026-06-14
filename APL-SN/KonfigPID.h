@@ -29,15 +29,15 @@ public:
 		float fOgrCalki;	//ograniczenie członu całkujacego
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
-
 		float fMnożnikWartZadanej;
 		//float fStałeWyprzedzenie;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
 		float fPrzesunięcieWyjścia;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
 		float fWolne1;
-		float fWolne2;
+		//float fWolne2;
 
-		uint8_t chPodstFiltraD;	//podstawa filtra IIR
-		uint8_t chProcWartZadWyprz;	//procent zmiany wartości zadanej podawany na wejsście wyprzedzające
+		uint8_t cPodstFiltraD;	//podstawa filtra IIR
+		uint8_t cProcWartZadWyprz;	//procent zmiany wartości zadanej podawany na wejsście wyprzedzające
+		uint8_t cPodstawaFiltraWartZad;
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
 		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
@@ -88,12 +88,15 @@ private:
 	int m_nPodstFiltraD1;
 	int m_nPodstFiltraD2;
 	int m_nProcWyprzedzenia2;
+	int m_nPodstFiltraWartZadanej;
 	CString m_strPodstFiltraD1;
 	CString m_strPodstFiltraD2;
 	CString m_strProcWyprzedzenia;
+	CString m_strPodstFiltraWZad;
 	CSliderCtrl m_ctlSlidPodstCzasuFiltraD1;
 	CSliderCtrl m_ctlSlidPodstCzasuFiltraD2;
 	CSliderCtrl m_ctlSlidProcWyprzedzenia2;
+	CSliderCtrl m_ctlSlidPodstFiltraWartZad;
 	BOOL m_bTrybRegulacjiWylaczony;
 	BOOL m_bTrybRegulacjiReczny;
 	BOOL m_bTrybRegulacjiAkro;
@@ -112,6 +115,7 @@ private:
 	CString m_strWartoscMaxParametru2;
 	CString m_strOpisParametru1;
 	CString m_strOpisParametru2;
+	
 
 public:
 	afx_msg void OnTcnSelchangeTabKanalPid(NMHDR* pNMHDR, LRESULT* pResult);
@@ -149,4 +153,6 @@ public:
 	afx_msg void OnCustomdrawSliderProcWyprzedzenia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditPrzesuniecieWyjscia1();
+	afx_msg void OnNMCustomdrawSliderFiltrWzad(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnReleasedcaptureSliderFiltrWzad(NMHDR* pNMHDR, LRESULT* pResult);
 };
