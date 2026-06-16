@@ -218,7 +218,7 @@ typedef union 		//unia do konwersji między danymi 32, 16 i 8 bit
 #define FWYRC_WE_RC16			23
 #define LICZBA_FUNKCJI_KANALOW_WYJSCIOWYCH_RC	24	//liczba dostępnych funkcji realizowanych przez kanały wyjsciowe RC
 
-
+#define CZESTOTLIWOSC_ODSWIEZANIA_KANALOW_RC	10	//[Hz]
 
 //definicje funkcji silnika
 #define FSIL_NAPED				0	//normalna praca silnika jako napęd

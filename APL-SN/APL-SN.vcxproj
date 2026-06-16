@@ -229,6 +229,7 @@
     <ClInclude Include="UstawieniaKameryDlg.h" />
     <ClInclude Include="ViewTree.h" />
     <ClInclude Include="Wskaznik_LED.h" />
+    <ClInclude Include="WyjsciaRC.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnalizatorLogu.cpp" />
@@ -270,6 +271,7 @@
     <ClCompile Include="UstawieniaKameryDlg.cpp" />
     <ClCompile Include="ViewTree.cpp" />
     <ClCompile Include="Wskaznik_LED.cpp" />
+    <ClCompile Include="WyjsciaRC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="APL-SN.reg" />

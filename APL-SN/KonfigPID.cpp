@@ -522,24 +522,20 @@ void KonfigPID::UstawTrybRegulacji(int nParametr)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnBnClickedOk()
 {
-	uint8_t cFlagi;
 	uint8_t chErr = ERR_OK;
 	uint8_t chParametr[LICZBA_KAN_RC_DO_STROJENIA_PID];
 	CString strKomunikat;
 	BOOL m_bZmienionoKonfigurację = FALSE;
-	float fFiltry;
 
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
 		{		
-			cFlagi = (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);
-			getKomunikacja().m_unia8_32.dane8[0] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
-			getKomunikacja().m_unia8_32.dane8[1] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
-			getKomunikacja().m_unia8_32.dane8[2] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
-			fFiltry = getKomunikacja().m_unia8_32.daneFloat;
-
-			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, fFiltry, cFlagi);
+			getKomunikacja().m_unia8_32.dane8[0] = (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);	//flagi
+			getKomunikacja().m_unia8_32.dane8[1] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
+			getKomunikacja().m_unia8_32.dane8[2] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
+			getKomunikacja().m_unia8_32.dane8[3] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, getKomunikacja().m_unia8_32.daneFloat);
 			m_bZmienionoKonfigurację = FALSE;	//to polecenie nie wymaga przeładowania całosci, bo oprócz zapisu do FRAM ładuje też do zmiennych
 		}
 	}
@@ -625,7 +621,6 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 		m_stPID[n].fMaxWyj = 100.0f;
 		m_stPID[n].fPrzesunięcieWyjścia = 0.0f;
 		m_stPID[n].fWolne1 = 0.1f;
-		m_stPID[n].fWolne2 = 0.2f;
 		m_stPID[n].cPodstFiltraD = 8;
 		m_stPID[n].bZmieniony = TRUE;
 	}

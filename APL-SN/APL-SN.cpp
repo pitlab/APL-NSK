@@ -19,6 +19,8 @@
 #include "UstawieniaKameryDlg.h"
 #include "Wskaznik_LED.h"
 #include "KonfiguracjaFFT.h"
+#include "WyjsciaRC.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -55,6 +57,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WSK_LED, &CAPLSNApp::OnUpdateUstawieniaWskLed)
 	ON_COMMAND(ID_USTAWIENIA_KONFIGURACJAFFT, &CAPLSNApp::OnUstawieniaKonfiguracjafft)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_KONFIGURACJAFFT, &CAPLSNApp::OnUpdateUstawieniaKonfiguracjafft)
+	ON_COMMAND(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUstawieniaWyjscRC)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUpdateUstawieniaWyjscRC)
 END_MESSAGE_MAP()
 
 
@@ -560,6 +564,32 @@ void CAPLSNApp::OnUstawieniaKonfiguracjafft()
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNApp::OnUpdateUstawieniaKonfiguracjafft(CCmdUI* pCmdUI)
+{
+	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia okno dialogowe konfiguracji wyjść RC
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUstawieniaWyjscRC()
+{
+	WyjsciaRC dlg;
+	dlg.DoModal();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Konfiguracja -> Wyjścia RC...
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI)
 {
 	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);

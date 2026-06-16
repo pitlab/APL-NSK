@@ -95,6 +95,7 @@
 #define IDD_NAPED_I_STROJENIE           346
 #define IDD_WSKAZNIK_LED                348
 #define IDD_PARAMETRY_FFT               350
+#define IDD_WYJSCIA_RC                  351
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -424,6 +425,38 @@
 #define IDC_STATIC_PARAMETR2            1365
 #define IDC_SLIDER_FILTR_WZAD           1366
 #define IDC_STATIC_FILTR_WZAD           1367
+#define IDC_COMBO_FUNKCJA_WYJSCIA1      1369
+#define IDC_COMBO_FUNKCJA_WYJSCIA2      1370
+#define IDC_COMBO_FUNKCJA_WYJSCIA3      1371
+#define IDC_COMBO_FUNKCJA_WYJSCIA4      1372
+#define IDC_COMBO_FUNKCJA_WYJSCIA5      1373
+#define IDC_COMBO_FUNKCJA_WYJSCIA6      1374
+#define IDC_COMBO_FUNKCJA_WYJSCIA7      1375
+#define IDC_COMBO_FUNKCJA_WYJSCIA8      1376
+#define IDC_COMBO_FUNKCJA_WYJSCIA9      1377
+#define IDC_COMBO_FUNKCJA_WYJSCIA10     1378
+#define IDC_COMBO_FUNKCJA_WYJSCIA11     1379
+#define IDC_COMBO_FUNKCJA_WYJSCIA12     1380
+#define IDC_COMBO_FUNKCJA_WYJSCIA13     1381
+#define IDC_COMBO_FUNKCJA_WYJSCIA14     1382
+#define IDC_COMBO_FUNKCJA_WYJSCIA15     1383
+#define IDC_COMBO_FUNKCJA_WYJSCIA16     1384
+#define IDC_STAT_WART_KAN01             1385
+#define IDC_STAT_WART_KAN02             1386
+#define IDC_STAT_WART_KAN03             1387
+#define IDC_STAT_WART_KAN04             1388
+#define IDC_STAT_WART_KAN05             1389
+#define IDC_STAT_WART_KAN06             1390
+#define IDC_STAT_WART_KAN07             1391
+#define IDC_STAT_WART_KAN08             1392
+#define IDC_STAT_WART_KAN09             1393
+#define IDC_STAT_WART_KAN10             1394
+#define IDC_STAT_WART_KAN11             1395
+#define IDC_STAT_WART_KAN12             1396
+#define IDC_STAT_WART_KAN13             1397
+#define IDC_STAT_WART_KAN14             1398
+#define IDC_STAT_WART_KAN15             1399
+#define IDC_STAT_WART_KAN16             1400
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -462,14 +495,15 @@
 #define ID_USTAWIENIA_WSK_LED           32824
 #define ID_USTAWIENIA_KONFIGURACJAFFT   32826
 #define ID_BUT_POBIERZ_FFT              32827
+#define ID_USTAWIENIA_WYJ32828          32828
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        352
-#define _APS_NEXT_COMMAND_VALUE         32828
-#define _APS_NEXT_CONTROL_VALUE         1368
+#define _APS_NEXT_COMMAND_VALUE         32829
+#define _APS_NEXT_CONTROL_VALUE         1401
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

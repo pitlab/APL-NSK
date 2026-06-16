@@ -66,6 +66,8 @@ public:
 	afx_msg void OnUpdateUstawieniaWskLed(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaKonfiguracjafft();
 	afx_msg void OnUpdateUstawieniaKonfiguracjafft(CCmdUI* pCmdUI);
+	afx_msg void OnUstawieniaWyjscRC();
+	afx_msg void OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;

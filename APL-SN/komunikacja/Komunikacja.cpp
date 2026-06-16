@@ -1353,55 +1353,52 @@ uint8_t CKomunikacja::RekonfigurujWeWyRC()
 // parametry: chIndeksRegulatora - wskazuje na regualtor do zapisania
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, float fStalePrzesuniecie, float fFiltry, uint8_t cFlagi)
+uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, float fStalePrzesuniecie, float fFiltry)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_REG_PID + 2];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chDaneWychodzace[0] = cIndeksRegulatora;
-	chDaneWychodzace[1] = cFlagi;
-	chDaneWychodzace[2] = 0;
-	chDaneWychodzace[3] = 0;	//wolny
 	
 	m_unia8_32.daneFloat = fKp;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[4 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[1 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fTi;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[8 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[5 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fTd;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[12 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[9 + i] = m_unia8_32.dane8[i];
 
 	m_unia8_32.daneFloat = fLimitCalki;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[16 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[13 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fMinPid;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[20 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[17 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fMaxPid;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[24 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[21 + i] = m_unia8_32.dane8[i];
 	
 	m_unia8_32.daneFloat = fSkalaWZadanej;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[28 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[24 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fStalePrzesuniecie;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[32 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[29 + i] = m_unia8_32.dane8[i];
 
 	//w tej zmiennej s¹ upchniête 3 wartoœci 8-bitowych filtrów
 	m_unia8_32.daneFloat = fFiltry;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[36 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[33 + i] = m_unia8_32.dane8[i];
 
 	//rezerwa na 1 zmienn¹ float
 	m_unia8_32.daneFloat = 5.678f;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[40 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[37 + i] = m_unia8_32.dane8[i];
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, ROZMIAR_REG_PID + 2, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_KONFIG_PID, chDaneWychodzace, ROZMIAR_REG_PID - 1, chDanePrzychodzace, &chOdebrano);
 	if ((chErr == ERR_OK) && (chOdebrano >= 2))
 	{
 		if (chDanePrzychodzace[1] == PK_ZAPISZ_KONFIG_PID)

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Komunikacja/Komunikacja.h"
 #include "sys_def_wspolny.h"
-#define CZESTOTLIWOSC_ODSWIEZANIA	10	//[Hz]
+//#define CZESTOTLIWOSC_ODSWIEZANIA	10	//[Hz]
 
 
 //definicje funkcji wyjść RC

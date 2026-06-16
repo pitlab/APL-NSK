@@ -20,6 +20,8 @@ OdbiornikiRC::OdbiornikiRC(CWnd* pParent /*=nullptr*/)
 	, m_bZmienionoKanalDrazkow(FALSE)
 	, m_bZmienionoFunkcjeKanalow(FALSE)
 	, m_bZmienionoFunkcjeWyjscRC(FALSE)
+	, m_bZmodyfikowanoTelemetrie(FALSE)
+	, m_sBackupOkresuTelemetrii{0}
 {
 
 }
@@ -233,7 +235,7 @@ BOOL OdbiornikiRC::OnInitDialog()
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
 			if ((n >= TID_RC_KAN1) && (n <= TID_SERWO16))
-				sOkresTelemetrii[n] = (uint16_t)(MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA);
+				sOkresTelemetrii[n] = (uint16_t)(MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA_KANALOW_RC);
 			else
 				sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
 		}	
