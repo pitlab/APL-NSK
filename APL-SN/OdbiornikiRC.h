@@ -81,8 +81,6 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV
 	uint8_t WstawDaneKanalow();
-	void UstawMinMax();
-	void AktywujComboFunkcjiWyjscia(int NrWyjscia);
 	uint16_t m_sBackupOkresuTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	BOOL m_bZmodyfikowanoTelemetrie;
 
@@ -105,43 +103,12 @@ public:
 	CProgressCtrl m_ctlRC1Kan14;
 	CProgressCtrl m_ctlRC1Kan15;
 	CProgressCtrl m_ctlRC1Kan16;
-
-	CProgressCtrl m_ctlSerwo1;
-	CProgressCtrl m_ctlSerwo2;
-	CProgressCtrl m_ctlSerwo3;
-	CProgressCtrl m_ctlSerwo4;
-	CProgressCtrl m_ctlSerwo5;
-	CProgressCtrl m_ctlSerwo6;
-	CProgressCtrl m_ctlSerwo7;
-	CProgressCtrl m_ctlSerwo8;
-	CProgressCtrl m_ctlSerwo9;
-	CProgressCtrl m_ctlSerwo10;
-	CProgressCtrl m_ctlSerwo11;
-	CProgressCtrl m_ctlSerwo12;
-	CProgressCtrl m_ctlSerwo13;
-	CProgressCtrl m_ctlSerwo14;
-	CProgressCtrl m_ctlSerwo15;
-	CProgressCtrl m_ctlSerwo16;
-
 	CComboBox m_ctlOdbiornikRC1;
 	CComboBox m_ctlOdbiornikRC2;
-	CComboBox m_ctlTypWyjscia1;
-	CComboBox m_ctlTypWyjscia2;
-	CComboBox m_ctlTypWyjscia3;
-	CComboBox m_ctlTypWyjscia4;
-	CComboBox m_ctlTypWyjscia5;
-	CComboBox m_ctlTypWyjscia6;
-	CComboBox m_ctlTypWyjscia7;
-	CComboBox m_ctlTypWyjscia8;
-	CComboBox m_ctlTypWyjscia9_16;
-
 	CString strWejscie[KANALY_ODB_RC];
-	CString strWyjscie[KANALY_WYJSC_RC];
 	BOOL m_bZmienionoUstawienie;
-	//BOOL m_bZmienionoMinMax;
 	BOOL m_bZmienionoKanalDrazkow;
 	BOOL m_bZmienionoFunkcjeKanalow;
-	BOOL m_bZmienionoFunkcjeWyjscRC;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboRc1();
 	afx_msg void OnCbnSelchangeComboRc2();
@@ -188,37 +155,5 @@ public:
 	afx_msg void OnCbnSelchangeComboKan14();
 	afx_msg void OnCbnSelchangeComboKan15();
 	afx_msg void OnCbnSelchangeComboKan16();
-	CComboBox m_ctlFunkcjaWyjscia1;
-	CComboBox m_ctlFunkcjaWyjscia2;
-	CComboBox m_ctlFunkcjaWyjscia3;
-	CComboBox m_ctlFunkcjaWyjscia4;
-	CComboBox m_ctlFunkcjaWyjscia5;
-	CComboBox m_ctlFunkcjaWyjscia6;
-	CComboBox m_ctlFunkcjaWyjscia7;
-	CComboBox m_ctlFunkcjaWyjscia8;
-	CComboBox m_ctlFunkcjaWyjscia9;
-	CComboBox m_ctlFunkcjaWyjscia10;
-	CComboBox m_ctlFunkcjaWyjscia11;
-	CComboBox m_ctlFunkcjaWyjscia12;
-	CComboBox m_ctlFunkcjaWyjscia13;
-	CComboBox m_ctlFunkcjaWyjscia14;
-	CComboBox m_ctlFunkcjaWyjscia15;
-	CComboBox m_ctlFunkcjaWyjscia16;
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa1();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa2();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa3();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa4();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa5();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa6();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa7();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa8();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa9();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa10();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa11();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa12();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa13();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa14();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa15();
-	afx_msg void OnCbnSelchangeComboFunkcjaSerwa16();
 	afx_msg void OnBnClickedButNormalizuj();
 };

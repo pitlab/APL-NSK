@@ -1334,18 +1334,36 @@ uint8_t CKomunikacja::RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8
 // parametry: brak
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::RekonfigurujWeWyRC()
+uint8_t CKomunikacja::RekonfigurujWeRC()
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace;
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_REKONFIG_SERWA_RC, &chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_REKONFIG_WEJSCIA_RC, &chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
 
 	CzytajU8FRAM(chDanePrzychodzace, 1, FAU_KONF_ODB_RC);
 	return chErr;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia ponown¹ konfiguracjê wejsæ i wyjsæ RC po zmianie zawartoœci FRAM
+// Abyt polecenie nie wykonywa³o siê w pêtli, po poleceniu trzeba wydaæ inne polecenie zakoñczone POL_NIC, np. Odczyt FRAM
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::RekonfigurujWyRC()
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace;
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_REKONFIG_WYJSCIA_RC, &chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);
+
+	CzytajU8FRAM(chDanePrzychodzace, 1, FAU_KONF_ODB_RC);
+	return chErr;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

@@ -118,6 +118,8 @@ BEGIN_MESSAGE_MAP(WyjsciaRC, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_WYJSCIA14, &WyjsciaRC::OnCbnSelchangeComboFunkcjaWyjscia14)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_WYJSCIA15, &WyjsciaRC::OnCbnSelchangeComboFunkcjaWyjscia15)
 	ON_CBN_SELCHANGE(IDC_COMBO_FUNKCJA_WYJSCIA16, &WyjsciaRC::OnCbnSelchangeComboFunkcjaWyjscia16)
+	ON_WM_TIMER()
+	ON_CBN_SELCHANGE(IDC_COMBO_SERWO5, &WyjsciaRC::OnCbnSelchangeComboSerwo5)
 END_MESSAGE_MAP()
 
 
@@ -188,17 +190,6 @@ BOOL WyjsciaRC::OnInitDialog()
 
 	m_ctlTypWyjscia1.InsertString(0, _T("Port I/O PB9"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia1.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
-	m_ctlTypWyjscia1.InsertString(2, _T("-"));				//wejście ADC
-	m_ctlTypWyjscia1.InsertString(3, _T("-"));				//funkcja alternatywna
-	m_ctlTypWyjscia1.InsertString(4, _T("Serwo1 50Hz"));
-	m_ctlTypWyjscia1.InsertString(5, _T("-"));				//wyjście PWM 100Hz
-	m_ctlTypWyjscia1.InsertString(6, _T("-"));				//wyjście PWM 200Hz
-	m_ctlTypWyjscia1.InsertString(7, _T("ESC1 400Hz"));		//wyjście PWM 400Hz	
-	m_ctlTypWyjscia1.InsertString(8, _T("DShot150"));		//wyjście DShot150
-	m_ctlTypWyjscia1.InsertString(9, _T("DShot300"));		//wyjście DShot300
-	m_ctlTypWyjscia1.InsertString(10, _T("DShot600"));		//wyjście DShot600
-	m_ctlTypWyjscia1.InsertString(11, _T("DShot1200"));		//wyjście DShot1200		
-	m_ctlTypWyjscia1.InsertString(12, _T("LED WS281x"));	//obsługa programowalnego LED RGB
 
 	m_ctlTypWyjscia2.InsertString(0, _T("Port I/O PB10"));	//wyjście skonfigurowane jako wjściowy port IO do debugowania algorytmów
 	m_ctlTypWyjscia2.InsertString(1, _T("Wyjście S-Bus"));	//wyjście S-Bus
@@ -294,10 +285,7 @@ BOOL WyjsciaRC::OnInitDialog()
 	m_ctlTypWyjscia9_16.InsertString(5, _T("ESC 9-12 100Hz"));	//wyjście PWM 100Hz
 	m_ctlTypWyjscia9_16.InsertString(6, _T("ESC 9-10 200Hz"));	//wyjście PWM 200Hz
 	m_ctlTypWyjscia9_16.InsertString(7, _T("ESC 9 400Hz"));		//wyjście PWM 400Hz	
-	m_ctlTypWyjscia9_16.InsertString(8, _T("-"));
-	m_ctlTypWyjscia9_16.InsertString(7, _T("-"));
-	m_ctlTypWyjscia9_16.InsertString(10, _T("-"));
-	m_ctlTypWyjscia9_16.InsertString(11, _T("-"));
+
 
 
 	//odczytaj konfigurację  wyjść serw.
@@ -422,14 +410,6 @@ void WyjsciaRC::OnBnClickedOk()
 		cDane[3] = m_ctlTypWyjscia7.GetCurSel() | m_ctlTypWyjscia8.GetCurSel() << 4;
 		cDane[4] = m_ctlTypWyjscia9_16.GetCurSel();
 		cBlad = getKomunikacja().ZapiszDaneU8FRAM(cDane, 5, FAU_KONF_SERWA12);
-
-		cBlad = getKomunikacja().RekonfigurujWeWyRC();	//przeładuj konfigurację
-		if (cBlad != ERR_OK)
-		{
-			strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), cBlad);
-			MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
-			CDialogEx::OnOK();
-		}
 	}
 
 	if (m_bZmienionoFunkcjeWyjscRC)
@@ -460,7 +440,15 @@ void WyjsciaRC::OnBnClickedOk()
 		}
 	}
 
-	//sprawdź czy była zmiana i czy należy zresetować CM4
+	cBlad = getKomunikacja().RekonfigurujWyRC();	//przeładuj konfigurację
+	if (cBlad != ERR_OK)
+	{
+		strKomunikat.Format(_T("Błąd nr %d zapisu konfiguracji"), cBlad);
+		MessageBoxExW(this->m_hWnd, strKomunikat, _T("Ojojoj!"), MB_ICONWARNING, 0);
+		CDialogEx::OnOK();
+	}
+
+	/*/sprawdź czy była zmiana i czy należy zresetować CM4
 	if (m_bZmienionoUstawienie | m_bZmienionoFunkcjeWyjscRC)
 	{
 		//wyświetl okno z pytaniem czy resetować CM4
@@ -479,7 +467,7 @@ void WyjsciaRC::OnBnClickedOk()
 			}
 			cBlad = getKomunikacja().WyslijOK();	//wyłącz polecenie resetujące
 		}
-	}
+	}*/
 
 	CDialogEx::OnOK();
 }
@@ -494,6 +482,19 @@ void WyjsciaRC::OnBnClickedCancel()
 {
 	KillTimer(IDT_TIMER_RC);
 	CDialogEx::OnCancel();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na upływ czasu timera powodująca odświeżenia pasków kanałówRC w oknie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void WyjsciaRC::OnTimer(UINT_PTR nIDEvent)
+{
+	WstawDaneKanalow();
+
+	CDialogEx::OnTimer(nIDEvent);
 }
 
 
@@ -534,10 +535,10 @@ void WyjsciaRC::AktywujComboFunkcjiWyjscia(int NrWyjscia)
 	case 6: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA7)->EnableWindow((m_ctlTypWyjscia7.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia7.GetCurSel() <= TWY_DSHOT_1200));	break;
 	case 7: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA8)->EnableWindow((m_ctlTypWyjscia8.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia8.GetCurSel() <= TWY_DSHOT_1200));	break;
 
-	case 8:  GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA9)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_400HZ));	break;
+	case 8:  GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA9)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel()  >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_400HZ));	break;
 	case 9:  GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA10)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_200HZ));	break;
 	case 10: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA11)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_100HZ));	break;
-	case 11: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA12)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
+	case 11: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA12)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_PWM_100HZ));	break;
 
 	case 12: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA13)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
 	case 13: GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA14)->EnableWindow((m_ctlTypWyjscia9_16.GetCurSel() >= TWY_SERWO_50HZ) && (m_ctlTypWyjscia9_16.GetCurSel() <= TWY_SERWO_50HZ));	break;
@@ -562,16 +563,12 @@ uint8_t WyjsciaRC::WstawDaneKanalow()
 	else
 		nIndeksTele -= 1;	//indeks jest liczbą danych -1
 
-
-
-
-	//aktualizuj wartości min i max
+	//aktualizuj wartości liczbowe kanałów
 	for (int n = 0; n < KANALY_WYJSC_RC; n++)
 	{
 		nWartoscRC = (int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO1 + n];
 		strWyjscie[n].Format(_T("%d"), nWartoscRC);
 	}
-
 
 	m_ctlSerwo1.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO1]);
 	m_ctlSerwo2.SetPos((int)getProtokol().m_vDaneTelemetryczne[nIndeksTele].dane[TID_SERWO2]);
@@ -598,48 +595,76 @@ uint8_t WyjsciaRC::WstawDaneKanalow()
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo1()
 {
+	AktywujComboFunkcjiWyjscia(0);
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo2()
 {
+	int nFunkcjaKan2 = m_ctlTypWyjscia2.GetCurSel();
+	int nFunkcjaKan3 = m_ctlTypWyjscia3.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA2)->EnableWindow((nFunkcjaKan2 == nFunkcjaKan3) && ((nFunkcjaKan2 == TWY_SERWO_50HZ) || ((nFunkcjaKan2 >= TWY_PWM_400HZ) && (nFunkcjaKan2 <= TWY_DSHOT_1200))));
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo3()
 {
+	int nFunkcjaKan2 = m_ctlTypWyjscia2.GetCurSel();
+	int nFunkcjaKan3 = m_ctlTypWyjscia3.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA3)->EnableWindow((nFunkcjaKan3 == nFunkcjaKan2) && ((nFunkcjaKan3 == TWY_SERWO_50HZ) || ((nFunkcjaKan3 >= TWY_PWM_400HZ) && (nFunkcjaKan3 <= TWY_DSHOT_1200))));
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo4()
 {
+	int nFunkcjaKan4 = m_ctlTypWyjscia4.GetCurSel();
+	int nFunkcjaKan5 = m_ctlTypWyjscia5.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA4)->EnableWindow((nFunkcjaKan4 == nFunkcjaKan5) && ((nFunkcjaKan4 == TWY_SERWO_50HZ) || ((nFunkcjaKan4 >= TWY_PWM_400HZ) && (nFunkcjaKan4 <= TWY_DSHOT_1200))));
+	m_bZmienionoUstawienie = TRUE;
+}
+
+
+void WyjsciaRC::OnCbnSelchangeComboSerwo5()
+{
+	int nFunkcjaKan4 = m_ctlTypWyjscia4.GetCurSel();
+	int nFunkcjaKan5 = m_ctlTypWyjscia5.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA5)->EnableWindow((nFunkcjaKan5 == nFunkcjaKan4) && ((nFunkcjaKan5 == TWY_SERWO_50HZ) || ((nFunkcjaKan5 >= TWY_PWM_400HZ) && (nFunkcjaKan5 <= TWY_DSHOT_1200))));
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo6()
 {
+	int nFunkcjaKan6 = m_ctlTypWyjscia6.GetCurSel();
+	int nFunkcjaKan8 = m_ctlTypWyjscia8.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA6)->EnableWindow((nFunkcjaKan6 == nFunkcjaKan8) && ((nFunkcjaKan6 == TWY_SERWO_50HZ) || ((nFunkcjaKan6 >= TWY_PWM_400HZ) && (nFunkcjaKan6 <= TWY_DSHOT_1200))));
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo8()
 {
+	int nFunkcjaKan6 = m_ctlTypWyjscia6.GetCurSel();
+	int nFunkcjaKan8 = m_ctlTypWyjscia8.GetCurSel();
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA8)->EnableWindow((nFunkcjaKan6 == nFunkcjaKan8) && ((nFunkcjaKan8 == TWY_SERWO_50HZ) || ((nFunkcjaKan8 >= TWY_PWM_400HZ) && (nFunkcjaKan8 <= TWY_DSHOT_1200))));
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo7()
 {
+	GetDlgItem(IDC_COMBO_FUNKCJA_WYJSCIA7)->EnableWindow(FALSE);	//zawsze nieaktywne
 	m_bZmienionoUstawienie = TRUE;
 }
 
 
 void WyjsciaRC::OnCbnSelchangeComboSerwo9()
 {
+	for (int n=8; n<16; n++)
+		AktywujComboFunkcjiWyjscia(n);
 	m_bZmienionoUstawienie = TRUE;
 }
 
@@ -738,3 +763,8 @@ void WyjsciaRC::OnCbnSelchangeComboFunkcjaWyjscia16()
 {
 	m_bZmienionoFunkcjeWyjscRC = TRUE;
 }
+
+
+
+
+

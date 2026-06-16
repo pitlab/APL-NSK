@@ -140,4 +140,6 @@ public:
 	afx_msg void OnCbnSelchangeComboFunkcjaWyjscia14();
 	afx_msg void OnCbnSelchangeComboFunkcjaWyjscia15();
 	afx_msg void OnCbnSelchangeComboFunkcjaWyjscia16();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnCbnSelchangeComboSerwo5();
 };

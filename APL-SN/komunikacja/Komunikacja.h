@@ -66,7 +66,8 @@ public:
 	uint8_t CzytajFloatFRAM(float* fDane, uint8_t chRozmiar, uint16_t sAdres);
 	uint8_t SpakujU8doFloat(uint8_t* chDane, uint8_t chRozmiarU8, float* fData);
 	uint8_t RozpakujFloatDoU8(float* fData, uint8_t chRozmiarU8, uint8_t* chDane);
-	uint8_t RekonfigurujWeWyRC();
+	uint8_t RekonfigurujWeRC();
+	uint8_t RekonfigurujWyRC();
 	uint8_t ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, float fStalePrzesuniecie, float fFiltry);
 	uint8_t ZapiszWysterowanieObrotow(uint16_t sMin, uint16_t sMax, uint16_t sZawis);
 	uint8_t ZapiszTrybRegulacji(uint8_t *chTrybRegulacji);
