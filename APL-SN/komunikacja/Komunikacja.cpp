@@ -1401,7 +1401,7 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp
 	
 	m_unia8_32.daneFloat = fSkalaWZadanej;
 	for (int i = 0; i < 4; i++)
-		chDaneWychodzace[24 + i] = m_unia8_32.dane8[i];
+		chDaneWychodzace[25 + i] = m_unia8_32.dane8[i];
 	m_unia8_32.daneFloat = fStalePrzesuniecie;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[29 + i] = m_unia8_32.dane8[i];

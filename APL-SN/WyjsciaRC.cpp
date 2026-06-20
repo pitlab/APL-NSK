@@ -143,14 +143,12 @@ BOOL WyjsciaRC::OnInitDialog()
 	{
 		nIndeksDronaWRoju = getKomunikacja().m_cRoj.m_nIndeksWrona;
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
-		{
 			m_sBackupOkresuTelemetrii[n] = getKomunikacja().m_cRoj.vWron[nIndeksDronaWRoju].m_sOkresTelemetrii[n];
-		}
-
+		
 		//ustaw telemetrię wejść i wyjść RC na CZESTOTLIWOSC_ODSWIEZANIA [Hz], resztę wyłącz
 		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
-			if ((n >= TID_RC_KAN1) && (n <= TID_SERWO16))
+			if ((n >= TID_SERWO1) && (n <= TID_SERWO16))
 				sOkresTelemetrii[n] = (uint16_t)(MAX_CZESTOTLIWOSC_TELEMETRII / CZESTOTLIWOSC_ODSWIEZANIA_KANALOW_RC);
 			else
 				sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
