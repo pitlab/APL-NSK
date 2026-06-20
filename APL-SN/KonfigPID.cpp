@@ -184,22 +184,29 @@ BOOL KonfigPID::OnInitDialog()
 		if (chErr == ERR_OK)
 		{
 			m_stPID[n].fKp = fDane[0];			//FAU_PID_P0 wzmocnienienie członu P regulatora 0
-			m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
 			m_stPID[n].fTd = fDane[2];			//FAU_PID_D0 wzmocnienienie członu D regulatora 0
 			m_stPID[n].fOgrCalki = fDane[3];	//FAU_PID_OGR_I0 górna granica wartości całki członu I regulatora 0
 			m_stPID[n].fMinWyj = fDane[4];		//FAU_PID_MIN_WY0 minimalna wartość wyjścia
 			m_stPID[n].fMaxWyj = fDane[5];		//FAU_PID_MAX_WY0 maksymalna wartość wyjścia
 			m_stPID[n].fMnożnikWartZadanej = fDane[6];	 //FAU_MNOZN_WZAD  mnożnik wartości zadanej
-			m_stPID[n].fPrzesunięcieWyjścia = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
 			m_stPID[n].fWolne1 = fDane[8];				//FAU_PID1 wolne
+			if (n & 0x01)
+			{
+				m_stPID[n].fPrzesunięcieWyjścia = 0;	//nieparzyste PID czyli regulatory pochoodnej nie mają stałego przesunięcia
+				m_stPID[n].fTi = 0;			//ani członu całkującego
+			}
+			else
+			{
+				m_stPID[n].fPrzesunięcieWyjścia = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
+				m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
+			}
 
-			//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe
+			//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe. Dostęp do nich jest przez unię
 			getKomunikacja().m_unia8_32.daneFloat = fDane[9];				//FAU_PID2 wolne
 			m_stPID[n].bWylaczony = (getKomunikacja().m_unia8_32.dane8[0] & 0x40) >> 6;	//1U regulator wyłączony (bit 6), Regulator kątowy (bit 7)
 			m_stPID[n].cPodstFiltraD = getKomunikacja().m_unia8_32.dane8[1];			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
 			m_stPID[n].cPodstawaFiltraWartZad = getKomunikacja().m_unia8_32.dane8[2];	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
 			m_stPID[n].cProcWartZadWyprz = getKomunikacja().m_unia8_32.dane8[3];		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
-			
 			if (n & 0x01)	//regulatory nieparzyste obsługują pochodną, czyli prędkość katową lub liniową, więc nie mogą być kątowe
 				m_stPID[n].bKatowy = FALSE;
 			else

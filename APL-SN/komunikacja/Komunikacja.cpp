@@ -132,15 +132,37 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_SERWO15]			= "Serwo kan.15 [us]";
 	m_strNazwyZmiennychTele[TID_SERWO16]			= "Serwo kan.16 [us]";
 
+	m_strNazwyZmiennychTele[TID_BSP_AKCELX]			= "Przyspieszenie BSP.X";
+	m_strNazwyZmiennychTele[TID_BSP_AKCELY]			= "Przyspieszenie BSP.Y";
+	m_strNazwyZmiennychTele[TID_BSP_AKCELZ]			= "Przyspieszenie BSP.Z";
+	m_strNazwyZmiennychTele[TID_BSP_ZYROP]			= "Predkoœæ k¹towa P BSP";
+	m_strNazwyZmiennychTele[TID_BSP_ZYROQ]			= "Predkoœæ k¹towa Q BSP";
+	m_strNazwyZmiennychTele[TID_BSP_ZYROR]			= "Predkoœæ k¹towa R BSP";
+	m_strNazwyZmiennychTele[TID_BSP_MAGNEX]			= "Pole magn. X BSP [uT]";
+	m_strNazwyZmiennychTele[TID_BSP_MAGNEY]			= "Pole magn. Y BSP [uT]";
+	m_strNazwyZmiennychTele[TID_BSP_MAGNEZ]			= "Pole magn. Z BSP [uT]";
+
+	m_strNazwyZmiennychTele[TID_BSP_IMUX]			= "K¹t BSP Phi";
+	m_strNazwyZmiennychTele[TID_BSP_IMUY]			= "K¹t BSP Theta";
+	m_strNazwyZmiennychTele[TID_BSP_IMUZ]			= "K¹t BSP Psi";
+	m_strNazwyZmiennychTele[TID_BSP_KURS]			= "Kurs geograficzny [rad]";
+	m_strNazwyZmiennychTele[TID_BSP_AGL]			= "Wysokoœæ AGL BSP [m]";
+	m_strNazwyZmiennychTele[TID_BSP_AMSL]			= "Wysokoœæ AMSL BSP [m]";
+	m_strNazwyZmiennychTele[TID_BSP_IAS]			= "Prêdkoœæ IAS [m/s]";
+	m_strNazwyZmiennychTele[TID_BSP_PRED_POLN]		= "Sk³adowa pó³n.prêdk.BSP";
+	m_strNazwyZmiennychTele[TID_BSP_PRED_WSCH]		= "Sk³adowa wsch.prêdk.BSP";
+	m_strNazwyZmiennychTele[TID_BSP_PRED_WDOL]		= "Sk³adowa prêdk. BSP w dó³";
+	m_strNazwyZmiennychTele[TID_BSP_SZER_GEO]		= "Szerokoœæ geo. BSP [rad]";
+	m_strNazwyZmiennychTele[TID_BSP_DLUG_GEO]		= "D³ugoœæ geo. BSP [rad]";
+
 	m_strNazwyZmiennychTele[TID_DOTYK_ADC0]			= "Ekran dotyk. ADC[0]";
 	m_strNazwyZmiennychTele[TID_DOTYK_ADC1]			= "Ekran dotyk. ADC[1]";
 	m_strNazwyZmiennychTele[TID_DOTYK_ADC2]			= "Ekran dotyk. ADC[2]";
 	m_strNazwyZmiennychTele[TID_CZAS_PETLI]			= "Czas pêtli g³ównej [us]";
-	m_strNazwyZmiennychTele[TID_ROZNE_F11]			= "Zm. debug. fRozne[11]";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC1]		= "Jakoœæ up-linku RC1";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC2]		= "Jakoœæ up-linku RC2";
 
-
+	//--- zmienne telemetryczne w ramce 2 -----------------------------------------------
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WZAD]		= "Wart.zadana przechyl";	//wartoœæ zadana regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TID_PID_PRZE_FWEJ]		= "Filtr.wejœcie przech";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
 	m_strNazwyZmiennychTele[TID_PID_PRZE_CALK]		= "Ca³ka przechylenia";		//wartoœæ ca³ki cz³onu I przechylenia

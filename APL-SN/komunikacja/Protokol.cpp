@@ -416,6 +416,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						nIndeksZmiennej = b + t * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
 						if (chBity & (0x01 << b))
 						{
+							assert(nNumerZmiennejwRamce < MAX_INDEKSOW_TELEMETR_W_RAMCE);
+							assert(nIndeksZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
 							stDaneTele.dane[nIndeksZmiennej] = fZmienna;
 							//znajdŸ ekstrema potrzebne do skalowania wykresów
