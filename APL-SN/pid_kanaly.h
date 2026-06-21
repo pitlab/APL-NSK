@@ -113,7 +113,5 @@
 #define LICZBA_DRAZKOW		4	//liczba regulatorów które mają wartość zadaną ustawianą drążkami aparatury
 
 
-//definicje bitów konfiguracji PID
-#define PID_MASKA_FILTRA_D		0x3F
-//#define PID_WLACZONY			0x40
-#define PID_KATOWY				0x80
+//definicje bitów pola flagi konfiguracji PID
+#define PID_KATOWY			0x01

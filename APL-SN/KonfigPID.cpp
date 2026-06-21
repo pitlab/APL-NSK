@@ -162,7 +162,7 @@ END_MESSAGE_MAP()
 BOOL KonfigPID::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	float fDane[ROZMIAR_REG_PID / 4 + 2];
+	float fDane[ROZMIAR_REG_PID / 4];
 	uint8_t chDane[KANALY_FUNKCYJNE];
 	uint8_t chErr;
 	CString strKomunikat, strParametr;
@@ -179,38 +179,35 @@ BOOL KonfigPID::OnInitDialog()
 
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
-		//poniewaz polecenie może odczytywać 32 bajty (8 floatów) a PID obecnie zajmuje więcej, więc podziel odczyt na 2 części
-		chErr = getKomunikacja().CzytajFloatFRAM(fDane, 11, FAU_PID_KP + n * ROZMIAR_REG_PID);		//pierwsze 6 parametrów
+		//polecenie może odczytywać 48 bajty (12 floatów)
+		chErr = getKomunikacja().CzytajFloatFRAM(fDane, 10, FAU_PID_KP + n * ROZMIAR_REG_PID);		
 		if (chErr == ERR_OK)
 		{
 			m_stPID[n].fKp = fDane[0];			//FAU_PID_P0 wzmocnienienie członu P regulatora 0
+			if (n & 0x01)
+				m_stPID[n].fTi = 0;			//ani członu całkującego
+			else
+				m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
+
 			m_stPID[n].fTd = fDane[2];			//FAU_PID_D0 wzmocnienienie członu D regulatora 0
 			m_stPID[n].fOgrCalki = fDane[3];	//FAU_PID_OGR_I0 górna granica wartości całki członu I regulatora 0
 			m_stPID[n].fMinWyj = fDane[4];		//FAU_PID_MIN_WY0 minimalna wartość wyjścia
 			m_stPID[n].fMaxWyj = fDane[5];		//FAU_PID_MAX_WY0 maksymalna wartość wyjścia
 			m_stPID[n].fMnożnikWartZadanej = fDane[6];	 //FAU_MNOZN_WZAD  mnożnik wartości zadanej
-			m_stPID[n].fWolne1 = fDane[8];				//FAU_PID1 wolne
 			if (n & 0x01)
-			{
-				m_stPID[n].fPrzesunięcieWyjścia = 0;	//nieparzyste PID czyli regulatory pochoodnej nie mają stałego przesunięcia
-				m_stPID[n].fTi = 0;			//ani członu całkującego
-			}
+				m_stPID[n].fPrzesunięcieWyjścia = 0;	//nieparzyste PID czyli regulatory pochodnej nie mają stałego przesunięcia
 			else
-			{
 				m_stPID[n].fPrzesunięcieWyjścia = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
-				m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
-			}
+			m_stPID[n].fWolne1 = fDane[8];					//FAU_PID1 wolne
 
-			//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe. Dostęp do nich jest przez unię
-			getKomunikacja().m_unia8_32.daneFloat = fDane[9];				//FAU_PID2 wolne
-			m_stPID[n].bWylaczony = (getKomunikacja().m_unia8_32.dane8[0] & 0x40) >> 6;	//1U regulator wyłączony (bit 6), Regulator kątowy (bit 7)
-			m_stPID[n].cPodstFiltraD = getKomunikacja().m_unia8_32.dane8[1];			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
-			m_stPID[n].cPodstawaFiltraWartZad = getKomunikacja().m_unia8_32.dane8[2];	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
-			m_stPID[n].cProcWartZadWyprz = getKomunikacja().m_unia8_32.dane8[3];		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
+			m_unia8_32.daneFloat = fDane[9];	//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe. Dostęp do nich jest przez unię
 			if (n & 0x01)	//regulatory nieparzyste obsługują pochodną, czyli prędkość katową lub liniową, więc nie mogą być kątowe
 				m_stPID[n].bKatowy = FALSE;
 			else
-				m_stPID[n].bKatowy = (getKomunikacja().m_unia8_32.dane8[0] & 0x80) >> 7;
+				m_stPID[n].bKatowy = ((m_unia8_32.dane8[0] & PID_KATOWY) == PID_KATOWY);
+			m_stPID[n].cPodstFiltraD = m_unia8_32.dane8[1];				//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
+			m_stPID[n].cPodstawaFiltraWartZad = m_unia8_32.dane8[2];	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
+			m_stPID[n].cProcWartZadWyprz = m_unia8_32.dane8[3];			//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia			
 			m_stPID[n].bZmieniony = FALSE;
 		}
 		else
@@ -496,11 +493,6 @@ void KonfigPID::UstawKontrolki(int nParametr)
 
 void KonfigPID::UstawTrybRegulacji(int nParametr)
 {
-	/*int nIndeksRegulatora;
-	if (nParametr < ROZMIAR_DRAZKOW)
-		nIndeksRegulatora = nParametr;
-	else
-		nIndeksRegulatora = ROZMIAR_DRAZKOW - 1;*/
 	assert(nParametr < LICZBA_REG_PARAM);
 
 	m_bTrybRegulacjiWylaczony = FALSE;
@@ -538,11 +530,11 @@ void KonfigPID::OnBnClickedOk()
 	{
 		if (m_stPID[n].bZmieniony)	//zapisz tylko te regulatory, które były zmienione
 		{		
-			getKomunikacja().m_unia8_32.dane8[0] = (m_stPID[n].bKatowy * 0x80) + (m_stPID[n].bWylaczony * 0x40);	//flagi
-			getKomunikacja().m_unia8_32.dane8[1] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
-			getKomunikacja().m_unia8_32.dane8[2] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
-			getKomunikacja().m_unia8_32.dane8[3] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
-			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, getKomunikacja().m_unia8_32.daneFloat);
+			m_unia8_32.dane8[0] = m_stPID[n].bKatowy * PID_KATOWY;	//1U flagi
+			m_unia8_32.dane8[1] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
+			m_unia8_32.dane8[2] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
+			m_unia8_32.dane8[3] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, m_unia8_32.daneFloat);
 			m_bZmienionoKonfigurację = FALSE;	//to polecenie nie wymaga przeładowania całosci, bo oprócz zapisu do FRAM ładuje też do zmiennych
 		}
 	}
@@ -976,16 +968,11 @@ void KonfigPID::OnEnChangeEditSkalaWartZadAkro()
 void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	float fCzas;
 
 	UpdateData(TRUE);
 	m_nPodstFiltraD1 = m_ctlSlidPodstCzasuFiltraD1.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 0].cPodstFiltraD = m_nPodstFiltraD1;	//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD1, więc aktualizuj również tutaj podczas odświeżania
-	if (m_nPodstFiltraD1)
-		fCzas = m_nPodstFiltraD1 / 200.f * 1000;
-	else
-		fCzas = 0.0f;
-	m_strPodstFiltraD1.Format(_T("Filtr D: %d (%.0f ms)"), m_nPodstFiltraD1, fCzas);
+	m_strPodstFiltraD1.Format(_T("Filtr D: %d "), m_nPodstFiltraD1);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -1014,16 +1001,11 @@ void KonfigPID::OnNMReleasedcaptureSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult
 void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	float fCzas;
 
 	UpdateData(TRUE);
 	m_nPodstFiltraD2 = m_ctlSlidPodstCzasuFiltraD2.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 1].cPodstFiltraD = m_nPodstFiltraD2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	if (m_nPodstFiltraD2)
-		fCzas = m_nPodstFiltraD2 / 200.f * 1000;
-	else
-		fCzas = 0.0f;
-	m_strPodstFiltraD2.Format(_T("Filtr D: %d (%.0f ms)"), m_nPodstFiltraD2, fCzas);	
+	m_strPodstFiltraD2.Format(_T("Filtr D: %d "), m_nPodstFiltraD2);	
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -1065,8 +1047,6 @@ void KonfigPID::OnBnClickedCheckKatowy()
 void KonfigPID::OnBnClickedRadioRegWylacz()
 {
 	m_chTrybRegulacji[m_nBiezacyParametr] = REG_WYLACZ;		//regultor wyłączony
-	m_stPID[2 * m_nBiezacyParametr + 0].bWylaczony = TRUE;
-	m_stPID[2 * m_nBiezacyParametr + 1].bWylaczony = TRUE;
 	UstawTrybRegulacji(m_nBiezacyParametr);
 	WlaczKontrolki(m_chTrybRegulacji[m_nBiezacyParametr], m_nBiezacyParametr);
 	m_bZmienionyTrybRegulacji = TRUE;
@@ -1165,7 +1145,6 @@ void KonfigPID::OnCbnSelchangeComboStrojonyParametr2()
 void KonfigPID::OnEnChangeEditParametrMin1()
 {
 	UpdateData(TRUE);
-	//m_fWartośćMinParametru[0] = ZamienStrNaFloat(m_strWartoscMinParametru1.GetString());
 	m_fWartośćParametru[0] = ZamienStrNaFloat(m_strWartoscMinParametru1.GetString());
 	m_bZmienioneWartościStrojenia = TRUE;
 }
@@ -1179,7 +1158,6 @@ void KonfigPID::OnEnChangeEditParametrMin1()
 void KonfigPID::OnEnChangeEditParametrMax1()
 {
 	UpdateData(TRUE);
-	//m_fWartośćMaxParametru[0] = ZamienStrNaFloat(m_strWartoscMaxParametru1.GetString());
 	m_fWartośćParametru[2] = ZamienStrNaFloat(m_strWartoscMaxParametru1.GetString());
 	m_bZmienioneWartościStrojenia = TRUE;
 }
@@ -1193,7 +1171,6 @@ void KonfigPID::OnEnChangeEditParametrMax1()
 void KonfigPID::OnEnChangeEditParametrMin2()
 {
 	UpdateData(TRUE);
-	//m_fWartośćMinParametru[1] = ZamienStrNaFloat(m_strWartoscMinParametru2.GetString());
 	m_fWartośćParametru[1] = ZamienStrNaFloat(m_strWartoscMinParametru2.GetString());
 	m_bZmienioneWartościStrojenia = TRUE;
 }
@@ -1207,7 +1184,6 @@ void KonfigPID::OnEnChangeEditParametrMin2()
 void KonfigPID::OnEnChangeEditParametrMax2()
 {
 	UpdateData(TRUE);
-	//m_fWartośćMaxParametru[1] = ZamienStrNaFloat(m_strWartoscMaxParametru2.GetString());
 	m_fWartośćParametru[3] = ZamienStrNaFloat(m_strWartoscMaxParametru2.GetString());
 	m_bZmienioneWartościStrojenia = TRUE;
 }

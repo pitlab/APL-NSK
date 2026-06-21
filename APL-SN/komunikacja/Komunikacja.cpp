@@ -1427,14 +1427,12 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp
 	m_unia8_32.daneFloat = fStalePrzesuniecie;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[29 + i] = m_unia8_32.dane8[i];
-
-	//w tej zmiennej s¹ upchniête 3 wartoœci 8-bitowych filtrów
-	m_unia8_32.daneFloat = fFiltry;
+	
+	m_unia8_32.daneFloat = 123.45678f;		//rezerwa na 1 zmienn¹ float
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[33 + i] = m_unia8_32.dane8[i];
 
-	//rezerwa na 1 zmienn¹ float
-	m_unia8_32.daneFloat = 5.678f;
+	m_unia8_32.daneFloat = fFiltry;		//w tej zmiennej s¹ upchniête 3 wartoœci 8-bitowych filtrów
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[37 + i] = m_unia8_32.dane8[i];
 

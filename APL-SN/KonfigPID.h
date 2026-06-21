@@ -30,18 +30,24 @@ public:
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
 		float fMnożnikWartZadanej;
-		//float fStałeWyprzedzenie;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
-		float fPrzesunięcieWyjścia;	//stała wartość podawana na wejście wyprzedzajace (umożliwia lot pod niezerowym kątem)
+		float fPrzesunięcieWyjścia;	//stała wartość podawana na wyjście (umożliwia lot pod niezerowym kątem)
 		float fWolne1;
-		//float fWolne2;
 
 		uint8_t cPodstFiltraD;	//podstawa filtra IIR
 		uint8_t cProcWartZadWyprz;	//procent zmiany wartości zadanej podawany na wejsście wyprzedzające
 		uint8_t cPodstawaFiltraWartZad;
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
-		BOOL bWylaczony;	//regulator jest wyłączony
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
 	} m_stPID[LICZBA_PID];
+
+	union _un8_32
+	{
+		float daneFloat;
+		uint32_t dane32;
+		uint16_t dane16[2];
+		uint8_t dane8[4];
+	} m_unia8_32;
+
 	uint8_t m_chTrybRegulacji[LICZBA_REG_PARAM];
 	BOOL m_bZmienionyTrybRegulacji;
 	BOOL m_bZmienioneParametryStrojenia;
