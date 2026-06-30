@@ -37,6 +37,9 @@
 #define FAU_RC_WY_ZAWISU   	0x0096   	//2U wysterowanie regulatorów w zawisie w jednostkach standardowych 0-2000
 #define LICZBA_DANYCH_NAPEDU	3
 
+#define FAU_RC_WY_IDENT		0x0098		//2U wysterowanie regulatorów podczas identyfikacji w jednostkach standardowych [0..1999]
+#define FAU_CZAS_IDENT		0x009A		//2U czas identyfikacji każdego silnika w milisekundach
+
 #define FAU_TSYNC_MON       0x009A     	//1U miesiąc ostatniej synchronizacji
 #define FAU_TSYNC_DAY       0x009B 		//1U dzień ostatniej synchronizacji
 #define FAU_TSYNC_HOU       0x009C		//1U

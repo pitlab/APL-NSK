@@ -83,6 +83,7 @@ public:
 	uint8_t RozpocznijDiagnostykeRezoanansu(void);
 	uint8_t ZatrzymajSilniki(void);
 	uint8_t Prze³adujKonfiguracjePID(void);
+	uint8_t RozpocznijIdentyfikacjeSilnikow(uint16_t sWsysterowanie, uint16_t sCzas);
 
 	Roj m_cRoj;
 	Wron m_cWron;

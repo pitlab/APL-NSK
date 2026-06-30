@@ -92,6 +92,9 @@ BOOL KonfiguracjaFFT::OnInitDialog()
 		return FALSE;
 	}
 
+	getKomunikacja().m_chWykładnikPotęgi = m_chWykładnikPotęgi;		//rozmiar rysowanych wodospadów zakeży od zmiennej getKomunikacja().m_chWykładnikPotęgi, więc aktualizuj ją
+
+
 	m_ctlRozdzielczoscFFT.SetRangeMin(FFT_WYKLADNIK_MIN);
 	m_ctlRozdzielczoscFFT.SetRangeMax(FFT_WYKLADNIK_MAX);
 	m_ctlRozdzielczoscFFT.SetPos(m_chWykładnikPotęgi);

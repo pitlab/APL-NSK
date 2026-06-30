@@ -1783,7 +1783,6 @@ uint8_t CKomunikacja::ZatrzymajSilniki(void)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PRze³adowuje konfiguracjê PID po zmianie parametru
 // parametry: brak
@@ -1796,5 +1795,28 @@ uint8_t CKomunikacja::Prze³adujKonfiguracjePID(void)
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
 
 	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_PRZELADUJ_KONF_PID, chDaneWychodzace, 0, chDanePrzychodzace, &chOdebrano);	//zatrzymuje silniki w trakcie testu FFT
+	return chErr;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// PRze³adowuje konfiguracjê PID po zmianie parametru
+// parametry: brak
+// zwraca: kod b³êdu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t CKomunikacja::RozpocznijIdentyfikacjeSilnikow(uint16_t sWsysterowanie, uint16_t sCzas)
+{
+	uint8_t chErr, chOdebrano;
+	uint8_t chDaneWychodzace[5];
+	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
+	
+	getProtokol().m_unia8_32.dane16[0] = sWsysterowanie;
+	getProtokol().m_unia8_32.dane16[1] = sCzas;
+
+	for (uint8_t n = 0; n < 4; n++)
+		chDaneWychodzace[n] = getProtokol().m_unia8_32.dane8[n];
+
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_URUCHOM_INDENT_SILN, chDaneWychodzace, 4, chDanePrzychodzace, &chOdebrano);	//uruchamia proces identyfikacji silników, krêc¹c kolejno ka¿dym z nich
 	return chErr;
 }

@@ -244,7 +244,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				chKolor[2] = (sPix & 0x001F) * 8;				//B
 
 
-				Indeks = (480 * y + x) *4;
+				Indeks = ((size_t)(480 * y) + x) * 4;
 				bgraBuffer[Indeks + 0] = chKolor[2];	//B
 				bgraBuffer[Indeks + 1] = chKolor[1];	//G
 				bgraBuffer[Indeks + 2] = chKolor[0];	//R
@@ -274,7 +274,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		int8_t chWartosc;
 		int16_t sKolorR, sKolorB;
 		CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-		size_t bufferSize = static_cast<size_t>(m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * sizeof(float));
+		size_t bufferSize = ((size_t)m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * sizeof(float));
 		std::vector<uint8_t> bgraBuffer(bufferSize);
 		
 		for (int t = 0; t < LICZBA_ZMIENNYCH_FFT; t++)
@@ -283,7 +283,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			{
 				for (int x = 0; x < m_nRozmiarWykresuFFT; x++)
 				{
-					Indeks = (y * (int)m_nRozmiarWykresuFFT + x) * sizeof(float);
+					Indeks = ((size_t)(y * (int)m_nRozmiarWykresuFFT) + x) * sizeof(float);
 
 					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
 					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
@@ -1396,13 +1396,13 @@ void CAPLSNView::UstawScrollOdWidoku()
 		TRACE("Can't get scroll info");
 		return;
 	}
-	m_nMaxScrollPoziomo = max(((int)round(m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscWykresu) , 0);
+	m_nMaxScrollPoziomo = max(((int)round((float)m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscWykresu) , 0);
 	m_nBiezacyScrollPoziomo = min(m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo);
 
 	scrollInfo.nMin = 0;
 	//scrollInfo.nMax = (int)(m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscWykresu;
 	scrollInfo.nMax = m_nMaxScrollPoziomo;
-	scrollInfo.nPos = (int)round(m_nBiezacyScrollPoziomo * m_fZoomPoziomo);
+	scrollInfo.nPos = (int)round((float)m_nBiezacyScrollPoziomo * m_fZoomPoziomo);
 	scrollInfo.nPage = m_nSzerokoscWykresu / 4;
 	VERIFY(SetScrollInfo(SB_HORZ, &scrollInfo));
 	TRACE("BieżScroll=%d, MaxScroll=%d, Wykres=%d, zoom=%.3f\n", m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo, m_nSzerokoscWykresu, m_fZoomPoziomo);
