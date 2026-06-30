@@ -53,6 +53,8 @@ BEGIN_MESSAGE_MAP(NapedStrojenie, CDialogEx)
 	ON_BN_CLICKED(IDC_BUT_ROZPOCZNIJ_IDENTYFIKACJE, &NapedStrojenie::OnBnClickedButRozpocznijIdentyfikacje)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_WYSTEROWANIE_SILNIKA, &NapedStrojenie::OnNMCustomdrawSlidWysterowanieSilnika)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLID_CZAS_IDENTYFIKACJI, &NapedStrojenie::OnNMCustomdrawSlidCzasIdentyfikacji)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLID_CZAS_IDENTYFIKACJI, &NapedStrojenie::OnReleasedcaptureSlidCzasIdentyfikacji)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLID_WYSTEROWANIE_SILNIKA, &NapedStrojenie::OnReleasedcaptureSlidWysterowanieSilnika)
 END_MESSAGE_MAP()
 
 
@@ -63,14 +65,15 @@ END_MESSAGE_MAP()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL NapedStrojenie::OnInitDialog()
 {
-	uint8_t cDane[2* LICZBA_DANYCH_NAPEDU];
+	uint8_t cDane[10];	//5 zmiennych 16 bitowych
 	uint8_t cBłąd;
 
 	CDialogEx::OnInitDialog();
-	m_bBylaZmianaObrotow = FALSE;
 
+	m_ctlWysterownieSilnika.SetRange(0, 20);
+	m_ctlCzasIdentyfikacji.SetRange(0, 20);
 
-	cBłąd = getKomunikacja().CzytajU8FRAM(cDane, 2* LICZBA_DANYCH_NAPEDU, FAU_RC_WY_MIN);
+	cBłąd = getKomunikacja().CzytajU8FRAM(cDane, 10, FAU_RC_WY_MIN);
 	if (cBłąd == ERR_OK)
 	{
 		m_nObrotyMin = cDane[0] + cDane[1] * 0x100;
@@ -79,21 +82,15 @@ BOOL NapedStrojenie::OnInitDialog()
 		m_strObrotyMax.Format(_T("%ld"), m_nObrotyMax);
 		m_nObrotyZawis = cDane[4] + cDane[5] * 0x100;
 		m_strObrotyZawis.Format(_T("%ld"), m_nObrotyZawis);
-	}
 
-
-	cBłąd = getKomunikacja().CzytajU8FRAM(cDane, 8, FAU_RC_WY_IDENT);
-	if (cBłąd == ERR_OK)
-	{
-		m_nWysterowanieSilnika = cDane[0] + cDane[1] * 0x100;	//2U wysterowanie regulatorów podczas identyfikacji w jednostkach standardowych [0..1999]
-		m_nCzasIdentyfikacji = cDane[2] + cDane[3] * 0x100;		//2U czas identyfikacji każdego silnika w milisekundach
+		m_nWysterowanieSilnika = cDane[6] + cDane[7] * 0x100;	//2U wysterowanie regulatorów podczas identyfikacji w jednostkach standardowych [0..1999]
+		m_nCzasIdentyfikacji = cDane[8] + cDane[9] * 0x100;		//2U czas identyfikacji każdego silnika w milisekundach
+		m_ctlWysterownieSilnika.SetPos(m_nWysterowanieSilnika / KROK_WYSTER_IDENTYFIKCJI);		
+		m_ctlCzasIdentyfikacji.SetPos(m_nCzasIdentyfikacji / KROK_CZASU_IDENTYFIKCJI);
 	}
-	m_ctlWysterownieSilnika.SetRange(0, 20);
-	m_ctlWysterownieSilnika.SetPos(m_nWysterowanieSilnika / KROK_WYSTER_IDENTYFIKCJI);
-	m_ctlCzasIdentyfikacji.SetRange(0, 20);
-	m_ctlCzasIdentyfikacji.SetPos(m_nCzasIdentyfikacji / KROK_CZASU_IDENTYFIKCJI);
 	UpdateData(FALSE);
-
+	m_bBylaZmianaIdentyfikacji = FALSE;
+	m_bBylaZmianaObrotow = FALSE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
@@ -197,7 +194,7 @@ void NapedStrojenie::OnBnClickedButRozpocznijIdentyfikacje()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Obsługa zmiany stanu suwaka definiującego wysterowanie silników podczas identyfikacji
+// Reakcja na potrzebę przerysowania suwaka definiującego wysterowanie silników podczas identyfikacji
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void NapedStrojenie::OnNMCustomdrawSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESULT* pResult)
@@ -207,6 +204,19 @@ void NapedStrojenie::OnNMCustomdrawSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESUL
 	m_nWysterowanieSilnika = KROK_WYSTER_IDENTYFIKCJI * m_ctlWysterownieSilnika.GetPos();
 	m_strWysterowanieSilnika.Format(_T("Wysterowanie silnika: %d "), m_nWysterowanieSilnika);
 	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka definiującego czas trwania identyfikacji
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void NapedStrojenie::OnReleasedcaptureSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateData(TRUE);
+	m_nWysterowanieSilnika = KROK_WYSTER_IDENTYFIKCJI * m_ctlWysterownieSilnika.GetPos();
 	m_bBylaZmianaIdentyfikacji = TRUE;
 	*pResult = 0;
 }
@@ -214,7 +224,7 @@ void NapedStrojenie::OnNMCustomdrawSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESUL
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Obsługa zmiany stanu suwaka definiującego czas trwania identyfikacji
+// Reakcja na potrzebę przerysowania suwaka  definiującego czas trwania identyfikacji
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void NapedStrojenie::OnNMCustomdrawSlidCzasIdentyfikacji(NMHDR* pNMHDR, LRESULT* pResult)
@@ -224,6 +234,20 @@ void NapedStrojenie::OnNMCustomdrawSlidCzasIdentyfikacji(NMHDR* pNMHDR, LRESULT*
 	m_nCzasIdentyfikacji = KROK_CZASU_IDENTYFIKCJI * m_ctlCzasIdentyfikacji.GetPos();
 	m_strCzasIdentyfikacji.Format(_T("Czas identyfikacji: %d ms "), m_nCzasIdentyfikacji);
 	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Reakcja na zmianę położenia suwaka definiującego czas trwania identyfikacji
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void NapedStrojenie::OnReleasedcaptureSlidCzasIdentyfikacji(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateData(TRUE);
+	m_nCzasIdentyfikacji = KROK_CZASU_IDENTYFIKCJI * m_ctlCzasIdentyfikacji.GetPos();
 	m_bBylaZmianaIdentyfikacji = TRUE;
 	*pResult = 0;
 }
+

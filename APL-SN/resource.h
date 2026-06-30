@@ -469,7 +469,6 @@
 #define IDC_STAT_WART_KAN15             1399
 #define IDC_STAT_WART_KAN16             1400
 #define IDC_SLID_WYSTEROWANIE_SILNIKA   1401
-#define IDC_SLIDER2                     1402
 #define IDC_SLID_CZAS_IDENTYFIKACJI     1402
 #define IDC_STATIC_WYSTEROWANIE_SILNIKA 1403
 #define IDC_STATIC_CZAS__IDENTYFIKACJI  1404
@@ -513,13 +512,14 @@
 #define ID_USTAWIENIA_KONFIGURACJAFFT   32826
 #define ID_BUT_POBIERZ_FFT              32827
 #define ID_USTAWIENIA_WYJ32828          32828
+#define ID_USTAWIENIA_SILNIKI           32829
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        352
-#define _APS_NEXT_COMMAND_VALUE         32829
+#define _APS_NEXT_COMMAND_VALUE         32830
 #define _APS_NEXT_CONTROL_VALUE         1406
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

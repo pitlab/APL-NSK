@@ -47,8 +47,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_MIKSER, &CAPLSNApp::OnUpdateUstawieniaMikser)
 	ON_COMMAND(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUstawieniaOdbiornikirc)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_ODBIORNIKIRC, &CAPLSNApp::OnUpdateUstawieniaOdbiornikirc)
-	ON_COMMAND(ID_USTAWIENIA_NA, &CAPLSNApp::OnUstawieniaNaped)
-	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_NA, &CAPLSNApp::OnUpdateUstawieniaNaped)
+//	ON_COMMAND(ID_USTAWIENIA_NA, &CAPLSNApp::OnUstawieniaNaped)
+//	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_NA, &CAPLSNApp::OnUpdateUstawieniaNaped)
 	ON_COMMAND(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUstawParkamery)
 	ON_UPDATE_COMMAND_UI(ID_USTAW_PARKAMERY, &CAPLSNApp::OnUpdateUstawParkamery)
 	ON_COMMAND(ID_USTAWIENIA_ZAPISZSAMPLEAUDIO, &CAPLSNApp::OnUstawieniaZapiszsampleaudio)
@@ -59,6 +59,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_KONFIGURACJAFFT, &CAPLSNApp::OnUpdateUstawieniaKonfiguracjafft)
 	ON_COMMAND(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUstawieniaWyjscRC)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUpdateUstawieniaWyjscRC)
+	ON_COMMAND(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUstawieniaSilniki)
+	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUpdateUstawieniaSilniki)
 END_MESSAGE_MAP()
 
 
@@ -446,7 +448,7 @@ void CAPLSNApp::OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI)
 // Uruchamia polecenie menu Konfiguracja -> Napęd i strojenie...
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnUstawieniaNaped()
+void CAPLSNApp::OnUstawieniaSilniki()
 {
 	NapedStrojenie cNapedStrojenieDlg;
 	cNapedStrojenieDlg.DoModal();
@@ -458,7 +460,7 @@ void CAPLSNApp::OnUstawieniaNaped()
 // Definiuje dostępność polecenia menu Konfiguracja -> Napęd i strojenie...
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnUpdateUstawieniaNaped(CCmdUI* pCmdUI)
+void CAPLSNApp::OnUpdateUstawieniaSilniki(CCmdUI* pCmdUI)
 {
 	if (getKomunikacja().CzyPolaczonoUart() || getKomunikacja().CzyPolaczonoEth())
 		pCmdUI->Enable(TRUE);
@@ -596,3 +598,4 @@ void CAPLSNApp::OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI)
 	else
 		pCmdUI->Enable(FALSE);
 }
+

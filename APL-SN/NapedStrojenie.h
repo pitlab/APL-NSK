@@ -52,4 +52,6 @@ public:
 	CString m_strCzasIdentyfikacji;
 	afx_msg void OnNMCustomdrawSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSlidCzasIdentyfikacji(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnReleasedcaptureSlidCzasIdentyfikacji(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnReleasedcaptureSlidWysterowanieSilnika(NMHDR* pNMHDR, LRESULT* pResult);
 };
