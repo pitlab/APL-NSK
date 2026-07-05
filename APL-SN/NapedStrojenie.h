@@ -19,7 +19,7 @@ public:
 	enum { IDD = IDD_NAPED_I_STROJENIE };
 #endif
 #define  KROK_WYSTER_IDENTYFIKCJI	50
-#define  KROK_CZASU_IDENTYFIKCJI	200
+#define  KROK_CZASU_IDENTYFIKCJI	500
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // obsługa DDX/DDV

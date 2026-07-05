@@ -42,12 +42,12 @@ CKomunikacja::CKomunikacja()
 	m_wskaznikInstancji = m_LicznikInstancji++;
 
 	//D³ugoœæ nazwy nie powinna przekraczaæ sta³ej DLUGOSC_NAZWY
-	m_strNazwyZmiennychTele[TID_AKCEL1X]			= "Akcelerometr1 X [m/s^2]";
-	m_strNazwyZmiennychTele[TID_AKCEL1Y]			= "Akcelerometr1 Y [m/s^2]";
-	m_strNazwyZmiennychTele[TID_AKCEL1Z]			= "Akcelerometr1 Z [m/s^2]";
-	m_strNazwyZmiennychTele[TID_AKCEL2X]			= "Akcelerometr2 X [m/s^2]";
-	m_strNazwyZmiennychTele[TID_AKCEL2Y]			= "Akcelerometr2 Y [m/s^2]";
-	m_strNazwyZmiennychTele[TID_AKCEL2Z]			= "Akcelerometr2 Z [m/s^2]";
+	m_strNazwyZmiennychTele[TID_AKCEL1X]			= "Akcelerometr1 X [m/s2]";
+	m_strNazwyZmiennychTele[TID_AKCEL1Y]			= "Akcelerometr1 Y [m/s2]";
+	m_strNazwyZmiennychTele[TID_AKCEL1Z]			= "Akcelerometr1 Z [m/s2]";
+	m_strNazwyZmiennychTele[TID_AKCEL2X]			= "Akcelerometr2 X [m/s2]";
+	m_strNazwyZmiennychTele[TID_AKCEL2Y]			= "Akcelerometr2 Y [m/s2]";
+	m_strNazwyZmiennychTele[TID_AKCEL2Z]			= "Akcelerometr2 Z [m/s2]";
 	m_strNazwyZmiennychTele[TID_ZYRO1P]				= "¯yroskop1 P [rad/s]";
 	m_strNazwyZmiennychTele[TID_ZYRO1Q]				= "¯yroskop1 Q [rad/s]";
 	m_strNazwyZmiennychTele[TID_ZYRO1R]				= "¯yroskop1 R [rad/s]";
@@ -132,9 +132,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_SERWO15]			= "Serwo kan.15 [us]";
 	m_strNazwyZmiennychTele[TID_SERWO16]			= "Serwo kan.16 [us]";
 
-	m_strNazwyZmiennychTele[TID_BSP_AKCELX]			= "Przyspieszenie BSP.X";
-	m_strNazwyZmiennychTele[TID_BSP_AKCELY]			= "Przyspieszenie BSP.Y";
-	m_strNazwyZmiennychTele[TID_BSP_AKCELZ]			= "Przyspieszenie BSP.Z";
+	m_strNazwyZmiennychTele[TID_BSP_AKCELX]			= "Przyspiesz.X BSP [m/s2]";
+	m_strNazwyZmiennychTele[TID_BSP_AKCELY]			= "Przyspiesz.Y BSP [m/s2]";
+	m_strNazwyZmiennychTele[TID_BSP_AKCELZ]			= "Przyspiesz.Z BSP [m/s2]";
 	m_strNazwyZmiennychTele[TID_BSP_ZYROP]			= "Predkoœæ k¹towa P BSP";
 	m_strNazwyZmiennychTele[TID_BSP_ZYROQ]			= "Predkoœæ k¹towa Q BSP";
 	m_strNazwyZmiennychTele[TID_BSP_ZYROR]			= "Predkoœæ k¹towa R BSP";
@@ -142,13 +142,13 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_BSP_MAGNEY]			= "Pole magn. Y BSP [uT]";
 	m_strNazwyZmiennychTele[TID_BSP_MAGNEZ]			= "Pole magn. Z BSP [uT]";
 
-	m_strNazwyZmiennychTele[TID_BSP_IMUX]			= "K¹t BSP Phi";
-	m_strNazwyZmiennychTele[TID_BSP_IMUY]			= "K¹t BSP Theta";
-	m_strNazwyZmiennychTele[TID_BSP_IMUZ]			= "K¹t BSP Psi";
+	m_strNazwyZmiennychTele[TID_BSP_IMUX]			= "K¹t Phi BSP";
+	m_strNazwyZmiennychTele[TID_BSP_IMUY]			= "K¹t Theta BSP";
+	m_strNazwyZmiennychTele[TID_BSP_IMUZ]			= "K¹t Psi BSP";
 	m_strNazwyZmiennychTele[TID_BSP_KURS]			= "Kurs geograficzny [rad]";
 	m_strNazwyZmiennychTele[TID_BSP_AGL]			= "Wysokoœæ AGL BSP [m]";
 	m_strNazwyZmiennychTele[TID_BSP_AMSL]			= "Wysokoœæ AMSL BSP [m]";
-	m_strNazwyZmiennychTele[TID_BSP_IAS]			= "Prêdkoœæ IAS [m/s]";
+	m_strNazwyZmiennychTele[TID_BSP_IAS]			= "Prêdkoœæ IAS BSP [m/s]";
 	m_strNazwyZmiennychTele[TID_BSP_PRED_POLN]		= "Sk³adowa pó³n.prêdk.BSP";
 	m_strNazwyZmiennychTele[TID_BSP_PRED_WSCH]		= "Sk³adowa wsch.prêdk.BSP";
 	m_strNazwyZmiennychTele[TID_BSP_PRED_WDOL]		= "Sk³adowa prêdk. BSP w dó³";
@@ -161,6 +161,27 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_CZAS_PETLI]			= "Czas pêtli g³ównej [us]";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC1]		= "Jakoœæ up-linku RC1";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC2]		= "Jakoœæ up-linku RC2";
+	m_strNazwyZmiennychTele[TID_JAKOSC_DOWN_RC]		= "Jakoœæ down-linku RC";
+
+	m_strNazwyZmiennychTele[TID_ADC1_1]				= "Napiêcie czujn analog 1";
+	m_strNazwyZmiennychTele[TID_ADC1_2]				= "Napiêcie czujn analog 2";
+	m_strNazwyZmiennychTele[TID_ADC2_1]				= "Napiêcie czujn analog 3";
+	m_strNazwyZmiennychTele[TID_ADC2_2]				= "Napiêcie czujn analog 4";
+
+	m_strNazwyZmiennychTele[TID_BAT1_NAPIECIE]		= "Bateria1: Napiêcie [V]";
+	m_strNazwyZmiennychTele[TID_BAT1_PRAD]			= "Bateria1: Pr¹d [A]";
+	m_strNazwyZmiennychTele[TID_BAT1_ENERGIA]		= "Bateria1: Energia [mAh]";
+	m_strNazwyZmiennychTele[TID_BAT2_NAPIECIE]		= "Bateria2: Napiêcie [V]";
+	m_strNazwyZmiennychTele[TID_BAT2_PRAD]			= "Bateria2: Pr¹d [A]";
+	m_strNazwyZmiennychTele[TID_BAT2_ENERGIA]		= "Bateria2: Energia [mAh]";
+
+	m_strNazwyZmiennychTele[TID_BAT_RTC_NAPIECIE]	= "Bateria RTC: Napiêcie [V]";
+	m_strNazwyZmiennychTele[TID_TEMPERATURA_CPU]	= "Temperatura CPU [K]";
+	m_strNazwyZmiennychTele[TID_VREF_ADC]			= "Napiêcie ref. ADC [V]";
+	m_strNazwyZmiennychTele[TID_NAPIECIE_WE1]		= "Napiêcie wejœciowe 1 [V]";
+	m_strNazwyZmiennychTele[TID_NAPIECIE_WE2]		= "Napiêcie wejœciowe 2 [V]";
+	m_strNazwyZmiennychTele[TID_NAPIECIE_SERW]		= "Napiêcie magistrali serw [V]";
+	m_strNazwyZmiennychTele[TID_NAPIECIE_USB]		= "Napiêcie zasilania z USB [V]";
 
 	//--- zmienne telemetryczne w ramce 2 -----------------------------------------------
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WZAD]		= "Wart.zadana przechyl";	//wartoœæ zadana regulatora sterowania przechyleniem
