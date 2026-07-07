@@ -16,7 +16,7 @@
 //Formaty liczb:
 // U - liczba całkowita bez znaku. Cyfra przed literą oznacza rozmiar w bajtach
 // S - liczba całkowita ze znakiem.
-// CH - znak alfanumeryczny
+// C - znak alfanumeryczny
 // F - liczba float
 
 #define FA_USER_VAR	    	0x0000	    //zmienne użytkownika
@@ -24,13 +24,8 @@
 #define FAU_WE_RC1_MAX		0x0020		//16*2U maksymalna wartość każdego kanału z odbiornika RC1
 #define FAU_WE_RC2_MIN		0x0040		//16*2U minimalna wartość każdego kanału z odbiornika RC2
 #define FAU_WE_RC2_MAX		0x0060		//16*2U maksymalna wartość każdego kanału z odbiornika RC2
-
-#define FAU_CH6_MIN         0x0080 		//4F minimalna wartość regulowanej zmiennej
-#define FAU_CH6_MAX         0x0084      //4F maksymalna wartość regulowanej zmiennej
-#define FAU_CH6_FUNCT       0x0088      //1U funkcja kanału 6: rodzaj zmiennej do regulacji
-#define FAU_CH7_MIN         0x0089		//4F minimalna wartość regulowanej zmiennej
-#define FAU_CH7_MAX         0x008D      //4F maksymalna wartość regulowanej zmiennej
-#define FAU_CH7_FUNCT       0x0091      //1U funkcja kanału 7: rodzaj zmiennej do regulacji
+#define FAU_80        		0x0080
+//wolne 12 bajtów
 
 #define FAU_RC_WY_MIN   	0x0092     	//2U minimalne wysterowanie regulatorów w trakcie lotu w jednostkach standardowych 0-2000
 #define FAU_RC_WY_MAX      	0x0094 		//2U maksymalne wysterowanie silników w trakcie lotu w jednostkach standardowych 0-2000
@@ -39,13 +34,8 @@
 
 #define FAU_RC_WY_IDENT		0x0098		//2U wysterowanie regulatorów podczas identyfikacji w jednostkach standardowych [0..1999]
 #define FAU_CZAS_IDENT		0x009A		//2U czas identyfikacji każdego silnika w milisekundach
-
-#define FAU_TSYNC_MON       0x009A     	//1U miesiąc ostatniej synchronizacji
-#define FAU_TSYNC_DAY       0x009B 		//1U dzień ostatniej synchronizacji
-#define FAU_TSYNC_HOU       0x009C		//1U
-#define FAU_TSYNC_MIN       0x009D
-#define FAU_TSYNC_SEC       0x009E
-#define FAU_TSYNC_DIF       0x009F 		//1U ostatnia różnica czasu synchronizacji
+#define FAU_9C				0x009C
+//wolne 4 bajty 
 
 //mikser
 #define FAU_MIX_PRZECH		0x00A0		//8*4F współczynnik wpływu przechylenia na dany silnik
@@ -70,7 +60,9 @@
 #define FAU_PID2			FA_USER_PID+40	//1U wolne
 #define FAU_PID3			FA_USER_PID+41	//1U wolne
 #define ROZMIAR_REG_PID		42
-//12 regulatorów zajmuje 336 bajtów - 0x180
+//12 regulatorów zajmuje 504 bajtów - 0x1F8
+#define FAU_TRYB_REG	    0x02F8		//6*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków i 2 regulatorów pozycji N i E
+#define FAU_CRC_PID			0x02FE		//2U CRC konfiguracji regulatorów liczone od 0x0100 do 0x02FE
 
 //konfiguracja odbiorników RC i wyjść serw/ESC zdefiniowane w sys_def_wspolnych.h
 #define FAU_KONF_ODB_RC		0x0300		//1U konfiguracja odbiorników RC: Bity 0..3 = RC1, bity 4..7 = RC2: 0=PPM, 1=S-Bus
@@ -84,10 +76,8 @@
 #define FAU_LOW_VOLT_ALARM  0x031A 		//4F próg alarmu niskiego napięcia
 #define FAU_VOLT_DROP_COMP  0x031E		//4F współczynnik kompensacji spadku napięcia pakietu
 #define FAU_LANDING_SPD     0x0322		//4F prędkość lądowania
-
-//wzmocnienia drążków aparatury dla poszczególnych trybów pracy regulatorów
-#define FAU_ZADANA_AKRO     0x0316		//4x4F wartość zadana z drążków aparatury dla regulatora Akro
-#define FAU_ZADANA_STAB     0x0326		//4x4F wartość zadana z drążków aparatury dla regulatora Stab
+#define FAU_326				0x0326
+//wolne 16 bajtów
 
 //definicje wskaźników LED zrobionych z WS8213
 #define FAU_WSKLED_TYP_LED	0x0336		//1U typ układu WS8211 lub WS8213, ponieważ maja inne definicje kolorów
@@ -121,24 +111,19 @@
 #define FAU_WSKLED2_MAX_NIEB		FAU_WSKLED2+16	//1U definiuje poziom składowej niebieskiej na końcu skali1
 #define FAU_WSKLED2_LICZBA_LED		FAU_WSKLED2+17	//1U liczba LED-ów z których zbudowany jest wskaźnik
 
-//#define FAU_WSKLED3			FAU_WSKLED2 + ROZMIAR_WSKAZNIKA_LED
-//#define FAU_WSKLED3_NUM_ZMIENNEJ	FAU_WSKLED3+8	//1U indeks wizualizowanej zmiennej 2
-#define FAU_				FAU_WSKLED1 + LICZBA_WSKAZNIKOW_LED * ROZMIAR_WSKAZNIKA_LED
-//miejsce na trzeci wskaźnik
+#define FAU_35B						0x035B
+//miejsce zarezerwowane na trzeci wskaźnik
 
-#define FAU_FUNKCJA_KAN_RC			0x036C		//12*1U Numer funkcji przypisanej do kanału RC (5..16)
-//wolne 12 bajtów
-
-
-#define FAU_TRYB_REG	    		0x0400		//6*1U Tryb pracy regulatorów 4 podstawowych wartości przypisanych do drążków i 2 regulatorów pozycji N i E
-#define FAU_KAN_DRAZKA_RC			0x0406		//4*1U Numer kanału przypisany do funkcji drążka aparatury: przechylenia, pochylenia, odchylenia i wysokości
-#define FAU_STROJ1_PARAMETR			0x040A		//2*1U numer strojonego parametru
-#define FAU_STROJ2_PARAMETR			0x040B
-#define FAU_STROJ1_WART_MIN			0x040C		//2*4F minimalna wartość parametru dla minimalnej wartości kanału
-#define FAU_STROJ2_WART_MIN			0x0410
-#define FAU_STROJ1_WART_MAX			0x0414		//2*4F maksymalna wartość parametru dla maksymalnej wartości kanału
-#define FAU_STROJ2_WART_MAX			0x0418
-
+#define FAU_KAN_DRAZKA_RC			0x036D		//4*1U Numer kanału przypisany do funkcji drążka aparatury: przechylenia, pochylenia, odchylenia i wysokości
+#define FAU_FUNKCJA_KAN_RC			0x0371		//12*1U Numer funkcji przypisanej do kanału RC (5..16)
+#define FAU_STROJ1_PARAMETR			0x037D		//1U numer strojonego parametru 1
+#define FAU_STROJ2_PARAMETR			0x037E		//1U numer strojonego parametru 2
+#define FAU_STROJ1_WART_MIN			0x037F		//4F minimalna wartość parametru 1
+#define FAU_STROJ2_WART_MIN			0x0383		//4F minimalna wartość parametru 2
+#define FAU_STROJ1_WART_MAX			0x0387		//4F maksymalna wartość parametru 1
+#define FAU_STROJ2_WART_MAX			0x038B		//4F maksymalna wartość parametru 2
+#define FAU_38F						0x038F
+//wolne 369 bajtów
 
 
 #define FA_HARD_VAR         	0x0500	    //zmienne definiujące parametry sprzętu 0x500 = 1280
@@ -191,7 +176,6 @@
 #define	FAH_ZYRO2_TEMP_ZIM     	FAH_ZYRO_TEMP+12	//4F temperatura kalibracji na zimno żyroskopu 2
 #define	FAH_ZYRO2_TEMP_POK     	FAH_ZYRO_TEMP+16	//4F temperatura kalibracji w temperaturze pokojowej żyroskopu 2
 #define	FAH_ZYRO2_TEMP_GOR     	FAH_ZYRO_TEMP+20	//4F temperatura kalibracji na gotąco żyroskopu 2
-
 
 #define	FAH_MOD_CIS_ROZ	    	FAH_ZYRO_TEMP+24    //czujniki ciśnienia różnicowego
 #define	FAH_CISN_ROZN1_ZIM 		FAH_MOD_CIS_ROZ+0	//4F korekcja czujnika ciśnienia różnicowego 1 na zimno
@@ -362,8 +346,3 @@
 #define VMAX_MIX_PRZE    (float)100.0
 #define VDEF_MIX_PRZE    (float)100.0
 
-
-/*
-#define VALM_SPGAIN       (float)0.0001  //limity wartości  współczynnika wzmocnienia sygnału zadanego z aparatury
-#define VALP_SPGAIN       (float)100.0
-#define VALD_SPGAIN       (float)1.0    //wartość domyślna*/

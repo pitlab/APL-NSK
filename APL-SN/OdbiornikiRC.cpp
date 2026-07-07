@@ -133,7 +133,7 @@ END_MESSAGE_MAP()
 BOOL OdbiornikiRC::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	uint8_t chErr, chDane[KANALY_WYJSC_RC];	//dane są odczytwane czwórkami, więc trzeba zarezerwowac na odczyt minimum 4 bajty
+	uint8_t chErr, chDane[KANALY_WYJSC_RC];	
 	int nIndeksDronaWRoju;
 	uint16_t sOkresTelemetrii[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH];
 	CString strNapis;

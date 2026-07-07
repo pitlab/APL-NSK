@@ -30,8 +30,8 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_strMaxWyj1(_T(""))
 	, m_strMinWyj2(_T(""))
 	, m_strMaxWyj2(_T(""))
-	, m_strPrzesunięcieWyjścia1(_T(""))
-	, m_strPrzesunięcieWyjścia2(_T(""))
+	, m_strPrzesunięcieWartościZadanej1(_T(""))
+	, m_strPrzesunięcieWartościZadanej2(_T(""))
 	, m_strSkalaWartZadanejStab(_T(""))
 	, m_strSkalaWartZadanejAkro(_T(""))
 	, m_bKatowy(FALSE)
@@ -90,8 +90,8 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PARAMETR_MAX2, m_strWartoscMaxParametru2);
 	DDX_Text(pDX, IDC_EDIT_MNOZNIK_WART_ZAD_STAB, m_strSkalaWartZadanejStab);
 	DDX_Text(pDX, IDC_EDIT_MNOZNIK_WART_ZAD_AKRO, m_strSkalaWartZadanejAkro);
-	DDX_Text(pDX, IDC_EDIT_PRZESUNIECIE_WYJSCIA1, m_strPrzesunięcieWyjścia1);
-	DDX_Text(pDX, IDC_EDIT_PRZESUNIECIE_WYJSCIA2, m_strPrzesunięcieWyjścia2);
+	DDX_Text(pDX, IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ1, m_strPrzesunięcieWartościZadanej1);
+	DDX_Text(pDX, IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2, m_strPrzesunięcieWartościZadanej2);
 	DDX_Check(pDX, IDC_CHECK_KATOWY1, m_bKatowy);
 
 	DDX_Text(pDX, IDC_STATIC_FILTR_D1, m_strPodstFiltraD1);
@@ -159,8 +159,6 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MIN2, &KonfigPID::OnEnChangeEditParametrMin2)
 	ON_EN_CHANGE(IDC_EDIT_PARAMETR_MAX2, &KonfigPID::OnEnChangeEditParametrMax2)
 	ON_CBN_SELCHANGE(IDC_COMBO_STROJONY_PARAMETR2, &KonfigPID::OnCbnSelchangeComboStrojonyParametr2)
-	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WYJSCIA1, &KonfigPID::OnEnChangeEditPrzesuniecieWyjscia1)
-	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WYJSCIA2, &KonfigPID::OnEnChangeEditPrzesuniecieWyjscia2)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_WZAD1, &KonfigPID::OnNMCustomdrawSliderFiltrWzad1)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_WZAD2, &KonfigPID::OnNMCustomdrawSliderFiltrWzad2)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_WZAD1, &KonfigPID::OnReleasedcaptureSliderFiltrWzad1)
@@ -169,7 +167,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_PROC_WYPRZEDZENIA2, &KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia2)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_PROC_WYPRZEDZENIA1, &KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia1)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_PROC_WYPRZEDZENIA2, &KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2)
-	
+	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ1, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej1)
+	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej2)
 END_MESSAGE_MAP()
 
 
@@ -216,9 +215,9 @@ BOOL KonfigPID::OnInitDialog()
 			m_stPID[n].fMaxWyj = fDane[5];		//FAU_PID_MAX_WY0 maksymalna wartość wyjścia
 			m_stPID[n].fMnożnikWartZadanej = fDane[6];	 //FAU_MNOZN_WZAD  mnożnik wartości zadanej
 			if (n & 0x01)
-				m_stPID[n].fPrzesunięcieWyjścia = 0;	//nieparzyste PID czyli regulatory pochodnej nie mają stałego przesunięcia
+				m_stPID[n].fPrzesunięcieWartościZadanej = 0;	//nieparzyste PID czyli regulatory pochodnej nie mają stałego przesunięcia
 			else
-				m_stPID[n].fPrzesunięcieWyjścia = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
+				m_stPID[n].fPrzesunięcieWartościZadanej = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
 			m_stPID[n].fWolne1 = fDane[8];					//FAU_PID1 wolne
 
 			m_unia8_32.daneFloat = fDane[9];	//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe. Dostęp do nich jest przez unię
@@ -503,7 +502,7 @@ void KonfigPID::WlaczKontrolki(uint8_t cTrybPracyRegulatora, uint8_t cKanal)
 	GetDlgItem(IDC_EDIT_MIN_WY1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_EDIT_MAX_WY1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_EDIT_MNOZNIK_WART_ZAD_STAB)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_EDIT_PRZESUNIECIE_WYJSCIA1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cKanal < 4));
+	GetDlgItem(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cKanal < 4));
 	GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_SLIDER_FILTR_WZAD1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
@@ -520,7 +519,7 @@ void KonfigPID::WlaczKontrolki(uint8_t cTrybPracyRegulatora, uint8_t cKanal)
 	GetDlgItem(IDC_EDIT_MIN_WY2)->EnableWindow(cTrybPracyRegulatora >= REG_RECZNA);
 	GetDlgItem(IDC_EDIT_MAX_WY2)->EnableWindow(cTrybPracyRegulatora >= REG_RECZNA);
 	GetDlgItem(IDC_EDIT_MNOZNIK_WART_ZAD_AKRO)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_EDIT_PRZESUNIECIE_WYJSCIA2)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cKanal < 4));
+	GetDlgItem(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cKanal < 4));
 	GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(cTrybPracyRegulatora >= REG_AKRO);	
 	GetDlgItem(IDC_SLIDER_FILTR_WZAD2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
 	GetDlgItem(IDC_SLIDER_PROC_WYPRZEDZENIA2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
@@ -544,9 +543,9 @@ void KonfigPID::UstawKontrolki(int nParametr)
 
 	WlaczKontrolki(m_chTrybRegulacji[nParametr], nParametr);
 
-	m_strKP1.Format(_T("%.2f"), m_stPID[nRegGlow].fKp);
+	m_strKP1.Format(_T("%.3f"), m_stPID[nRegGlow].fKp);
 	m_strKP1.Replace(_T('.'), _T(','));
-	m_strKP2.Format(_T("%.2f"), m_stPID[nRegPoch].fKp);
+	m_strKP2.Format(_T("%.3f"), m_stPID[nRegPoch].fKp);
 	m_strKP2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fTi);
@@ -559,19 +558,19 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
 	m_strTD2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strOgrCalki1.Format(_T("%.0f"), m_stPID[nRegGlow].fOgrCalki);
+	m_strOgrCalki1.Format(_T("%.1f"), m_stPID[nRegGlow].fOgrCalki);
 	m_strOgrCalki1.Replace(_T('.'), _T(','));
-	m_strOgrCalki2.Format(_T("%.0f"), m_stPID[nRegPoch].fOgrCalki);
+	m_strOgrCalki2.Format(_T("%.1f"), m_stPID[nRegPoch].fOgrCalki);
 	m_strOgrCalki2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strMinWyj1.Format(_T("%.0f"), m_stPID[nRegGlow].fMinWyj);
+	m_strMinWyj1.Format(_T("%.1f"), m_stPID[nRegGlow].fMinWyj);
 	m_strMinWyj1.Replace(_T('.'), _T(','));
-	m_strMinWyj2.Format(_T("%.0f"), m_stPID[nRegPoch].fMinWyj);
+	m_strMinWyj2.Format(_T("%.1f"), m_stPID[nRegPoch].fMinWyj);
 	m_strMinWyj2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strMaxWyj1.Format(_T("%.0f"), m_stPID[nRegGlow].fMaxWyj);
+	m_strMaxWyj1.Format(_T("%.1f"), m_stPID[nRegGlow].fMaxWyj);
 	m_strMaxWyj1.Replace(_T('.'), _T(','));
-	m_strMaxWyj2.Format(_T("%.0f"), m_stPID[nRegPoch].fMaxWyj);
+	m_strMaxWyj2.Format(_T("%.1f"), m_stPID[nRegPoch].fMaxWyj);
 	m_strMaxWyj2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_strSkalaWartZadanejStab.Format(_T("%.6f"), m_stPID[nRegGlow].fMnożnikWartZadanej);
@@ -579,19 +578,19 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strSkalaWartZadanejAkro.Format(_T("%.6f"), m_stPID[nRegPoch].fMnożnikWartZadanej);
 	m_strSkalaWartZadanejAkro.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strPrzesunięcieWyjścia1.Format(_T("%.4f"), m_stPID[nRegGlow].fPrzesunięcieWyjścia);
-	m_strPrzesunięcieWyjścia1.Replace(_T('.'), _T(','));
-	m_strPrzesunięcieWyjścia2.Format(_T("%.4f"), m_stPID[nRegPoch].fPrzesunięcieWyjścia);
-	m_strPrzesunięcieWyjścia2.Replace(_T('.'), _T(','));
+	m_strPrzesunięcieWartościZadanej1.Format(_T("%.4f"), m_stPID[nRegGlow].fPrzesunięcieWartościZadanej);
+	m_strPrzesunięcieWartościZadanej1.Replace(_T('.'), _T(','));
+	m_strPrzesunięcieWartościZadanej2.Format(_T("%.4f"), m_stPID[nRegPoch].fPrzesunięcieWartościZadanej);
+	m_strPrzesunięcieWartościZadanej2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_ctlSlidPodstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].cPodstFiltraD);
 	m_ctlSlidPodstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].cPodstFiltraD);
+	m_ctlSlidProcWyprzedzenia1.SetPos(m_stPID[nRegGlow].cProcWartZadWyprz);
 	m_ctlSlidProcWyprzedzenia2.SetPos(m_stPID[nRegPoch].cProcWartZadWyprz);
 	m_ctlSlidPodstFiltraWartZad1.SetPos(m_stPID[nRegGlow].cPodstawaFiltraWartZad);
 	m_ctlSlidPodstFiltraWartZad2.SetPos(m_stPID[nRegPoch].cPodstawaFiltraWartZad);
 	m_bKatowy = m_stPID[nRegGlow].bKatowy;
 	UpdateData(FALSE);
-
 	UstawJednostke(nParametr);
 	UstawTrybRegulacji(nParametr);
 }
@@ -641,7 +640,7 @@ void KonfigPID::OnBnClickedOk()
 			m_unia8_32.dane8[1] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
 			m_unia8_32.dane8[2] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
 			m_unia8_32.dane8[3] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
-			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWyjścia, m_unia8_32.daneFloat);
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWartościZadanej, m_unia8_32.daneFloat);
 			m_bZmienionoKonfigurację = FALSE;	//to polecenie nie wymaga przeładowania całosci, bo oprócz zapisu do FRAM ładuje też do zmiennych
 		}
 	}
@@ -725,7 +724,7 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 		m_stPID[n].fOgrCalki = 20.0f;
 		m_stPID[n].fMinWyj = -100.0f;
 		m_stPID[n].fMaxWyj = 100.0f;
-		m_stPID[n].fPrzesunięcieWyjścia = 0.0f;
+		m_stPID[n].fPrzesunięcieWartościZadanej = 0.0f;
 		m_stPID[n].fWolne1 = 0.1f;
 		m_stPID[n].cPodstFiltraD = 8;
 		m_stPID[n].bZmieniony = TRUE;
@@ -1041,13 +1040,13 @@ void KonfigPID::OnEnChangeEditSkalaWartZadStab()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki przesunięcia wyjścia 1
+// Edycja kontrolki przesunięcia wartości zadanej 1
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnEnChangeEditPrzesuniecieWyjscia1()
+void KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej1()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 0].fPrzesunięcieWyjścia = ZamienStrNaFloat(m_strPrzesunięcieWyjścia1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].fPrzesunięcieWartościZadanej = ZamienStrNaFloat(m_strPrzesunięcieWartościZadanej1.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -1058,10 +1057,10 @@ void KonfigPID::OnEnChangeEditPrzesuniecieWyjscia1()
 // Edycja kontrolki przesunięcia wyjścia 1
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnEnChangeEditPrzesuniecieWyjscia2()
+void KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej2()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 1].fPrzesunięcieWyjścia = ZamienStrNaFloat(m_strPrzesunięcieWyjścia2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].fPrzesunięcieWartościZadanej = ZamienStrNaFloat(m_strPrzesunięcieWartościZadanej2.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -1410,4 +1409,5 @@ void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT*
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	*pResult = 0;
 }
+
 

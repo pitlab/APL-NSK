@@ -30,7 +30,7 @@ public:
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
 		float fMnożnikWartZadanej;
-		float fPrzesunięcieWyjścia;	//stała wartość podawana na wyjście (umożliwia lot pod niezerowym kątem)
+		float fPrzesunięcieWartościZadanej;	//stała wartość dodawana do wartości zadanej (umożliwia lot pod niezerowym kątem lub asymetrię prędkości wznoszenia i opadania)
 		float fWolne1;
 
 		uint8_t cPodstFiltraD;	//podstawa filtra IIR
@@ -88,8 +88,8 @@ private:
 	CString m_strMinWyj2;
 	CString m_strMaxWyj1;	
 	CString m_strMaxWyj2;
-	CString m_strPrzesunięcieWyjścia1;
-	CString m_strPrzesunięcieWyjścia2;
+	CString m_strPrzesunięcieWartościZadanej1;
+	CString m_strPrzesunięcieWartościZadanej2;
 	BOOL m_bKatowy;
 	int m_nPodstFiltraD1;
 	int m_nPodstFiltraD2;
@@ -162,7 +162,6 @@ public:
 	afx_msg void OnEnChangeEditParametrMin2();
 	afx_msg void OnEnChangeEditParametrMax2();
 	afx_msg void OnCbnSelchangeComboStrojonyParametr2();
-	afx_msg void OnEnChangeEditPrzesuniecieWyjscia1();
 	afx_msg void OnNMCustomdrawSliderFiltrWzad1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMCustomdrawSliderFiltrWzad2(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderFiltrWzad1(NMHDR* pNMHDR, LRESULT* pResult);
@@ -171,5 +170,6 @@ public:
 	afx_msg void OnNMCustomdrawSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnEnChangeEditPrzesuniecieWyjscia2();
+	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej1();
+	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej2();
 };

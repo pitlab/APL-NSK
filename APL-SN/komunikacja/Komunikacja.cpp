@@ -1058,7 +1058,7 @@ uint8_t CKomunikacja::ZapiszDaneU8FRAM(uint8_t* chDane, uint8_t chRozmiar, uint1
 	chDaneWychodzace[2] = m_unia8_32.dane8[1];
 	for (uint8_t n = 0; n < chRozmiar; n++)
 		chDaneWychodzace[3 + n] = *(chDane + n);
-	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FRAM_U8, chDaneWychodzace, 4 * chRozmiar + 3, chDanePrzychodzace, &chOdebrano);
+	chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_ZAPISZ_FRAM_U8, chDaneWychodzace, chRozmiar + 3, chDanePrzychodzace, &chOdebrano);
 	return chErr;
 }
 
