@@ -385,7 +385,10 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 				}
 				else
 				{
-					stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.bottom;
+					if ((stKonfigLewy.fMinWykresu < 0.0f) && (stKonfigLewy.fMaxWykresu < 0.0f))
+						stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.top;
+					else
+						stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.bottom;
 					stKonfigLewy.bWykresPrzechodziPrzezZero = FALSE;
 				}
 				stKonfigPrawy.fPoziomZera = stKonfigLewy.fPoziomZera;
@@ -623,7 +626,12 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 	if (stKonfig->bWykresPrzechodziPrzezZero)
 		pktfPoczatek.y = stKonfig->fPoziomZera - (fZmienna * stKonfig->fSkalaY);
 	else
-		pktfPoczatek.y = stKonfig->fPoziomZera - ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);
+	{
+		if (stKonfig->fMinWykresu > 0)
+			pktfPoczatek.y = stKonfig->fPoziomZera - ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);	//wykresy powyżej zera
+		else
+			pktfPoczatek.y = stKonfig->fPoziomZera + ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);	//wykresy poniżej zera
+	}
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
@@ -634,7 +642,12 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 			if (stKonfig->bWykresPrzechodziPrzezZero)
 				pktfKoniec.y = stKonfig->fPoziomZera - (fZmienna * stKonfig->fSkalaY);
 			else
-				pktfKoniec.y = stKonfig->fPoziomZera - ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);
+			{				
+				if (stKonfig->fMinWykresu > 0)
+					pktfKoniec.y = stKonfig->fPoziomZera - ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);	//wykresy powyżej zera
+				else
+					pktfKoniec.y = stKonfig->fPoziomZera + ((fZmienna - stKonfig->fMinWykresu) * stKonfig->fSkalaY);	//wykresy poniżej zera
+			}
 
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush);
 			pktfPoczatek = pktfKoniec;
@@ -688,7 +701,8 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 	}
 	else
 		nPodzPowyzejZera = 0;
-	for (int n = 0; n <= nPodzPowyzejZera; n++)
+
+	for (int n = 0; n < nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(stKonfigLewy->rOknoWykresu.left);;
 		pktfKoniec.x = (float)(stKonfigLewy->rOknoWykresu.right);
@@ -707,49 +721,53 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 		else
 			fWartosc = stKonfigLewy->fMinWykresu + n * fSkokPodzialki;
 		
-		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), fWartosc);
-		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), fWartosc);
-		else if (n * fSkokPodzialki < 100.f)
-			strNazwa.Format(_T("%.1f"), fWartosc);
-		else
+		if (fWartosc > 1000)
 			strNazwa.Format(_T("%.0f"), fWartosc);
+		else if (fWartosc > 100.f)
+			strNazwa.Format(_T("%.1f"), fWartosc);
+		else if (fWartosc > 10)
+			strNazwa.Format(_T("%.2f"), fWartosc);
+		else 
+			strNazwa.Format(_T("%.3f"), fWartosc);
 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
+
 	//lewa strona, podzialki ponizej zera
 	if (stKonfigLewy->fMinWykresu < 0)
-		nPodzPonizejZera = (int)round(fabs(stKonfigLewy->fMinWykresu) / fSkokPodzialki);
+	{
+		if (stKonfigLewy->bWykresPrzechodziPrzezZero)
+			nPodzPonizejZera = (int)round(fabs(stKonfigLewy->fMinWykresu) / fSkokPodzialki);
+		else
+			nPodzPonizejZera = (int)round(fabs(stKonfigLewy->fMaxWykresu - stKonfigLewy->fMinWykresu) / fSkokPodzialki);
+	}
 	else
 		nPodzPonizejZera = 0;
+
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(stKonfigLewy->rOknoWykresu.left);;
 		pktfKoniec.x = (float)(stKonfigLewy->rOknoWykresu.right);
 		pktfPoczatek.y = pktfKoniec.y = stKonfigLewy->fPoziomZera + n * fSkokPodzialki * stKonfigLewy->fSkalaY;
-		if (pktfPoczatek.y < stKonfigLewy->rOknoWykresu.bottom)	//nie rysuj poniżej okna
-		{
-			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.1f);
-			rectWartosciOsi.top = pktfPoczatek.y - 10;
-			rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
-			rectWartosciOsi.left = 0;
-			rectWartosciOsi.right = MIEJSCE_NA_LEGENDE;
-			if (stKonfigLewy->bWykresPrzechodziPrzezZero)
-				fWartosc = n * -fSkokPodzialki;
-			else
-				fWartosc = stKonfigLewy->fMinWykresu + n * -fSkokPodzialki;
+		pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.1f);
+		rectWartosciOsi.top = pktfPoczatek.y - 10;
+		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
+		rectWartosciOsi.left = 0;
+		rectWartosciOsi.right = MIEJSCE_NA_LEGENDE;
+		if (stKonfigLewy->bWykresPrzechodziPrzezZero)
+			fWartosc = n * -fSkokPodzialki;
+		else
+			fWartosc = stKonfigLewy->fMinWykresu + n * -fSkokPodzialki;
 
-			if (n * fSkokPodzialki < 1)
-				strNazwa.Format(_T("%.3f"), fWartosc);
-			else if (n * fSkokPodzialki < 10)
-				strNazwa.Format(_T("%.2f"), fWartosc);
-			else if (n * fSkokPodzialki < 100.f)
-				strNazwa.Format(_T("%.1f"), fWartosc);
-			else
-				strNazwa.Format(_T("%.0f"), fWartosc);
-			pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
-		}
+		if (fWartosc < -1000)
+			strNazwa.Format(_T("%.0f"), fWartosc);
+		else if (fWartosc < -100.f)
+			strNazwa.Format(_T("%.1f"), fWartosc);
+		else if (fWartosc < -10)
+			strNazwa.Format(_T("%.2f"), fWartosc);
+		else
+			strNazwa.Format(_T("%.3f"), fWartosc);
+		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 
 	//prawa strona osi Y: Min2 i Max2, rysuj podziałki dla zera i powyżej
@@ -764,7 +782,7 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 	else
 		nPodzPowyzejZera = 0;
 
-	for (int n = 0; n <= nPodzPowyzejZera; n++)
+	for (int n = 0; n < nPodzPowyzejZera; n++)
 	{
 		pktfPoczatek.x = (float)(stKonfigPrawy->rOknoWykresu.left);;
 		pktfKoniec.x = (float)(stKonfigPrawy->rOknoWykresu.right);
@@ -784,19 +802,29 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 		else
 			fWartosc = stKonfigPrawy->fMinWykresu + n * fSkokPodzialki;
 
-		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), fWartosc);
-		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), fWartosc);
-		else if (n * fSkokPodzialki < 100)
-			strNazwa.Format(_T("%.1f"), fWartosc);
-		else
+		if (fWartosc > 1000)
 			strNazwa.Format(_T("%.0f"), fWartosc);
+		else if (fWartosc > 100.f)
+			strNazwa.Format(_T("%.1f"), fWartosc);
+		else if (fWartosc > 10)
+			strNazwa.Format(_T("%.2f"), fWartosc);
+		else
+			strNazwa.Format(_T("%.3f"), fWartosc);
 
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
+
 	//prawa strona, podzialki poniżej zera
-	nPodzPonizejZera = (int)round(fabs(stKonfigPrawy->fMinWykresu) / fSkokPodzialki);
+	if (stKonfigPrawy->fMinWykresu < 0)
+	{
+		if (stKonfigPrawy->bWykresPrzechodziPrzezZero)
+			nPodzPonizejZera = (int)round(fabs(stKonfigPrawy->fMinWykresu) / fSkokPodzialki);
+		else
+			nPodzPonizejZera = (int)round(fabs(stKonfigPrawy->fMaxWykresu - stKonfigPrawy->fMinWykresu) / fSkokPodzialki);
+	}
+	else
+		nPodzPonizejZera = 0;
+
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
 		pktfPoczatek.x = (float)(stKonfigPrawy->rOknoWykresu.left);;
@@ -807,19 +835,18 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
 		rectWartosciOsi.left = (float)stKonfigPrawy->rOknoWykresu.right;;
 		rectWartosciOsi.right = (float)(stKonfigPrawy->rOknoWykresu.right + MIEJSCE_NA_LEGENDE);
-		//fWartosc = stKonfigPrawy->fMinWykresu + n * -fSkokPodzialki;
 		if (stKonfigPrawy->bWykresPrzechodziPrzezZero)
 			fWartosc = n * -fSkokPodzialki;
 		else
 			fWartosc = stKonfigPrawy->fMinWykresu + n * -fSkokPodzialki;
-		if (n * fSkokPodzialki < 1)
-			strNazwa.Format(_T("%.3f"), fWartosc);
-		else if (n * fSkokPodzialki < 10)
-			strNazwa.Format(_T("%.2f"), fWartosc);
-		else if (n * fSkokPodzialki < 100)
-			strNazwa.Format(_T("%.1f"), fWartosc);
-		else
+		if (fWartosc < -1000)
 			strNazwa.Format(_T("%.0f"), fWartosc);
+		else if (fWartosc < -100.f)
+			strNazwa.Format(_T("%.1f"), fWartosc);
+		else if (fWartosc < -10)
+			strNazwa.Format(_T("%.2f"), fWartosc);
+		else
+			strNazwa.Format(_T("%.3f"), fWartosc);
 		pRenderTarget->DrawText(strNazwa, rectWartosciOsi, pBrush, m_pTextFormat);
 	}
 }

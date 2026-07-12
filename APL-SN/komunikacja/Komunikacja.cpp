@@ -83,8 +83,11 @@ CKomunikacja::CKomunikacja()
 	//zmienne barametryczne
 	m_strNazwyZmiennychTele[TID_CISBEZW1]			= "Ciœn.Bzwzgl.1 [Pa]";
 	m_strNazwyZmiennychTele[TID_CISBEZW2]			= "Ciœn.Bzwzgl.2 [Pa]";
-	m_strNazwyZmiennychTele[TID_WYSOKOSC1]			= "Wysokoœæ AGL1 [m]";
-	m_strNazwyZmiennychTele[TID_WYSOKOSC2]			= "Wysokoœæ AGL2 [m]";
+	m_strNazwyZmiennychTele[TID_WYSOKOSC_AGL1]		= "Wysokoœæ AGL1 [m]";
+	m_strNazwyZmiennychTele[TID_WYSOKOSC_AGL2]		= "Wysokoœæ AGL2 [m]";
+	m_strNazwyZmiennychTele[TID_WYSOKOSC_MSL1]		= "Wysokoœæ MSL1 [m]";
+	m_strNazwyZmiennychTele[TID_WYSOKOSC_MSL2]		= "Wysokoœæ MSL2 [m]";
+
 	m_strNazwyZmiennychTele[TID_CISROZN1]			= "Ciœn.Ró¿n.1 [Pa]";
 	m_strNazwyZmiennychTele[TID_CISROZN2]			= "Ciœn.Ró¿n.2 [Pa]";
 	m_strNazwyZmiennychTele[TID_PREDIAS1]			= "Prêdkoœæ IAS1 [m/s]";
@@ -177,11 +180,12 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_BAT_RTC_NAPIECIE]	= "Bateria RTC: Napiêcie [V]";
 	m_strNazwyZmiennychTele[TID_TEMPERATURA_CPU]	= "Temperatura CPU [K]";
-	m_strNazwyZmiennychTele[TID_VREF_ADC]			= "Napiêcie ref. ADC [V]";
+	
 	m_strNazwyZmiennychTele[TID_NAPIECIE_WE1]		= "Napiêcie wejœciowe 1 [V]";
 	m_strNazwyZmiennychTele[TID_NAPIECIE_WE2]		= "Napiêcie wejœciowe 2 [V]";
 	m_strNazwyZmiennychTele[TID_NAPIECIE_SERW]		= "Napiêcie magistrali serw [V]";
 	m_strNazwyZmiennychTele[TID_NAPIECIE_USB]		= "Napiêcie zasilania z USB [V]";
+
 
 	//--- zmienne telemetryczne w ramce 2 -----------------------------------------------
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WZAD]		= "Wart.zadana przechyl";	//wartoœæ zadana regulatora sterowania przechyleniem

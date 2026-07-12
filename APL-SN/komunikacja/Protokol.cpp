@@ -421,9 +421,9 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
 							stDaneTele.dane[nIndeksZmiennej] = fZmienna;
 							//znajdŸ ekstrema potrzebne do skalowania wykresów
-							if (fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax)
+							if ((fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax) && (fZmienna != 0.0))
 								m_stEkstremaTelemetrii[nIndeksZmiennej].fMax = fZmienna;
-							if (fZmienna < m_stEkstremaTelemetrii[nIndeksZmiennej].fMin)
+							if ((fZmienna < m_stEkstremaTelemetrii[nIndeksZmiennej].fMin) && (fZmienna != 0.0))
 								m_stEkstremaTelemetrii[nIndeksZmiennej].fMin = fZmienna;
 							nNumerZmiennejwRamce++;
 						}

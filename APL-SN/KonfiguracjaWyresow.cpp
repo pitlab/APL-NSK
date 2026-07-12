@@ -118,12 +118,13 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 	int nLiczbaZmiannychLogu;
 	float fZmienna, fMin, fMax;
 
-	m_cListaDanych.InsertColumn(LD_NAZWA, _T("Nazwa zmiennej"), LVCFMT_CENTER, 120);
+	m_cListaDanych.InsertColumn(LD_NAZWA, _T("Nazwa zmiennej"), LVCFMT_CENTER, 130);
 	m_cListaDanych.InsertColumn(LD_ID, _T("ID"), LVCFMT_CENTER, 30);
-	m_cListaDanych.InsertColumn(LD_ZRODLO, _T("Źrodlo"), LVCFMT_CENTER, 40);
+	m_cListaDanych.InsertColumn(LD_ZRODLO, _T("Źrodlo"), LVCFMT_CENTER, 45);
 	m_cListaDanych.InsertColumn(LD_LPOMIAR, _T("Pomiarów"), LVCFMT_CENTER, 60);
-	m_cListaDanych.InsertColumn(LD_MIN, _T("Min"), LVCFMT_CENTER, 50);
-	m_cListaDanych.InsertColumn(LD_MAX, _T("Max"), LVCFMT_CENTER, 50);
+	m_cListaDanych.InsertColumn(LD_MIN, _T("Min"), LVCFMT_CENTER, 60);
+	m_cListaDanych.InsertColumn(LD_MAX, _T("Max"), LVCFMT_CENTER, 60);
+
 	//czy są jakieś dane?
 	nLiczbaDanych = (int)getProtokol().m_vDaneTelemetryczne.size();
 	if (nLiczbaDanych)
@@ -132,7 +133,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		{
 			//policz niezerowe dane dla tej zmiennej
 			nRozmiarZmiennej = 0;
-			fMin = fMax = 0.0f;
+			fMin = WARTOSC_MAX;
+			fMax = WARTOSC_MIN;
 			for (int x = 0; x < nLiczbaDanych; x++)
 			{
 				fZmienna = getProtokol().m_vDaneTelemetryczne[x].dane[n];
@@ -152,13 +154,29 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 				m_cListaDanych.InsertItem(nLicznikZmiennych, getKomunikacja().m_strNazwyZmiennychTele[n]);	
 				strNapis.Format(_T("%d"), n);
 				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_ID, strNapis);			//ID
-				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_ZRODLO, _T("Tele"));	//Źródło
+				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_ZRODLO, _T("Telem"));	//Źródło
 				strNapis.Format(_T("%d"), nRozmiarZmiennej);
 				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_LPOMIAR, strNapis);	//liczba pomiarów
-				strNapis.Format(_T("%.3f"), fMin);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_MIN, strNapis);		//min
-				strNapis.Format(_T("%.3f"), fMax);
-				m_cListaDanych.SetItemText(nLicznikZmiennych, LD_MAX, strNapis);		//max
+
+				if (fMin > 1000)
+					strNapis.Format(_T("%.0f"), fMin);
+				else if (fMin > 100)
+					strNapis.Format(_T("%.1f"), fMin);
+				else if (fMin > 10)
+					strNapis.Format(_T("%.2f"), fMin);
+				else
+					strNapis.Format(_T("%.3f"), fMin);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//min
+
+				if (fMax > 1000)
+					strNapis.Format(_T("%.0f"), fMax);
+				else if (fMax > 100)
+					strNapis.Format(_T("%.1f"), fMax);
+				else if (fMax > 10)
+					strNapis.Format(_T("%.2f"), fMax);
+				else
+					strNapis.Format(_T("%.3f"), fMax);
+				m_cListaDanych.SetItemText(nLicznikZmiennych, 5, strNapis);	//max
 				nLicznikZmiennych++;
 			}
 		}
@@ -182,7 +200,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		{
 			//policz niezerowe dane dla tej zmiennej
 			nRozmiarZmiennej = 0;
-			fMin = fMax = 0.0f;
+			fMin = WARTOSC_MAX;
+			fMax = WARTOSC_MIN;
 			nLiczbaDanych = (int)pDoc->m_vLog[n].vfWartosci.size();
 			for (int x = 0; x < nLiczbaDanych; x++)
 			{
@@ -206,9 +225,25 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 				m_cListaDanych.SetItemText(nLicznikZmiennych, 2, strNapis);	//źródło
 				strNapis.Format(_T("%d"), nRozmiarZmiennej);
 				m_cListaDanych.SetItemText(nLicznikZmiennych, 3, strNapis);	//liczba pomiarów
-				strNapis.Format(_T("%.3f"), fMin);
+
+				if (fMin > 1000)
+					strNapis.Format(_T("%.0f"), fMin);
+				else if (fMin > 100)
+					strNapis.Format(_T("%.1f"), fMin);
+				else if (fMin > 10)
+					strNapis.Format(_T("%.2f"), fMin);
+				else 
+					strNapis.Format(_T("%.3f"), fMin);
 				m_cListaDanych.SetItemText(nLicznikZmiennych, 4, strNapis);	//min
-				strNapis.Format(_T("%.3f"), fMax);
+
+				if (fMax > 1000)
+					strNapis.Format(_T("%.0f"), fMax);
+				else if (fMax > 100)
+					strNapis.Format(_T("%.1f"), fMax);
+				else if (fMax > 10)
+					strNapis.Format(_T("%.2f"), fMax);
+				else
+					strNapis.Format(_T("%.3f"), fMax);
 				m_cListaDanych.SetItemText(nLicznikZmiennych, 5, strNapis);	//max
 				nLicznikZmiennych++;
 			}
