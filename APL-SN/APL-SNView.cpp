@@ -540,19 +540,12 @@ void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float
 	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
 	{
 		m_nIloscDanychWykresu = (int)pDoc->m_vLog[nIndeksZmiennej].vfWartosci.size();
-		//float fSkalaX = (float)okno.right / m_nIloscDanychWykresu * m_fZoomPoziomo;
-		//float fSkalaX = m_fZoomPoziomo;
-		//float fSkalaY = (float)okno.bottom / 40.0f * m_fZoomPionowo;
-		//pktfPoczatek.x = (float)okno.left + fHscroll;
 		pktfPoczatek.x = (float)okno.left;
 		pktfPoczatek.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
 		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
-			//pktfKoniec.x = (float)(okno.left + (n - m_nBiezacyScrollPoziomo) * fSkalaX);
 			pktfKoniec.x = (float)(okno.left + n * fSkalaX);
-			//pktfKoniec.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[n] * fSkalaY);
 			nIndeks = n + (int)(m_nBiezacyScrollPoziomo * fSkalaX);
-			//nIndeks = n + m_nBiezacyScrollPoziomo;
 			if (nIndeks < 0)
 				nIndeks = 0;
 			if (nIndeks >= m_nIloscDanychWykresu)
@@ -583,9 +576,15 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 	if (!lLiczbaRamek)
 		return;
 	stTelemetria_t stDaneTele;
-	int32_t nIndexRamki = lLiczbaRamek - 1;
+	int32_t nIndexRamki;
 	CD2DPointF pktfPoczatek, pktfKoniec;
 	CD2DRectF rectLegenda;
+
+	int32_t nPrzesuniecieScrolla = (uint32_t)stKonfig->fHscroll;
+	if ((lLiczbaRamek > nPrzesuniecieScrolla) && nPrzesuniecieScrolla)
+		nIndexRamki = lLiczbaRamek - nPrzesuniecieScrolla - 2;
+	else
+		nIndexRamki = lLiczbaRamek - 2;
 
 	//rysuj legendę
 	CString strNazwa = getKomunikacja().m_strNazwyZmiennychTele[nIndeksZmiennej];
@@ -606,12 +605,17 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 	pRenderTarget->DrawText(strNazwa, rectLegenda, pBrush, m_pTextFormat);
 
 	//rysuj wykres
-	pktfPoczatek.x = (float)stKonfig->rOknoWykresu.left + stKonfig->fHscroll;
-	pktfKoniec.x = 1.0f * stKonfig->fSkalaX + stKonfig->rOknoWykresu.left + stKonfig->fHscroll;
+	pktfPoczatek.x = (float)stKonfig->rOknoWykresu.left;
+	pktfKoniec.x = 1.0f * stKonfig->fSkalaX + stKonfig->rOknoWykresu.left;
+	m_nSzerokoscWykresu = stKonfig->rOknoWykresu.right - stKonfig->rOknoWykresu.left;	//ustaw szerokość wykresu potrzebną do scrollowania
+	//strNazwa.Format(_T("Szer wykresu: %d, Liczba ramek: %d"), m_nSzerokoscWykresu, nIndexRamki);
+	//rectLegenda.left += 150;
+	//rectLegenda.right += 150;
+	//pRenderTarget->DrawText(strNazwa, rectLegenda, pBrush, m_pTextFormat);
 
 	//znajdź ostatnią istniejacą zmienną. Może jej nie być w ostatniej ramce, ze względu na różne okresy telemerii
 	do
-	{
+	{	
 		fZmienna = (*vDaneTele)[nIndexRamki--].dane[nIndeksZmiennej];
 	} while (!fZmienna && nIndexRamki);
 	
@@ -653,6 +657,13 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 			pktfPoczatek = pktfKoniec;
 		}
 	} while ((pktfKoniec.x < stKonfig->rOknoWykresu.right) && (nIndexRamki >= 0));	//pobierz danych na szerokość okna lub tyle ile się da
+
+	//okresowo aktualizuj pozycje scrolla
+	if (m_nIloscDanychWykresu > m_nPoprzedniRozmiarWykresu + 20)
+	{
+		m_nPoprzedniRozmiarWykresu = m_nIloscDanychWykresu;
+		UstawScrollOdWidoku();
+	}
 }
 
 
@@ -1269,27 +1280,15 @@ void CAPLSNView::OnSize(UINT nType, int cx, int cy)
 
 	m_nSzerokoscOkna = cx;
 	m_nSzerokoscWykresu = m_nSzerokoscOkna - 2 * MIEJSCE_NA_LEGENDE;
-	
-	/*CAPLSNDoc* pDoc = GetDocument();
-	if (pDoc)
-	{
-		if (pDoc->m_vLog.size())
-			m_nIloscDanychWykresu = (int)pDoc->m_vLog[9].vfWartosci.size();
-	}*/
-
 	m_pLinearGradientBrush->SetEndPoint(CPoint(cx, cy));
 	UstawScrollOdWidoku();
 }
 
 
 
-/// <summary>
+///////////////////////////////////////////////////////////////////////////////////////////////////
 /// Reakcja na przekręcenie kółka myszy. Steruje powiększeniem wykresu w poziomie lub pionie
-/// </summary>
-/// <param name="nFlags"></param>
-/// <param name="zDelta"></param>
-/// <param name="pt"></param>
-/// <returns></returns>
+///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
@@ -1314,15 +1313,13 @@ BOOL CAPLSNView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 }
 
 
-/// <summary>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 /// Raakcja na naciśnięcie klawisza klawiatury
-/// </summary>
-/// <param name="nChar"> - zwracany kod przyciśnietego klawisza</param>
-/// <param name="nRepCnt"></param>
-/// <param name="nFlags"></param>
+// zwraca: nic
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	switch (nChar)
 	{
 	case 16: break;	//shift	-	przełacz zoomowanie między poziomem a pionem
@@ -1384,11 +1381,9 @@ void CAPLSNView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
-	//UINT nKrok = (UINT)(5 * m_fZoomPoziomo);
-	UINT nKrok = 5;
-	//UINT nStrona = (UINT)round(m_nSzerokoscWykresu * m_fZoomPoziomo);
+	UINT nKrok = 50;
 	UINT nStrona = m_nSzerokoscWykresu;
+
 	switch (nSBCode)
 	{
 	case SB_LEFT:			m_nBiezacyScrollPoziomo = 0;	break;	// Scroll to far left.
@@ -1397,9 +1392,9 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	case SB_LINERIGHT:		m_nBiezacyScrollPoziomo += nKrok;	break;	//Scroll right.
 	case SB_PAGELEFT:		if (m_nBiezacyScrollPoziomo > (int)nStrona)	m_nBiezacyScrollPoziomo -= nStrona;	break;	//Scroll one page left.
 	case SB_PAGERIGHT:		m_nBiezacyScrollPoziomo += nStrona;	break;	//Scroll one page right.
-	case SB_RIGHT:			m_nBiezacyScrollPoziomo = nPos;	break;	//Scroll to far right.
-	case SB_THUMBPOSITION:	m_nBiezacyScrollPoziomo = nPos;	break; //Scroll to absolute position.The current position is specified by the nPos parameter.
-	case SB_THUMBTRACK:		m_nBiezacyScrollPoziomo = nPos;	break;	//Drag scroll
+	case SB_RIGHT:			m_nBiezacyScrollPoziomo = m_nMaxScrollPoziomo;	break;	//Scroll to far right
+	case SB_THUMBPOSITION:		//Scroll to absolute position.The current position is specified by the nPos parameter.
+	case SB_THUMBTRACK:		m_nBiezacyScrollPoziomo = nPos;		break;	//Drag scroll
 	}
 	m_bRysujTelemetrie = TRUE;
 	CView::OnHScroll(nSBCode, m_nBiezacyScrollPoziomo, pScrollBar);
@@ -1416,24 +1411,25 @@ void CAPLSNView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::UstawScrollOdWidoku()
 {
-	SCROLLINFO scrollInfo;
+	SCROLLINFO scrollInfo = {};
 
 	if (!GetScrollInfo(SB_HORZ, &scrollInfo))
 	{
 		TRACE("Can't get scroll info");
 		return;
 	}
-	m_nMaxScrollPoziomo = max(((int)round((float)m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscWykresu) , 0);
+	m_nMaxScrollPoziomo = (int)round(m_nIloscDanychWykresu * m_fZoomPoziomo) - 1;
 	m_nBiezacyScrollPoziomo = min(m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo);
-
+	scrollInfo.cbSize = sizeof(scrollInfo);
 	scrollInfo.nMin = 0;
-	//scrollInfo.nMax = (int)(m_nIloscDanychWykresu * m_fZoomPoziomo) - m_nSzerokoscWykresu;
 	scrollInfo.nMax = m_nMaxScrollPoziomo;
-	scrollInfo.nPos = (int)round((float)m_nBiezacyScrollPoziomo * m_fZoomPoziomo);
-	scrollInfo.nPage = m_nSzerokoscWykresu / 4;
+	scrollInfo.nPos = m_nBiezacyScrollPoziomo;
+	scrollInfo.nPage = m_nSzerokoscWykresu;
+	scrollInfo.fMask = SIF_ALL;
 	VERIFY(SetScrollInfo(SB_HORZ, &scrollInfo));
 	TRACE("BieżScroll=%d, MaxScroll=%d, Wykres=%d, zoom=%.3f\n", m_nBiezacyScrollPoziomo, m_nMaxScrollPoziomo, m_nSzerokoscWykresu, m_fZoomPoziomo);
 }
+
 
 
 void CAPLSNView::OnOleInsertNew()

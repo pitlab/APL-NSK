@@ -105,25 +105,6 @@ private:
 	{
 		CRect rOknoWykresu;
 		float fHscroll;
-		float fPoziomZeraLewy;
-		float fPoziomZeraPrawy;
-		float fMinWykresu;
-		float fMaxWykresu;
-		float fMinLewy;
-		float fMaxLewy;
-		float fMinPrawy;
-		float fMaxPrawy;
-		float fSkalaX;
-		float fSkalaLewaY;
-		float fSkalaPrawaY;
-		float fStartLegendy;
-		BOOL bWykresPrzechodziPrzezZero;
-	} stKonfigWykresu2_t;
-
-	typedef struct
-	{
-		CRect rOknoWykresu;
-		float fHscroll;
 		float fPoziomZera;
 		float fMinWykresu;
 		float fMaxWykresu;
@@ -133,6 +114,7 @@ private:
 		BOOL bWykresPrzechodziPrzezZero;
 		BOOL bStronaPrawa;	//0=wykres ze skalą po lewej, 1=wykres ze skalą po prawej
 	} stKonfigWykresu_t;
+	int m_nPoprzedniRozmiarWykresu;		//zmienna do aktualizacji pozycji scrolla co kolejną setke danych
 
 public:
 	uint32_t m_nNumerPortuCom;
