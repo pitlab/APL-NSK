@@ -9,6 +9,7 @@
 #include "Errors.h"
 #include "pid_kanaly.h"
 #include "sys_def_wspolny.h"
+#include <assert.h>
 
 // Okno dialogowe KonfigPID
 

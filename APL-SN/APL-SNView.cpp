@@ -16,6 +16,7 @@
 #include "Errors.h"
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

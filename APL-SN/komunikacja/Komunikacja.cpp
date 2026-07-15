@@ -190,7 +190,6 @@ CKomunikacja::CKomunikacja()
 	//--- zmienne telemetryczne w ramce 2 -----------------------------------------------
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WZAD]		= "Wart.zadana przechyl";	//wartoœæ zadana regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TID_PID_PRZE_FWEJ]		= "Filtr.wejœcie przech";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PRZE_CALK]		= "Ca³ka przechylenia";		//wartoœæ ca³ki cz³onu I przechylenia
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WYJ]		= "Wy PID przechylenia";	//wyjœcie regulatora sterowania przechyleniem
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WY_P]		= "Wy P przechylenia";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PRZE_WY_I]		= "Wy I przechylenia";		//wyjœcie cz³onu I
@@ -198,7 +197,7 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_WZAD]	= "Wart.zad.pr.k¹t.prze";	//wartoœæ zadana regulatora prêdkoœci¹ k¹towej przechylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_FWEJ]	= "Filtr.we.pr.k¹t.prze";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_FZAD]	= "Ca³ka pr.k¹t.prze";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
+	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_FZAD]	= "Fil.w.zad.pr.k¹t.prze";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
 	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_WYJ]	= "Wy PID pr.k¹t.prze";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ przechylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_WY_P]	= "Wy P pr.k¹t.prze";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PK_PRZE_WY_D]	= "Wy D pr.k¹t.prze";		//wyjœcie cz³onu D
@@ -206,7 +205,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_POCH_WZAD]		= "Wart.zadana pochylenia";	//wartoœæ zadana regulatora sterowania pochyleniem
 	m_strNazwyZmiennychTele[TID_PID_POCH_FWEJ]		= "Filtr.wejœcie pochyl";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_POCH_CALK]		= "Ca³ka pochylenia";		//wartoœæ ca³ki cz³onu I pochylenia
 	m_strNazwyZmiennychTele[TID_PID_POCH_WYJ]		= "Wy PID pochylenia";		//wyjœcie regulatora sterowania pochyleniem
 	m_strNazwyZmiennychTele[TID_PID_POCH_WY_P]		= "Wy P pochylenia";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_POCH_WY_I]		= "Wy I pochylenia";		//wyjœcie cz³onu I
@@ -214,7 +212,7 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_PK_POCH_WZAD]	= "Wart.zad.pr.k¹t.poch";	//wartoœæ zadana regulatora prêdkoœci¹ k¹towej pochylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_POCH_FWEJ]	= "Filtr.we.pr.k¹t.poch";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PK_POCH_FZAD]	= "Ca³ka pr.k¹t.poch";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
+	m_strNazwyZmiennychTele[TID_PID_PK_POCH_FZAD]	= "Fil.w.zad.pr.k¹t.poch";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
 	m_strNazwyZmiennychTele[TID_PID_PK_POCH_WYJ]	= "Wy PID pr.k¹t.poch";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ pochylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_POCH_WY_P]	= "Wy P pr.k¹t.poch";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PK_POCH_WY_D]	= "Wy D pr.k¹t.poch";		//wyjœcie cz³onu D
@@ -222,7 +220,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_ODCH_WZAD]		= "Wart.zadana odchenia";	//wartoœæ zadana regulatora sterowania odchyleniem
 	m_strNazwyZmiennychTele[TID_PID_ODCH_FWEJ]		= "Filtr.wejœcie odchyl";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_ODCH_CALK]		= "Ca³ka odchylenia";		//wartoœæ ca³ki cz³onu I odchylenia
 	m_strNazwyZmiennychTele[TID_PID_ODCH_WYJ]		= "Wy PID odchylenia";		//wyjœcie regulatora sterowania odchyleniem
 	m_strNazwyZmiennychTele[TID_PID_ODCH_WY_P]		= "Wy P odchylenia";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_ODCH_WY_I]		= "Wy I odchylenia";		//wyjœcie cz³onu I
@@ -230,7 +227,7 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_WZAD]	= "Wart.zadana pr.k¹t.odch";//wartoœæ zadana regulatora prêdkoœci¹ k¹towej pochylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_FWEJ]	= "Filtr.wej.pr.k¹t.odch";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_FZAD]	= "Ca³ka pr.k¹t.odch";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
+	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_FZAD]	= "Fil.w.zad.pr.k¹t.odch";		//przefiltrowana wartoœæ zadana do liczenia wartosci wyprzedzaj¹cej
 	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_WYJ]	= "Wy PID pr.k¹t.odch";		//wyjœcie regulatora sterowania prêdkoœci¹ k¹tow¹ odchylenia
 	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_WY_P]	= "Wy P pr.k¹t.odch";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PK_ODCH_WY_D]	= "Wy D pr.k¹t.odch";		//wyjœcie cz³onu D
@@ -238,7 +235,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_WYSO_WZAD]		= "Wart.zadana wysokoœci";	//wartoœæ zadana regulatora sterowania wysokoœci¹
 	m_strNazwyZmiennychTele[TID_PID_WYSO_FWEJ]		= "Filtr.wejœcie wysokoœci";//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_WYSO_CALK]		= "Ca³ka wysokoœci";		//wartoœæ ca³ki cz³onu I 
 	m_strNazwyZmiennychTele[TID_PID_WYSO_WYJ]		= "Wy PID wysokoœci";		//wyjœcie regulatora sterowania wysokoœci¹
 	m_strNazwyZmiennychTele[TID_PID_WYSO_WY_P]		= "Wy P wysokoœci";			//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_WYSO_WY_I]		= "Wy I wysokoœci";			//wyjœcie cz³onu I
@@ -254,7 +250,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_NAWN_WZAD]		= "Wart.zadana naw. N";		//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TID_PID_NAWN_FWEJ]		= "Filtr.wejœcie naw. N";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_NAWN_CALK]		= "Ca³ka nawigacji N";		//wartoœæ ca³ki cz³onu I 
 	m_strNazwyZmiennychTele[TID_PID_NAWN_WYJ]		= "Wy PID nawig. N";		//wyjœcie regulatora sterowania nawigacj¹ w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TID_PID_NAWN_WY_P]		= "Wy P nawigacji N";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_NAWN_WY_I]		= "Wy I nawigacji N";		//wyjœcie cz³onu I
@@ -262,7 +257,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_WZAD]	= "Wart.zadana pr.naw.N";	//wartoœæ zadana prêdkoœci w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_FWEJ]	= "Filtr.we.pr.nawig.N";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_CALK]	= "Ca³ka prêd.nawig.N";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ zmiany wysokoœcim_strNazwyZmiennychTele
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_WYJ]	= "Wy PID pr.nawig.N";		//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku pó³nocnym
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_WY_P]	= "Wy P prêd.nawig.N";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWN_WY_I]	= "Wy I prêd.nawig.N";		//wyjœcie cz³onu I
@@ -270,7 +264,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_NAWE_WZAD]		= "Wart.zad.naw. E";		//wartoœæ zadana regulatora sterowania nawigacj¹ w kierunku wschodnim
 	m_strNazwyZmiennychTele[TID_PID_NAWE_FWEJ]		= "Filtr.wejœcie naw. E";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_NAWE_CALK]		= "Ca³ka nawigacji E";		//wartoœæ ca³ki cz³onu I 
 	m_strNazwyZmiennychTele[TID_PID_NAWE_WYJ]		= "Wy PID nawig. E";		//wyjœcie regulatora sterowania nawigacj¹ w kierunku wschodnim
 	m_strNazwyZmiennychTele[TID_PID_NAWE_WY_P]		= "Wy P nawigacji E";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_NAWE_WY_I]		= "Wy I nawigacji E";		//wyjœcie cz³onu I
@@ -278,7 +271,6 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_WZAD]	= "Wart.zadana pr.naw.E";	//wartoœæ zadana prêdkoœci w kierunku wschodnim
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_FWEJ]	= "Filtr.we.pr.nawig.E";	//przefiltrowana wartoœæ wejœciowa do liczenia akcji ró¿niczkuj¹cej
-	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_CALK]	= "Ca³ka prêd.nawig.E";		//wartoœæ ca³ki cz³onu I prêdkoœci¹ zmiany prêdkoœci w kierunku wschodnime
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_WYJ]	= "Wy PID pr.nawig.E";		//wyjœcie regulatora sterowania prêdkoœci¹ w kierunku wschodnim
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_WY_P]	= "Wy P prêd.nawig.E";		//wyjœcie cz³onu P
 	m_strNazwyZmiennychTele[TID_PID_PR_NAWE_WY_I]	= "Wy I prêd.nawig.E";		//wyjœcie cz³onu I

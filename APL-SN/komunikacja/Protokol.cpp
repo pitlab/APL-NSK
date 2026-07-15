@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include "../sys_def_wspolny.h"
+#include <assert.h>
 
 /*Struktura ramki komunikacyjnej
 0xAA - Nag³ówek.Strumieñ danych wejœciowych analizujemy pod k¹tem obecnoœci preambu³y.
