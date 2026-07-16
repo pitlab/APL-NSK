@@ -325,7 +325,9 @@
 #define IDC_STAT_MIN_MAX02              1245
 #define IDC_STAT_JEDNOSTKA_AKRO2        1245
 #define IDC_STAT_MIN_MAX03              1246
+#define IDC_EDIT_KW1                    1246
 #define IDC_STAT_MIN_MAX04              1247
+#define IDC_EDIT_KW2                    1247
 #define IDC_EDIT_OBR_MAX                1248
 #define IDC_STAT_MIN_MAX05              1248
 #define IDC_STAT_MIN_MAX06              1249

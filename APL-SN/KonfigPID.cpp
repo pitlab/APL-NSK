@@ -79,6 +79,9 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_TI2, m_strTI2);	
 	DDX_Text(pDX, IDC_EDIT_TD1, m_strTD1);
 	DDX_Text(pDX, IDC_EDIT_TD2, m_strTD2);
+	DDX_Text(pDX, IDC_EDIT_KW1, m_strKW1);
+	DDX_Text(pDX, IDC_EDIT_KW2, m_strKW2);
+
 	DDX_Text(pDX, IDC_EDIT_LIMIT_CALKI1, m_strOgrCalki1);
 	DDX_Text(pDX, IDC_EDIT_LIMIT_CALKI2, m_strOgrCalki2);
 	DDX_Text(pDX, IDC_EDIT_MIN_WY1, m_strMinWyj1);
@@ -170,6 +173,8 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_PROC_WYPRZEDZENIA2, &KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2)
 	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ1, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej1)
 	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej2)
+	ON_EN_CHANGE(IDC_EDIT_KW1, &KonfigPID::OnEnChangeEditKw1)
+	ON_EN_CHANGE(IDC_EDIT_KW2, &KonfigPID::OnEnChangeEditKw2)
 END_MESSAGE_MAP()
 
 
@@ -209,8 +214,8 @@ BOOL KonfigPID::OnInitDialog()
 				m_stPID[n].fTi = 0;			//ani członu całkującego
 			else
 				m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
-
 			m_stPID[n].fTd = fDane[2];			//FAU_PID_D0 wzmocnienienie członu D regulatora 0
+			m_stPID[n].fKw = fDane[8];			
 			m_stPID[n].fOgrCalki = fDane[3];	//FAU_PID_OGR_I0 górna granica wartości całki członu I regulatora 0
 			m_stPID[n].fMinWyj = fDane[4];		//FAU_PID_MIN_WY0 minimalna wartość wyjścia
 			m_stPID[n].fMaxWyj = fDane[5];		//FAU_PID_MAX_WY0 maksymalna wartość wyjścia
@@ -219,7 +224,6 @@ BOOL KonfigPID::OnInitDialog()
 				m_stPID[n].fPrzesunięcieWartościZadanej = 0;	//nieparzyste PID czyli regulatory pochodnej nie mają stałego przesunięcia
 			else
 				m_stPID[n].fPrzesunięcieWartościZadanej = fDane[7];	//FAU_PID_STALE_WYPRZ stała wartość podawana na wejście wyprzedzające (umożliwia lot pod niezerowym kątem)
-			m_stPID[n].fWolne1 = fDane[8];					//FAU_PID1 wolne
 
 			m_unia8_32.daneFloat = fDane[9];	//w ostatniej liczbie typu float prześlij 4 zmienne 8 bitowe. Dostęp do nich jest przez unię
 			if (n & 0x01)	//regulatory nieparzyste obsługują pochodną, czyli prędkość katową lub liniową, więc nie mogą być kątowe
@@ -559,6 +563,11 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
 	m_strTD2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
+	m_strKW1.Format(_T("%.4f"), m_stPID[nRegGlow].fKw);
+	m_strKW1.Replace(_T('.'), _T(','));
+	m_strKW2.Format(_T("%.4f"), m_stPID[nRegPoch].fKw);
+	m_strKW2.Replace(_T('.'), _T(','));
+	UpdateData(FALSE);
 	m_strOgrCalki1.Format(_T("%.1f"), m_stPID[nRegGlow].fOgrCalki);
 	m_strOgrCalki1.Replace(_T('.'), _T(','));
 	m_strOgrCalki2.Format(_T("%.1f"), m_stPID[nRegPoch].fOgrCalki);
@@ -859,7 +868,7 @@ float KonfigPID::ZamienStrNaFloat(CString strLiczba)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki wzmocnienia regulatora pochodnej
+// Edycja kontrolki wzmocnienia regulatora kąta 
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditKp1()
@@ -873,7 +882,7 @@ void KonfigPID::OnEnChangeEditKp1()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki wzmocnienia regulatora kąta
+// Edycja kontrolki wzmocnienia regulatora pochodnej
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditKp2()
@@ -887,7 +896,7 @@ void KonfigPID::OnEnChangeEditKp2()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki Ti regulatora pochodnej
+// Edycja kontrolki Ti regulatora kąta
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditTi1()
@@ -901,7 +910,7 @@ void KonfigPID::OnEnChangeEditTi1()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki Ti regulatora kąta
+// Edycja kontrolki Ti regulatora pochodnej
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditTi2()
@@ -915,7 +924,7 @@ void KonfigPID::OnEnChangeEditTi2()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki Td regulatora pochodnej
+// Edycja kontrolki Td regulatora kąta
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditTd1()
@@ -929,13 +938,41 @@ void KonfigPID::OnEnChangeEditTd1()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Edycja kontrolki Td regulatora kąta
+// Edycja kontrolki Td regulatora pochodnej
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigPID::OnEnChangeEditTd2()
 {
 	UpdateData(TRUE);
 	m_stPID[2 * m_nBiezacyParametr + 1].fTd = ZamienStrNaFloat(m_strTD2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
+	UpdateData(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Edycja kontrolki kW regulatora kąta
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditKw1()
+{
+	UpdateData(TRUE);
+	m_stPID[2 * m_nBiezacyParametr + 0].fKw = ZamienStrNaFloat(m_strKW1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
+	UpdateData(FALSE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Edycja kontrolki kW regulatora pochodnej
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfigPID::OnEnChangeEditKw2()
+{
+	UpdateData(TRUE);
+	m_stPID[2 * m_nBiezacyParametr + 1].fKw = ZamienStrNaFloat(m_strKW2.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -1093,7 +1130,7 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD1(NMHDR* pNMHDR, LRESULT* pResult)
 	UpdateData(TRUE);
 	m_nPodstFiltraD1 = m_ctlSlidPodstCzasuFiltraD1.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 0].cPodstFiltraD = m_nPodstFiltraD1;	//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD1, więc aktualizuj również tutaj podczas odświeżania
-	m_strPodstFiltraD1.Format(_T("Filtr D: %d "), m_nPodstFiltraD1);
+	m_strPodstFiltraD1.Format(_T("Podstawa filtra członu D: %d "), m_nPodstFiltraD1);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -1126,7 +1163,7 @@ void KonfigPID::OnNMCustomdrawSliderFiltrD2(NMHDR* pNMHDR, LRESULT* pResult)
 	UpdateData(TRUE);
 	m_nPodstFiltraD2 = m_ctlSlidPodstCzasuFiltraD2.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 1].cPodstFiltraD = m_nPodstFiltraD2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	m_strPodstFiltraD2.Format(_T("Filtr D: %d "), m_nPodstFiltraD2);	
+	m_strPodstFiltraD2.Format(_T("Podstawa filtra członu D: %d "), m_nPodstFiltraD2);	
 	UpdateData(FALSE);
 	*pResult = 0;
 }
@@ -1371,10 +1408,12 @@ void KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pR
 	UpdateData(TRUE);
 	m_nProcWyprzedzenia1 = m_ctlSlidProcWyprzedzenia1.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 0].cProcWartZadWyprz = m_nProcWyprzedzenia1;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	m_strProcWyprzedzenia1.Format(_T("Wielkość akcji wyprzedzającej: %d%% "), m_nProcWyprzedzenia1);
+	m_strProcWyprzedzenia1.Format(_T("Wzm. wyprzedzającej KW: %d%% "), m_nProcWyprzedzenia1);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
+
+
 
 void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -1397,10 +1436,12 @@ void KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pR
 	UpdateData(TRUE);
 	m_nProcWyprzedzenia2 = m_ctlSlidProcWyprzedzenia2.GetPos();
 	m_stPID[2 * m_nBiezacyParametr + 1].cProcWartZadWyprz = m_nProcWyprzedzenia2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	m_strProcWyprzedzenia2.Format(_T("Wielkość akcji wyprzedzającej: %d%% "), m_nProcWyprzedzenia2);
+	m_strProcWyprzedzenia2.Format(_T("Wzm. wyprzedzenia KW: %d%% "), m_nProcWyprzedzenia2);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
+
+
 
 void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -1410,5 +1451,7 @@ void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT*
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	*pResult = 0;
 }
+
+
 
 

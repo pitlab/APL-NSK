@@ -26,6 +26,7 @@ public:
 		float fKp;		
 		float fTi;
 		float fTd;
+		float fKw;
 		float fOgrCalki;	//ograniczenie członu całkujacego
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
@@ -82,6 +83,8 @@ private:
 	CString m_strFiltrD2;
 	CString m_strTD1;
 	CString m_strTD2;
+	CString m_strKW1;
+	CString m_strKW2;
 	CString m_strOgrCalki1;
 	CString m_strOgrCalki2;
 	CString m_strMinWyj1;
@@ -172,4 +175,7 @@ public:
 	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej1();
 	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej2();
+	afx_msg void OnStnClickedStaticFiltrD1();
+	afx_msg void OnEnChangeEditKw1();
+	afx_msg void OnEnChangeEditKw2();
 };
