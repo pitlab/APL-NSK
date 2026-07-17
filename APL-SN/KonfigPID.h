@@ -24,18 +24,17 @@ public:
 	struct pid_t
 	{
 		float fKp;		
-		float fTi;
-		float fTd;
+		float fKi;
+		float fKd;
 		float fKw;
 		float fOgrCalki;	//ograniczenie członu całkujacego
 		float fMinWyj;		//minimalna wartość wyjścia
 		float fMaxWyj;		//maksymalna wartość wyjścia
 		float fMnożnikWartZadanej;
 		float fPrzesunięcieWartościZadanej;	//stała wartość dodawana do wartości zadanej (umożliwia lot pod niezerowym kątem lub asymetrię prędkości wznoszenia i opadania)
-		float fWolne1;
 
 		uint8_t cPodstFiltraD;	//podstawa filtra IIR
-		uint8_t cProcWartZadWyprz;	//procent zmiany wartości zadanej podawany na wejsście wyprzedzające
+		uint8_t cPodstawaFiltraWartWej;	
 		uint8_t cPodstawaFiltraWartZad;
 		BOOL bKatowy;		//zawija kąt miedzy 0 i 2Pi
 		BOOL bZmieniony;	//zmieniono nastawy regulatora
@@ -96,22 +95,22 @@ private:
 	BOOL m_bKatowy;
 	int m_nPodstFiltraD1;
 	int m_nPodstFiltraD2;
-	int m_nProcWyprzedzenia1;
-	int m_nProcWyprzedzenia2;
+	int m_nPodstFiltraWartWejsciowej1;
+	int m_nPodstFiltraWartWejsciowej2;
 	int m_nPodstFiltraWartZadanej1;
 	int m_nPodstFiltraWartZadanej2;
 	CString m_strPodstFiltraD1;
 	CString m_strPodstFiltraD2;
-	CString m_strProcWyprzedzenia1;
-	CString m_strProcWyprzedzenia2;
+	CString m_strPodstawaFiltraWartWejsciowej1;
+	CString m_strPodstawaFiltraWartWejsciowej2;
 	CString m_strPodstFiltraWZad1;
 	CString m_strPodstFiltraWZad2;
 	CSliderCtrl m_ctlSlidPodstCzasuFiltraD1;
 	CSliderCtrl m_ctlSlidPodstCzasuFiltraD2;
 	CSliderCtrl m_ctlSlidPodstFiltraWartZad1;
 	CSliderCtrl m_ctlSlidPodstFiltraWartZad2;
-	CSliderCtrl m_ctlSlidProcWyprzedzenia1;
-	CSliderCtrl m_ctlSlidProcWyprzedzenia2;
+	CSliderCtrl m_ctlSlidPodstFiltraWartWej1;
+	CSliderCtrl m_ctlSlidPodstFiltraWartWej2;
 	BOOL m_bTrybRegulacjiWylaczony;
 	BOOL m_bTrybRegulacjiReczny;
 	BOOL m_bTrybRegulacjiAkro;
@@ -169,13 +168,13 @@ public:
 	afx_msg void OnNMCustomdrawSliderFiltrWzad2(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderFiltrWzad1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcaptureSliderFiltrWzad2(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnNMCustomdrawSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSliderFiltrWwej1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSliderFiltrWwej2(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej1();
 	afx_msg void OnEnChangeEditPrzesuniecieWartZadanej2();
 	afx_msg void OnStnClickedStaticFiltrD1();
 	afx_msg void OnEnChangeEditKw1();
 	afx_msg void OnEnChangeEditKw2();
+	afx_msg void OnReleasedcaptureSliderFiltrWwej1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnReleasedcaptureSliderFiltrWwej2(NMHDR* pNMHDR, LRESULT* pResult);
 };

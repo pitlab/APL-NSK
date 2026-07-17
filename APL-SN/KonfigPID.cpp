@@ -39,8 +39,8 @@ KonfigPID::KonfigPID(CWnd* pParent /*=nullptr*/)
 	, m_nBiezacyParametr(0)
 	, m_nPodstFiltraD1(0)
 	, m_nPodstFiltraD2(0)
-	, m_nProcWyprzedzenia1(0)
-	, m_nProcWyprzedzenia2(0)
+	, m_nPodstFiltraWartWejsciowej1(0)
+	, m_nPodstFiltraWartWejsciowej2(0)
 	, m_nPodstFiltraWartZadanej1(0)
 	, m_nPodstFiltraWartZadanej2(0)
 	, m_strPodstFiltraD1(_T(""))
@@ -108,10 +108,10 @@ void KonfigPID::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_FILTR_WZAD1, m_ctlSlidPodstFiltraWartZad1);
 	DDX_Control(pDX, IDC_SLIDER_FILTR_WZAD2, m_ctlSlidPodstFiltraWartZad2);
 
-	DDX_Text(pDX, IDC_STATIC_PROC_WYPRZEDZENIA1, m_strProcWyprzedzenia1);
-	DDX_Control(pDX, IDC_SLIDER_PROC_WYPRZEDZENIA1, m_ctlSlidProcWyprzedzenia1);
-	DDX_Text(pDX, IDC_STATIC_PROC_WYPRZEDZENIA2, m_strProcWyprzedzenia2);
-	DDX_Control(pDX, IDC_SLIDER_PROC_WYPRZEDZENIA2, m_ctlSlidProcWyprzedzenia2);
+	DDX_Text(pDX, IDC_STATIC_FILTR_WWEJ1, m_strPodstawaFiltraWartWejsciowej1);
+	DDX_Control(pDX, IDC_SLIDER_FILTR_WWEJ1, m_ctlSlidPodstFiltraWartWej1);
+	DDX_Text(pDX, IDC_STATIC_FILTR_WWEJ2, m_strPodstawaFiltraWartWejsciowej2);
+	DDX_Control(pDX, IDC_SLIDER_FILTR_WWEJ2, m_ctlSlidPodstFiltraWartWej2);
 	
 	DDX_Check(pDX, IDC_RADIO_REG_WYLACZ, m_bTrybRegulacjiWylaczony);
 	DDX_Check(pDX, IDC_RADIO_REG_RECZNY, m_bTrybRegulacjiReczny);
@@ -167,14 +167,16 @@ BEGIN_MESSAGE_MAP(KonfigPID, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_WZAD2, &KonfigPID::OnNMCustomdrawSliderFiltrWzad2)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_WZAD1, &KonfigPID::OnReleasedcaptureSliderFiltrWzad1)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_WZAD2, &KonfigPID::OnReleasedcaptureSliderFiltrWzad2)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_PROC_WYPRZEDZENIA1, &KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia1)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_PROC_WYPRZEDZENIA2, &KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia2)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_PROC_WYPRZEDZENIA1, &KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia1)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_PROC_WYPRZEDZENIA2, &KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_STATIC_FILTR_WWEJ1, &KonfigPID::OnNMCustomdrawSliderFiltrWwej1)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_STATIC_FILTR_WWEJ2, &KonfigPID::OnNMCustomdrawSliderFiltrWwej2)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_WWEJ1, &KonfigPID::OnReleasedcaptureSliderFiltrWwej1)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_FILTR_WWEJ2, &KonfigPID::OnReleasedcaptureSliderFiltrWwej2)
 	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ1, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej1)
 	ON_EN_CHANGE(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2, &KonfigPID::OnEnChangeEditPrzesuniecieWartZadanej2)
 	ON_EN_CHANGE(IDC_EDIT_KW1, &KonfigPID::OnEnChangeEditKw1)
 	ON_EN_CHANGE(IDC_EDIT_KW2, &KonfigPID::OnEnChangeEditKw2)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_WWEJ1, &KonfigPID::OnNMCustomdrawSliderFiltrWwej1)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_FILTR_WWEJ2, &KonfigPID::OnNMCustomdrawSliderFiltrWwej2)
 END_MESSAGE_MAP()
 
 
@@ -211,10 +213,10 @@ BOOL KonfigPID::OnInitDialog()
 		{
 			m_stPID[n].fKp = fDane[0];			//FAU_PID_P0 wzmocnienienie członu P regulatora 0
 			if (n & 0x01)
-				m_stPID[n].fTi = 0;			//ani członu całkującego
+				m_stPID[n].fKi = 0;			//ani członu całkującego
 			else
-				m_stPID[n].fTi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
-			m_stPID[n].fTd = fDane[2];			//FAU_PID_D0 wzmocnienienie członu D regulatora 0
+				m_stPID[n].fKi = fDane[1];			//FAU_PID_I0 wzmocnienienie członu I regulatora 0
+			m_stPID[n].fKd = fDane[2];			//FAU_PID_D0 wzmocnienienie członu D regulatora 0
 			m_stPID[n].fKw = fDane[8];			
 			m_stPID[n].fOgrCalki = fDane[3];	//FAU_PID_OGR_I0 górna granica wartości całki członu I regulatora 0
 			m_stPID[n].fMinWyj = fDane[4];		//FAU_PID_MIN_WY0 minimalna wartość wyjścia
@@ -232,7 +234,7 @@ BOOL KonfigPID::OnInitDialog()
 				m_stPID[n].bKatowy = ((m_unia8_32.dane8[0] & PID_KATOWY) == PID_KATOWY);
 			m_stPID[n].cPodstFiltraD = m_unia8_32.dane8[1];				//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
 			m_stPID[n].cPodstawaFiltraWartZad = m_unia8_32.dane8[2];	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
-			m_stPID[n].cProcWartZadWyprz = m_unia8_32.dane8[3];			//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia			
+			m_stPID[n].cPodstawaFiltraWartWej = m_unia8_32.dane8[3];	//1U Podstawa filtra IIR wartości wejściowej		
 			m_stPID[n].bZmieniony = FALSE;
 		}
 		else
@@ -257,7 +259,8 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctlSlidPodstCzasuFiltraD2.SetRange(0, 255);
 	m_ctlSlidPodstFiltraWartZad1.SetRange(0, 255);
 	m_ctlSlidPodstFiltraWartZad2.SetRange(0, 255);
-	m_ctlSlidProcWyprzedzenia2.SetRange(0, 100);
+	m_ctlSlidPodstFiltraWartWej1.SetRange(0, 15);
+	m_ctlSlidPodstFiltraWartWej2.SetRange(0, 15);
 
 	//inicjalizacja strojenia parametrów PID
 	strParametr.Format(_T("Strojenie wyłączone"));
@@ -511,10 +514,10 @@ void KonfigPID::WlaczKontrolki(uint8_t cTrybPracyRegulatora, uint8_t cKanal)
 	GetDlgItem(IDC_CHECK_KATOWY1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_SLIDER_FILTR_D1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_SLIDER_FILTR_WZAD1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_SLIDER_PROC_WYPRZEDZENIA1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
+	GetDlgItem(IDC_SLIDER_FILTR_WWEJ1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
 	GetDlgItem(IDC_STATIC_FILTR_D1)->EnableWindow(cTrybPracyRegulatora >= REG_STAB);
 	GetDlgItem(IDC_STATIC_FILTR_WZAD1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_STATIC_PROC_WYPRZEDZENIA1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
+	GetDlgItem(IDC_STATIC_FILTR_WWEJ1)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
 	
 	//regulatory akro
 	GetDlgItem(IDC_EDIT_KP2)->EnableWindow(cTrybPracyRegulatora >= REG_AKRO);
@@ -527,10 +530,10 @@ void KonfigPID::WlaczKontrolki(uint8_t cTrybPracyRegulatora, uint8_t cKanal)
 	GetDlgItem(IDC_EDIT_PRZESUNIECIE_WART_ZADANEJ2)->EnableWindow((cTrybPracyRegulatora >= REG_STAB) & (cKanal < 4));
 	GetDlgItem(IDC_SLIDER_FILTR_D2)->EnableWindow(cTrybPracyRegulatora >= REG_AKRO);	
 	GetDlgItem(IDC_SLIDER_FILTR_WZAD2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_SLIDER_PROC_WYPRZEDZENIA2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
+	GetDlgItem(IDC_SLIDER_FILTR_WWEJ2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
 	GetDlgItem(IDC_STATIC_FILTR_D2)->EnableWindow(cTrybPracyRegulatora >= REG_AKRO);
 	GetDlgItem(IDC_STATIC_FILTR_WZAD2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
-	GetDlgItem(IDC_STATIC_PROC_WYPRZEDZENIA2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
+	GetDlgItem(IDC_STATIC_FILTR_WWEJ2)->EnableWindow((cTrybPracyRegulatora >= REG_AKRO) & (cTrybPracyRegulatora < REG_AUTO) & (cKanal < 4));
 }
 
 
@@ -553,14 +556,14 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	m_strKP2.Format(_T("%.3f"), m_stPID[nRegPoch].fKp);
 	m_strKP2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fTi);
+	m_strTI1.Format(_T("%.4f"), m_stPID[nRegGlow].fKi);
 	m_strTI1.Replace(_T('.'), _T(','));
-	m_strTI2.Format(_T("%.4f"), m_stPID[nRegPoch].fTi);
+	m_strTI2.Format(_T("%.4f"), m_stPID[nRegPoch].fKi);
 	m_strTI2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
-	m_strTD1.Format(_T("%.4f"), m_stPID[nRegGlow].fTd);
+	m_strTD1.Format(_T("%.4f"), m_stPID[nRegGlow].fKd);
 	m_strTD1.Replace(_T('.'), _T(','));
-	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fTd);
+	m_strTD2.Format(_T("%.4f"), m_stPID[nRegPoch].fKd);
 	m_strTD2.Replace(_T('.'), _T(','));
 	UpdateData(FALSE);
 	m_strKW1.Format(_T("%.4f"), m_stPID[nRegGlow].fKw);
@@ -595,8 +598,8 @@ void KonfigPID::UstawKontrolki(int nParametr)
 	UpdateData(FALSE);
 	m_ctlSlidPodstCzasuFiltraD1.SetPos(m_stPID[nRegGlow].cPodstFiltraD);
 	m_ctlSlidPodstCzasuFiltraD2.SetPos(m_stPID[nRegPoch].cPodstFiltraD);
-	m_ctlSlidProcWyprzedzenia1.SetPos(m_stPID[nRegGlow].cProcWartZadWyprz);
-	m_ctlSlidProcWyprzedzenia2.SetPos(m_stPID[nRegPoch].cProcWartZadWyprz);
+	m_ctlSlidPodstFiltraWartWej1.SetPos(m_stPID[nRegGlow].cPodstawaFiltraWartWej);
+	m_ctlSlidPodstFiltraWartWej2.SetPos(m_stPID[nRegPoch].cPodstawaFiltraWartWej);
 	m_ctlSlidPodstFiltraWartZad1.SetPos(m_stPID[nRegGlow].cPodstawaFiltraWartZad);
 	m_ctlSlidPodstFiltraWartZad2.SetPos(m_stPID[nRegPoch].cPodstawaFiltraWartZad);
 	m_bKatowy = m_stPID[nRegGlow].bKatowy;
@@ -649,8 +652,8 @@ void KonfigPID::OnBnClickedOk()
 			m_unia8_32.dane8[0] = m_stPID[n].bKatowy * PID_KATOWY;	//1U flagi
 			m_unia8_32.dane8[1] = m_stPID[n].cPodstFiltraD;			//1U Podstawa filtra IIR błędu do liczenia członu różniczkującego
 			m_unia8_32.dane8[2] = m_stPID[n].cPodstawaFiltraWartZad;	//1U Podstawa filtra IIR wartości zadanej do liczenia członu wyprzedzajacego 
-			m_unia8_32.dane8[3] = m_stPID[n].cProcWartZadWyprz;		//1U procentowa wartość zmiany wartości zadanej podawana na wejście wyprzedzenia
-			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fTi, m_stPID[n].fTd, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWartościZadanej, m_unia8_32.daneFloat);
+			m_unia8_32.dane8[3] = m_stPID[n].cPodstawaFiltraWartWej;	//1U 
+			chErr |= getKomunikacja().ZapiszKonfiguracjePID(n, m_stPID[n].fKp, m_stPID[n].fKi, m_stPID[n].fKd, m_stPID[n].fKw, m_stPID[n].fOgrCalki, m_stPID[n].fMinWyj, m_stPID[n].fMaxWyj, m_stPID[n].fMnożnikWartZadanej, m_stPID[n].fPrzesunięcieWartościZadanej, m_unia8_32.daneFloat);
 			m_bZmienionoKonfigurację = FALSE;	//to polecenie nie wymaga przeładowania całosci, bo oprócz zapisu do FRAM ładuje też do zmiennych
 		}
 	}
@@ -718,25 +721,30 @@ void KonfigPID::OnBnClickedButUstawDomyslne()
 	for (int n = 0; n < LICZBA_PID; n++)
 	{
 		m_stPID[n].fKp = 1.0f;
-		m_stPID[n].fTi = 0.1f;
+		m_stPID[n].fKi = 0.1f;
 		if (n & 0x01)	//regulator akro
 		{
-			m_stPID[n].fTi = 0.0f;
-			m_stPID[n].fTd = 0.01f;				
-			m_stPID[n].cProcWartZadWyprz = 10;
+			m_stPID[n].fKi = 0.0f;
+			m_stPID[n].fKd = 0.01f;				
+			m_stPID[n].fKw = 0.1f;
+			m_stPID[n].cPodstawaFiltraWartWej = 10;
+			m_stPID[n].cPodstawaFiltraWartZad = 120;
+
 		}
 		else            //regulator stab
 		{
-			m_stPID[n].fTi = 0.1f;
-			m_stPID[n].fTd = 0.001f;	
-			m_stPID[n].cProcWartZadWyprz = 0;
+			m_stPID[n].fKi = 0.1f;
+			m_stPID[n].fKd = 0.001f;	
+			m_stPID[n].fKw = 0.0f;
+			m_stPID[n].cPodstawaFiltraWartWej = 0;
+			m_stPID[n].cPodstawaFiltraWartZad = 0;
 		}
 		m_stPID[n].fOgrCalki = 20.0f;
 		m_stPID[n].fMinWyj = -100.0f;
 		m_stPID[n].fMaxWyj = 100.0f;
 		m_stPID[n].fPrzesunięcieWartościZadanej = 0.0f;
-		m_stPID[n].fWolne1 = 0.1f;
-		m_stPID[n].cPodstFiltraD = 8;
+		
+		m_stPID[n].cPodstFiltraD = 120;
 		m_stPID[n].bZmieniony = TRUE;
 	}
 
@@ -902,7 +910,7 @@ void KonfigPID::OnEnChangeEditKp2()
 void KonfigPID::OnEnChangeEditTi1()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 0].fTi = ZamienStrNaFloat(m_strTI1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].fKi = ZamienStrNaFloat(m_strTI1.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -916,7 +924,7 @@ void KonfigPID::OnEnChangeEditTi1()
 void KonfigPID::OnEnChangeEditTi2()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 1].fTi = ZamienStrNaFloat(m_strTI2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].fKi = ZamienStrNaFloat(m_strTI2.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -930,7 +938,7 @@ void KonfigPID::OnEnChangeEditTi2()
 void KonfigPID::OnEnChangeEditTd1()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 0].fTd = ZamienStrNaFloat(m_strTD1.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 0].fKd = ZamienStrNaFloat(m_strTD1.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -944,7 +952,7 @@ void KonfigPID::OnEnChangeEditTd1()
 void KonfigPID::OnEnChangeEditTd2()
 {
 	UpdateData(TRUE);
-	m_stPID[2 * m_nBiezacyParametr + 1].fTd = ZamienStrNaFloat(m_strTD2.GetString());
+	m_stPID[2 * m_nBiezacyParametr + 1].fKd = ZamienStrNaFloat(m_strTD2.GetString());
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	UpdateData(FALSE);
 }
@@ -1402,24 +1410,24 @@ void KonfigPID::OnReleasedcaptureSliderFiltrWzad2(NMHDR* pNMHDR, LRESULT* pResul
 // Reakcja na zmianę położenia suwaka wielkości akcji wyprzedzającej regulatora głównego
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult)
+void KonfigPID::OnNMCustomdrawSliderFiltrWwej1(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
-	m_nProcWyprzedzenia1 = m_ctlSlidProcWyprzedzenia1.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 0].cProcWartZadWyprz = m_nProcWyprzedzenia1;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	m_strProcWyprzedzenia1.Format(_T("Wzm. wyprzedzającej KW: %d%% "), m_nProcWyprzedzenia1);
+	m_nPodstFiltraWartWejsciowej1 = m_ctlSlidPodstFiltraWartWej1.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 0].cPodstawaFiltraWartWej = m_nPodstFiltraWartWejsciowej1;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
+	m_strPodstawaFiltraWartWejsciowej1.Format(_T("Podstawa filtra wart.wej: %d "), m_nPodstFiltraWartWejsciowej1);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
 
 
 
-void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT* pResult)
+void KonfigPID::OnReleasedcaptureSliderFiltrWwej1(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	UpdateData(TRUE);
-	m_nProcWyprzedzenia2 = m_ctlSlidProcWyprzedzenia2.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 0].cProcWartZadWyprz = m_nProcWyprzedzenia1;
+	m_nPodstFiltraWartWejsciowej1 = m_ctlSlidPodstFiltraWartWej1.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 0].cPodstawaFiltraWartWej = m_nPodstFiltraWartWejsciowej1;
 	m_stPID[2 * m_nBiezacyParametr + 0].bZmieniony = TRUE;
 	*pResult = 0;
 }
@@ -1430,27 +1438,33 @@ void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia1(NMHDR* pNMHDR, LRESULT*
 // Reakcja na zmianę położenia suwaka wielkości akcji wyprzedzającej regulatora pochodnej
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void KonfigPID::OnNMCustomdrawSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult)
+void KonfigPID::OnNMCustomdrawSliderFiltrWwej2(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	UpdateData(TRUE);
-	m_nProcWyprzedzenia2 = m_ctlSlidProcWyprzedzenia2.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 1].cProcWartZadWyprz = m_nProcWyprzedzenia2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
-	m_strProcWyprzedzenia2.Format(_T("Wzm. wyprzedzenia KW: %d%% "), m_nProcWyprzedzenia2);
+	m_nPodstFiltraWartWejsciowej2 = m_ctlSlidPodstFiltraWartWej2.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 1].cPodstawaFiltraWartWej = m_nPodstFiltraWartWejsciowej2;		//ponieważ przesuwanie kursorami nie wywołuje metody OnNMReleasedcaptureSliderFiltrD2, więc aktualizuj również tutaj
+	m_strPodstawaFiltraWartWejsciowej2.Format(_T("Podstawa filtra wart.wej: %d "), m_nPodstFiltraWartWejsciowej2);
 	UpdateData(FALSE);
 	*pResult = 0;
 }
 
 
 
-void KonfigPID::OnReleasedcaptureSliderProcWyprzedzenia2(NMHDR* pNMHDR, LRESULT* pResult)
+void KonfigPID::OnReleasedcaptureSliderFiltrWwej2(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	UpdateData(TRUE);
-	m_nProcWyprzedzenia2 = m_ctlSlidProcWyprzedzenia2.GetPos();
-	m_stPID[2 * m_nBiezacyParametr + 1].cProcWartZadWyprz = m_nProcWyprzedzenia2;
+	m_nPodstFiltraWartWejsciowej2 = m_ctlSlidPodstFiltraWartWej2.GetPos();
+	m_stPID[2 * m_nBiezacyParametr + 1].cPodstawaFiltraWartWej = m_nPodstFiltraWartWejsciowej2;
 	m_stPID[2 * m_nBiezacyParametr + 1].bZmieniony = TRUE;
 	*pResult = 0;
 }
+
+
+
+
+
+
 
 
 

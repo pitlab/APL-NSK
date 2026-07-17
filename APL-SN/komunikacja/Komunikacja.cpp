@@ -1410,7 +1410,7 @@ uint8_t CKomunikacja::RekonfigurujWyRC()
 // parametry: chIndeksRegulatora - wskazuje na regualtor do zapisania
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp, float fTi, float fTd, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, float fStalePrzesuniecie, float fFiltry)
+uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp, float fKi, float fKd, float fKw, float fLimitCalki, float fMinPid, float fMaxPid, float fSkalaWZadanej, float fStalePrzesuniecie, float fFiltry)
 {
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[ROZMIAR_REG_PID + 2];
@@ -1421,10 +1421,10 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp
 	m_unia8_32.daneFloat = fKp;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[1 + i] = m_unia8_32.dane8[i];
-	m_unia8_32.daneFloat = fTi;
+	m_unia8_32.daneFloat = fKi;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[5 + i] = m_unia8_32.dane8[i];
-	m_unia8_32.daneFloat = fTd;
+	m_unia8_32.daneFloat = fKd;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[9 + i] = m_unia8_32.dane8[i];
 
@@ -1445,7 +1445,7 @@ uint8_t CKomunikacja::ZapiszKonfiguracjePID(uint8_t cIndeksRegulatora, float fKp
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[29 + i] = m_unia8_32.dane8[i];
 	
-	m_unia8_32.daneFloat = 123.45678f;		//rezerwa na 1 zmienn¹ float
+	m_unia8_32.daneFloat = fKw;
 	for (int i = 0; i < 4; i++)
 		chDaneWychodzace[33 + i] = m_unia8_32.dane8[i];
 
