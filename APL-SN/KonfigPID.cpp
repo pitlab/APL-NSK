@@ -259,8 +259,8 @@ BOOL KonfigPID::OnInitDialog()
 	m_ctlSlidPodstCzasuFiltraD2.SetRange(0, 255);
 	m_ctlSlidPodstFiltraWartZad1.SetRange(0, 255);
 	m_ctlSlidPodstFiltraWartZad2.SetRange(0, 255);
-	m_ctlSlidPodstFiltraWartWej1.SetRange(0, 15);
-	m_ctlSlidPodstFiltraWartWej2.SetRange(0, 15);
+	m_ctlSlidPodstFiltraWartWej1.SetRange(0, 31);
+	m_ctlSlidPodstFiltraWartWej2.SetRange(0, 31);
 
 	//inicjalizacja strojenia parametrów PID
 	strParametr.Format(_T("Strojenie wyłączone"));
