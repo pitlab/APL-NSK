@@ -7,18 +7,31 @@
 
 uint8_t JsonWykresu::Zapisz(const std::filesystem::path& wcNazwaPliku)
 {
-    json j;
+    json jGrupa;
 
-    j["TypWykresu"] = nTypWykresu;
-    j["Zmienna"] = nIndeksZmiennej;
-    j["Kolor"] = nKolor;
+    for (const auto& konf : vKonfWykresow)
+    {
+        json jWykres;
+
+        jWykres["TypWykresu"] = konf.nTypWykresu;
+        jWykres["Zmienna"] = konf.nIndeksZmiennej;
+        jWykres["Kolor"] =
+        {
+            {"r", konf.fKolor.r},
+            {"g", konf.fKolor.g},
+            {"b", konf.fKolor.b},
+            {"a", konf.fKolor.a}
+        };
+        jGrupa["Konfiguracja Wykresow"].push_back(jWykres);
+    }
+  
 
     std::ofstream file(wcNazwaPliku);
 
     if (!file.is_open())
         return ERR_FILE_READ;
 
-    file << j.dump(4);      // 4 = ³adne wciêcia
+    file << jGrupa.dump(4);      // 4 = ³adne wciêcia
     return ERR_OK;
 }
 
@@ -36,5 +49,5 @@ uint8_t JsonWykresu::Czytaj(const std::filesystem::path& wcNazwaPliku)
 
     nTypWykresu = j.value("TypWykresu", 1);
     nIndeksZmiennej = j.value("Zmienna", 1);
-    nKolor = j.value("Kolor", 30);
+    fKolor = j.value("Kolor", 30);
 }

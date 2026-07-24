@@ -550,6 +550,7 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 	JsonWykresu Json;
 	OPENFILENAME ofn;
 	wchar_t wcNazwaPliku[_MAX_PATH];
+	JsonWykresu::stKonfWykr stKonf;
 
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -570,8 +571,24 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 	if (GetSaveFileName(&ofn) != TRUE)
 		return;
 
-	Json.nIndeksZmiennej = 5;
-	Json.nKolor = 0x12345678;
+	
+	int nLiczbaGrup = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
+	int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[0].vZmienne.size();
+
+	for (const auto& g : m_cDrzewoWykresow.vGrupaWykresow)
+	{
+		stKonf.nTypWykresu = g.chTypWykresu;
+		for (const auto& w : g.vZmienne)
+		{
+			stKonf.nIndeksZmiennej = w.sIdZmiennej;			
+			stKonf.fKolor = w.cKolorD2D1;
+
+			//Json.nIndeksZmiennej = w.sIdZmiennej;
+			//Json.fKolor = w.cKolorD2D1;
+			Json.vKonfWykresow.push_back(stKonf);
+		}
+	}
+
 	if (Json.Zapisz(wcNazwaPliku) != ERR_OK)
 	{
 		MessageBoxExW(this->m_hWnd, _T("Nie mogę zapisać konfiguracji."), _T("Ojojojoj!"), MB_ICONWARNING, 0);

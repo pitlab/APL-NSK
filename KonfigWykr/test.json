@@ -1,0 +1,54 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "TypWykresu": 1,
+            "Zmienna": 145
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "TypWykresu": 1,
+            "Zmienna": 149
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "TypWykresu": 2,
+            "Zmienna": 149
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "TypWykresu": 2,
+            "Zmienna": 152
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "TypWykresu": 1,
+            "Zmienna": 153
+        }
+    ]
+}
