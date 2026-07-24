@@ -2,6 +2,7 @@
 #include "DrzewoWykresow.h"
 #include "APL-SNDoc.h"
 #include "afxcolorpickerctrl.h"
+#include "nlohmann/json.hpp"
 
 //definicje kolumn listy Danych
 #define LD_NAZWA	0
@@ -52,6 +53,16 @@ protected:
 	float m_fZakresMinWykresu;
 	float m_fZakresMaxWykresu;
 
+	struct stKonfigWykresu
+	{
+		std::string cNazwa;
+		int nTypWykresu;
+		int nIndeksZmiennej;
+		int nKolor;
+	};
+	std::vector<stKonfigWykresu> vKonfigWykresow;
+
+
 public:
 	CListCtrl m_cListaDanych;
 	DrzewoWykresow m_cDrzewoWykresow;
@@ -62,4 +73,8 @@ public:
 	CString m_strZakresMaxWykresu;
 	afx_msg void OnEnChangeEditWykresMin();
 	afx_msg void OnEnChangeEditWykresMax();
+	afx_msg void OnBnClickedButZapiszKonf();
+	afx_msg void OnBnClickedButCzytajKonf();
+	void ZapiszDoJson(nlohmann::json& j, const stKonfigWykresu& vKonf);
+	void CzytajzJson(nlohmann::json& j, stKonfigWykresu& vKonf);
 };

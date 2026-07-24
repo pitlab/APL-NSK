@@ -301,7 +301,7 @@
 #define IDC_SLIDER_FILTR_D2             1230
 #define IDC_STATIC_FILTR_D2             1231
 #define IDC_CHECK_WYLACZ2               1232
-#define IDC_SLIDER_FILTR_WWEJ2		    1232
+#define IDC_SLIDER_FILTR_WWEJ2          1232
 #define IDC_STAT_JEDNOSTKA_STAB         1233
 #define IDC_STAT_JEDNOSTKA_AKRO         1234
 #define IDC_STATIC_FILTR_WWEJ2          1235
@@ -471,9 +471,10 @@
 #define IDC_STATIC_CZAS__IDENTYFIKACJI  1404
 #define IDC_BUT_ROZPOCZNIJ_IDENTYFIKACJE 1405
 #define IDC_EDIT_OBR_JALOWE             1406
+#define IDC_BUT_CZYTAJ_KONF             1406
 #define IDC_EDIT_OBR_MIN                1407
+#define IDC_BUT_ZAPISZ_KONF             1407
 #define IDC_EDIT_OBR_ZAWIS              1408
-
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -521,7 +522,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        352
 #define _APS_NEXT_COMMAND_VALUE         32830
-#define _APS_NEXT_CONTROL_VALUE         1406
+#define _APS_NEXT_CONTROL_VALUE         1408
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

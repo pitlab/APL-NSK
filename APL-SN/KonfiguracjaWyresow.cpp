@@ -5,7 +5,13 @@
 #include "APL-SN.h"
 #include "KonfiguracjaWyresow.h"
 #include "afxdialogex.h"
-
+#include "nlohmann/json.hpp"
+#include "JsonWykresu.h"
+#include <string>
+#include "nlohmann/json.hpp"
+#include <fstream>
+#include <vector>
+#include "Errors.h"
 
 // Okno dialogowe KonfiguracjaWyresow
 
@@ -60,6 +66,8 @@ BEGIN_MESSAGE_MAP(KonfiguracjaWyresow, CDialogEx)
 	ON_NOTIFY(NM_CLICK, IDC_TREE_WYKRESOW, &KonfiguracjaWyresow::OnNMClickTreeWykresow)
 	ON_EN_CHANGE(IDC_EDIT_WYKRES_MIN, &KonfiguracjaWyresow::OnEnChangeEditWykresMin)
 	ON_EN_CHANGE(IDC_EDIT_WYKRES_MAX, &KonfiguracjaWyresow::OnEnChangeEditWykresMax)
+	ON_BN_CLICKED(IDC_BUT_ZAPISZ_KONF, &KonfiguracjaWyresow::OnBnClickedButZapiszKonf)
+	ON_BN_CLICKED(IDC_BUT_CZYTAJ_KONF, &KonfiguracjaWyresow::OnBnClickedButCzytajKonf)
 END_MESSAGE_MAP()
 
 
@@ -529,4 +537,107 @@ void KonfiguracjaWyresow::OnEnChangeEditWykresMax()
 	UpdateData(TRUE);
 	m_strZakresMaxWykresu.Replace(_T(','), _T('.'));
 	m_fZakresMaxWykresu = (float)_wtof(m_strZakresMaxWykresu);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obsługa przycisku zapisu konfiguracji wykresów
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
+{
+	JsonWykresu Json;
+	OPENFILENAME ofn;
+	wchar_t wcNazwaPliku[_MAX_PATH];
+
+	wcNazwaPliku[0] = '\0';
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = this->m_hWnd;
+	ofn.lpstrFile = wcNazwaPliku;
+	ofn.nMaxFile = sizeof(wcNazwaPliku);
+	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = _T("../KonfigWykr");
+	ofn.Flags = OFN_PATHMUSTEXIST;
+	ofn.lpstrDefExt = _T("json");
+	ofn.lpstrTitle = _T("Nazwij plik z konfiguracją wykresów");
+
+	//otwórz dialog i wskaż plik
+	if (GetSaveFileName(&ofn) != TRUE)
+		return;
+
+	Json.nIndeksZmiennej = 5;
+	Json.nKolor = 0x12345678;
+	if (Json.Zapisz(wcNazwaPliku) != ERR_OK)
+	{
+		MessageBoxExW(this->m_hWnd, _T("Nie mogę zapisać konfiguracji."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
+	}
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obsługa przycisku odczytu konfiguracji wykresów
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
+{
+	JsonWykresu Json;
+	OPENFILENAME ofn;
+	wchar_t wcNazwaPliku[_MAX_PATH];
+
+	wcNazwaPliku[0] = '\0';
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = this->m_hWnd;
+	ofn.lpstrFile = wcNazwaPliku;
+	ofn.nMaxFile = sizeof(wcNazwaPliku);
+	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = _T("../KonfigWykr");
+	ofn.Flags = OFN_PATHMUSTEXIST;
+	ofn.lpstrDefExt = _T("json");
+	ofn.lpstrTitle = _T("Wskaż plik z konfiguracją wykresów");
+
+	//otwórz dialog i wskaż plik
+	if (GetOpenFileName(&ofn) != TRUE)
+		return;
+
+	std::ifstream file(wcNazwaPliku);
+
+	if (!file.is_open())
+		return;
+
+	Json.Czytaj(wcNazwaPliku);
+
+}
+
+
+
+void KonfiguracjaWyresow::ZapiszDoJson(nlohmann::json& j, const stKonfigWykresu& vKonf)
+{
+	j =
+	{
+		{"Nazwa", vKonf.cNazwa},
+		{"TypWykresu", vKonf.nTypWykresu},
+		{"Zmienna", vKonf.nIndeksZmiennej},
+		{"Kolor", vKonf.nKolor}
+	};
+}
+
+
+
+void KonfiguracjaWyresow::CzytajzJson(nlohmann::json& j, stKonfigWykresu& vKonf)
+{
+	j.at("Nazwa").get_to(vKonf.cNazwa);
+	j.at("TypWykresu").get_to(vKonf.nTypWykresu);
+	j.at("Zmienna").get_to(vKonf.nIndeksZmiennej);
+	j.at("Kolor").get_to(vKonf.nKolor);
 }
