@@ -75,6 +75,5 @@ public:
 	afx_msg void OnEnChangeEditWykresMax();
 	afx_msg void OnBnClickedButZapiszKonf();
 	afx_msg void OnBnClickedButCzytajKonf();
-	void ZapiszDoJson(nlohmann::json& j, const stKonfigWykresu& vKonf);
-	void CzytajzJson(nlohmann::json& j, stKonfigWykresu& vKonf);
+	void WstawGrupeWykresow(DrzewoWykresow* dDrzewo);
 };

@@ -357,7 +357,7 @@ void CDaneFlash::OnBnClickedButCzytajFlash()
 	uint16_t sBufor[ROZMIAR_BUF_SEKT];
 
 	Error = _wfopen_s(&pPlikSektora, L"sektor.bin", L"wb");
-	if (!Error)
+	if ((!Error) && pPlikSektora)
 	{
 		m_ctlPasekPostepu.SetRange(0, (ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT) - 1);
 		for (uint32_t n = 0; n < ROZMIAR_SEKTORA16_FLASH / ROZMIAR_BUF_SEKT; n++)

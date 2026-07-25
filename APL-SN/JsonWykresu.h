@@ -16,6 +16,10 @@ public:
 		int nTypWykresu = 0;
 		int nIndeksZmiennej = 0;
 		D2D1::ColorF fKolor = 0;
+		//std::string wcNazwa;
+		CString strNazwa;
+		float fMin;
+		float fMax;
 	};
 
 	std::vector<stKonfWykr> vKonfWykresow;

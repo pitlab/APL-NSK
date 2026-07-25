@@ -259,50 +259,8 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 		chNumerLogu++;
 	}
 
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TVS_SHOWSELALWAYS;
-	m_cDrzewoWykresow.SetExtendedStyle(dwViewStyle, dwViewStyle);
-
-	m_cDrzewoWykresow.m_hGlownyWezel = m_cDrzewoWykresow.InsertItem(_T("Wykresy"), 0, 0, TVI_ROOT, TVI_FIRST);
-	m_cDrzewoWykresow.SetItemState(m_cDrzewoWykresow.m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
-	CString strNazwaGalezi;
-	CString strNazwaWykresu;
-
 	//wstaw do kontrolki obiekty wcześniej zdefinioane w statycznym wektorze
-	int nLiczbaGrupWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
-	if (!nLiczbaGrupWykresow)
-	{
-		//Jezeli nie ma żadnej grupy wykresów to dodaj pierwszą
-		DrzewoWykresow::stGrupaWykresow_t stGrupa;
-		stGrupa.chTypWykresu = WYKRES_WSPOLNA_SKALA;
-		m_cDrzewoWykresow.vGrupaWykresow.push_back(stGrupa);
-		nLiczbaGrupWykresow = 1;
-	}
-
-	HTREEITEM hDrzewa;
-	for (int g = 0; g < nLiczbaGrupWykresow; g++)
-	{
-		if (m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
-			strNazwaGalezi.Format(_T("Wspólna skala %d"), g+1);
-		else
-			strNazwaGalezi.Format(_T("Osobne skale %d"), g+1);
-
-		hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaGalezi, 1, 1, m_cDrzewoWykresow.m_hGlownyWezel);
-		m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow = hDrzewa;
-
-		//jeżeli istnieją wykresy utworzone wcześniej to wstaw nowe uchwyty do nich
-		int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne.size();
-		for (int w = 0; w < nLiczbaWykresow; w++)
-		{
-			strNazwaWykresu = m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].strNazwa;
-			if (m_cDrzewoWykresow.vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
-				hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 3, 4, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
-			else
-				hDrzewa = m_cDrzewoWykresow.InsertItem(strNazwaWykresu, 5, 6, m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow);
-			m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].hWykres = hDrzewa;
-		}
-		m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.vGrupaWykresow[g].hGalazWykresow, TVE_EXPAND);
-	}
-	m_cDrzewoWykresow.Expand(m_cDrzewoWykresow.m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
+	WstawGrupeWykresow(&m_cDrzewoWykresow);
 
 	m_DropTarget.Register(this);
 	//m_cDrzewoWykresow.DragAcceptFiles();	//drzewo akceptuje przeciagane do niego wykresy
@@ -344,12 +302,66 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Funkcja wstawia wykresy do okna z wektora
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void KonfiguracjaWyresow::WstawGrupeWykresow(DrzewoWykresow *dDrzewo)
+{
+	HTREEITEM hDrzewa;
+	CString strNazwaGalezi;
+	CString strNazwaWykresu;
+	int nLiczbaGrupWykresow = (int)dDrzewo->vGrupaWykresow.size();
+
+	dDrzewo->DeleteAllItems();
+	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TVS_SHOWSELALWAYS;
+	dDrzewo->SetExtendedStyle(dwViewStyle, dwViewStyle);
+
+	dDrzewo->m_hGlownyWezel = dDrzewo->InsertItem(_T("Wykresy"), 0, 0, TVI_ROOT, TVI_FIRST);
+	dDrzewo->SetItemState(dDrzewo->m_hGlownyWezel, TVIS_BOLD, TVIS_BOLD);	//pogrub 
+
+	if (!nLiczbaGrupWykresow)
+	{
+		//Jezeli nie ma żadnej grupy wykresów to dodaj pierwszą
+		DrzewoWykresow::stGrupaWykresow_t stGrupa;
+		stGrupa.chTypWykresu = WYKRES_WSPOLNA_SKALA;
+		dDrzewo->vGrupaWykresow.push_back(stGrupa);
+		nLiczbaGrupWykresow = 1;
+	}
+
+	for (int g = 0; g < nLiczbaGrupWykresow; g++)
+	{
+		if (dDrzewo->vGrupaWykresow[g].chTypWykresu == WYKRES_WSPOLNA_SKALA)
+			strNazwaGalezi.Format(_T("Wspólna skala %d"), g + 1);
+		else
+			strNazwaGalezi.Format(_T("Osobne skale %d"), g + 1);
+
+		hDrzewa = dDrzewo->InsertItem(strNazwaGalezi, 1, 1, dDrzewo->m_hGlownyWezel);
+		dDrzewo->vGrupaWykresow[g].hGalazWykresow = hDrzewa;
+
+		//jeżeli istnieją wykresy utworzone wcześniej to wstaw nowe uchwyty do nich
+		int nLiczbaWykresow = (int)dDrzewo->vGrupaWykresow[g].vZmienne.size();
+		for (int w = 0; w < nLiczbaWykresow; w++)
+		{
+			strNazwaWykresu = dDrzewo->vGrupaWykresow[g].vZmienne[w].strNazwa;
+			if (dDrzewo->vGrupaWykresow[g].chTypWykresu == WYKRES_OSOBNA_SKALA)
+				hDrzewa = dDrzewo->InsertItem(strNazwaWykresu, 3, 4, dDrzewo->vGrupaWykresow[g].hGalazWykresow);
+			else
+				hDrzewa = dDrzewo->InsertItem(strNazwaWykresu, 5, 6, dDrzewo->vGrupaWykresow[g].hGalazWykresow);
+			dDrzewo->vGrupaWykresow[g].vZmienne[w].hWykres = hDrzewa;
+		}
+		dDrzewo->Expand(dDrzewo->vGrupaWykresow[g].hGalazWykresow, TVE_EXPAND);
+	}
+	dDrzewo->Expand(dDrzewo->m_hGlownyWezel, TVE_EXPAND);		//rozwiń gałęzie w głównym węźle drzewa
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Zamknięcie okna przyciskiem OK
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfiguracjaWyresow::OnBnClickedOk()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	CDialogEx::OnOK();
 }
 
@@ -362,7 +374,6 @@ void KonfiguracjaWyresow::OnBnClickedOk()
 void KonfiguracjaWyresow::OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMBCDROPDOWN pDropDown = reinterpret_cast<LPNMBCDROPDOWN>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	*pResult = 0;
 }
 
@@ -370,7 +381,6 @@ void KonfiguracjaWyresow::OnDropdownIdok(NMHDR* pNMHDR, LRESULT* pResult)
 
 void KonfiguracjaWyresow::OnMouseMove(UINT nFlags, CPoint point)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	if (m_bPrzeciaganieMysza)
 	{
 		m_cpPozycjaMyszy = point;
@@ -402,7 +412,6 @@ void KonfiguracjaWyresow::OnLButtonUp(UINT nFlags, CPoint point)
 //przesłania zmianę kursora
 BOOL KonfiguracjaWyresow::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi komunikatów i/lub wywołaj domyślny
 	if (m_bKursorPrzeciaganie)
 	{
 		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
@@ -423,7 +432,6 @@ BOOL KonfiguracjaWyresow::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 void KonfiguracjaWyresow::OnLvnItemchangedListaDanych(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	*pResult = 0;
 }
 
@@ -471,7 +479,6 @@ void KonfiguracjaWyresow::OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pR
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	//D2D1::ColorF cKolorD2D1;
 
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	//pNMTreeView->itemNew;
 
 	
@@ -482,7 +489,6 @@ void KonfiguracjaWyresow::OnTvnSelchangedTreeWykresow(NMHDR* pNMHDR, LRESULT* pR
 void KonfiguracjaWyresow::OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 
 	*pResult = 0;
 }
@@ -490,7 +496,6 @@ void KonfiguracjaWyresow::OnTvnSelchangingTreeWykresow(NMHDR* pNMHDR, LRESULT* p
 
 void KonfiguracjaWyresow::OnNMClickTreeWykresow(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	COLORREF cKolor;
 
 	HTREEITEM hDrzewa = m_cDrzewoWykresow.GetSelectedItem();
@@ -582,9 +587,9 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 		{
 			stKonf.nIndeksZmiennej = w.sIdZmiennej;			
 			stKonf.fKolor = w.cKolorD2D1;
-
-			//Json.nIndeksZmiennej = w.sIdZmiennej;
-			//Json.fKolor = w.cKolorD2D1;
+			stKonf.strNazwa = w.strNazwa;
+			stKonf.fMin = w.fMin;
+			stKonf.fMax = w.fMax;
 			Json.vKonfWykresow.push_back(stKonf);
 		}
 	}
@@ -593,7 +598,6 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 	{
 		MessageBoxExW(this->m_hWnd, _T("Nie mogę zapisać konfiguracji."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
 	}
-
 }
 
 
@@ -607,6 +611,11 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 	JsonWykresu Json;
 	OPENFILENAME ofn;
 	wchar_t wcNazwaPliku[_MAX_PATH];
+	int nPoprzedniTypWykresu = 0;
+	int nIndeksGrupy = -1;
+	DrzewoWykresow::stGrupaWykresow_t stGrupa;
+	DrzewoWykresow::stZmienna_t stZmienna;
+	
 
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -634,27 +643,29 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 
 	Json.Czytaj(wcNazwaPliku);
 
-}
+	m_cDrzewoWykresow.vGrupaWykresow.clear();
 
-
-
-void KonfiguracjaWyresow::ZapiszDoJson(nlohmann::json& j, const stKonfigWykresu& vKonf)
-{
-	j =
+	for (const auto& konf : Json.vKonfWykresow)
 	{
-		{"Nazwa", vKonf.cNazwa},
-		{"TypWykresu", vKonf.nTypWykresu},
-		{"Zmienna", vKonf.nIndeksZmiennej},
-		{"Kolor", vKonf.nKolor}
-	};
-}
+		stZmienna.sIdZmiennej = konf.nIndeksZmiennej;
+		stZmienna.cKolorD2D1 = konf.fKolor;
+		stZmienna.strNazwa = konf.strNazwa;
+		stZmienna.fMin = konf.fMin;
+		stZmienna.fMax = konf.fMax;
 
-
-
-void KonfiguracjaWyresow::CzytajzJson(nlohmann::json& j, stKonfigWykresu& vKonf)
-{
-	j.at("Nazwa").get_to(vKonf.cNazwa);
-	j.at("TypWykresu").get_to(vKonf.nTypWykresu);
-	j.at("Zmienna").get_to(vKonf.nIndeksZmiennej);
-	j.at("Kolor").get_to(vKonf.nKolor);
+		if (konf.nTypWykresu == nPoprzedniTypWykresu)
+		{			
+			m_cDrzewoWykresow.vGrupaWykresow[nIndeksGrupy].vZmienne.push_back(stZmienna);	//dodaj wykresy do istniejącej grupy
+		}
+		else        //utwórz nową grupę
+		{			
+			nPoprzedniTypWykresu = konf.nTypWykresu;
+			stGrupa.chTypWykresu = konf.nTypWykresu;               			
+			stGrupa.vZmienne.push_back(stZmienna);
+			m_cDrzewoWykresow.vGrupaWykresow.push_back(stGrupa);
+			stGrupa.vZmienne.clear();
+			nIndeksGrupy++;
+		}	
+	}
+	WstawGrupeWykresow(&m_cDrzewoWykresow);
 }

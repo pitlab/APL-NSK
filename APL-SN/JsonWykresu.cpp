@@ -3,6 +3,7 @@
 #include "JsonWykresu.h"
 #include <fstream>
 #include <filesystem>
+#include <atlconv.h>
 
 
 uint8_t JsonWykresu::Zapisz(const std::filesystem::path& wcNazwaPliku)
@@ -13,8 +14,12 @@ uint8_t JsonWykresu::Zapisz(const std::filesystem::path& wcNazwaPliku)
     {
         json jWykres;
 
+        CW2A utf8(konf.strNazwa, CP_UTF8);
+        jWykres["Nazwa"] = std::string(utf8);
         jWykres["TypWykresu"] = konf.nTypWykresu;
         jWykres["Zmienna"] = konf.nIndeksZmiennej;
+        jWykres["Min"] = konf.fMin;
+        jWykres["Max"] = konf.fMax;
         jWykres["Kolor"] =
         {
             {"r", konf.fKolor.r},
@@ -39,15 +44,33 @@ uint8_t JsonWykresu::Zapisz(const std::filesystem::path& wcNazwaPliku)
 
 uint8_t JsonWykresu::Czytaj(const std::filesystem::path& wcNazwaPliku)
 {
+    json jGrupa;
+    json jWykres;
     std::ifstream file(wcNazwaPliku);
 
     if (!file.is_open())
         return ERR_FILE_READ;
 
-    json j;
-    file >> j;
+    file >> jGrupa;
+    vKonfWykresow.clear();
 
-    nTypWykresu = j.value("TypWykresu", 1);
-    nIndeksZmiennej = j.value("Zmienna", 1);
-    fKolor = j.value("Kolor", 30);
+    for (const auto& jWykres : jGrupa["Konfiguracja Wykresow"])
+    {
+        stKonfWykr konf;
+
+        std::string wcNazwa = jWykres.value("Nazwa", "");
+        CA2W wide(wcNazwa.c_str(), CP_UTF8);
+        konf.strNazwa = wide;
+        konf.nTypWykresu = jWykres["TypWykresu"];
+        konf.nIndeksZmiennej = jWykres["Zmienna"];
+        konf.fMin = jWykres["Min"];
+        konf.fMax = jWykres["Max"];
+        konf.fKolor.r = jWykres["Kolor"]["r"];
+        konf.fKolor.g = jWykres["Kolor"]["g"];
+        konf.fKolor.b = jWykres["Kolor"]["b"];
+        konf.fKolor.a = jWykres["Kolor"]["a"];
+
+        vKonfWykresow.push_back(konf);
+    }
+    return ERR_OK;
 }
