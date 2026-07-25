@@ -446,9 +446,12 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 							stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.bottom - stKonfigLewy.fSkalaY * (float)fabsf(stKonfigLewy.fMinWykresu);
 							stKonfigLewy.bWykresPrzechodziPrzezZero = TRUE;
 						}
-						else
+						else //nie ma zera na wykresie
 						{
-							stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.bottom;
+							if (stKonfigLewy.fMaxWykresu > 0.0f)
+								stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.bottom;
+							else
+								stKonfigLewy.fPoziomZera = (float)stKonfigLewy.rOknoWykresu.top;
 							stKonfigLewy.bWykresPrzechodziPrzezZero = FALSE;
 						}		
 
@@ -481,7 +484,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 								stKonfigPrawy.fMaxWykresu = pDoc->m_vLog[nIdZmiennej].fMax;
 						}
 
-						fRozpietoscWykresu = (fabsf(stKonfigPrawy.fMinWykresu) + fabsf(stKonfigPrawy.fMaxWykresu));
+						fRozpietoscWykresu = fabsf(stKonfigPrawy.fMaxWykresu - stKonfigPrawy.fMinWykresu);
 						if (fRozpietoscWykresu < MIN_POZPIETOSC_WYKRESU)
 							fRozpietoscWykresu = MIN_POZPIETOSC_WYKRESU;	//zapobiega dzieleniu przez 0
 						stKonfigPrawy.fSkalaY = (stKonfigPrawy.rOknoWykresu.bottom - stKonfigPrawy.rOknoWykresu.top) / fRozpietoscWykresu;
@@ -494,7 +497,10 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						}
 						else
 						{
-							stKonfigPrawy.fPoziomZera = (float)stKonfigPrawy.rOknoWykresu.bottom;
+							if (stKonfigPrawy.fMaxWykresu > 0.0f)
+								stKonfigPrawy.fPoziomZera = (float)stKonfigPrawy.rOknoWykresu.bottom;
+							else
+								stKonfigPrawy.fPoziomZera = (float)stKonfigPrawy.rOknoWykresu.top;
 							stKonfigPrawy.bWykresPrzechodziPrzezZero = FALSE;
 						}
 
@@ -756,16 +762,18 @@ void CAPLSNView::RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfi
 	else
 		nPodzPonizejZera = 0;
 
+	pktfPoczatek.x = (float)(stKonfigLewy->rOknoWykresu.left);;
+	pktfKoniec.x = (float)(stKonfigLewy->rOknoWykresu.right);
+	rectWartosciOsi.left = 0;
+	rectWartosciOsi.right = MIEJSCE_NA_LEGENDE;
 	for (int n = 1; n <= nPodzPonizejZera; n++)
 	{
-		pktfPoczatek.x = (float)(stKonfigLewy->rOknoWykresu.left);;
-		pktfKoniec.x = (float)(stKonfigLewy->rOknoWykresu.right);
+		
 		pktfPoczatek.y = pktfKoniec.y = stKonfigLewy->fPoziomZera + n * fSkokPodzialki * stKonfigLewy->fSkalaY;
 		pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, pBrush, 0.1f);
 		rectWartosciOsi.top = pktfPoczatek.y - 10;
 		rectWartosciOsi.bottom = rectWartosciOsi.top + 20;
-		rectWartosciOsi.left = 0;
-		rectWartosciOsi.right = MIEJSCE_NA_LEGENDE;
+		
 		if (stKonfigLewy->bWykresPrzechodziPrzezZero)
 			fWartosc = n * -fSkokPodzialki;
 		else
@@ -887,7 +895,7 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 		fZakresWskazan = fMax - fMin;
 
 	fPierwotnySkokPodzialki = fFinalnySkokPodzialki = fZakresWskazan / nProponowanaLiczbaPodzialek;
-	if (fPierwotnySkokPodzialki)
+	/*if (fPierwotnySkokPodzialki)
 	{
 		while (round(fFinalnySkokPodzialki) < 100)	//potrzeba 3 miejsc znaczących
 		//while (round(fFinalnySkokPodzialki) < 10)	//potrzeba 2 miejsc znaczących
@@ -896,7 +904,7 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 			fFinalnySkokPodzialki = fPierwotnySkokPodzialki * nMnoznik;
 		}
 	}
-	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;
+	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;*/
 	return fFinalnySkokPodzialki;
 }
 
