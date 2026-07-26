@@ -1,0 +1,82 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 128.0,
+                "g": 0.0,
+                "r": 128.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop1 P [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 6
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop2 P [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 9
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 128.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop1 Q [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 7
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 128.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop1 R [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 8
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop2 R [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 11
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 128.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Żyroskop2 Q [rad/s]",
+            "TypWykresu": 1,
+            "Zmienna": 10
+        }
+    ]
+}

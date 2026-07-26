@@ -1,0 +1,108 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 128.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 153
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 161
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 128.0,
+                "r": 128.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID odchylenia",
+            "TypWykresu": 1,
+            "Zmienna": 170
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.kąt.odch",
+            "TypWykresu": 1,
+            "Zmienna": 178
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID przechylenia",
+            "TypWykresu": 1,
+            "Zmienna": 136
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.zm.wysoko",
+            "TypWykresu": 1,
+            "Zmienna": 195
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID wysokości",
+            "TypWykresu": 1,
+            "Zmienna": 187
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 128.0,
+                "g": 0.0,
+                "r": 128.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.kąt.prze",
+            "TypWykresu": 1,
+            "Zmienna": 144
+        }
+    ]
+}

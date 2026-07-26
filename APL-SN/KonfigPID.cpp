@@ -281,6 +281,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad kąta prze"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej kąta prze"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprz. kąta przechylenia"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_PRZE_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_PRZE_WYPRZ, strParametr);
@@ -300,6 +303,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad prędk.kąt.prze"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej prędk.kąt.prze"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprz.prędk.kąt. prze"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_PRZE_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_PRZE_WYPRZ, strParametr);
@@ -320,6 +326,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad kąta poch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej kąta poch"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia kąta poch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_POCH_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_POCH_WYPRZ, strParametr);
@@ -339,6 +348,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad prędk.kąt.poch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej prędk.kąt.poch"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia prędk.kąt.poch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_POCH_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_POCH_WYPRZ, strParametr);
@@ -358,6 +370,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad kąta odch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej kąta odch"));
+	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia kąta odch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_KATA_ODCH_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_KATA_ODCH_WYPRZ, strParametr);
@@ -377,6 +392,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad prędk.kąt.odch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej prędk.kąt.odch"));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia prędk.kąt.odch"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ODCH_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ODCH_WYPRZ, strParametr);
@@ -396,6 +414,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad wysokości"));
 	m_ctlStrojonyParametr1.InsertString(STRP_WYSOKOSCI_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_WYSOKOSCI_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej wysokości"));
+	m_ctlStrojonyParametr1.InsertString(STRP_WYSOKOSCI_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_WYSOKOSCI_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia wysokości"));
 	m_ctlStrojonyParametr1.InsertString(STRP_WYSOKOSCI_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_WYSOKOSCI_WYPRZ, strParametr);
@@ -415,6 +436,9 @@ BOOL KonfigPID::OnInitDialog()
 	strParametr.Format(_T("Podst.filtra W.Zad prędk.zm.wys."));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ZWYS_FWZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ZWYS_FWZ, strParametr);
+	strParametr.Format(_T("Podst.filtra W.Wej prędk.zm.wys."));
+	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ZWYS_FWE, strParametr);
+	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ZWYS_FWE, strParametr);
 	strParametr.Format(_T("%% Wyprzedzenia prędk.zm.wys"));
 	m_ctlStrojonyParametr1.InsertString(STRP_PRED_ZWYS_WYPRZ, strParametr);
 	m_ctlStrojonyParametr2.InsertString(STRP_PRED_ZWYS_WYPRZ, strParametr);

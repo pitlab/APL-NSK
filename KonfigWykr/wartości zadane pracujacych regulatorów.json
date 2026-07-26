@@ -1,0 +1,56 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wart.zadana przechyl",
+            "TypWykresu": 1,
+            "Zmienna": 128
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wart.zadana odchenia",
+            "TypWykresu": 1,
+            "Zmienna": 162
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.zm.wysoko",
+            "TypWykresu": 1,
+            "Zmienna": 195
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wart.zadana pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 145
+        }
+    ]
+}

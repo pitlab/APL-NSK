@@ -1,0 +1,95 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Predkość kątowa Q BSP",
+            "TypWykresu": 1,
+            "Zmienna": 87
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wart.zad.pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 154
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Fil.w.zad.pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 155
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy PID pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 161
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy P pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 158
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy D pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 159
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wyprzedz. pr.kąt.poch",
+            "TypWykresu": 1,
+            "Zmienna": 160
+        }
+    ]
+}

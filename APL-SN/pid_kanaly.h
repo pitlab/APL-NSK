@@ -57,65 +57,74 @@
 #define STRP_KATA_PRZE_TD		3	//strojenie członu różniczkującego w regulatorze przechylenia
 #define STRP_KATA_PRZE_FD		4	//Strojenie filtra sygnału różniczkowanego
 #define STRP_KATA_PRZE_FWZ		5	//Strojenie filtra wartości zadanej
-#define STRP_KATA_PRZE_WYPRZ	6	//strojenie wielkości akcji wyprzedzającej
-#define STRP_PRED_PRZE_KP		7	//strojenie wzmocnienia w regulatorze prędkości kątowej przechylenia
-#define STRP_PRED_PRZE_TI		8	//strojenie członu całkujacego w regulatorze prędkości kątowej przechylenia
-#define STRP_PRED_PRZE_TD		9	//strojenie członu różniczkującego w regulatorze prędkości kątowej przechylenia
-#define STRP_PRED_PRZE_FD		10	//Strojenie filtra sygnału różniczkowanego
-#define STRP_PRED_PRZE_FWZ		11	//Strojenie filtra wartości zadanej
-#define STRP_PRED_PRZE_WYPRZ	12	//strojenie wielkości akcji wyprzedzającej
+#define STRP_KATA_PRZE_FWE		6	//Strojenie filtra wartości wejściowej
+#define STRP_KATA_PRZE_WYPRZ	7	//strojenie wielkości akcji wyprzedzającej
+#define STRP_PRED_PRZE_KP		8	//strojenie wzmocnienia w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TI		9	//strojenie członu całkujacego w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_TD		10	//strojenie członu różniczkującego w regulatorze prędkości kątowej przechylenia
+#define STRP_PRED_PRZE_FD		11	//Strojenie filtra sygnału różniczkowanego
+#define STRP_PRED_PRZE_FWZ		12	//Strojenie filtra wartości zadanej
+#define STRP_PRED_PRZE_FWE		13	//Strojenie filtra wartości wejściowej
+#define STRP_PRED_PRZE_WYPRZ	14	//strojenie wielkości akcji wyprzedzającej
 
-#define STRP_KATA_POCH_KP		13	//strojenie wzmocnienia w regulatorze pochylenia
-#define STRP_KATA_POCH_TI		14	//strojenie członu całkujacego w regulatorze pochylenia
-#define STRP_KATA_POCH_TD		15	//strojenie członu różniczkującego w regulatorze pochylenia
-#define STRP_KATA_POCH_FD		16	//Strojenie filtra sygnału różniczkowanego
-#define STRP_KATA_POCH_FWZ		17	//Strojenie filtra wartości zadanej
-#define STRP_KATA_POCH_WYPRZ	18	//strojenie wielkości akcji wyprzedzającej
-#define STRP_PRED_POCH_KP		19	//strojenie wzmocnienia w regulatorze prędkości kątowej pochylenia
-#define STRP_PRED_POCH_TI		20	//strojenie członu całkujacego w regulatorze prędkości kątowej pochylenia
-#define STRP_PRED_POCH_TD		21	//strojenie członu różniczkującego w regulatorze prędkości kątowej pochylenia
-#define STRP_PRED_POCH_FD		22	//Strojenie filtra sygnału różniczkowanego
-#define STRP_PRED_POCH_FWZ		23	//Strojenie filtra wartości zadanej
-#define STRP_PRED_POCH_WYPRZ	24	//strojenie wielkości akcji wyprzedzającej
-#define STRP_KATA_ODCH_KP		25	//strojenie wzmocnienia w regulatorze odchylenia
-#define STRP_KATA_ODCH_TI		26	//strojenie członu całkujacego w regulatorze odchylenia
-#define STRP_KATA_ODCH_TD		27	//strojenie członu różniczkującego w regulatorze odchylenia
-#define STRP_KATA_ODCH_FD		28	//Strojenie filtra sygnału różniczkowanego
-#define STRP_KATA_ODCH_FWZ		29	//Strojenie filtra wartości zadanej
-#define STRP_KATA_ODCH_WYPRZ	30	//strojenie wielkości akcji wyprzedzającej
-#define STRP_PRED_ODCH_KP		31	//strojenie wzmocnienia w regulatorze prędkości kątowej odchylenia
-#define STRP_PRED_ODCH_TI		32	//strojenie członu całkujacego w regulatorze prędkości kątowej odchylenia
-#define STRP_PRED_ODCH_TD		33	//strojenie członu różniczkującego w regulatorze prędkości kątowej odchylenia
-#define STRP_PRED_ODCH_FD		34	//Strojenie filtra sygnału różniczkowanego
-#define STRP_PRED_ODCH_FWZ		35	//Strojenie filtra wartości zadanej
-#define STRP_PRED_ODCH_WYPRZ	36	//strojenie wielkości akcji wyprzedzającej
-#define STRP_WYSOKOSCI_KP		37	//strojenie wzmocnienia w regulatorze wysokości
-#define STRP_WYSOKOSCI_TI		38	//strojenie członu całkujacego w regulatorze wysokości
-#define STRP_WYSOKOSCI_TD		39	//strojenie członu różniczkującego w regulatorze wysokości
-#define STRP_WYSOKOSCI_FD		40	//Strojenie filtra sygnału różniczkowanego
-#define STRP_WYSOKOSCI_FWZ		41	//Strojenie filtra wartości zadanej
-#define STRP_WYSOKOSCI_WYPRZ	42	//strojenie wielkości akcji wyprzedzającej
-#define STRP_PRED_ZWYS_KP		43	//strojenie wzmocnienia w regulatorze prędkości zmiany wysokości
-#define STRP_PRED_ZWYS_TI		44	//strojenie członu całkujacego w regulatorze prędkości zmiany wysokości
-#define STRP_PRED_ZWYS_TD		45	//strojenie członu różniczkującego w regulatorze prędkości zmiany wysokości
-#define STRP_PRED_ZWYS_FD		46	//Strojenie filtra sygnału różniczkowanego
-#define STRP_PRED_ZWYS_FWZ		47	//Strojenie filtra wartości zadanej
-#define STRP_PRED_ZWYS_WYPRZ	48	//strojenie wielkości akcji wyprzedzającej
-#define STRP_NAWI_POLN_KP		49	//strojenie wzmocnienia w regulatorze nawigacji w kierunku północnym
-#define STRP_NAWI_POLN_TI		50	//strojenie członu całkujacego w regulatorze nawigacji w kierunku północnym
-#define STRP_NAWI_POLN_TD		51	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku północnym
-#define STRP_PRED_POLN_KP		52	//strojenie wzmocnienia w regulatorze prędkości w kierunku północnym
-#define STRP_PRED_POLN_TI		53	//strojenie członu całkujacego w regulatorze prędkości w kierunku północnym
-#define STRP_PRED_POLN_TD		54	//strojenie członu różniczkującego w regulatorze prędkości w kierunku północnym
-#define STRP_NAWI_WSCH_KP		55	//strojenie wzmocnienia w regulatorze nawigacji w kierunku wschodnim
-#define STRP_NAWI_WSCH_TI		56	//strojenie członu całkujacego w regulatorze nawigacji w kierunku wschodnim
-#define STRP_NAWI_WSCH_TD		57	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku wschodnim
-#define STRP_PRED_WSCH_KP		58	//strojenie wzmocnienia w regulatorze prędkości w kierunku wschodnim
-#define STRP_PRED_WSCH_TI		59	//strojenie członu całkujacego w regulatorze prędkości w kierunku wschodnim
-#define STRP_PRED_WSCH_TD		60	//strojenie członu różniczkującego w regulatorze prędkości w kierunku wschodnim
-#define LICZBA_STROJONYCH_PARAMETROW_PID	61
+#define STRP_KATA_POCH_KP		15	//strojenie wzmocnienia w regulatorze pochylenia
+#define STRP_KATA_POCH_TI		16	//strojenie członu całkujacego w regulatorze pochylenia
+#define STRP_KATA_POCH_TD		17	//strojenie członu różniczkującego w regulatorze pochylenia
+#define STRP_KATA_POCH_FD		18	//Strojenie filtra sygnału różniczkowanego
+#define STRP_KATA_POCH_FWZ		19	//Strojenie filtra wartości zadanej
+#define STRP_KATA_POCH_FWE		20	//Strojenie filtra wartości wejściowej
+#define STRP_KATA_POCH_WYPRZ	21	//strojenie wielkości akcji wyprzedzającej
+#define STRP_PRED_POCH_KP		22	//strojenie wzmocnienia w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TI		23	//strojenie członu całkujacego w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_TD		24	//strojenie członu różniczkującego w regulatorze prędkości kątowej pochylenia
+#define STRP_PRED_POCH_FD		25	//Strojenie filtra sygnału różniczkowanego
+#define STRP_PRED_POCH_FWZ		26	//Strojenie filtra wartości zadanej
+#define STRP_PRED_POCH_FWE		27	//Strojenie filtra wartości wejściowej
+#define STRP_PRED_POCH_WYPRZ	28	//strojenie wielkości akcji wyprzedzającej
 
+#define STRP_KATA_ODCH_KP		29	//strojenie wzmocnienia w regulatorze odchylenia
+#define STRP_KATA_ODCH_TI		30	//strojenie członu całkujacego w regulatorze odchylenia
+#define STRP_KATA_ODCH_TD		31	//strojenie członu różniczkującego w regulatorze odchylenia
+#define STRP_KATA_ODCH_FD		32	//Strojenie filtra sygnału różniczkowanego
+#define STRP_KATA_ODCH_FWZ		33	//Strojenie filtra wartości zadanej
+#define STRP_KATA_ODCH_FWE		34	//Strojenie filtra wartości wejściowej
+#define STRP_KATA_ODCH_WYPRZ	35	//strojenie wielkości akcji wyprzedzającej
+#define STRP_PRED_ODCH_KP		36	//strojenie wzmocnienia w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TI		37	//strojenie członu całkujacego w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_TD		38	//strojenie członu różniczkującego w regulatorze prędkości kątowej odchylenia
+#define STRP_PRED_ODCH_FD		39	//Strojenie filtra sygnału różniczkowanego
+#define STRP_PRED_ODCH_FWZ		40	//Strojenie filtra wartości zadanej
+#define STRP_PRED_ODCH_FWE		41	//Strojenie filtra wartości wejściowej
+#define STRP_PRED_ODCH_WYPRZ	42	//strojenie wielkości akcji wyprzedzającej
 
+#define STRP_WYSOKOSCI_KP		43	//strojenie wzmocnienia w regulatorze wysokości
+#define STRP_WYSOKOSCI_TI		44	//strojenie członu całkujacego w regulatorze wysokości
+#define STRP_WYSOKOSCI_TD		45	//strojenie członu różniczkującego w regulatorze wysokości
+#define STRP_WYSOKOSCI_FD		46	//Strojenie filtra sygnału różniczkowanego
+#define STRP_WYSOKOSCI_FWZ		47	//Strojenie filtra wartości zadanej
+#define STRP_WYSOKOSCI_FWE		48	//Strojenie filtra wartości wejściowej
+#define STRP_WYSOKOSCI_WYPRZ	49	//strojenie wielkości akcji wyprzedzającej
+#define STRP_PRED_ZWYS_KP		50	//strojenie wzmocnienia w regulatorze prędkości zmiany wysokości
+#define STRP_PRED_ZWYS_TI		51	//strojenie członu całkujacego w regulatorze prędkości zmiany wysokości
+#define STRP_PRED_ZWYS_TD		52	//strojenie członu różniczkującego w regulatorze prędkości zmiany wysokości
+#define STRP_PRED_ZWYS_FD		53	//Strojenie filtra sygnału różniczkowanego
+#define STRP_PRED_ZWYS_FWZ		54	//Strojenie filtra wartości zadanej
+#define STRP_PRED_ZWYS_FWE		55	//Strojenie filtra wartości wejściowej
+#define STRP_PRED_ZWYS_WYPRZ	56	//strojenie wielkości akcji wyprzedzającej
+
+#define STRP_NAWI_POLN_KP		57	//strojenie wzmocnienia w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_POLN_TI		58	//strojenie członu całkujacego w regulatorze nawigacji w kierunku północnym
+#define STRP_NAWI_POLN_TD		59	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku północnym
+#define STRP_PRED_POLN_KP		60	//strojenie wzmocnienia w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_POLN_TI	 	61	//strojenie członu całkujacego w regulatorze prędkości w kierunku północnym
+#define STRP_PRED_POLN_TD		62	//strojenie członu różniczkującego w regulatorze prędkości w kierunku północnym
+#define STRP_NAWI_WSCH_KP		63	//strojenie wzmocnienia w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_WSCH_TI		64	//strojenie członu całkujacego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_NAWI_WSCH_TD		65	//strojenie członu różniczkującego w regulatorze nawigacji w kierunku wschodnim
+#define STRP_PRED_WSCH_KP		66	//strojenie wzmocnienia w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_WSCH_TI		67	//strojenie członu całkujacego w regulatorze prędkości w kierunku wschodnim
+#define STRP_PRED_WSCH_TD		68	//strojenie członu różniczkującego w regulatorze prędkości w kierunku wschodnim
+#define LICZBA_STROJONYCH_PARAMETROW_PID	69
 
 //definicje trybów regulacji
 #define REG_WYLACZ		0		//regultor wyłączony

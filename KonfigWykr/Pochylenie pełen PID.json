@@ -1,0 +1,121 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wart.zadana pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 145
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Filtr war.zad.pochyl",
+            "TypWykresu": 1,
+            "Zmienna": 146
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 36.0,
+                "g": 192.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Kąt Theta BSP",
+            "TypWykresu": 1,
+            "Zmienna": 93
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Param. Strojenia 1",
+            "TypWykresu": 2,
+            "Zmienna": 224
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Param. Strojenia 2",
+            "TypWykresu": 2,
+            "Zmienna": 225
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy P pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 149
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy I pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 150
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wy D pochylenia",
+            "TypWykresu": 1,
+            "Zmienna": 151
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Wyprzedz.kąta pochyl",
+            "TypWykresu": 1,
+            "Zmienna": 152
+        }
+    ]
+}
