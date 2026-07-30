@@ -104,13 +104,13 @@ private:
 	typedef struct
 	{
 		CRect rOknoWykresu;
-		float fHscroll;
-		float fPoziomZera;
-		float fMinWykresu;
-		float fMaxWykresu;
-		float fSkalaX;
-		float fSkalaY;
-		float fStartLegendy;
+		float fHscroll = 0.0f;
+		float fPoziomZera = 0.0f;
+		float fMinWykresu = 0.0f;
+		float fMaxWykresu = 0.0f;
+		float fSkalaX = 0.0f;
+		float fSkalaY = 0.0f;
+		float fStartLegendy = 0.0f;
 		BOOL bWykresPrzechodziPrzezZero;
 		BOOL bStronaPrawa;	//0=wykres ze skalą po lewej, 1=wykres ze skalą po prawej
 	} stKonfigWykresu_t;

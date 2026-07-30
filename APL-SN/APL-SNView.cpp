@@ -93,6 +93,8 @@ CAPLSNView::CAPLSNView() noexcept
 , pWskWatkuOdswiezaniaFFT(0)
 , m_nSzerokoscKamery(0)
 , m_nWysokoscKamery(0)
+, m_nRozmiarWykresuFFT(0)
+, m_nPoprzedniRozmiarWykresu(0)
 {
 	getKomunikacja().m_chAdresAutopilota = m_chAdresAutopilota;	//przekaż domyślny adres do klasy komunikacyjnej
 	// Enable D2D support for this window:
