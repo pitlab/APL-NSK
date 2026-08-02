@@ -1,0 +1,95 @@
+{
+    "Konfiguracja Wykresow": [
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.1 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 51
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.2 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 52
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 1.0,
+                "g": 0.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.3 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 53
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 255.0,
+                "r": 0.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.4 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 54
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 255.0,
+                "g": 0.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.5 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 55
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 0.0,
+                "g": 255.0,
+                "r": 255.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.6 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 56
+        },
+        {
+            "Kolor": {
+                "a": 1.0,
+                "b": 240.0,
+                "g": 202.0,
+                "r": 166.0
+            },
+            "Max": 0.0,
+            "Min": 0.0,
+            "Nazwa": "Odb RC kan.7 [us]",
+            "TypWykresu": 1,
+            "Zmienna": 57
+        }
+    ]
+}

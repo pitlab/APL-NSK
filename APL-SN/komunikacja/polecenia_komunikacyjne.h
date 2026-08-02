@@ -41,7 +41,7 @@
 #define ADRES_STACJI			0x00
 #define ADRES_BROADCAST			0xFF
 #define WIELOMIAN_CRC			0x1021
-#define DLUGOSC_NAZWY			20		//maksymalna długość nazwy BSP, zmiennych telemetrycznych, lub innych nazw
+#define DLUGOSC_NAZWY			22		//maksymalna długość nazwy BSP, zmiennych telemetrycznych, lub innych nazw
 #define ROZMIAR_ROZNE_FLOAT		12
 #define ROZMIAR_ROZNE_SHORT		24
 #define ROZMIAR_ROZNE_CHAR		48

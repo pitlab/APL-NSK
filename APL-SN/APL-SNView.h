@@ -125,7 +125,8 @@ public:
 	CString m_strAdresIP;
 
 	void RysujWykresTelemetrii(stKonfigWykresu_t *stKonfig, std::vector<stTelemetria_t> *vDaneTele, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
-	void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
+	//void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
+	void RysujWykresLogu(stKonfigWykresu_t* stKonfig, std::vector <CAnalizatorLogu::stZmiennaLogu_t> vLog, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 	void RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfigWykresu_t* stKonfigPrawy, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 
 // Wygenerowano funkcje mapy komunikatów

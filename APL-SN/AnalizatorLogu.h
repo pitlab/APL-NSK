@@ -1,5 +1,6 @@
 #include <vector>
 #include "komunikacja/polecenia_komunikacyjne.h"
+#include <string>
 #pragma once
 
 
@@ -21,6 +22,7 @@ public:
 
 	
 	uint8_t Analizuj(uint8_t * chBufor, UINT nRozmiar, std::vector<stZmiennaLogu_t> &vLogu);
+	void ZamienPrzecinekNaKropke(char* cZmienna);
 
 private:
 	BOOL m_bAnalizaNaglowka;

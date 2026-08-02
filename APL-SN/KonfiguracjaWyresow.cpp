@@ -214,7 +214,7 @@ BOOL KonfiguracjaWyresow::OnInitDialog()
 			for (int x = 0; x < nLiczbaDanych; x++)
 			{
 				fZmienna = pDoc->m_vLog[n].vfWartosci[x];
-				if (fZmienna)
+				//if (fZmienna)
 				{
 					nRozmiarZmiennej++;
 					if (fZmienna < fMin)

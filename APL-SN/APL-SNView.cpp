@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include "AnalizatorLogu.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -320,8 +321,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	}
 
 
-	//rysowanie wykresów telemetrii
-	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)	//czy są dane telemetryczne lub wczytany z pliku log
+	//rysowanie wykresów 
+	if (m_bRysujTelemetrie || m_cKonfiguracjaWykresow.m_bZawieraLog)	//czy są dane telemetryczne lub wczytany z pliku logu
 	{
 		m_bRysujTelemetrie = FALSE;
 		stKonfigLewy.bStronaPrawa = stKonfigPrawy.bStronaPrawa = FALSE;
@@ -408,7 +409,8 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					else
 					{
 						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-						RysujWykresLogu(stKonfigLewy.rOknoWykresu, (float)m_nBiezacyScrollPoziomo, stKonfigLewy.fPoziomZera, stKonfigLewy.fSkalaX, stKonfigLewy.fSkalaY, nID, pRenderTarget, m_pBrushWykresu);
+						RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
+						
 					}
 				}
 			}	
@@ -465,7 +467,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						else
 						{
 							int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-							RysujWykresLogu(stKonfigLewy.rOknoWykresu, (float)m_nBiezacyScrollPoziomo, stKonfigLewy.fPoziomZera, stKonfigLewy.fSkalaX, stKonfigLewy.fSkalaY, nID, pRenderTarget, m_pBrushWykresu);
+							RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
 						}
 					}
 					if (w == 1)	//skala prawa dla wykresu 2 po prawej stronie
@@ -514,7 +516,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 						else
 						{
 							int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-							RysujWykresLogu(stKonfigPrawy.rOknoWykresu, (float)m_nBiezacyScrollPoziomo, stKonfigPrawy.fPoziomZera, stKonfigPrawy.fSkalaX, stKonfigPrawy.fSkalaY, nID, pRenderTarget, m_pBrushWykresu);
+							RysujWykresLogu(&stKonfigPrawy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
 						}
 					}
 				}
@@ -541,25 +543,45 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 //  pBrush - wskaźnik na narzędzie rysujace określonym kolorem
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujWykresLogu(CRect okno, float fHscroll, float fVzera, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+void CAPLSNView::RysujWykresLogu(stKonfigWykresu_t* stKonfig, std::vector <CAnalizatorLogu::stZmiennaLogu_t> vLog, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	CD2DPointF pktfPoczatek, pktfKoniec;
-	CAPLSNDoc* pDoc = GetDocument();
 	int nIndeks;
-	if (pDoc->m_vLog.size() && pDoc->m_bOdczytanoLog)
+	CD2DRectF rectLegenda;
+
+	if (vLog.size())
 	{
-		m_nIloscDanychWykresu = (int)pDoc->m_vLog[nIndeksZmiennej].vfWartosci.size();
-		pktfPoczatek.x = (float)okno.left;
-		pktfPoczatek.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[0] * fSkalaY);
+
+		//rysuj legendę
+		CString strNazwa = vLog[nIndeksZmiennej].strNazwaZmiennej;
+		rectLegenda.top = (float)(stKonfig->rOknoWykresu.top + 5);
+		rectLegenda.bottom = (float)(rectLegenda.top + 20);
+		if (stKonfig->bStronaPrawa)
+		{
+			rectLegenda.right = stKonfig->fStartLegendy;
+			rectLegenda.left = (float)(rectLegenda.right - 120);
+			stKonfig->fStartLegendy = rectLegenda.left;
+		}
+		else
+		{
+			rectLegenda.left = stKonfig->fStartLegendy;
+			rectLegenda.right = (float)(rectLegenda.left + 120);
+			stKonfig->fStartLegendy = rectLegenda.right;
+		}
+		pRenderTarget->DrawText(strNazwa, rectLegenda, pBrush, m_pTextFormat);
+
+		m_nIloscDanychWykresu = (int)vLog[nIndeksZmiennej].vfWartosci.size();
+		pktfPoczatek.x = (float)stKonfig->rOknoWykresu.left;
+		pktfPoczatek.y = stKonfig->fPoziomZera - (vLog[nIndeksZmiennej].vfWartosci[0] * stKonfig->fSkalaY);
 		for (int n = 1; n < m_nIloscDanychWykresu; n++)
 		{
-			pktfKoniec.x = (float)(okno.left + n * fSkalaX);
-			nIndeks = n + (int)(m_nBiezacyScrollPoziomo * fSkalaX);
+			pktfKoniec.x = (float)(stKonfig->rOknoWykresu.left + n * stKonfig->fSkalaX);
+			nIndeks = n + (int)(m_nBiezacyScrollPoziomo * stKonfig->fSkalaX);
 			if (nIndeks < 0)
 				nIndeks = 0;
 			if (nIndeks >= m_nIloscDanychWykresu)
 				nIndeks = m_nIloscDanychWykresu-1;
-			pktfKoniec.y = fVzera - (pDoc->m_vLog[nIndeksZmiennej].vfWartosci[nIndeks] * fSkalaY);
+			pktfKoniec.y = stKonfig->fPoziomZera - (vLog[nIndeksZmiennej].vfWartosci[nIndeks] * stKonfig->fSkalaY);
 			pRenderTarget->DrawLine(pktfPoczatek, pktfKoniec, m_pBrushWykresu);
 			pktfPoczatek = pktfKoniec;
 		}

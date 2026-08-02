@@ -28,7 +28,7 @@ public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
 	CAnalizatorLogu m_cAnalizatorLogu;
-	std::vector <CAnalizatorLogu::stZmiennaLogu_t> m_vLog;		//zzmienna przechowująca odczytany log
+	std::vector <CAnalizatorLogu::stZmiennaLogu_t> m_vLog;		//zmienna przechowująca odczytany log
 	BOOL m_bOdczytanoLog;
 
 

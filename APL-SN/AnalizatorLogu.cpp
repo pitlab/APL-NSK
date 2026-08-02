@@ -3,6 +3,7 @@
 #include "Errors.h"
 
 
+
 CAnalizatorLogu::CAnalizatorLogu()
 
 {
@@ -63,8 +64,10 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 		{
 			//analiza treœci logu
 			if (chBufor[n] == ';')
-			{
+			{				
 				m_chZmienna[m_chIndeksZmiennej++] = 0;	//zero terminuj¹ce liczbê
+				ZamienPrzecinekNaKropke((char*)m_chZmienna);	//zamieñ przecinek na kropkê aby poprawnie zdekodowaæ czêœæ u³amkow¹
+
 				if (m_chIndeksZmiennejLogu == 0)	//czas hh:mm:ss.ss interpretuj jako liczbê sekund od pocz¹tku doby
 					fWartosc = 3600 * atoi((const char*)m_chZmienna) + 60* atoi((const char*)(m_chZmienna + 3)) + (float)atof((const char*)(m_chZmienna + 6));
 				else
@@ -90,3 +93,20 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 	return chErr;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Zamienia przecinek na kropkê w podanym ci¹gu
+// Parametry:
+//  *cZmienna - wskaŸnik na tablicê znaków
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAnalizatorLogu::ZamienPrzecinekNaKropke(char *cZmienna)
+{
+	std::string strZmienna;
+	strZmienna.assign(cZmienna);	//zamiana *char na std::string
+
+	size_t nPozycja = strZmienna.find(',');
+	if (nPozycja)
+		cZmienna[nPozycja] = '.';
+}
