@@ -243,9 +243,13 @@
 #define TID_BSP_SZER_GEO		102
 #define TID_BSP_DLUG_GEO		103
 
-#define TID_DOTYK_ADC0			104
-#define TID_DOTYK_ADC1			105
-#define TID_DOTYK_ADC2			106
+//#define TID_DOTYK_ADC0			104
+//#define TID_DOTYK_ADC1			105
+//#define TID_DOTYK_ADC2			106
+#define TID_CISBEZW3			104
+#define TID_WYSOKOSC_MSL3		105
+#define TID_WARIO3				106
+
 #define TID_CZAS_PETLI			107	//czas trwania ostatniej petli głównej w us
 #define TID_JAKOSC_UP_RC1		108
 #define TID_JAKOSC_UP_RC2		109
@@ -377,9 +381,22 @@
 
 #define TID_PID_STROJENIE1		224	//wartość parametru strojącego 1
 #define TID_PID_STROJENIE2		225	//wartość parametru strojącego 2
+
+#define TID_KALMAN_X0			226
+#define TID_KALMAN_X1			227
+#define TID_KALMAN_X2			228
+#define TID_KALMAN_X3			229
+#define TID_KALMAN_K0			230
+#define TID_KALMAN_K1			231
+#define TID_KALMAN_K2			232
+#define TID_KALMAN_K3			233
+#define TID_KALMAN_P0			234
+#define TID_KALMAN_P1			235
+#define TID_KALMAN_P2			236
+#define TID_KALMAN_P3			237
 //max do 255
 
-#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	226
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	238
 
 
 //#define MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH2	112

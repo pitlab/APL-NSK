@@ -96,6 +96,7 @@
 #define IDD_WSKAZNIK_LED                348
 #define IDD_PARAMETRY_FFT               350
 #define IDD_WYJSCIA_RC                  351
+#define IDD_REJESTRATOR                 352
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -475,6 +476,38 @@
 #define IDC_EDIT_OBR_MIN                1407
 #define IDC_BUT_ZAPISZ_KONF             1407
 #define IDC_EDIT_OBR_ZAWIS              1408
+#define IDC_CHECK1                      1408
+#define IDC_CHECK2                      1409
+#define IDC_CHECK3                      1410
+#define IDC_CHECK4                      1411
+#define IDC_CHECK5                      1412
+#define IDC_CHECK6                      1413
+#define IDC_CHECK7                      1414
+#define IDC_CHECK8                      1415
+#define IDC_CHECK9                      1416
+#define IDC_CHECK10                     1417
+#define IDC_CHECK11                     1418
+#define IDC_CHECK12                     1419
+#define IDC_CHECK13                     1420
+#define IDC_CHECK14                     1421
+#define IDC_CHECK15                     1422
+#define IDC_CHECK16                     1423
+#define IDC_CHECK17                     1424
+#define IDC_CHECK18                     1425
+#define IDC_CHECK19                     1426
+#define IDC_CHECK20                     1427
+#define IDC_CHECK21                     1428
+#define IDC_CHECK22                     1429
+#define IDC_CHECK23                     1430
+#define IDC_CHECK24                     1431
+#define IDC_CHECK25                     1432
+#define IDC_CHECK26                     1433
+#define IDC_CHECK27                     1434
+#define IDC_CHECK28                     1435
+#define IDC_CHECK29                     1436
+#define IDC_CHECK30                     1437
+#define IDC_CHECK31                     1438
+#define IDC_CHECK32                     1439
 #define ID_POLACZ                       2001
 #define ID_WYSLIJ                       2002
 #define ID_ZAMKNIJ                      2003
@@ -520,9 +553,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        352
+#define _APS_NEXT_RESOURCE_VALUE        354
 #define _APS_NEXT_COMMAND_VALUE         32830
-#define _APS_NEXT_CONTROL_VALUE         1408
+#define _APS_NEXT_CONTROL_VALUE         1412
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

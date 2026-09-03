@@ -209,6 +209,7 @@
     <ClInclude Include="NapedStrojenie.h" />
     <ClInclude Include="OdbiornikiRC.h" />
     <ClInclude Include="PIDtabCtrl.h" />
+    <ClInclude Include="Rejestrator.h" />
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
     <ClInclude Include="DrzewoWykresow.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="NapedStrojenie.cpp" />
     <ClCompile Include="OdbiornikiRC.cpp" />
     <ClCompile Include="PIDtabCtrl.cpp" />
+    <ClCompile Include="Rejestrator.cpp" />
     <ClCompile Include="Roj.cpp" />
     <ClCompile Include="Wron.cpp" />
     <ClCompile Include="DrzewoWykresow.cpp" />

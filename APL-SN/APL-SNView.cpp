@@ -403,15 +403,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 					nIdZmiennej = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;					
 					m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 					if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-					{						
 						RysujWykresTelemetrii(&stKonfigLewy, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
-					}
 					else
-					{
-						int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-						RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
-						
-					}
+						RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
 				}
 			}	
 
@@ -461,14 +455,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 						m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 						if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						{
 							RysujWykresTelemetrii(&stKonfigLewy, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
-						}
 						else
-						{
-							int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-							RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
-						}
+							RysujWykresLogu(&stKonfigLewy, GetDocument()->m_vLog, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
 					}
 					if (w == 1)	//skala prawa dla wykresu 2 po prawej stronie
 					{
@@ -510,14 +499,9 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 						m_pBrushWykresu->SetColor(m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].cKolorD2D1);
 						if (m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].chZrodloZmiennej == ZRODLO_TELEMETRIA)	//0 == telemetria
-						{
 							RysujWykresTelemetrii(&stKonfigPrawy, &getProtokol().m_vDaneTelemetryczne, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
-						}
 						else
-						{
-							int nID = m_cKonfiguracjaWykresow.m_cDrzewoWykresow.vGrupaWykresow[g].vZmienne[w].sIdZmiennej;
-							RysujWykresLogu(&stKonfigPrawy, GetDocument()->m_vLog, nID, pRenderTarget, m_pBrushWykresu);
-						}
+							RysujWykresLogu(&stKonfigPrawy, GetDocument()->m_vLog, nIdZmiennej, pRenderTarget, m_pBrushWykresu);
 					}
 				}
 			}
@@ -551,7 +535,6 @@ void CAPLSNView::RysujWykresLogu(stKonfigWykresu_t* stKonfig, std::vector <CAnal
 
 	if (vLog.size())
 	{
-
 		//rysuj legendę
 		CString strNazwa = vLog[nIndeksZmiennej].strNazwaZmiennej;
 		rectLegenda.top = (float)(stKonfig->rOknoWykresu.top + 5);

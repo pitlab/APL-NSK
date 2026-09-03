@@ -158,9 +158,13 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_BSP_SZER_GEO]		= "Szerokoœæ geo. BSP [rad]";
 	m_strNazwyZmiennychTele[TID_BSP_DLUG_GEO]		= "D³ugoœæ geo. BSP [rad]";
 
-	m_strNazwyZmiennychTele[TID_DOTYK_ADC0]			= "Ekran dotyk. ADC[0]";
-	m_strNazwyZmiennychTele[TID_DOTYK_ADC1]			= "Ekran dotyk. ADC[1]";
-	m_strNazwyZmiennychTele[TID_DOTYK_ADC2]			= "Ekran dotyk. ADC[2]";
+	//m_strNazwyZmiennychTele[TID_DOTYK_ADC0]			= "Ekran dotyk. ADC[0]";
+	//m_strNazwyZmiennychTele[TID_DOTYK_ADC1]			= "Ekran dotyk. ADC[1]";
+	//m_strNazwyZmiennychTele[TID_DOTYK_ADC2]			= "Ekran dotyk. ADC[2]";
+	m_strNazwyZmiennychTele[TID_CISBEZW3]			= "Ciœn.Bzwzgl.3 [Pa]";
+	m_strNazwyZmiennychTele[TID_WYSOKOSC_MSL3]		= "Wysokoœæ MSL3 [m]";
+	m_strNazwyZmiennychTele[TID_WARIO3]				= "Prêdk.zm.wys.3 [m/s]";
+
 	m_strNazwyZmiennychTele[TID_CZAS_PETLI]			= "Czas pêtli g³ównej [us]";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC1]		= "Jakoœæ up-linku RC1";
 	m_strNazwyZmiennychTele[TID_JAKOSC_UP_RC2]		= "Jakoœæ up-linku RC2";
@@ -292,6 +296,20 @@ CKomunikacja::CKomunikacja()
 
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE1]		= "Param. Strojenia 1";		//wartoœæ parametru stroj¹cego 1
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE2]		= "Param. Strojenia 2";		//wartoœæ parametru stroj¹cego 2
+
+	m_strNazwyZmiennychTele[TID_KALMAN_X0] = "Kalman. X[0]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X1] = "Kalman. X[1]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X2] = "Kalman. X[2]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X3] = "Kalman. X[3]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K0] = "Kalman. K[0][0]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K1] = "Kalman. K[1][1]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K2] = "Kalman. K[2][2]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K3] = "Kalman. K[3][3]";
+	m_strNazwyZmiennychTele[TID_KALMAN_P0] = "Kalman. P[0][0]";
+	m_strNazwyZmiennychTele[TID_KALMAN_P1] = "Kalman. P[1][1]";
+	m_strNazwyZmiennychTele[TID_KALMAN_P2] = "Kalman. P[2][2]";
+	m_strNazwyZmiennychTele[TID_KALMAN_P3] = "Kalman. P[3][3]";
+	
 }
 
 
