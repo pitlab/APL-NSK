@@ -22,14 +22,19 @@ class MapaWysokosciowa
 		double dSrodekX;
 		double dSrodekY;
 		float fRozmiar;	
-		float fNodata;
+		float fNodata;	//wartoœæ oznaczajaca niewa¿ne dane
+		float fWysMin;	//ekstrema potrzebne do znalezienia skali kolorowania
+		float fWysMax;
 		std::vector <float> vfWysokoœæ;
 	};
 
+	uint8_t m_cZmienna[ROZMIAR_BUFORA_ANALIZY];
+	uint8_t m_cIndeksZmiennej;
 	uint8_t m_cTypParametru;
 	BOOL m_bAnalizaNaglowka;
+	BOOL m_bPierwszeWa¿neDane = TRUE;
 	uint16_t m_sIndeksX, m_sIndeksY;	//indeksy punktów terenu
 
-	uint8_t MapaWysokosciowa::Analizuj(uint8_t* chBufor, UINT nRozmiar, stNumerycznyModelTerenu_t stNMT);
+	uint8_t MapaWysokosciowa::Analizuj(uint8_t* chBufor, UINT nRozmiar, stNumerycznyModelTerenu_t *stNMT);
 };
 

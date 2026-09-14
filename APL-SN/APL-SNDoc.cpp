@@ -32,6 +32,7 @@ END_MESSAGE_MAP()
 CAPLSNDoc::CAPLSNDoc() noexcept
 	: m_bZdjecieGotowe(FALSE)
 	, m_bFFTGotowe(FALSE)
+	, m_bOdczytanaMapaNMT(FALSE)
 {
 	// TODO: tutaj dodaj jednorazowy kod konstruowania
 	//m_sZdjecie[0] = 0;
@@ -96,11 +97,13 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 			{
 				//obsługa pliku mapy
 				m_cMapaWysokosciowa.m_bAnalizaNaglowka = TRUE;
-				CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);
+				m_cMapaWysokosciowa.m_bPierwszeWażneDane = TRUE;
+				m_cMapaWysokosciowa.m_cIndeksZmiennej = 0;
+				CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);				
 				if (strNazwaPliku.Find(_T("asc"), 0) > 0)
 					do {
 						nOdczytano = ar.Read(chRead, ROZMIAR_BUFORA_ODCZYTU_LOGU);
-						m_cMapaWysokosciowa.Analizuj(chRead, nOdczytano, m_stNMT);
+						m_cMapaWysokosciowa.Analizuj(chRead, nOdczytano, &m_stNMT);
 					} while (nOdczytano);
 					ar.Close();
 					m_bOdczytanaMapaNMT = TRUE;
