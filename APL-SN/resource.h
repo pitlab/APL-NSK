@@ -548,13 +548,15 @@
 #define ID_BUT_POBIERZ_FFT              32827
 #define ID_USTAWIENIA_WYJ32828          32828
 #define ID_USTAWIENIA_SILNIKI           32829
+#define ID_PLIK_OTW32830                32830
+#define ID_PLIK_MAPA                    32831
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        354
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32832
 #define _APS_NEXT_CONTROL_VALUE         1412
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

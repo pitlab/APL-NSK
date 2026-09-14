@@ -2,6 +2,7 @@
 // APL-SNDoc.h: interfejs klasy CAPLSNDoc
 #include "AnalizatorLogu.h"
 #include "sys_def_wspolny.h"
+#include "MapaWysokosciowa.h"
 //
 
 #pragma once
@@ -21,6 +22,7 @@ public:
 	uint16_t m_sZdjecieRGB565[480 * 320];
 	BOOL m_bZdjecieGotowe;
 	BOOL m_bFFTGotowe;
+	BOOL m_bOdczytanaMapaNMT;
 	float m_fWynikFFT[LICZBA_TESTOW_FFT][LICZBA_ZMIENNYCH_FFT][FFT_MAX_ROZMIAR / 2];	//wartość sygnału wyjściowego
 
 // Przesłania
@@ -28,7 +30,10 @@ public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
 	CAnalizatorLogu m_cAnalizatorLogu;
+	MapaWysokosciowa m_cMapaWysokosciowa;
+	MapaWysokosciowa::stNumerycznyModelTerenu_t m_stNMT;
 	std::vector <CAnalizatorLogu::stZmiennaLogu_t> m_vLog;		//zmienna przechowująca odczytany log
+
 	BOOL m_bOdczytanoLog;
 
 

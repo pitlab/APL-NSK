@@ -297,19 +297,34 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE1]		= "Param. Strojenia 1";		//wartoœæ parametru stroj¹cego 1
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE2]		= "Param. Strojenia 2";		//wartoœæ parametru stroj¹cego 2
 
+	m_strNazwyZmiennychTele[TID_TOF_ODLEGLOSC]		= "TOF.Odleg³oœæ [m]";		//odelg³oœæ w metrach
+	m_strNazwyZmiennychTele[TID_TOF_STATUS]			= "TOF.Status Pomiaru";		//status pomiaru
+	m_strNazwyZmiennychTele[TID_TOF_NOWY_POMIAR]	= "TOF.Licznik Pomiarów";	//licnzik inkrementowany przy nowym pomiarze
+	m_strNazwyZmiennychTele[TID_TOF_SIGMA]			= "TOF.Odchylenie std.";	//odchylenie standardowe pomiaru
+	m_strNazwyZmiennychTele[TID_TOF_REFLEKT_CELU]	= "TOF.Reflekt.celu";		//reflektancja celu
+	m_strNazwyZmiennychTele[TID_TOF_NATEZENIE_TLA]	= "TOF.Natê¿.t³a";			//poziom natê¿enia t³a
+
 	m_strNazwyZmiennychTele[TID_KALMAN_X0] = "Kalman. X[0]";
 	m_strNazwyZmiennychTele[TID_KALMAN_X1] = "Kalman. X[1]";
 	m_strNazwyZmiennychTele[TID_KALMAN_X2] = "Kalman. X[2]";
 	m_strNazwyZmiennychTele[TID_KALMAN_X3] = "Kalman. X[3]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K0] = "Kalman. K[0][0]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K1] = "Kalman. K[1][1]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K2] = "Kalman. K[2][2]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K3] = "Kalman. K[3][3]";
-	m_strNazwyZmiennychTele[TID_KALMAN_P0] = "Kalman. P[0][0]";
-	m_strNazwyZmiennychTele[TID_KALMAN_P1] = "Kalman. P[1][1]";
-	m_strNazwyZmiennychTele[TID_KALMAN_P2] = "Kalman. P[2][2]";
-	m_strNazwyZmiennychTele[TID_KALMAN_P3] = "Kalman. P[3][3]";
-	
+	m_strNazwyZmiennychTele[TID_KALMAN_X4] = "Kalman. X[4]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X5] = "Kalman. X[5]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X6] = "Kalman. X[6]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X7] = "Kalman. X[7]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X8] = "Kalman. X[8]";
+	m_strNazwyZmiennychTele[TID_KALMAN_X9] = "Kalman. X[9]";
+
+	m_strNazwyZmiennychTele[TID_KALMAN_K0] = "Kalman. K[hc1 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K1] = "Kalman. K[hc2 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K2] = "Kalman. K[vc1 -> v]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K3] = "Kalman. K[vc2 -> v]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K4] = "Kalman. K[a1 -> a]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K5] = "Kalman. K[a2 -> a]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K6] = "Kalman. K[hg1 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K7] = "Kalman. K[hg2 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K8] = "Kalman. K[hl -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_K9] = "Kalman. K[hm -> h]";	
 }
 
 
@@ -988,7 +1003,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / MAX_ZMIENNYCH_TELEMETR_W_RAMCE);
 	uint16_t sOdebranoLacznie = 0;
 
 	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
@@ -996,18 +1011,18 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE
 	for (int n = 0; n < chLiczbaRamek; n++)
 	{
-		if ((sRozmiar - sOdebranoLacznie) > OKRESOW_TELEMETRII_W_RAMCE)
-			chDaneWychodzace[0] = OKRESOW_TELEMETRII_W_RAMCE;
+		if ((sRozmiar - sOdebranoLacznie) > MAX_ZMIENNYCH_TELEMETR_W_RAMCE)
+			chDaneWychodzace[0] = MAX_ZMIENNYCH_TELEMETR_W_RAMCE;
 		else
 			chDaneWychodzace[0] = sRozmiar - sOdebranoLacznie;			//rozmiar
-		chDaneWychodzace[1] = (uint8_t)((n * OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);		//przesuniêcie, czyli czytaj od tego indeksu
-		chDaneWychodzace[2] = (uint8_t)(((n * OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
+		chDaneWychodzace[1] = (uint8_t)((n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE) & 0x00FF);		//przesuniêcie, czyli czytaj od tego indeksu
+		chDaneWychodzace[2] = (uint8_t)(((n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE) & 0xFF00) >> 8);
 
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
 		if (chErr == ERR_OK)
 		{
 			for (uint8_t m = 0; m < chOdebrano/2; m++)
-				*(sOKres + n * OKRESOW_TELEMETRII_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
+				*(sOKres + n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
 			sOdebranoLacznie += chOdebrano/2;
 		}		
 	}
@@ -1036,8 +1051,6 @@ uint8_t CKomunikacja::ZapiszOkresTelemetrii(uint16_t *sOKres, uint16_t sRozmiar)
 	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);
 	uint8_t chRozmiar;
 	uint16_t sDoZapisu = sRozmiar;
-
-	ASSERT(sRozmiar <= LICZBA_RAMEK_TELEMETR * OKRESOW_TELEMETRII_W_RAMCE);
 
 	for (int n = 0; n < chLiczbaRamek; n++)
 	{

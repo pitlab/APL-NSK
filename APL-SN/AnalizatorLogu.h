@@ -13,7 +13,7 @@ public:
 
 	struct stZmiennaLogu_t 
 	{
-		uint8_t chIndeksZmiennej;
+		uint16_t sIndeksZmiennej;
 		CString strNazwaZmiennej;
 		std::vector <float> vfWartosci;
 		float fMin;		//minimalna wartoœæ zmiennej
@@ -26,10 +26,10 @@ public:
 
 private:
 	BOOL m_bAnalizaNaglowka;
-	uint8_t m_chIndeksZmiennejLogu;
+	uint16_t m_sIndeksZmiennejLogu;
 	uint8_t m_chZmienna[DLUGOSC_NAZWY] = {0,0};
 	uint8_t m_chIndeksNazwy = 0;
-	uint8_t m_chIndeksZmiennej = 0;
+	uint16_t m_sIndeksZmiennej = 0;
 };
 
 

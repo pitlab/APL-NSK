@@ -10,6 +10,7 @@
 #include "KonfigRejestratora.h"
 #include <vector>
 #include <memory>
+#include "MapaWysokosciowa.h"
 
 #define MIEJSCE_MIEDZY_WYKRESAMI	12
 //#define MIEJSCE_PRZED_WYKRESEM		40
@@ -84,6 +85,7 @@ protected:
 	CD2DTextFormat* m_pTextFormat;
 	CD2DSolidColorBrush* m_pBrushWykresu;
 	CD2DSolidColorBrush* m_pBrushOsiWykresu;
+	CD2DSolidColorBrush* m_pBrushMapyNMT;
 	CD2DLinearGradientBrush* m_pLinearGradientBrush;
 	float m_fZoomPoziomo;
 	float m_fZoomPionowo;
@@ -128,7 +130,7 @@ public:
 	//void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 	void RysujWykresLogu(stKonfigWykresu_t* stKonfig, std::vector <CAnalizatorLogu::stZmiennaLogu_t> vLog, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 	void RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfigWykresu_t* stKonfigPrawy, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-
+	void RysujMapeNumeryczną(MapaWysokosciowa::stNumerycznyModelTerenu_t *stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 // Wygenerowano funkcje mapy komunikatów
 protected:
 	afx_msg void OnFilePrintPreview();

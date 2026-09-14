@@ -511,3 +511,5 @@ void CClassView::OnKonfigWykresow()
 
 	cKonfiguracjaWykresow.DoModal();
 }
+
+

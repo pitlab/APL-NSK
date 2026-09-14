@@ -8,7 +8,7 @@ CAnalizatorLogu::CAnalizatorLogu()
 
 {
 	m_bAnalizaNaglowka = TRUE;
-	m_chIndeksZmiennejLogu = 0;
+	m_sIndeksZmiennejLogu = 0;
 }
 
 CAnalizatorLogu::~CAnalizatorLogu()
@@ -45,11 +45,12 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 				vLogu.push_back(stZmiennaLogu);
 				stZmiennaLogu.strNazwaZmiennej = "";		//wyczyœæ nazwê zmiennej
 				m_chIndeksNazwy = 0;
-				m_chIndeksZmiennejLogu++;
+				m_sIndeksZmiennejLogu++;
 			}
 			else
 			{
-				stZmiennaLogu.chIndeksZmiennej = m_chIndeksZmiennejLogu;
+				//stZmiennaLogu.sIndeksZmiennej = m_sIndeksZmiennejLogu;
+
 				stZmiennaLogu.strNazwaZmiennej.Insert(m_chIndeksNazwy, chBufor[n]);				
 				m_chIndeksNazwy++;
 			}
@@ -57,7 +58,7 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			if (chBufor[n] == 0x0A)	//LF - koniec wiersza nag³ówka
 			{
 				m_bAnalizaNaglowka = FALSE;
-				m_chIndeksZmiennejLogu = 0;
+				m_sIndeksZmiennejLogu = 0;
 			}
 		}
 		else
@@ -65,29 +66,29 @@ uint8_t CAnalizatorLogu::Analizuj(uint8_t* chBufor, UINT nRozmiar, std::vector<s
 			//analiza treœci logu
 			if (chBufor[n] == ';')
 			{				
-				m_chZmienna[m_chIndeksZmiennej++] = 0;	//zero terminuj¹ce liczbê
+				m_chZmienna[m_sIndeksZmiennej++] = 0;	//zero terminuj¹ce liczbê
 				ZamienPrzecinekNaKropke((char*)m_chZmienna);	//zamieñ przecinek na kropkê aby poprawnie zdekodowaæ czêœæ u³amkow¹
 
-				if (m_chIndeksZmiennejLogu == 0)	//czas hh:mm:ss.ss interpretuj jako liczbê sekund od pocz¹tku doby
+				if (m_sIndeksZmiennejLogu == 0)	//czas hh:mm:ss.ss interpretuj jako liczbê sekund od pocz¹tku doby
 					fWartosc = 3600 * atoi((const char*)m_chZmienna) + 60* atoi((const char*)(m_chZmienna + 3)) + (float)atof((const char*)(m_chZmienna + 6));
 				else
 					fWartosc = (float)atof((const char*)m_chZmienna);
-				vLogu[m_chIndeksZmiennejLogu].vfWartosci.push_back(fWartosc);
+				vLogu[m_sIndeksZmiennejLogu].vfWartosci.push_back(fWartosc);
 
 				//znajdŸ ekstrema zmiennych, bêd¹ potrzebne do rysowania wykresów
-				if (fWartosc < vLogu[m_chIndeksZmiennejLogu].fMin)
-					vLogu[m_chIndeksZmiennejLogu].fMin = fWartosc;
-				if (fWartosc > vLogu[m_chIndeksZmiennejLogu].fMax)
-					vLogu[m_chIndeksZmiennejLogu].fMax = fWartosc;
-				m_chIndeksZmiennejLogu++;
-				m_chIndeksZmiennej = 0;
+				if (fWartosc < vLogu[m_sIndeksZmiennejLogu].fMin)
+					vLogu[m_sIndeksZmiennejLogu].fMin = fWartosc;
+				if (fWartosc > vLogu[m_sIndeksZmiennejLogu].fMax)
+					vLogu[m_sIndeksZmiennejLogu].fMax = fWartosc;
+				m_sIndeksZmiennejLogu++;
+				m_sIndeksZmiennej = 0;
 			}
 			else
 			{
-				m_chZmienna[m_chIndeksZmiennej++] = chBufor[n];
+				m_chZmienna[m_sIndeksZmiennej++] = chBufor[n];
 			}
 			if (chBufor[n] == 0x0A)	//LF - koniec wiersza nag³ówka
-				m_chIndeksZmiennejLogu = 0;
+				m_sIndeksZmiennejLogu = 0;
 		}
 	}
 	return chErr;

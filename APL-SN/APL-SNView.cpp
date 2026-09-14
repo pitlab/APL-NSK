@@ -18,6 +18,8 @@
 #include <string.h>
 #include <assert.h>
 #include "AnalizatorLogu.h"
+#include "MapaWysokosciowa.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -104,7 +106,7 @@ CAPLSNView::CAPLSNView() noexcept
 	// Initialize D2D resources:
 	m_pBrushWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 	m_pBrushOsiWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
-
+	m_pBrushMapyNMT = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 	//m_pBrushLegendy = new CD2DBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 	
 	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 11);
@@ -508,7 +510,12 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			RysujOknoGrupyWykresow(&stKonfigLewy, &stKonfigPrawy, pRenderTarget, m_pBrushOsiWykresu);
 			stKonfigLewy.rOknoWykresu.top = stKonfigLewy.rOknoWykresu.bottom + MIEJSCE_MIEDZY_WYKRESAMI;
 			stKonfigPrawy.rOknoWykresu.top = stKonfigPrawy.rOknoWykresu.bottom + MIEJSCE_MIEDZY_WYKRESAMI;
-		}		
+		}	
+	}
+
+	if (pDoc->m_bOdczytanaMapaNMT)
+	{
+		RysujMapeNumeryczną(&GetDocument()->m_stNMT, pRenderTarget, m_pBrushMapyNMT);
 	}
 	return TRUE;
 }
@@ -913,6 +920,62 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 	}
 	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;*/
 	return fFinalnySkokPodzialki;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Rysuje mapę Numerycznego Modelu Terenu
+// Parametry: 
+//  *stKonfig - wskaźnik na strukturę ze zmiennymi konfiguracji wykresu
+//  pRenderTarget - narzędzie rysujące
+//  pBrush - parametry pędzla rysujacego osie
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNView::RysujMapeNumeryczną(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
+{
+	size_t Indeks;
+	int8_t chWartosc;
+	int16_t sKolorR, sKolorB;
+	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
+	size_t bufferSize = ((size_t)m_nRozmiarWykresuFFT * LICZBA_TESTOW_FFT * sizeof(float));
+	std::vector<uint8_t> bgraBuffer(bufferSize);
+
+	for (int y = 0; y < stNMT->nWierszy; y++)
+	{
+		for (int x = 0; x < stNMT->nKolumn; x++)
+		{
+			Indeks = ((size_t)(y * (int)stNMT->nWierszy) + x);
+
+			//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
+			//chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
+			sKolorR = 128 + chWartosc;
+			if (sKolorR > 255)
+				sKolorR = 255;
+			sKolorB = 128 - chWartosc;
+			if (sKolorB < 0)
+				sKolorB = 0;
+			bgraBuffer[Indeks + 0] = (uint8_t)sKolorB;	//B
+			bgraBuffer[Indeks + 1] = 0;
+			bgraBuffer[Indeks + 2] = (uint8_t)sKolorR;	//R
+			bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
+		}
+	}
+
+	D2D1_SIZE_U size = D2D1::SizeU(m_nRozmiarWykresuFFT, LICZBA_TESTOW_FFT);
+	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+	m_spCameraBitmap.Release();
+
+	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
+	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), m_nRozmiarWykresuFFT * 4, &props, &m_spCameraBitmap);
+
+	if (m_spCameraBitmap)
+	{
+		float y = (FLOAT)(t * (LICZBA_TESTOW_FFT + MIEJSCE_MIEDZY_WODOSPADAMI));
+		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, y, (FLOAT)m_nRozmiarWykresuFFT, y + LICZBA_TESTOW_FFT));
+	}
+
 }
 
 

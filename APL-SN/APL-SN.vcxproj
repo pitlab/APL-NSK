@@ -205,6 +205,7 @@
     <ClInclude Include="KonfigPID.h" />
     <ClInclude Include="KonfiguracjaFFT.h" />
     <ClInclude Include="konfig_fram.h" />
+    <ClInclude Include="MapaWysokosciowa.h" />
     <ClInclude Include="MixerDlg.h" />
     <ClInclude Include="NapedStrojenie.h" />
     <ClInclude Include="OdbiornikiRC.h" />
@@ -249,6 +250,7 @@
     <ClCompile Include="komunikacja\Protokol.cpp" />
     <ClCompile Include="KonfigPID.cpp" />
     <ClCompile Include="KonfiguracjaFFT.cpp" />
+    <ClCompile Include="MapaWysokosciowa.cpp" />
     <ClCompile Include="MixerDlg.cpp" />
     <ClCompile Include="NapedStrojenie.cpp" />
     <ClCompile Include="OdbiornikiRC.cpp" />

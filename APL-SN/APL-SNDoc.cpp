@@ -63,7 +63,7 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 	CFile file;
 	CHAR szBuf[ROZMIAR_BUFORA_ODCZYTU_LOGU];
 	uint8_t chRead[ROZMIAR_BUFORA_ODCZYTU_LOGU];
-	CString string;
+	CString string, strNazwaPliku;
 	CFileException ex;
 	UINT nOdczytano;
 	for (int n = 0; n < 512; n++)
@@ -87,16 +87,37 @@ void CAPLSNDoc::Serialize(CArchive& ar)
 	}
 	else
 	{
-		// TODO: W tym miejscu dodaj kod ładujący
 		if (file.Open(ar.m_strFileName, CFile::modeRead | CFile::shareDenyWrite, &ex))
 		{
-			CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);
-			do {
-				nOdczytano = ar.Read(chRead, ROZMIAR_BUFORA_ODCZYTU_LOGU);
-				m_cAnalizatorLogu.Analizuj(chRead, nOdczytano, m_vLog);
-			} while (nOdczytano);
-			ar.Close();
-			m_bOdczytanoLog = TRUE;
+			//trzeba znaleźć metodę rozróżniajacą plik logu od pliku mapy i wywołać odpowiednią funkcję
+			CString strNazwaPliku = file.GetFileName();
+			int nPozyjaKropki = strNazwaPliku.Find(_T("asc"), 0);
+			if (strNazwaPliku.Find(_T("asc"), 0) > 0)
+			{
+				//obsługa pliku mapy
+				m_cMapaWysokosciowa.m_bAnalizaNaglowka = TRUE;
+				CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);
+				if (strNazwaPliku.Find(_T("asc"), 0) > 0)
+					do {
+						nOdczytano = ar.Read(chRead, ROZMIAR_BUFORA_ODCZYTU_LOGU);
+						m_cMapaWysokosciowa.Analizuj(chRead, nOdczytano, m_stNMT);
+					} while (nOdczytano);
+					ar.Close();
+					m_bOdczytanaMapaNMT = TRUE;
+			}
+
+			if (strNazwaPliku.Find(_T("log"), 0) > 0)
+			{
+				//obsługa pliku logu
+				CArchive ar(&file, CArchive::load, ROZMIAR_BUFORA_ODCZYTU_LOGU, szBuf);
+				if (strNazwaPliku.Find(_T("asc"), 0) > 0)
+					do {
+						nOdczytano = ar.Read(chRead, ROZMIAR_BUFORA_ODCZYTU_LOGU);
+						m_cAnalizatorLogu.Analizuj(chRead, nOdczytano, m_vLog);
+					} while (nOdczytano);
+					ar.Close();
+					m_bOdczytanoLog = TRUE;
+			}
 			UpdateAllViews(NULL);
 		}
 	}
