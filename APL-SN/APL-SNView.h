@@ -130,7 +130,8 @@ public:
 	//void RysujWykresLogu(CRect okno, float fHscroll, float fVpos, float fSkalaX, float fSkalaY, int nIndeksZmiennej, CHwndRenderTarget *pRenderTarget, CD2DSolidColorBrush *pBrush);
 	void RysujWykresLogu(stKonfigWykresu_t* stKonfig, std::vector <CAnalizatorLogu::stZmiennaLogu_t> vLog, int nIndeksZmiennej, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 	void RysujOknoGrupyWykresow(stKonfigWykresu_t* stKonfigLewy, stKonfigWykresu_t* stKonfigPrawy, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
-	void RysujMapeNumeryczną(MapaWysokosciowa::stNumerycznyModelTerenu_t *stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujMapeNumerycznąRGB512(MapaWysokosciowa::stNumerycznyModelTerenu_t *stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
+	void RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush);
 // Wygenerowano funkcje mapy komunikatów
 protected:
 	afx_msg void OnFilePrintPreview();

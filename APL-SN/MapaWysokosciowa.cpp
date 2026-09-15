@@ -87,7 +87,7 @@ uint8_t MapaWysokosciowa::Analizuj(uint8_t* cBufor, UINT nRozmiar, stNumerycznyM
 		else
 		{
 			//analiza treœci kafelka mapy
-			if (cBufor[n] == ' ')
+			if ((cBufor[n] == ' ') || (cBufor[n] == '\n'))
 			{
 				fWysokoœæ = (float)atof((const char*)m_cZmienna);
 				stNMT->vfWysokoœæ.push_back(fWysokoœæ);				
