@@ -935,26 +935,43 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 void CAPLSNView::RysujMapeNumeryczną(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	size_t Indeks;
-	uint8_t chWartosc;
-	int16_t sKolorR, sKolorG;
+	//uint8_t chWartosc;
+	int16_t sPodstawaKoloru, sKolorR, sKolorG;
 	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
 	size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
 	std::vector<uint8_t> bgraBuffer(bufferSize);
-	float fSkalaKoloru = 128 / (stNMT->fWysMax - stNMT->fWysMin);
+	float fSkalaKoloru = (255 + 128) / (stNMT->fWysMax - stNMT->fWysMin);
 
 	for (int n = 0; n < stNMT->vfWysokość.size(); n++)
 	{
 		Indeks = n * sizeof(float);
 		if (stNMT->vfWysokość[n] != stNMT->fNodata)
 		{
+			sKolorR = 0;
+			sKolorG = 0;
 			//rysuj skalę kolorów przechodzącą z zielonej w czerwoną
-			chWartosc = (int8_t)((stNMT->vfWysokość[n] - stNMT->fWysMin) * fSkalaKoloru);
-			sKolorR = 128 + chWartosc;
-			if (sKolorR > 255)
-				sKolorR = 255;
-			sKolorG = 128 - chWartosc;
-			if (sKolorG < 0)
+			sPodstawaKoloru = (int16_t)((stNMT->vfWysokość[n] - stNMT->fWysMin) * fSkalaKoloru);
+			if (sPodstawaKoloru > 255)	//tylko czerwony
+			{
+				sKolorR = sPodstawaKoloru - 128;
+				if (sKolorR > 255)
+					sKolorR = 255;
 				sKolorG = 0;
+			}
+			else
+			if (sPodstawaKoloru < 128)	//tylko zielony
+			{
+				sKolorG = 255 - sPodstawaKoloru;
+				if (sKolorG > 255)
+					sKolorG = 255;
+				sKolorR = 0;
+			}
+			else
+			{
+				sKolorR = sPodstawaKoloru - 128;
+				sKolorG = 255 - sPodstawaKoloru;
+			}
+
 			bgraBuffer[Indeks + 0] = 0;					//B
 			bgraBuffer[Indeks + 1] = (uint8_t)sKolorG;	//G
 			bgraBuffer[Indeks + 2] = (uint8_t)sKolorR;	//R

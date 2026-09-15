@@ -102,7 +102,7 @@ uint8_t MapaWysokosciowa::Analizuj(uint8_t* cBufor, UINT nRozmiar, stNumerycznyM
 					}
 					else
 					{
-						//szukaj kolejnyc ekstremów
+						//szukaj kolejnych ekstremów
 						if (fWysokoœæ < stNMT->fWysMin)
 							stNMT->fWysMin = fWysokoœæ;
 						else
@@ -110,7 +110,7 @@ uint8_t MapaWysokosciowa::Analizuj(uint8_t* cBufor, UINT nRozmiar, stNumerycznyM
 								stNMT->fWysMax = fWysokoœæ;
 					}
 				}
-				for (int x=0; x < ROZMIAR_BUFORA_ANALIZY; x++)	//wyczyœæ bufor
+				for (int x=0; x < m_cIndeksZmiennej; x++)	//wyczyœæ bufor
 					m_cZmienna[x] = 0;
 					m_cIndeksZmiennej = 0;
 			}
