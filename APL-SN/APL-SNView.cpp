@@ -949,8 +949,6 @@ void CAPLSNView::RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTe
 		Indeks = n * sizeof(float);
 		if (stNMT->vfWysokość[n] != stNMT->fNodata)
 		{
-			sKolorR = 0;
-			sKolorG = 0;
 			//rysuj skalę kolorów przechodzącą z zielonej w czerwoną
 			sPodstawaKoloru = (int16_t)((stNMT->vfWysokość[n] - stNMT->fWysMin) * fSkalaKoloru);
 			if (sPodstawaKoloru > 255)	//tylko czerwony
@@ -961,18 +959,18 @@ void CAPLSNView::RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTe
 				sKolorG = 0;
 			}
 			else
-				if (sPodstawaKoloru < 128)	//tylko zielony
-				{
-					sKolorG = 255 - sPodstawaKoloru;
-					if (sKolorG > 255)
-						sKolorG = 255;
-					sKolorR = 0;
-				}
-				else
-				{
-					sKolorR = sPodstawaKoloru - 128;
-					sKolorG = 255 - sPodstawaKoloru;
-				}
+			if (sPodstawaKoloru < 128)	//tylko zielony
+			{
+				sKolorG = 255 - sPodstawaKoloru;
+				if (sKolorG > 255)
+					sKolorG = 255;
+				sKolorR = 0;
+			}
+			else
+			{
+				sKolorR = sPodstawaKoloru - 128;
+				sKolorG = 255 - sPodstawaKoloru;
+			}
 
 			bgraBuffer[Indeks + 0] = 0;					//B
 			bgraBuffer[Indeks + 1] = (uint8_t)sKolorG;	//G
@@ -989,16 +987,12 @@ void CAPLSNView::RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTe
 
 	D2D1_SIZE_U size = D2D1::SizeU(stNMT->nKolumn, stNMT->nWierszy);
 	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-
 	m_spCameraBitmap.Release();
-
 	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
 	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spCameraBitmap);
 
 	if (m_spCameraBitmap)
-	{
 		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoomPoziomo, (FLOAT)stNMT->nWierszy * m_fZoomPoziomo));
-	}
 }
 
 
@@ -1017,19 +1011,15 @@ void CAPLSNView::RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTe
 void CAPLSNView::RysujMapeNumerycznąRGB512(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	size_t Indeks;
-	//uint8_t chWartosc;
 	int16_t sPodstawaKoloru, sKolorR, sKolorG, sKolorB;
 	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-	size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
+	//size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
+	size_t bufferSize = stNMT->vfWysokość.size() * sizeof(float);
 	std::vector<uint8_t> bgraBuffer(bufferSize);
 	float fSkalaKoloru = (8 * 64) / (stNMT->fWysMax - stNMT->fWysMin);
 
-	size_t oczekiwanaLiczba = (size_t)stNMT->nKolumn * stNMT->nWierszy;
-	size_t rzeczywistaLiczba = stNMT->vfWysokość.size();
-	TRACE(L"Kolumny=%u Wiersze=%u oczekiwane=%zu rzeczywiste=%zu\n", stNMT->nKolumn, stNMT->nWierszy, oczekiwanaLiczba, rzeczywistaLiczba);
-
-	for (int n = 0; n < stNMT->vfWysokość.size(); n++)
-	//1for (int n = 0; n < oczekiwanaLiczba; n++)
+	//for (int n = 0; n < stNMT->vfWysokość.size(); n++)
+	for (int n = 0; n < stNMT->nKolumn * stNMT->nWierszy; n++)
 	{
 		Indeks = n * sizeof(float);
 		if (stNMT->vfWysokość[n] != stNMT->fNodata)
@@ -1073,22 +1063,17 @@ void CAPLSNView::RysujMapeNumerycznąRGB512(MapaWysokosciowa::stNumerycznyModelT
 			bgraBuffer[Indeks + 1] = 0;		//G
 			bgraBuffer[Indeks + 2] = 250;	//R
 		}			
-		bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
-		
+		bgraBuffer[Indeks + 3] = 0xFF;			//Alfa		
 	}
 
 	D2D1_SIZE_U size = D2D1::SizeU(stNMT->nKolumn, stNMT->nWierszy);
 	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-
 	m_spCameraBitmap.Release();
-
 	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
 	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spCameraBitmap);
 
 	if (m_spCameraBitmap)
-	{
 		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoomPoziomo, (FLOAT)stNMT->nWierszy * m_fZoomPoziomo));
-	}
 }
 
 
