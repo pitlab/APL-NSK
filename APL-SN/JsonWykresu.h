@@ -11,18 +11,24 @@ public:
 	int nIndeksZmiennej = 0;
 	D2D1::ColorF fKolor = 0;
 
-	struct stKonfWykr
+	typedef struct 		//konfiguracja wykresu w obrêbie grupy
 	{
-		int nTypWykresu = 0;
 		int nIndeksZmiennej = 0;
 		D2D1::ColorF fKolor = 0;
-		//std::string wcNazwa;
-		CString strNazwa;
+		CString strNazwaWykresu;
 		float fMin;
 		float fMax;
-	};
+	} stKonfWykr_t;
 
-	std::vector<stKonfWykr> vKonfWykresow;
+	typedef struct 		//konfiguracja grupy wykresów
+	{
+		int nTypWykresu = 0;
+		CString strNazwaGrupy;	//na razie pusta
+		std::vector<stKonfWykr_t> vKonfWykresow;
+	} stKonfGrupy_t;
+
+	std::vector<stKonfGrupy_t> vKonfGrupy;
+	
 	uint8_t Zapisz(const std::filesystem::path& wcNazwaPliku);
 	uint8_t Czytaj(const std::filesystem::path& wcNazwaPliku);
 };

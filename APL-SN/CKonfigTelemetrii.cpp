@@ -90,7 +90,7 @@ BOOL KonfigTelemetrii::OnInitDialog()
 	m_ctlOkresTelemetrii.InsertColumn(1, _T("Częstotliwość"), 0, 80);
 
 	//Odczytaj z roju liste telemetrii
-	for (uint8_t n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
+	for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 	{
 		if (getKomunikacja().m_cRoj.vWron.size())
 		{

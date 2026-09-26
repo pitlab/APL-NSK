@@ -304,27 +304,33 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_TOF_REFLEKT_CELU]	= "TOF.Reflekt.celu";		//reflektancja celu
 	m_strNazwyZmiennychTele[TID_TOF_NATEZENIE_TLA]	= "TOF.Natê¿.t³a";			//poziom natê¿enia t³a
 
-	m_strNazwyZmiennychTele[TID_KALMAN_X0] = "Kalman. X[0]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X1] = "Kalman. X[1]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X2] = "Kalman. X[2]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X3] = "Kalman. X[3]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X4] = "Kalman. X[4]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X5] = "Kalman. X[5]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X6] = "Kalman. X[6]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X7] = "Kalman. X[7]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X8] = "Kalman. X[8]";
-	m_strNazwyZmiennychTele[TID_KALMAN_X9] = "Kalman. X[9]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X0] = "Kalm.Wys.X[0]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X1] = "Kalm.Wys.X[1]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X2] = "Kalm.Wys.X[2]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X3] = "Kalm.Wys.X[3]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X4] = "Kalm.Wys.X[4]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X5] = "Kalm.Wys.X[5]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X6] = "Kalm.Wys.X[6]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X7] = "Kalm.Wys.X[7]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X8] = "Kalm.Wys.X[8]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X9] = "Kalm.Wys.X[9]";
 
-	m_strNazwyZmiennychTele[TID_KALMAN_K0] = "Kalman. K[hc1 -> h]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K1] = "Kalman. K[hc2 -> h]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K2] = "Kalman. K[vc1 -> v]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K3] = "Kalman. K[vc2 -> v]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K4] = "Kalman. K[a1 -> a]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K5] = "Kalman. K[a2 -> a]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K6] = "Kalman. K[hg1 -> h]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K7] = "Kalman. K[hg2 -> h]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K8] = "Kalman. K[hl -> h]";
-	m_strNazwyZmiennychTele[TID_KALMAN_K9] = "Kalman. K[hm -> h]";	
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K0] = "Kalm.Wys.K[hc1 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K1] = "Kalm.Wys.K[hc2 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K2] = "Kalm.Wys.K[vc1 -> v]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K3] = "Kalm.Wys.K[vc2 -> v]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K4] = "Kalm.Wys.K[a1 -> a]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K5] = "Kalm.Wys.K[a2 -> a]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K6] = "Kalm.Wys.K[hg1 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K7] = "Kalm.Wys.K[hg2 -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K8] = "Kalm.Wys.K[hl -> h]";
+	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K9] = "Kalm.Wys.K[hm -> h]";
+
+
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X0] = "Kalm.K¹tów X[0]";
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X1] = "Kalm.K¹tów X[1]";
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X2] = "Kalm.K¹tów X[2]";
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X3] = "Kalm.K¹tów X[3]";
 }
 
 

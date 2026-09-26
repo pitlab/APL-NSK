@@ -552,10 +552,9 @@ void KonfiguracjaWyresow::OnEnChangeEditWykresMax()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 {
-	JsonWykresu Json;
+	JsonWykresu JsonWykr;
 	OPENFILENAME ofn;
 	wchar_t wcNazwaPliku[_MAX_PATH];
-	JsonWykresu::stKonfWykr stKonf;
 
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -577,24 +576,32 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 		return;
 
 	
-	int nLiczbaGrup = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
-	int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[0].vZmienne.size();
+	//int nLiczbaGrup = (int)m_cDrzewoWykresow.vGrupaWykresow.size();
+	//int nLiczbaWykresow = (int)m_cDrzewoWykresow.vGrupaWykresow[0].vZmienne.size();
+	int nIndeksGrupy = 0;
 
-	for (const auto& g : m_cDrzewoWykresow.vGrupaWykresow)
+	for (const auto& vGrupa : m_cDrzewoWykresow.vGrupaWykresow)
 	{
-		stKonf.nTypWykresu = g.chTypWykresu;
-		for (const auto& w : g.vZmienne)
+		JsonWykresu::stKonfGrupy_t stKonfGrupy;
+
+		stKonfGrupy.nTypWykresu = vGrupa.chTypWykresu;
+		stKonfGrupy.strNazwaGrupy.Format(_T("Grupay %d"), nIndeksGrupy+1);
+		for (const auto& vWykres : m_cDrzewoWykresow.vGrupaWykresow[nIndeksGrupy].vZmienne)
 		{
-			stKonf.nIndeksZmiennej = w.sIdZmiennej;			
-			stKonf.fKolor = w.cKolorD2D1;
-			stKonf.strNazwa = w.strNazwa;
-			stKonf.fMin = w.fMin;
-			stKonf.fMax = w.fMax;
-			Json.vKonfWykresow.push_back(stKonf);
+			JsonWykresu::stKonfWykr_t stKonfWykr;
+
+			stKonfWykr.nIndeksZmiennej = vWykres.sIdZmiennej;
+			stKonfWykr.fKolor = vWykres.cKolorD2D1;
+			stKonfWykr.strNazwaWykresu = vWykres.strNazwa;
+			stKonfWykr.fMin = vWykres.fMin;
+			stKonfWykr.fMax = vWykres.fMax;
+			stKonfGrupy.vKonfWykresow.push_back(stKonfWykr);
 		}
+		JsonWykr.vKonfGrupy.push_back(stKonfGrupy);
+		nIndeksGrupy++;
 	}
 
-	if (Json.Zapisz(wcNazwaPliku) != ERR_OK)
+	if (JsonWykr.Zapisz(wcNazwaPliku) != ERR_OK)
 	{
 		MessageBoxExW(this->m_hWnd, _T("Nie mogę zapisać konfiguracji."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
 	}
@@ -608,14 +615,12 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 {
-	JsonWykresu Json;
+	JsonWykresu JsonWykr;
 	OPENFILENAME ofn;
 	wchar_t wcNazwaPliku[_MAX_PATH];
-	int nPoprzedniTypWykresu = 0;
-	int nIndeksGrupy = -1;
+	int nIndeksGrupy = 0;
 	DrzewoWykresow::stGrupaWykresow_t stGrupa;
 	DrzewoWykresow::stZmienna_t stZmienna;
-	
 
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -641,31 +646,23 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 	if (!file.is_open())
 		return;
 
-	Json.Czytaj(wcNazwaPliku);
-
+	JsonWykr.Czytaj(wcNazwaPliku);
 	m_cDrzewoWykresow.vGrupaWykresow.clear();
-
-	for (const auto& konf : Json.vKonfWykresow)
+	for (const auto& vGrupa : JsonWykr.vKonfGrupy)
 	{
-		stZmienna.sIdZmiennej = konf.nIndeksZmiennej;
-		stZmienna.cKolorD2D1 = konf.fKolor;
-		stZmienna.strNazwa = konf.strNazwa;
-		stZmienna.fMin = konf.fMin;
-		stZmienna.fMax = konf.fMax;
+		stGrupa.chTypWykresu = vGrupa.nTypWykresu;
+		m_cDrzewoWykresow.vGrupaWykresow.push_back(stGrupa);
 
-		if (konf.nTypWykresu == nPoprzedniTypWykresu)
-		{			
+		for (const auto& vWykres : JsonWykr.vKonfGrupy[nIndeksGrupy].vKonfWykresow)
+		{
+			stZmienna.sIdZmiennej = vWykres.nIndeksZmiennej;
+			stZmienna.cKolorD2D1 = vWykres.fKolor;
+			stZmienna.strNazwa = vWykres.strNazwaWykresu;
+			stZmienna.fMin = vWykres.fMin;
+			stZmienna.fMax = vWykres.fMax;
 			m_cDrzewoWykresow.vGrupaWykresow[nIndeksGrupy].vZmienne.push_back(stZmienna);	//dodaj wykresy do istniejącej grupy
-		}
-		else        //utwórz nową grupę
-		{			
-			nPoprzedniTypWykresu = konf.nTypWykresu;
-			stGrupa.chTypWykresu = konf.nTypWykresu;               			
-			stGrupa.vZmienne.push_back(stZmienna);
-			m_cDrzewoWykresow.vGrupaWykresow.push_back(stGrupa);
-			stGrupa.vZmienne.clear();
-			nIndeksGrupy++;
-		}	
+		}		
+		nIndeksGrupy++;
 	}
 	WstawGrupeWykresow(&m_cDrzewoWykresow);
 }
