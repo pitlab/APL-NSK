@@ -98,7 +98,7 @@
 #define PK_TELEM_FFT			95	//szybka ramka telemetryczna do przesyłania wyników FFT
 #define PK_TELEMETRIA1			96	//ramka telemetryczna 1
 #define PK_TELEMETRIA2			97	//ramka telemetryczna 2
-#define PK_TELEMETRIA3			98	//ramka telemetryczna 3 
+#define PK_TELEMETRIA3			98	//ramka telemetryczna 3 - na razie nie używane
 #define PK_TELEMETRIA4			99	//ramka telemetryczna 4 - na razie nie używane
 
 
