@@ -388,6 +388,32 @@
 #define TID_TOF_SIGMA			229	//odchylenie standardowe pomiaru
 #define TID_TOF_REFLEKT_CELU	230	//reflektancja celu
 #define TID_TOF_NATEZENIE_TLA	231	//poziom natężenia tła
+
+#define TID_232	232
+#define TID_233	233
+#define TID_234	234
+#define TID_235	235
+#define TID_236	236
+#define TID_237	237
+#define TID_238	238
+#define TID_239	239
+#define TID_240	240
+#define TID_241	241
+#define TID_242	242
+#define TID_243	243
+#define TID_244	244
+#define TID_245	245
+#define TID_245	246
+#define TID_247	247
+#define TID_248	248
+#define TID_249	249
+#define TID_250	250
+#define TID_251	251
+#define TID_252	252
+#define TID_253	253
+#define TID_254	254
+#define TID_255	255
+
 //max do 255
 
 //--- zmienne telemetryczne w ramce 3 -----------------------------------------------
@@ -443,7 +469,7 @@
 #define MAX_ZMIENNYCH_TELEMETR_W_RAMCE	115		//tyle zmiennych może być przesłanych w jednej ramce telemetrycznej (ramek może być kilka)
 #define MAX_INDEKSOW_TELEMETR_W_RAMCE	128		//zmienne w ramce można wybrać z takiej puli indeksów
 #define LICZBA_BAJTOW_ID_TELEMETRII		16		//liczba bajtów w ramce telemetrii identyfikujaca przesyłane zmienne
-#define LICZBA_RAMEK_TELEMETR			3		//obecnie są 2 ramki dla zmiennych 0..127 i 128..256
+#define LICZBA_RAMEK_TELEMETR			4		//obecnie są 2 ramki dla zmiennych 0..127 i 128..256
 #define OKRESOW_TELEMETRII_W_RAMCE		120		//podczas zapisu konfiguracji telemetrii w ramce przesyłane jest na raz się tyle 16-bitowych okresów telemetrii
 
 

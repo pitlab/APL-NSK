@@ -304,6 +304,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_TOF_REFLEKT_CELU]	= "TOF.Reflekt.celu";		//reflektancja celu
 	m_strNazwyZmiennychTele[TID_TOF_NATEZENIE_TLA]	= "TOF.Natê¿.t³a";			//poziom natê¿enia t³a
 
+	for (int n = TID_232; n <= TID_255; n++)
+		m_strNazwyZmiennychTele[n] = "-- jeszcze puste --";
+
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X0] = "Kalm.Wys.X[0]";
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X1] = "Kalm.Wys.X[1]";
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X2] = "Kalm.Wys.X[2]";
@@ -326,11 +329,26 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K8] = "Kalm.Wys.K[hl -> h]";
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_K9] = "Kalm.Wys.K[hm -> h]";
 
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X0] = "Kalm.K¹tów X[0]";	//kwaternion w
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X1] = "Kalm.K¹tów X[1]";	//kwaternion x
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X2] = "Kalm.K¹tów X[2]";	//kwaternion y
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X3] = "Kalm.K¹tów X[3]";	//kwaternion z
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X4] = "Kalm.K¹tów X[4]";	//bias ¿yro P
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X5] = "Kalm.K¹tów X[5]";	//bias ¿yro Q
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X6] = "Kalm.K¹tów X[6]";	//bias ¿yro R
 
-	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X0] = "Kalm.K¹tów X[0]";
-	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X1] = "Kalm.K¹tów X[1]";
-	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X2] = "Kalm.K¹tów X[2]";
-	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_X3] = "Kalm.K¹tów X[3]";
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X0] = "Kalm.Kal.Mag.X[0]";	//k¹t obrotu Phi wektora mag
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X1] = "Kalm.Kal.Mag.X[1]";	//k¹t obrotu Theta wektora mag
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X2] = "Kalm.Kal.Mag.X[2]";	//k¹t obrotu Psi wektora mag
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X3] = "Kalm.Kal.Mag.X[3]";	//bias X magnetometru 1
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X4] = "Kalm.Kal.Mag.X[4]";	//bias Y magnetometru 1
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X5] = "Kalm.Kal.Mag.X[5]";	//bias Z magnetometru 1
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X6] = "Kalm.Kal.Mag.X[6]";	//bias X magnetometru 2
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X7] = "Kalm.Kal.Mag.X[7]";	//bias Y magnetometru 2
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X8] = "Kalm.Kal.Mag.X[8]";	//bias Z magnetometru 2
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X9] = "Kalm.Kal.Mag.X[9]";	//bias X magnetometru 3
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X10] = "Kalm.Kal.Mag.X[10]";	//bias Y magnetometru 3
+	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X11] = "Kalm.Kal.Mag.X[11]";	//bias Z magnetometru 3	
 }
 
 
