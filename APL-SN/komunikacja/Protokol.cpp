@@ -411,40 +411,46 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				for (uint8_t t = 0; t < LICZBA_BAJTOW_ID_TELEMETRII; t++)
 				{
 					chBity = m_chDaneWy[t];
-					for (uint8_t b = 0; b < 8; b++)	//iteracja po bitach bajtu ID telemetrii
+					if (chBity)	//obrabiaj dane tylko gdy coœ przysz³o
 					{
-						//indeks zmiennej jest zdefiniowany przez numer ustawionego bitu identyfikacyjnego oraz offset wynikaj¹cy z numeru ramki, która definiuje jedna z MAX_INDEKSOW_TELEMETR_W_RAMCE (128) zmiennych
-						nIndeksZmiennej = b + t * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
-						if (chBity & (0x01 << b))
+						for (uint8_t b = 0; b < 8; b++)	//iteracja po bitach bajtu ID telemetrii
 						{
-							assert(nNumerZmiennejwRamce < MAX_INDEKSOW_TELEMETR_W_RAMCE);
-							assert(nIndeksZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
-							fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
-							stDaneTele.dane[nIndeksZmiennej] = fZmienna;
-							//znajdŸ ekstrema potrzebne do skalowania wykresów
-							if ((fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax) && (fZmienna != 0.0))
-								m_stEkstremaTelemetrii[nIndeksZmiennej].fMax = fZmienna;
-							if ((fZmienna < m_stEkstremaTelemetrii[nIndeksZmiennej].fMin) && (fZmienna != 0.0))
-								m_stEkstremaTelemetrii[nIndeksZmiennej].fMin = fZmienna;
-							nNumerZmiennejwRamce++;
+							//indeks zmiennej jest zdefiniowany przez numer ustawionego bitu identyfikacyjnego oraz offset wynikaj¹cy z numeru ramki, która definiuje jedna z MAX_INDEKSOW_TELEMETR_W_RAMCE (128) zmiennych
+							nIndeksZmiennej = b + t * 8 + ((m_chPolecenie - PK_TELEMETRIA1) * MAX_INDEKSOW_TELEMETR_W_RAMCE);
+							if (chBity & (0x01 << b))
+							{
+								assert(nNumerZmiennejwRamce < MAX_INDEKSOW_TELEMETR_W_RAMCE);
+								assert(nIndeksZmiennej < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+								fZmienna = Char2Float16(&m_chDaneWy[2 * nNumerZmiennejwRamce + LICZBA_BAJTOW_ID_TELEMETRII]);
+								stDaneTele.dane[nIndeksZmiennej] = fZmienna;
+								//znajdŸ ekstrema potrzebne do skalowania wykresów
+								if ((fZmienna > m_stEkstremaTelemetrii[nIndeksZmiennej].fMax) && (fZmienna != 0.0))
+									m_stEkstremaTelemetrii[nIndeksZmiennej].fMax = fZmienna;
+								if ((fZmienna < m_stEkstremaTelemetrii[nIndeksZmiennej].fMin) && (fZmienna != 0.0))
+									m_stEkstremaTelemetrii[nIndeksZmiennej].fMin = fZmienna;
+								nNumerZmiennejwRamce++;
+							}
 						}
 					}
 				}
 
 				//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki bêd¹ mia³y ten sam znacznik czasu. W takim przypadku scal to w jednym indeksie wektora
-				if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
+				if (nNumerZmiennejwRamce)	//je¿eli coœ przysz³o
 				{
-					size_t nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
-					for (uint16_t t = 0; t < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; t++)
+					if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 					{
-						if (stDaneTele.dane[t] != 0.0f)
-							m_vDaneTelemetryczne[nIndeksWektora].dane[t] = stDaneTele.dane[t];
+						size_t nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
+						for (uint16_t t = 0; t < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; t++)
+						{
+							if (stDaneTele.dane[t] != 0.0f)
+								m_vDaneTelemetryczne[nIndeksWektora].dane[t] = stDaneTele.dane[t];
+						}
 					}
-				}
-				else
-				{
-					m_vDaneTelemetryczne.push_back(stDaneTele);
-					SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+					else
+					{
+						m_vDaneTelemetryczne.push_back(stDaneTele);
+						SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+					}
 				}
 				chZnakCzasuPoprzedniejRamki = m_chZnakCzasu;				
 				//TRACE("SetEvent: Telemetria\n");	
@@ -584,6 +590,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	BOOL bRamkaOK = FALSE;
 	uint8_t chLicznikRetransmisji = 0;
 	uint8_t chErr = ERR_OK;
+
 	uint32_t nErr;
 	int32_t x, iRozmiar, iNumer, iKoniecZakresuSzukania;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
@@ -630,21 +637,23 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 				TRACE("Czas %d\n", iCzasOczekiwania);
 
-				//sprawdŸ kilka ostatnich ramek która z nich ma taki sam TimeStamp jak nadawcza
+				//sprawdŸ ostatni¹ ramkê czy jest to ramka odpowiedzi na wys³an¹ ramkê
 				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
-				if (iRozmiar > LICZBA_SPRAWDZANYCH_RAMEK)
-					iKoniecZakresuSzukania = iRozmiar - LICZBA_SPRAWDZANYCH_RAMEK;	//szukaj ramki z odpowiedz¹ tylko w ostatnich n=LICZBA_SPRAWDZANYCH_RAMEK ramkach
-				else
-					iKoniecZakresuSzukania = 0;
-
-				for (x = iRozmiar-1; x > iKoniecZakresuSzukania; x--)
+				if (iRozmiar)
 				{
-					TRACE("Ramka %d: czas: %d == %d\n", x, m_vRamkaPolecenia[x].chZnakCzasu, chRamka[PR_ZNAK_CZASU]);
-					if (m_vRamkaPolecenia[x].chZnakCzasu == chRamka[PR_ZNAK_CZASU])	//porównuj czas
+					iNumer = iRozmiar - 1;	//zapamiêtaj indeks ramki
+
+					//odpowiedzi¹ mo¿e byæ ramka z kodem b³êdu: OK gdy w porz¹dku lub inny gdy b³¹d
+					if (m_vRamkaPolecenia[iNumer].chPolecenie == PK_BLAD)
 					{
-						iNumer = x;	//zapamiêtaj indeks ramki
-						bRamkaOK = TRUE;
-						TRACE("Ramka OK\n");
+						chErr = m_vRamkaPolecenia[iNumer].dane[0];	//zwracany kod b³êdu
+						bRamkaOK = (bRamkaOK == PK_OK);
+					}
+					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odcztane dane
+					else
+					{
+						if (m_vRamkaPolecenia[iNumer].chPolecenie == chPolecenie)
+							bRamkaOK = TRUE;
 					}
 				}
 			} while (!bRamkaOK && (iCzasOczekiwania < iCzasNaRamke));
