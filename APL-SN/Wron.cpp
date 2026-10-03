@@ -20,10 +20,10 @@ void Wron::UstawNazwe(uint8_t* chNazwa)
 // Parametr: chIndeksZmiennej - wskazuje na zmienn¹ w tablicy
 // zwraca: czêstotliwoœæ
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-float Wron::PobierzCzestotliwoscTelemetrii(uint8_t chIndeksZmiennej)
+float Wron::PobierzCzestotliwoscTelemetrii(uint16_t sIndeksZmiennej)
 {
-	if ((m_sOkresTelemetrii[chIndeksZmiennej] == TEMETETRIA_WYLACZONA) || (m_sOkresTelemetrii[chIndeksZmiennej] == 0))
+	if ((m_sOkresTelemetrii[sIndeksZmiennej] == TEMETETRIA_WYLACZONA) || (m_sOkresTelemetrii[sIndeksZmiennej] == 0))
 		return 0.0f;
 	else
-		return MAX_CZESTOTLIWOSC_TELEMETRII / (m_sOkresTelemetrii[chIndeksZmiennej]); 
+		return MAX_CZESTOTLIWOSC_TELEMETRII / (m_sOkresTelemetrii[sIndeksZmiennej]);
 }

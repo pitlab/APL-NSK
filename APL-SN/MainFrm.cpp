@@ -14,7 +14,7 @@
 #endif
 
 // CMainFrame
-static const TCHAR APP_VER[] = _T("1.0.1");
+static const TCHAR APP_VER[] = _T("1.0.213");
 
 IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWndEx)
 

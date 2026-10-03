@@ -433,10 +433,10 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						}
 					}
 				}
-
-				//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki bêd¹ mia³y ten sam znacznik czasu. W takim przypadku scal to w jednym indeksie wektora
+				
 				if (nNumerZmiennejwRamce)	//je¿eli coœ przysz³o
 				{
+					//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki maj¹ ten sam znacznik czasu. W takim przypadku scal je w jednym indeksie wektora
 					if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 					{
 						size_t nIndeksWektora = m_vDaneTelemetryczne.size() - 1;
@@ -451,6 +451,10 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						m_vDaneTelemetryczne.push_back(stDaneTele);
 						SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
 					}
+				}
+				else
+				{
+					int dupa_blada = 1;	//pu³apka na ramkê bez danych
 				}
 				chZnakCzasuPoprzedniejRamki = m_chZnakCzasu;				
 				//TRACE("SetEvent: Telemetria\n");	
@@ -647,7 +651,11 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 					if (m_vRamkaPolecenia[iNumer].chPolecenie == PK_BLAD)
 					{
 						chErr = m_vRamkaPolecenia[iNumer].dane[0];	//zwracany kod b³êdu
-						bRamkaOK = (bRamkaOK == PK_OK);
+						if (chErr == ERR_OK)
+						{
+							if (m_vRamkaPolecenia[iNumer].dane[1] == chPolecenie)	//czy zwracana jest odpowiedŸ na wys³ane polecenie?
+								bRamkaOK = TRUE;
+						}
 					}
 					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odcztane dane
 					else

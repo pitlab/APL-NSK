@@ -70,7 +70,7 @@ BOOL KonfigTelemetrii::OnInitDialog()
 	if (nPozycja == 0)
 	{
 		//jeżeli nie ma pozycji to je wstaw
-		for (int n = 1; n < MAX_OKRES_TELEMETRII+2; n++)
+		for (int n = 1; n < MAX_OKRES_TELEMETRII + 2; n++)
 		{
 			nPozycja = PozycjaDlaOkresu(n, &sOkres);
 			if (nPoprzedniaPoz != nPozycja)
@@ -90,30 +90,25 @@ BOOL KonfigTelemetrii::OnInitDialog()
 	m_ctlOkresTelemetrii.InsertColumn(1, _T("Częstotliwość"), 0, 80);
 
 	//Odczytaj z roju liste telemetrii
-	for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
-	{
-		if (getKomunikacja().m_cRoj.vWron.size())
+	if (getKomunikacja().m_cRoj.vWron.size())
+	{	
+		for (int n = 0; n < LICZBA_ZMIENNYCH_TELEMETRYCZNYCH; n++)
 		{
-			m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];
+			m_sOkresTelemetrii[n] = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].m_sOkresTelemetrii[n];			
 			fCzestotliwosc = getKomunikacja().m_cRoj.vWron[m_nIndeksDronaWRoju].PobierzCzestotliwoscTelemetrii(n);
-		}
-		else
-		{
-			m_sOkresTelemetrii[n] = TEMETETRIA_WYLACZONA;
-			fCzestotliwosc = 0;
-		}
 
-		m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
-		if (fCzestotliwosc)
-			strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
-		else
-			strNapis.Format(_T("Wyłączone"));
-		m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);
+			//wstaw częstotliwości do listy wyświetlanej w oknie
+			m_ctlOkresTelemetrii.InsertItem(n, getKomunikacja().m_strNazwyZmiennychTele[n]);
+			if (fCzestotliwosc)
+				strNapis.Format(_T("%.2f Hz"), fCzestotliwosc);
+			else
+				strNapis.Format(_T("Wyłączone"));
+			m_ctlOkresTelemetrii.SetItemText(n, 1, strNapis);
+		}
 	}
 
 	m_ctrlZajetosc.SetRange(0, 100);
 	AktualizujZajetoscLacza();
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // WYJĄTEK: Strona właściwości OCX powinna zwrócić FALSE
 }
@@ -121,16 +116,14 @@ BOOL KonfigTelemetrii::OnInitDialog()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Reakcja na naciśnięcie OK
+// Reakcja na naciśnięcie OK. Zapisz konfigurację do roju oraz wyślij ramkę do wrona
 // Parametry: brak
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void KonfigTelemetrii::OnBnClickedOk()
 {
-	// TODO: Dodaj tutaj swój kod procedury obsługi powiadamiania kontrolki
 	if (m_bZmieniono)
 	{
-		//zapisz do roju oraz wyślij ramkę do wrona
 		if (getKomunikacja().m_cRoj.vWron.size() == 0)
 		{
 			CDialogEx::OnCancel();
