@@ -1,4 +1,9 @@
-﻿
+﻿///////////////////////////////////////////////////////////////////////////////////////////////////
+// Okno lewego panelu bocznego. Pierwotnie miało zawierać strukturę roju i parametry takie jak telemetria poszczególnych jednostek, czyli wronów.
+// Jednak ze względu na trdności w przekazywniu danych parametry wrona są definiowane gdzie indziej.
+// Być może w przyszłości będzie to narzędzie do definiowania roju, ale na razie nie jest używane.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "pch.h"
 #include "framework.h"
 #include "MainFrm.h"

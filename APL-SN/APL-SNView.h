@@ -12,13 +12,14 @@
 #include <memory>
 #include "MapaWysokosciowa.h"
 
-#define MIEJSCE_MIEDZY_WYKRESAMI	12
-//#define MIEJSCE_PRZED_WYKRESEM		40
-#define MIEJSCE_NA_LEGENDE			40
-#define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 40
+#define MIEJSCE_Y_MIEDZY_WYKRESAMI	12
+#define MIEJSCE_X_NA_LEGENDE			40
+#define ODLEGLOSC_MIEDZY_PODZIALKAMI_OSI 30
 #define MIN_POZPIETOSC_WYKRESU		0.0001f
 #define MIEJSCE_MIEDZY_WODOSPADAMI	15
 #define WODOSPAD_SKALA_KOLORU	30.0f
+
+
 
 class CAPLSNView : public CView
 
@@ -103,7 +104,7 @@ protected:
 
 private:
 	float ZnajdzPodzialke(CRect okno, float fMin, float fMax);
-	typedef struct
+	typedef struct stKonfigWykresu
 	{
 		CRect rOknoWykresu;
 		float fHscroll = 0.0f;

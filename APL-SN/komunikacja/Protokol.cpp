@@ -596,7 +596,7 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	uint8_t chErr = ERR_OK;
 
 	uint32_t nErr;
-	int32_t x, iRozmiar, iNumer, iKoniecZakresuSzukania;
+	int32_t x, iRozmiar, iNumer;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
 	clock_t poczatek, koniec;
 	uint32_t iCzasOczekiwania;

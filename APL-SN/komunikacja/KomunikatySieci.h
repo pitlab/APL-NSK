@@ -37,7 +37,7 @@ struct stRamka_t
 struct stTelemetria_t
 {
 	uint8_t chSubSekunda = 0;		//1/256 czêœæ sekundy z RTC
-	uint8_t chAdres;
+	//uint8_t chAdres;
 	float dane[LICZBA_ZMIENNYCH_TELEMETRYCZNYCH] = {0};
 };
 
