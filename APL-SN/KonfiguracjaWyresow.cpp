@@ -565,7 +565,7 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = this->m_hWnd;
 	ofn.lpstrFile = wcNazwaPliku;
-	ofn.nMaxFile = sizeof(wcNazwaPliku);
+	ofn.nMaxFile = _countof(wcNazwaPliku);
 	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
@@ -631,13 +631,13 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = this->m_hWnd;
 	ofn.lpstrFile = wcNazwaPliku;
-	ofn.nMaxFile = sizeof(wcNazwaPliku);
+	ofn.nMaxFile = _countof(wcNazwaPliku);
 	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
 	ofn.lpstrInitialDir = _T("../KonfigWykr");
-	ofn.Flags = OFN_PATHMUSTEXIST;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER;
 	ofn.lpstrDefExt = _T("json");
 	ofn.lpstrTitle = _T("Wskaż plik z konfiguracją wykresów");
 

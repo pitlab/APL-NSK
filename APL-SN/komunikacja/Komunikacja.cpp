@@ -70,9 +70,12 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KAT_IMU1X]			= "Trygono. Phi [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_IMU1Y]			= "Trygono. Theta [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_IMU1Z]			= "Trygono. Psi [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_IMU2X]			= "Kwatern. Phi [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_IMU2Y]			= "Kwatern. Theta [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_IMU2Z]			= "Kwatern. Psi [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_IMU2X]			= "Kwatern. Phi [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_IMU2Y]			= "Kwatern. Theta [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_IMU2Z]			= "Kwatern. Psi [rad]";
+	m_strNazwyZmiennychTele[TID_DLUG_VMAG1]			= "D³ugoœæ wektora Mag1";	//d³ugoœæ wektora magetycznego 1
+	m_strNazwyZmiennychTele[TID_DLUG_VMAG2]			= "D³ugoœæ wektora Mag2";
+	m_strNazwyZmiennychTele[TID_DLUG_VMAG3]			= "D³ugoœæ wektora Mag3";
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1X]			= "¯yro. Phi [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1Y]			= "¯yro. Theta [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1Z]			= "¯yro. Psi [rad]";
