@@ -157,18 +157,18 @@
 #define TID_KAT_IMU1X			23
 #define TID_KAT_IMU1Y			24
 #define TID_KAT_IMU1Z			25
-//#define TID_KAT_IMU2X			26
-//#define TID_KAT_IMU2Y			27
-//#define TID_KAT_IMU2Z			28
-#define TID_DLUG_VMAG1			26		//długość wektora magetycznego 1
-#define TID_DLUG_VMAG2			27		//długość wektora magetycznego 2
-#define TID_DLUG_VMAG3			28		//długość wektora magetycznego 3
+#define TID_KAT_IMU2X			26
+#define TID_KAT_IMU2Y			27
+#define TID_KAT_IMU2Z			28
 #define TID_KAT_ZYRO1X			29
 #define TID_KAT_ZYRO1Y			30
 #define TID_KAT_ZYRO1Z			31
-#define TID_KAT_AKCELX			32
-#define TID_KAT_AKCELY			33
-#define TID_KAT_AKCELZ			34
+//#define TID_KAT_AKCELX			32
+//#define TID_KAT_AKCELY			33
+//#define TID_KAT_AKCELZ			34
+#define TID_DLUG_VMAG1			32		//długość wektora magetycznego 1
+#define TID_DLUG_VMAG2			33		//długość wektora magetycznego 2
+#define TID_DLUG_VMAG3			34		//długość wektora magetycznego 3
 
 //zmienne barometryczne
 #define TID_CISBEZW1			35
@@ -462,9 +462,19 @@
 #define TID_KALMAN_KAL_MAG_X9	292		//bias X magnetometru 3
 #define TID_KALMAN_KAL_MAG_X10	293		//bias Y magnetometru 3
 #define TID_KALMAN_KAL_MAG_X11	294		//bias Z magnetometru 3
+
+#define TID_SYMUL_PREDK_P		295		//prędkość kątowa P symulacji
+#define TID_SYMUL_PREDK_Q		296		//prędkość kątowa Q symulacji
+#define TID_SYMUL_PREDK_R		297		//prędkość kątowa R symulacji
+#define TID_SYMUL_AKCEL_X 		298		//składowa przyspieszenia X
+#define TID_SYMUL_AKCEL_Y		299		//składowa przyspieszenia Y
+#define TID_SYMUL_AKCEL_Z		300		//składowa przyspieszenia Z
+#define TID_SYMUL_MAGN_X		301		//składowa magnetyczna X
+#define TID_SYMUL_MAGN_Y		302		//składowa magnetyczna Y
+#define TID_SYMUL_MAGN_Z		303		//składowa magnetyczna Z
 //max do 384
 
-#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	295
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	304
 
 
 //#define MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH2	112

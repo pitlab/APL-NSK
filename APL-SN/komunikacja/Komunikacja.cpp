@@ -79,9 +79,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1X]			= "¯yro. Phi [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1Y]			= "¯yro. Theta [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_ZYRO1Z]			= "¯yro. Psi [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_AKCELX]			= "Akcel. Phi [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_AKCELY]			= "Akcel. Theta [rad]";
-	m_strNazwyZmiennychTele[TID_KAT_AKCELZ]			= "Akcel. Psi [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_AKCELX]			= "Akcel. Phi [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_AKCELY]			= "Akcel. Theta [rad]";
+	//m_strNazwyZmiennychTele[TID_KAT_AKCELZ]			= "Akcel. Psi [rad]";
 
 	//zmienne barametryczne
 	m_strNazwyZmiennychTele[TID_CISBEZW1]			= "Ciœn.Bzwzgl.1 [Pa]";
@@ -352,6 +352,16 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X9] = "Kalm.Kal.Mag.X[9]";	//bias X magnetometru 3
 	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X10] = "Kalm.Kal.Mag.X[10]";	//bias Y magnetometru 3
 	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X11] = "Kalm.Kal.Mag.X[11]";	//bias Z magnetometru 3	
+
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_P] = "Symul.predk.k¹towa P";	//prêdkoœæ k¹towa P symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_Q] = "Symul.predk.k¹towa Q";	//prêdkoœæ k¹towa Q symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_R] = "Symul.predk.k¹towa R";	//prêdkoœæ k¹towa R symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_X] = "Symul.przyspiesze. X";	//sk³adowa przyspieszenia X
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Y] = "Symul.przyspiesze. Y";	//sk³adowa przyspieszenia Y
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Z] = "Symul.przyspiesze. Z";	//sk³adowa przyspieszenia Z
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_X] = "Symul.pole magnety. X";	//sk³adowa magnetyczna X
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Y] = "Symul.pole magnety. Y";	//sk³adowa magnetyczna Y
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Z] = "Symul.pole magnety. Z";	//sk³adowa magnetyczna Z
 }
 
 
