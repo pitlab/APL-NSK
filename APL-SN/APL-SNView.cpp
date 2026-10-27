@@ -1106,16 +1106,29 @@ void CAPLSNView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 void CAPLSNView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 	CMenu menu;
-	menu.LoadMenu(IDR_POPUP_WIDOKU);
+	if (!menu.LoadMenu(IDR_POPUP_WIDOKU))
+	{
+		DWORD nBłąd = GetLastError();
 
-	CMenu* pSumMenu = menu.GetSubMenu(0);
+		CString strInfo;
+		strInfo.Format(L"LoadMenu(IDR_POPUP_WIDOKU) nie powiodło się.\n GetLastError = %lu (0x%08lX)", nBłąd, nBłąd);
+		AfxMessageBox(strInfo);
+		return;
+	}
+
+
+	CMenu* pSumMenu = menu.GetSubMenu(0);			//w tym miejscu jest zgłaszany wyjątek
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
 		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
 
-		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE, TRUE))
+		//if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE, TRUE))
+		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->GetSafeHmenu(), FALSE, TRUE))
+		{
+			delete pPopupMenu;
 			return;
+		}
 
 		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
 		UpdateDialogControls(this, FALSE);

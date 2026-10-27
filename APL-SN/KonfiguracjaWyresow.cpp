@@ -563,7 +563,8 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = this->m_hWnd;
+	//ofn.hwndOwner = this->m_hWnd;
+	ofn.hwndOwner = this->GetSafeHwnd();
 	ofn.lpstrFile = wcNazwaPliku;
 	ofn.nMaxFile = _countof(wcNazwaPliku);
 	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
@@ -620,8 +621,8 @@ void KonfiguracjaWyresow::OnBnClickedButZapiszKonf()
 void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 {
 	JsonWykresu JsonWykr;
-	OPENFILENAME ofn;
-	wchar_t wcNazwaPliku[_MAX_PATH];
+	OPENFILENAME ofn = {};
+	wchar_t wcNazwaPliku[_MAX_PATH] = {};
 	int nIndeksGrupy = 0;
 	DrzewoWykresow::stGrupaWykresow_t stGrupa;
 	DrzewoWykresow::stZmienna_t stZmienna;
@@ -629,7 +630,8 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 	wcNazwaPliku[0] = '\0';
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = this->m_hWnd;
+//	ofn.hwndOwner = this->m_hWnd;
+	ofn.hwndOwner = this->GetSafeHwnd();
 	ofn.lpstrFile = wcNazwaPliku;
 	ofn.nMaxFile = _countof(wcNazwaPliku);
 	ofn.lpstrFilter = _T("Konfiguracja Wykresów\0*.json\0");
@@ -642,7 +644,7 @@ void KonfiguracjaWyresow::OnBnClickedButCzytajKonf()
 	ofn.lpstrTitle = _T("Wskaż plik z konfiguracją wykresów");
 
 	//otwórz dialog i wskaż plik
-	if (GetOpenFileName(&ofn) != TRUE)
+	if (GetOpenFileName(&ofn) != TRUE)		//tutaj pojawia się wyjątek
 		return;
 
 	std::ifstream file(wcNazwaPliku);

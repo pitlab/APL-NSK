@@ -472,9 +472,12 @@
 #define TID_SYMUL_MAGN_X		301		//składowa magnetyczna X
 #define TID_SYMUL_MAGN_Y		302		//składowa magnetyczna Y
 #define TID_SYMUL_MAGN_Z		303		//składowa magnetyczna Z
+#define TID_SYMUL_KAT_PHI		304		//kąt przechylenia uzyskany przez całkowanie prędkosci kątowej P
+#define TID_SYMUL_KAT_THE		305		//kąt pochylenia uzyskany przez całkowanie prędkosci kątowej Q
+#define TID_SYMUL_KAT_PSI		306		//kąt odchylenia uzyskany przez całkowanie prędkosci kątowej R
 //max do 384
 
-#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	304
+#define LICZBA_ZMIENNYCH_TELEMETRYCZNYCH	307
 
 
 //#define MAX_LICZBA_ZMIENNYCH_TELEMETRYCZNYCH2	112

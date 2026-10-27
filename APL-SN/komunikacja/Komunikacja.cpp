@@ -70,9 +70,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KAT_IMU1X]			= "Trygono. Phi [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_IMU1Y]			= "Trygono. Theta [rad]";
 	m_strNazwyZmiennychTele[TID_KAT_IMU1Z]			= "Trygono. Psi [rad]";
-	//m_strNazwyZmiennychTele[TID_KAT_IMU2X]			= "Kwatern. Phi [rad]";
-	//m_strNazwyZmiennychTele[TID_KAT_IMU2Y]			= "Kwatern. Theta [rad]";
-	//m_strNazwyZmiennychTele[TID_KAT_IMU2Z]			= "Kwatern. Psi [rad]";
+	m_strNazwyZmiennychTele[TID_KAT_IMU2X]			= "Kwatern. Phi [rad]";
+	m_strNazwyZmiennychTele[TID_KAT_IMU2Y]			= "Kwatern. Theta [rad]";
+	m_strNazwyZmiennychTele[TID_KAT_IMU2Z]			= "Kwatern. Psi [rad]";
 	m_strNazwyZmiennychTele[TID_DLUG_VMAG1]			= "D³ugoœæ wektora Mag1";	//d³ugoœæ wektora magetycznego 1
 	m_strNazwyZmiennychTele[TID_DLUG_VMAG2]			= "D³ugoœæ wektora Mag2";
 	m_strNazwyZmiennychTele[TID_DLUG_VMAG3]			= "D³ugoœæ wektora Mag3";
@@ -362,6 +362,9 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_X] = "Symul.pole magnety. X";	//sk³adowa magnetyczna X
 	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Y] = "Symul.pole magnety. Y";	//sk³adowa magnetyczna Y
 	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Z] = "Symul.pole magnety. Z";	//sk³adowa magnetyczna Z
+	m_strNazwyZmiennychTele[TID_SYMUL_KAT_PHI] = "Symul.k¹t Phi";	//k¹t przechylenia uzyskany przez ca³kowanie prêdkosci k¹towej P
+	m_strNazwyZmiennychTele[TID_SYMUL_KAT_THE] = "Symul.k¹t Theta";	//k¹t pochylenia uzyskany przez ca³kowanie prêdkosci k¹towej Q
+	m_strNazwyZmiennychTele[TID_SYMUL_KAT_PSI] = "Symul.k¹t Psi";	//k¹t odchylenia uzyskany przez ca³kowanie prêdkosci k¹towej R
 }
 
 
@@ -1040,7 +1043,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	uint8_t chErr, chOdebrano;
 	uint8_t chDaneWychodzace[3];
 	uint8_t chDanePrzychodzace[ROZM_DANYCH_UART];
-	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / MAX_ZMIENNYCH_TELEMETR_W_RAMCE);
+	uint8_t chLiczbaRamek = (uint8_t)ceil((double)sRozmiar / OKRESOW_TELEMETRII_W_RAMCE);	//zaokr¹glaj w górê
 	uint16_t sOdebranoLacznie = 0;
 
 	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
@@ -1048,18 +1051,20 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE
 	for (int n = 0; n < chLiczbaRamek; n++)
 	{
-		if ((sRozmiar - sOdebranoLacznie) > MAX_ZMIENNYCH_TELEMETR_W_RAMCE)
-			chDaneWychodzace[0] = MAX_ZMIENNYCH_TELEMETR_W_RAMCE;
+		//w pierwszym bajcie okreœl ile okresów ma odczytaæ
+		if ((sRozmiar - sOdebranoLacznie) > OKRESOW_TELEMETRII_W_RAMCE)
+			chDaneWychodzace[0] = OKRESOW_TELEMETRII_W_RAMCE;
 		else
 			chDaneWychodzace[0] = sRozmiar - sOdebranoLacznie;			//rozmiar
-		chDaneWychodzace[1] = (uint8_t)((n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE) & 0x00FF);		//przesuniêcie, czyli czytaj od tego indeksu
-		chDaneWychodzace[2] = (uint8_t)(((n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE) & 0xFF00) >> 8);
+		//w kolejnych 2 bajtach przeslij przesuniêcie, czyli czytaj od tego indeksu
+		chDaneWychodzace[1] = (uint8_t)((n * OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);
+		chDaneWychodzace[2] = (uint8_t)(((n * OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
 
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
 		if (chErr == ERR_OK)
 		{
 			for (uint8_t m = 0; m < chOdebrano/2; m++)
-				*(sOKres + n * MAX_ZMIENNYCH_TELEMETR_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
+				*(sOKres + n * OKRESOW_TELEMETRII_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
 			sOdebranoLacznie += chOdebrano/2;
 		}		
 	}

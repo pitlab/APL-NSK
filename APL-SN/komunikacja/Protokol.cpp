@@ -449,7 +449,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 					else
 					{
 						m_vDaneTelemetryczne.push_back(stDaneTele);
-						SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);
+						SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);		//tutaj zg³aszany jest wyj¹tek
 					}
 				}
 				else
