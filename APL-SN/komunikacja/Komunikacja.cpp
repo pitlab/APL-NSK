@@ -1049,7 +1049,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 	ASSERT(sRozmiar <= LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 
 	//w ramce nie zmieszcz¹ siê wszystkie 16-bitowe okresy, wiec na raz przesy³am maksymalnie OKRESOW_TELEMETRII_W_RAMCE
-	for (int n = 0; n < chLiczbaRamek; n++)
+	for (int r = 0; r < chLiczbaRamek; r++)
 	{
 		//w pierwszym bajcie okreœl ile okresów ma odczytaæ
 		if ((sRozmiar - sOdebranoLacznie) > OKRESOW_TELEMETRII_W_RAMCE)
@@ -1057,15 +1057,16 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 		else
 			chDaneWychodzace[0] = sRozmiar - sOdebranoLacznie;			//rozmiar
 		//w kolejnych 2 bajtach przeslij przesuniêcie, czyli czytaj od tego indeksu
-		chDaneWychodzace[1] = (uint8_t)((n * OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);
-		chDaneWychodzace[2] = (uint8_t)(((n * OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
+		chDaneWychodzace[1] = (uint8_t)((r * OKRESOW_TELEMETRII_W_RAMCE) & 0x00FF);
+		chDaneWychodzace[2] = (uint8_t)(((r * OKRESOW_TELEMETRII_W_RAMCE) & 0xFF00) >> 8);
 
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
 		if (chErr == ERR_OK)
 		{
-			for (uint8_t m = 0; m < chOdebrano/2; m++)
-				*(sOKres + n * OKRESOW_TELEMETRII_W_RAMCE + m) = chDanePrzychodzace[m * 2 + 0] + chDanePrzychodzace[m * 2 + 1] * 0x100;
-			sOdebranoLacznie += chOdebrano/2;
+			ASSERT(chOdebrano == chDaneWychodzace[0] * ROZMIAR_OKRESU_TELEMETRII);
+			for (int n = 0; n < chOdebrano / ROZMIAR_OKRESU_TELEMETRII; n++)
+				*(sOKres + r * OKRESOW_TELEMETRII_W_RAMCE + n) = chDanePrzychodzace[n * ROZMIAR_OKRESU_TELEMETRII + 0] + chDanePrzychodzace[n * ROZMIAR_OKRESU_TELEMETRII + 1] * 0x100;
+			sOdebranoLacznie += chOdebrano / ROZMIAR_OKRESU_TELEMETRII;
 		}		
 	}
 	return chErr;

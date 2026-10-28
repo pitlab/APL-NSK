@@ -487,6 +487,7 @@
 #define LICZBA_BAJTOW_ID_TELEMETRII		16		//liczba bajtów w ramce telemetrii identyfikujaca przesyłane zmienne
 #define LICZBA_RAMEK_TELEMETR			4		//obecnie są 2 ramki dla zmiennych 0..127 i 128..256
 #define OKRESOW_TELEMETRII_W_RAMCE		120		//podczas zapisu konfiguracji telemetrii w ramce przesyłane jest na raz się tyle 16-bitowych okresów telemetrii
+#define ROZMIAR_OKRESU_TELEMETRII		2		//z tylu bajtów składa się okres telemetrii, czyli licznik czas co jaki ma być wysyłana zmienna telemetryczna
 
 
 #define KWANT_CZASU_TELEMETRII	0.01f	//[s]

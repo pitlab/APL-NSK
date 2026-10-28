@@ -596,9 +596,9 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	uint8_t chErr = ERR_OK;
 
 	uint32_t nErr;
-	int32_t x, iRozmiar, iNumer;
+	int32_t nRozmiar, nIndeksRamki;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
-	clock_t poczatek, koniec;
+	clock_t ckCzasPocz¹tku, ckCzasKoñca;
 	uint32_t iCzasOczekiwania;
 
 	//zachowaj wskaŸniki. Bêd¹ potrzebne do retransmisji.
@@ -630,37 +630,40 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 		if (chErr == ERR_OK)
 		{
 			//gdy przyjdzie odpowiedŸ to zostanie wygenerowane zdarzenie: m_hZdarzenieRamkaDanychGotowa. Czekaj na nie
-			poczatek = clock();
+			ckCzasPocz¹tku = clock();
 			do
 			{
 				//wersja na zdarzeniach - wychodzi na timeoucie
 				nErr = WaitForSingleObject(m_hZdarzenieRamkaPolecenGotowa, iCzasNaRamke / 4);
 				if (nErr == WAIT_TIMEOUT)
 					nErr = GetLastError();	//breakpoint do testowania timeoutu
-				koniec = clock();
-				iCzasOczekiwania = (koniec - poczatek) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
+				ckCzasKoñca = clock();
+				iCzasOczekiwania = (ckCzasKoñca - ckCzasPocz¹tku) / (CLOCKS_PER_SEC / 1000);	//timeout licz w ms
 				TRACE("Czas %d\n", iCzasOczekiwania);
 
-				//sprawdŸ ostatni¹ ramkê czy jest to ramka odpowiedzi na wys³an¹ ramkê
-				iRozmiar = (uint32_t)m_vRamkaPolecenia.size();
-				if (iRozmiar)
+				//sprawdŸ czy ostatnia ramka jest odpowiedzi¹ na wys³ane polecenie
+				nRozmiar = (uint32_t)m_vRamkaPolecenia.size();
+				if (nRozmiar)
 				{
-					iNumer = iRozmiar - 1;	//zapamiêtaj indeks ramki
+					nIndeksRamki = nRozmiar - 1;	//zapamiêtaj indeks ramki
 
-					//odpowiedzi¹ mo¿e byæ ramka z kodem b³êdu: OK gdy w porz¹dku lub inny gdy b³¹d
-					if (m_vRamkaPolecenia[iNumer].chPolecenie == PK_BLAD)
+					//odpowiedzi¹ mo¿e byæ ramka PK_BLAD z kodem b³êdu: OK gdy w porz¹dku lub inny gdy b³¹d
+					if (m_vRamkaPolecenia[nIndeksRamki].chPolecenie == PK_BLAD)
 					{
-						chErr = m_vRamkaPolecenia[iNumer].dane[0];	//zwracany kod b³êdu
-						if (chErr == ERR_OK)
+						if (!m_vRamkaPolecenia[nIndeksRamki].dane.empty())	
 						{
-							if (m_vRamkaPolecenia[iNumer].dane[1] == chPolecenie)	//czy zwracana jest odpowiedŸ na wys³ane polecenie?
-								bRamkaOK = TRUE;
+							chErr = m_vRamkaPolecenia[nIndeksRamki].dane[0];	//zwracany kod b³êdu
+							if (chErr == ERR_OK)
+							{
+								if (m_vRamkaPolecenia[nIndeksRamki].dane[1] == chPolecenie)	//czy zwracana jest odpowiedŸ na wys³ane polecenie?
+									bRamkaOK = TRUE;
+							}
 						}
 					}
-					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odcztane dane
+					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odczytane dane
 					else
 					{
-						if (m_vRamkaPolecenia[iNumer].chPolecenie == chPolecenie)
+						if (m_vRamkaPolecenia[nIndeksRamki].chPolecenie == chPolecenie)
 							bRamkaOK = TRUE;
 					}
 				}
@@ -668,10 +671,10 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 			if (iCzasOczekiwania < iCzasNaRamke)
 			{
-				iRozmiar = (uint32_t)m_vRamkaPolecenia[iNumer].dane.size();
-				*chRozmiarWe = iRozmiar;
-				for (x = 0; x < iRozmiar; x++)
-					*chDaneWe++ = m_vRamkaPolecenia[iNumer].dane[x];
+				nRozmiar = (uint32_t)m_vRamkaPolecenia[nIndeksRamki].dane.size();
+				*chRozmiarWe = nRozmiar;
+				for (int n = 0; n < nRozmiar; n++)
+					*chDaneWe++ = m_vRamkaPolecenia[nIndeksRamki].dane[n];
 				bPolecenieGotowe = TRUE;
 			}
 			else
