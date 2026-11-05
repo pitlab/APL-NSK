@@ -199,6 +199,8 @@
     <ClInclude Include="APL-SN.h" />
     <ClInclude Include="APL-SNDoc.h" />
     <ClInclude Include="APL-SNView.h" />
+    <ClInclude Include="Bryla3DDoc.h" />
+    <ClInclude Include="Bryla3DView.h" />
     <ClInclude Include="CDaneFlash.h" />
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
@@ -214,6 +216,8 @@
     <ClInclude Include="KonfiguracjaFFT.h" />
     <ClInclude Include="konfig_fram.h" />
     <ClInclude Include="MapaWysokosciowa.h" />
+    <ClInclude Include="MapaWysokosciowaDoc.h" />
+    <ClInclude Include="MapaWysokosciowaView.h" />
     <ClInclude Include="MixerDlg.h" />
     <ClInclude Include="NapedStrojenie.h" />
     <ClInclude Include="OdbiornikiRC.h" />
@@ -247,6 +251,8 @@
     <ClCompile Include="APL-SN.cpp" />
     <ClCompile Include="APL-SNDoc.cpp" />
     <ClCompile Include="APL-SNView.cpp" />
+    <ClCompile Include="Bryla3DDoc.cpp" />
+    <ClCompile Include="Bryla3DView.cpp" />
     <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />
@@ -259,6 +265,8 @@
     <ClCompile Include="KonfigPID.cpp" />
     <ClCompile Include="KonfiguracjaFFT.cpp" />
     <ClCompile Include="MapaWysokosciowa.cpp" />
+    <ClCompile Include="MapaWysokosciowaDoc.cpp" />
+    <ClCompile Include="MapaWysokosciowaView.cpp" />
     <ClCompile Include="MixerDlg.cpp" />
     <ClCompile Include="NapedStrojenie.cpp" />
     <ClCompile Include="OdbiornikiRC.cpp" />

@@ -76,6 +76,8 @@
 #define IDD_PORT                        310
 #define IDD_USTAWIENIA_KAMERY           311
 #define IDT_TIMER_RC                    311
+#define IDR_BRYLA3D                     312
+#define IDR_MAPA_WYSOKOSCIOWA           313
 #define IDD_ZAPISZ_FLASH                316
 #define IDD_TELEMETRIA                  318
 #define IDD_KONFIG_TELEMETRII           318
@@ -548,16 +550,21 @@
 #define ID_BUT_POBIERZ_FFT              32827
 #define ID_USTAWIENIA_WYJ32828          32828
 #define ID_USTAWIENIA_SILNIKI           32829
-#define ID_PLIK_OTW32830                32830
-#define ID_PLIK_MAPA                    32831
+//#define ID_PLIK_OTW32830                32830
+//#define ID_PLIK_MAPA                    32831
+//#define ID_Menu32832                    32832
+//#define ID_PLIK_NOWABRY32833            32833
+//#define ID_PLIK_NOWABRYLA               32834
+#define ID_PLIK_NOWA_MAPA               32835
+#define ID_PLIK_NOWA_BRYLA              32836
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        354
-#define _APS_NEXT_COMMAND_VALUE         32832
+#define _APS_NEXT_COMMAND_VALUE         32837
 #define _APS_NEXT_CONTROL_VALUE         1412
-#define _APS_NEXT_SYMED_VALUE           312
+#define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

@@ -353,18 +353,30 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X10] = "Kalm.Kal.Mag.X[10]";	//bias Y magnetometru 3
 	m_strNazwyZmiennychTele[TID_KALMAN_KAL_MAG_X11] = "Kalm.Kal.Mag.X[11]";	//bias Z magnetometru 3	
 
-	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_P] = "Symul.predk.k¹towa P";	//prêdkoœæ k¹towa P symulacji
-	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_Q] = "Symul.predk.k¹towa Q";	//prêdkoœæ k¹towa Q symulacji
-	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_R] = "Symul.predk.k¹towa R";	//prêdkoœæ k¹towa R symulacji
-	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_X] = "Symul.przyspiesze. X";	//sk³adowa przyspieszenia X
-	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Y] = "Symul.przyspiesze. Y";	//sk³adowa przyspieszenia Y
-	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Z] = "Symul.przyspiesze. Z";	//sk³adowa przyspieszenia Z
-	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_X] = "Symul.pole magnety. X";	//sk³adowa magnetyczna X
-	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Y] = "Symul.pole magnety. Y";	//sk³adowa magnetyczna Y
-	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Z] = "Symul.pole magnety. Z";	//sk³adowa magnetyczna Z
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_P] = "Symul.predk.k¹tow P";	//prêdkoœæ k¹towa P symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_Q] = "Symul.predk.k¹tow Q";	//prêdkoœæ k¹towa Q symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_PREDK_R] = "Symul.predk.k¹tow R";	//prêdkoœæ k¹towa R symulacji
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_X] = "Symul.przyspiesz. X";	//sk³adowa przyspieszenia X
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Y] = "Symul.przyspiesz. Y";	//sk³adowa przyspieszenia Y
+	m_strNazwyZmiennychTele[TID_SYMUL_AKCEL_Z] = "Symul.przyspiesz. Z";	//sk³adowa przyspieszenia Z
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_X] = "Symul.pola magnet. X";	//sk³adowa magnetyczna X
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Y] = "Symul.pola magnet. Y";	//sk³adowa magnetyczna Y
+	m_strNazwyZmiennychTele[TID_SYMUL_MAGN_Z] = "Symul.pola magnet. Z";	//sk³adowa magnetyczna Z
 	m_strNazwyZmiennychTele[TID_SYMUL_KAT_PHI] = "Symul.k¹t Phi";	//k¹t przechylenia uzyskany przez ca³kowanie prêdkosci k¹towej P
 	m_strNazwyZmiennychTele[TID_SYMUL_KAT_THE] = "Symul.k¹t Theta";	//k¹t pochylenia uzyskany przez ca³kowanie prêdkosci k¹towej Q
 	m_strNazwyZmiennychTele[TID_SYMUL_KAT_PSI] = "Symul.k¹t Psi";	//k¹t odchylenia uzyskany przez ca³kowanie prêdkosci k¹towej R
+
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_Y0] = "Kalm.K¹tów.Y[0]";	//innowacja kata Phi
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_Y1] = "Kalm.K¹tów.Y[1]";	//innowacja kata Theta
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_Y2] = "Kalm.K¹tów.Y[2]";	//innowacja kata Psi
+
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_K60] = "Kalm.K¹tów.K[6][0]";	//wzmocnienie biasu Z
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_K61] = "Kalm.K¹tów.K[6][1]";	//wzmocnienie biasu Z
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_K62] = "Kalm.K¹tów.K[6][2]";	//wzmocnienie biasu Z
+
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_DBZ0] = "Kalm.K¹tów.dbZ0";		//zmiana biasu od akcelerometru
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_DBZ1] = "Kalm.K¹tów.dbZ1";		//zmiana biasu od akcelerometru
+	m_strNazwyZmiennychTele[TID_KALMAN_KATOW_DBZ2] = "Kalm.K¹tów.dbZ2";		//zmiana biasu od akcelerometru
 }
 
 
@@ -1063,7 +1075,7 @@ uint8_t CKomunikacja::CzytajOkresTelemetrii(uint16_t* sOKres, uint16_t sRozmiar)
 		chErr = getProtokol().WyslijOdbierzRamke(m_chAdresAutopilota, ADRES_STACJI, PK_CZYTAJ_OKRES_TELE, chDaneWychodzace, 3, chDanePrzychodzace, &chOdebrano);
 		if (chErr == ERR_OK)
 		{
-			ASSERT(chOdebrano == chDaneWychodzace[0] * ROZMIAR_OKRESU_TELEMETRII);
+			ASSERT(chOdebrano == chDaneWychodzace[0] * ROZMIAR_OKRESU_TELEMETRII);		//chOdebrano == 0
 			for (int n = 0; n < chOdebrano / ROZMIAR_OKRESU_TELEMETRII; n++)
 				*(sOKres + r * OKRESOW_TELEMETRII_W_RAMCE + n) = chDanePrzychodzace[n * ROZMIAR_OKRESU_TELEMETRII + 0] + chDanePrzychodzace[n * ROZMIAR_OKRESU_TELEMETRII + 1] * 0x100;
 			sOdebranoLacznie += chOdebrano / ROZMIAR_OKRESU_TELEMETRII;

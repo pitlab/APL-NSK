@@ -20,7 +20,10 @@
 #include "Wskaznik_LED.h"
 #include "KonfiguracjaFFT.h"
 #include "WyjsciaRC.h"
-
+#include "Bryla3DDoc.h"
+#include "Bryla3DView.h"
+#include "MapaWysokosciowaDoc.h"
+#include "MapaWysokosciowaView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -61,8 +64,11 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUpdateUstawieniaWyjscRC)
 	ON_COMMAND(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUstawieniaSilniki)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUpdateUstawieniaSilniki)
+	ON_COMMAND(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnIdrBryla3d)
+	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnUpdateIdrBryla3d)
+	ON_COMMAND(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnIdrMapaWysokosciowa)
+	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnUpdateIdrMapaWysokosciowa)
 END_MESSAGE_MAP()
-
 
 // Konstrukcja klasy CAPLSNApp
 
@@ -152,6 +158,7 @@ BOOL CAPLSNApp::InitInstance()
 
 	// Rejestruj szablony dokumentu aplikacji. Szablony dokumentu
 	//  służą jako połączenie między dokumentami, oknami ramek i widokami
+	// Dokument wykresów:
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_APLSNTYPE,
 		RUNTIME_CLASS(CAPLSNDoc),
@@ -160,6 +167,26 @@ BOOL CAPLSNApp::InitInstance()
 	if (!pDocTemplate)
 		return FALSE;
 	AddDocTemplate(pDocTemplate);
+
+	//Dokument obiektu 3D
+	//CMultiDocTemplate* pSzablonBryly3D;
+	m_pSzablonBryly3D = new CMultiDocTemplate(IDR_BRYLA3D,
+		RUNTIME_CLASS(CBryla3DDoc),
+		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
+		RUNTIME_CLASS(CBryla3DView));
+	if (!m_pSzablonBryly3D)
+		return FALSE;
+	AddDocTemplate(m_pSzablonBryly3D);
+
+	//Dokument mapy wysokościowej
+	//CMultiDocTemplate* m_pSzablonMapyWysokosciowej;
+	m_pSzablonMapyWysokosciowej = new CMultiDocTemplate(IDR_MAPA_WYSOKOSCIOWA,
+		RUNTIME_CLASS(CMapaWysokosciowaDoc),
+		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
+		RUNTIME_CLASS(CMapaWysokosciowaView));
+	if (!m_pSzablonMapyWysokosciowej)
+		return FALSE;
+	AddDocTemplate(m_pSzablonMapyWysokosciowej);
 
 	// utwórz główne okno ramek MDI
 	CMainFrame* pMainFrame = new CMainFrame;
@@ -599,3 +626,46 @@ void CAPLSNApp::OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI)
 		pCmdUI->Enable(FALSE);
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia okno z nowym dokumentem typu bryła 3D
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnIdrBryla3d()
+{
+	m_pSzablonBryly3D->OpenDocumentFile(NULL);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Plik -> Nowa bryła 3D
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateIdrBryla3d(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(TRUE);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Uruchamia okno z nowym dokumentem typu mapa wysokościowa
+// Zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnIdrMapaWysokosciowa()
+{
+	m_pSzablonMapyWysokosciowej->OpenDocumentFile(NULL);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Definiuje dostępność polecenia menu Plik -> Nowa mapa
+// zwraca: nic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CAPLSNApp::OnUpdateIdrMapaWysokosciowa(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(TRUE);
+}

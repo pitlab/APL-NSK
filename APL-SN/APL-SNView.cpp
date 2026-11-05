@@ -661,7 +661,7 @@ void CAPLSNView::RysujWykresTelemetrii(stKonfigWykresu_t* stKonfig, std::vector<
 
 	do    //sprawdzaj wektor ramki od końca aż napełni się wykres
 	{
-		fZmienna = (*vDaneTele)[nIndexRamki--].dane[nIndeksZmiennej];
+		fZmienna = (*vDaneTele)[nIndexRamki--].dane[nIndeksZmiennej];	//tutaj nastepuje wyjątek a wartość zmiennej sięga do kosmosu
 		if (fZmienna)
 		{
 			pktfKoniec.x += stKonfig->fSkalaX;

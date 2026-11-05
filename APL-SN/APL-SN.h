@@ -31,6 +31,8 @@ public:
 	CProtokol& getProtokol();
 	CKomunikacja& getKomunikacja();
 	//CGniazdoSieci& getGniazdoSieci();
+	CMultiDocTemplate *m_pSzablonBryly3D;
+	CMultiDocTemplate *m_pSzablonMapyWysokosciowej;
 
 // Implementacja
 	BOOL  m_bHiColorIcons;
@@ -70,6 +72,10 @@ public:
 	afx_msg void OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaSilniki();
 	afx_msg void OnUpdateUstawieniaSilniki(CCmdUI* pCmdUI);
+	afx_msg void OnIdrBryla3d();
+	afx_msg void OnUpdateIdrBryla3d(CCmdUI* pCmdUI);
+	afx_msg void OnIdrMapaWysokosciowa();
+	afx_msg void OnUpdateIdrMapaWysokosciowa(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;
