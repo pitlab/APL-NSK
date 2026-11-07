@@ -4,7 +4,7 @@
 #include "APL-SN.h"
 #include "MixerDlg.h"
 #include "konfig_fram.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #define _USE_MATH_DEFINES 
 #include < math.h >
 

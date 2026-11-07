@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Protokol.h"
-#include "../Errors.h"
+#include "../KodyBledow.h"
 #include "../multithreading.h"
 #include <chrono>
 #include <thread>

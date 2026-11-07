@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "AnalizatorLogu.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 
 
 

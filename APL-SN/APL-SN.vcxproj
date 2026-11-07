@@ -199,8 +199,8 @@
     <ClInclude Include="APL-SN.h" />
     <ClInclude Include="APL-SNDoc.h" />
     <ClInclude Include="APL-SNView.h" />
-    <ClInclude Include="Bryla3DDoc.h" />
-    <ClInclude Include="Bryla3DView.h" />
+    <ClInclude Include="Sfera3DDoc.h" />
+    <ClInclude Include="Sfera3DView.h" />
     <ClInclude Include="CDaneFlash.h" />
     <ClInclude Include="CKonfigTelemetrii.h" />
     <ClInclude Include="CRegistry.h" />
@@ -226,7 +226,7 @@
     <ClInclude Include="Roj.h" />
     <ClInclude Include="Wron.h" />
     <ClInclude Include="DrzewoWykresow.h" />
-    <ClInclude Include="Errors.h" />
+    <ClInclude Include="KodyBledow.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="framework.h" />
@@ -251,8 +251,8 @@
     <ClCompile Include="APL-SN.cpp" />
     <ClCompile Include="APL-SNDoc.cpp" />
     <ClCompile Include="APL-SNView.cpp" />
-    <ClCompile Include="Bryla3DDoc.cpp" />
-    <ClCompile Include="Bryla3DView.cpp" />
+    <ClCompile Include="Sfera3DDoc.cpp" />
+    <ClCompile Include="Sfera3DView.cpp" />
     <ClCompile Include="CDaneFlash.cpp" />
     <ClCompile Include="CKonfigTelemetrii.cpp" />
     <ClCompile Include="CRegistry.cpp" />

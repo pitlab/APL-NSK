@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "JsonWykresu.h"
 #include <fstream>
 #include <filesystem>

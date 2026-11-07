@@ -15,7 +15,7 @@
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <vector>
-#include "Errors.h"
+#include "KodyBledow.h"
 
 // Okno dialogowe KonfiguracjaWyresow
 

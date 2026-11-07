@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Komunikacja.h"
-#include "../Errors.h"
+#include "../KodyBledow.h"
 #include "KomunikatySieci.h"
 #include "Protokol.h"
 #include "../APL-SNDoc.h"

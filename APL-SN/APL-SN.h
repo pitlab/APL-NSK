@@ -31,7 +31,7 @@ public:
 	CProtokol& getProtokol();
 	CKomunikacja& getKomunikacja();
 	//CGniazdoSieci& getGniazdoSieci();
-	CMultiDocTemplate *m_pSzablonBryly3D;
+	CMultiDocTemplate *m_pSzablonSfery3D;
 	CMultiDocTemplate *m_pSzablonMapyWysokosciowej;
 
 // Implementacja
@@ -58,8 +58,6 @@ public:
 	afx_msg void OnUpdateUstawieniaMikser(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaOdbiornikirc();
 	afx_msg void OnUpdateUstawieniaOdbiornikirc(CCmdUI* pCmdUI);
-//	afx_msg void OnUstawieniaNaped();
-//	afx_msg void OnUpdateUstawieniaNaped(CCmdUI* pCmdUI);
 	afx_msg void OnUstawParkamery();
 	afx_msg void OnUpdateUstawParkamery(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaZapiszsampleaudio();
@@ -72,8 +70,8 @@ public:
 	afx_msg void OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaSilniki();
 	afx_msg void OnUpdateUstawieniaSilniki(CCmdUI* pCmdUI);
-	afx_msg void OnIdrBryla3d();
-	afx_msg void OnUpdateIdrBryla3d(CCmdUI* pCmdUI);
+	afx_msg void OnIdrSfera3d();
+	afx_msg void OnUpdateIdrSfera3d(CCmdUI* pCmdUI);
 	afx_msg void OnIdrMapaWysokosciowa();
 	afx_msg void OnUpdateIdrMapaWysokosciowa(CCmdUI* pCmdUI);
 };

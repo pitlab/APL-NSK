@@ -7,7 +7,7 @@
 #include "APL-SN.h"
 #include "CDaneFlash.h"
 #include "afxdialogex.h"
-#include "errors.h"
+#include "KodyBledow.h"
 
 
 // Okno dialogowe CDaneFlash

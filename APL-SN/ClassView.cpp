@@ -14,7 +14,7 @@
 #include "KonfiguracjaWyresow.h"
 #include "KonfigRejestratora.h"
 #include "komunikacja/Komunikacja.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "komunikacja/Protokol.h"
 
 class CClassViewMenuButton : public CMFCToolBarMenuButton

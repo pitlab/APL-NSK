@@ -5,7 +5,7 @@
 #include "APL-SN.h"
 #include "NapedStrojenie.h"
 #include "afxdialogex.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "sys_def_wspolny.h"
 #include <math.h>
 

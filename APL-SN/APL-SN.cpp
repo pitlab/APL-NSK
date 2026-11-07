@@ -20,8 +20,8 @@
 #include "Wskaznik_LED.h"
 #include "KonfiguracjaFFT.h"
 #include "WyjsciaRC.h"
-#include "Bryla3DDoc.h"
-#include "Bryla3DView.h"
+#include "Sfera3DDoc.h"
+#include "Sfera3DView.h"
 #include "MapaWysokosciowaDoc.h"
 #include "MapaWysokosciowaView.h"
 
@@ -64,8 +64,8 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUpdateUstawieniaWyjscRC)
 	ON_COMMAND(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUstawieniaSilniki)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUpdateUstawieniaSilniki)
-	ON_COMMAND(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnIdrBryla3d)
-	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnUpdateIdrBryla3d)
+	ON_COMMAND(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnIdrSfera3d)
+	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnUpdateIdrSfera3d)
 	ON_COMMAND(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnIdrMapaWysokosciowa)
 	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnUpdateIdrMapaWysokosciowa)
 END_MESSAGE_MAP()
@@ -170,13 +170,13 @@ BOOL CAPLSNApp::InitInstance()
 
 	//Dokument obiektu 3D
 	//CMultiDocTemplate* pSzablonBryly3D;
-	m_pSzablonBryly3D = new CMultiDocTemplate(IDR_BRYLA3D,
-		RUNTIME_CLASS(CBryla3DDoc),
+	m_pSzablonSfery3D = new CMultiDocTemplate(IDR_BRYLA3D,
+		RUNTIME_CLASS(CSfera3DDoc),
 		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
-		RUNTIME_CLASS(CBryla3DView));
-	if (!m_pSzablonBryly3D)
+		RUNTIME_CLASS(CSfera3DView));
+	if (!m_pSzablonSfery3D)
 		return FALSE;
-	AddDocTemplate(m_pSzablonBryly3D);
+	AddDocTemplate(m_pSzablonSfery3D);
 
 	//Dokument mapy wysokościowej
 	//CMultiDocTemplate* m_pSzablonMapyWysokosciowej;
@@ -632,9 +632,9 @@ void CAPLSNApp::OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI)
 // Uruchamia okno z nowym dokumentem typu bryła 3D
 // Zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnIdrBryla3d()
+void CAPLSNApp::OnIdrSfera3d()
 {
-	m_pSzablonBryly3D->OpenDocumentFile(NULL);
+	m_pSzablonSfery3D->OpenDocumentFile(NULL);
 }
 
 
@@ -643,7 +643,7 @@ void CAPLSNApp::OnIdrBryla3d()
 // Definiuje dostępność polecenia menu Plik -> Nowa bryła 3D
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnUpdateIdrBryla3d(CCmdUI* pCmdUI)
+void CAPLSNApp::OnUpdateIdrSfera3d(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(TRUE);
 }

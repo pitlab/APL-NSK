@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "MapaWysokosciowa.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 
 
 /*

@@ -6,7 +6,7 @@
 #include "WyjsciaRC.h"
 #include "afxdialogex.h"
 #include "konfig_fram.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "pid_kanaly.h"
 
 // Okno dialogowe WyjsciaRC

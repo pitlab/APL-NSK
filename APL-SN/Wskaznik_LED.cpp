@@ -5,7 +5,7 @@
 #include "APL-SN.h"
 #include "Wskaznik_LED.h"
 #include "afxdialogex.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 
 // Okno dialogowe Wskaznik_LED
 

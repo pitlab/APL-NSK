@@ -54,7 +54,7 @@
     <ClInclude Include="pch.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Errors.h">
+    <ClInclude Include="KodyBledow.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="multithreading.h">
@@ -153,10 +153,10 @@
     <ClInclude Include="MapaWysokosciowa.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Bryla3DDoc.h">
+    <ClInclude Include="Sfera3DDoc.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Bryla3DView.h">
+    <ClInclude Include="Sfera3DView.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="MapaWysokosciowaDoc.h">
@@ -281,10 +281,10 @@
     <ClCompile Include="MapaWysokosciowa.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Bryla3DDoc.cpp">
+    <ClCompile Include="Sfera3DDoc.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Bryla3DView.cpp">
+    <ClCompile Include="Sfera3DView.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="MapaWysokosciowaDoc.cpp">

@@ -6,7 +6,7 @@
 #include "KonfigPID.h"
 #include "afxdialogex.h"
 #include <math.h>
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "pid_kanaly.h"
 #include "sys_def_wspolny.h"
 #include <assert.h>

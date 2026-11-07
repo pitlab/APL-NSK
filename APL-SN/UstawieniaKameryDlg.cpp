@@ -5,7 +5,7 @@
 #include "APL-SN.h"
 #include "UstawieniaKameryDlg.h"
 #include "afxdialogex.h"
-#include "Errors.h"
+#include "KodyBledow.h"
 #include "komunikacja/Komunikacja.h"
 #include "komunikacja/polecenia_komunikacyjne.h"
 
