@@ -7,12 +7,14 @@ class CMapaWysokosciowaView :    public CView
 protected:
     CMapaWysokosciowaView();
     virtual ~CMapaWysokosciowaView();
+    DECLARE_MESSAGE_MAP()
 
 public:
     virtual void OnDraw(CDC* pDC);
+  
 
 protected:
-    DECLARE_MESSAGE_MAP()
+    afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
 
 };
 
