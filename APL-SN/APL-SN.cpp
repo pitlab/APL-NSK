@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_COMMAND(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUstawieniaSilniki)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUpdateUstawieniaSilniki)
 	ON_COMMAND(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnIdrSfera3d)
-	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnUpdateIdrSfera3d)
+	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_SFERA, &CAPLSNApp::OnUpdateIdrSfera3d)
 	ON_COMMAND(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnIdrMapaWysokosciowa)
 	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnUpdateIdrMapaWysokosciowa)
 END_MESSAGE_MAP()
@@ -170,7 +170,7 @@ BOOL CAPLSNApp::InitInstance()
 
 	//Dokument obiektu 3D
 	//CMultiDocTemplate* pSzablonBryly3D;
-	m_pSzablonSfery3D = new CMultiDocTemplate(IDR_BRYLA3D,
+	m_pSzablonSfery3D = new CMultiDocTemplate(IDR_SFERA3D,
 		RUNTIME_CLASS(CSfera3DDoc),
 		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
 		RUNTIME_CLASS(CSfera3DView));
@@ -180,7 +180,7 @@ BOOL CAPLSNApp::InitInstance()
 
 	//Dokument mapy wysokościowej
 	//CMultiDocTemplate* m_pSzablonMapyWysokosciowej;
-	m_pSzablonMapyWysokosciowej = new CMultiDocTemplate(IDR_MAPA_WYSOKOSCIOWA,
+	m_pSzablonMapyWysokosciowej = new CMultiDocTemplate(IDR_MAPA_NUMERYCZNA,
 		RUNTIME_CLASS(CMapaWysokosciowaDoc),
 		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
 		RUNTIME_CLASS(CMapaWysokosciowaView));

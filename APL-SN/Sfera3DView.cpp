@@ -101,14 +101,15 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
     ID2D1RenderTarget* pRT = pRenderTarget->GetRenderTarget();
     if (pRT == nullptr)
       return FALSE;
-	
-	//Tytu³ wykresu
-	rObiekt = { rOkno.left + 10, 10, rOkno.right, 40 };
-	pRenderTarget->DrawText(_T("Wykres biegunowy 3D magnetometru"), rObiekt, m_pBrushBlack, m_pTextFormat);
-
 
 	pRenderTarget->FillRectangle(rOkno, m_pLinearGradientBrush);
 	m_bOknoGotowe = TRUE;	//mo¿na zacz¹æ pobieraæ dane do rysowania sfery
+
+		//Tytu³ wykresu
+	rObiekt = { rOkno.left + 10, 10, rOkno.right, 25 };
+	pRenderTarget->DrawText(_T("Wykres biegunowy 3D magnetometru"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	rObiekt = { rOkno.left + 10, 25, rOkno.right, 40 };
+	pRenderTarget->DrawText(_T("Obrót: mysz + PPM"), rObiekt, m_pBrushBlack, m_pTextFormat);
 
 	//rysuj uk³ad wspó³rzednych
 	int rozmiar = rOkno.bottom;
@@ -162,8 +163,6 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		for (uint8_t i = 0; i < 3; i++)
 		{
 			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu
-			//kat_obr[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_BSP_IMUX + i];
-			//kat_obr[i] = 0.0f;
 		}
 
 		//dodaj k¹t obrotu zadany myszk¹

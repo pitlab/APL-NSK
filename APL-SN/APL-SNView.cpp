@@ -209,6 +209,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CHwndRenderTarget* pRenderTarget = (CHwndRenderTarget*)lParam;
 	ASSERT_VALID(pRenderTarget);
 	CAPLSNDoc* pDoc = GetDocument();
+	//pDoc->SetTitle(_T("Telemetria APL"));
 	stKonfigWykresu_t stKonfigLewy, stKonfigPrawy;
 	int nLiczbaWykresow;
 	int nIdZmiennej;
