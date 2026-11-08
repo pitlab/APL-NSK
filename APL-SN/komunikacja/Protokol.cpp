@@ -260,24 +260,25 @@ void CProtokol::WyslanoDaneETH(void)
 // [we] nTypPortu - typ zamykanego portu
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CProtokol::ZamknijPort(uint8_t chTypPortu)
+uint8_t CProtokol::ZamknijPort(uint8_t cTypPortu)
 {
-	uint8_t chErr = ERR_OK;
+	uint8_t cErr = ERR_OK;
+	uint8_t cZnacznikCzasu = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
 	
-	switch(chTypPortu)
+	switch(cTypPortu)
 	{
 	case UART:	
-		uint8_t chDaneWy;
-		uint8_t chRamka[ROZMIAR_RAMKI_UART];
+		uint8_t cDaneWy;
+		uint8_t cRamka[ROZMIAR_RAMKI_UART];
+		
 		using namespace std::this_thread; // sleep_for, sleep_until
 		using namespace std::chrono; // nanoseconds, system_clock, seconds
-
-		chErr = PrzygotujRamke(ADRES_BROADCAST, ADRES_STACJI, PK_ZAMKNIJ_POLACZENIE, &chDaneWy, 0, chRamka);
-		if (chErr == ERR_OK)
-			chErr = WyslijRamke(m_chTypPortu, chRamka, ROZM_CIALA_RAMKI);
+		cErr = PrzygotujRamke(ADRES_BROADCAST, ADRES_STACJI, cZnacznikCzasu, PK_ZAMKNIJ_POLACZENIE, &cDaneWy, 0, cRamka);
+		if (cErr == ERR_OK)
+			cErr = WyslijRamke(m_chTypPortu, cRamka, ROZM_CIALA_RAMKI);
 		
 		sleep_for(microseconds(1500));	//czekaj a¿ ramka zostanie wys³ana, dopiero potem roz³acz port. Do wys³ania jest 80 bitów. Przy 57600 zajmie to 1388us
-		chErr = getPortSzeregowy().Disconnect();
+		cErr = getPortSzeregowy().Disconnect();
 		m_bKoniecWatkuUart = TRUE;
 		WaitForSingleObject(pWskWatkuSluchajacegoUart, INFINITE);
 		break;
@@ -295,9 +296,9 @@ uint8_t CProtokol::ZamknijPort(uint8_t chTypPortu)
 		WaitForSingleObject(pWskWatkuSluchajacegoEth, INFINITE);
 		break;
 
-	default: chErr = ERR_ZLY_TYP_PORTU;	break;
+	default: cErr = ERR_ZLY_TYP_PORTU;	break;
 	}
-	return chErr;
+	return cErr;
 }
 
 
@@ -335,7 +336,7 @@ UINT CProtokol::WatekSluchajPortuEth(LPVOID pParam)
 uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 {
 	unsigned int iOdczytano;
-	uint8_t chErr;
+	uint8_t cErr = ERR_OK;
 	uint8_t chBuforOdb[ROZMIAR_RAMKI_UART];
 
 	
@@ -344,14 +345,14 @@ uint8_t CProtokol::WlasciwyWatekSluchajPortuCom()
 
 	while (!m_bKoniecWatkuUart)
 	{
-		chErr = getPortSzeregowy().ReceiveData(chBuforOdb, &iOdczytano, ROZM_DANYCH_UART);
-		if ((chErr == ERR_OK) && (iOdczytano))
+		cErr = getPortSzeregowy().ReceiveData(chBuforOdb, &iOdczytano, ROZM_DANYCH_UART);
+		if ((cErr == ERR_OK) && (iOdczytano))
 		{
 			//analizuj dane binarne bajt po bajcie
 			getProtokol().AnalizujOdebraneDane(chBuforOdb, iOdczytano);
 		}
 	}
-	return ERR_OK;
+	return cErr;
 }
 
 
@@ -389,7 +390,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 {
 	int nIndeksZmiennej;		//indeks zmiennej liczony z bitów obecnoœci zmiennej w ramce
 	int nNumerZmiennejwRamce;	//para bajtów przenosz¹ca wartoœæ zmiennej
-	uint8_t chBity,  chErr;
+	uint8_t chBity,  cErr;
 	uint8_t chZnakCzasuPoprzedniejRamki = 0;
 	stRamka_t stRamka;
 	stTelemetria_t stDaneTele;
@@ -397,8 +398,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 
 	for (uint32_t n = 0; n < iOdczytano; n++)
 	{		
-		chErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
-		if ((chErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
+		cErr = AnalizujRamke(chDaneWe[n], &m_chStanProtokolu, &m_chAdresNadawcy, &m_chZnakCzasu, &m_chPolecenie, &m_chIloscDanychRamki, &m_chOdbieranyBajt, m_chDaneWy, &m_sCRC16);
+		if ((cErr == ERR_OK) && (m_chStanProtokolu == PR_ODBIOR_NAGL) && (m_chIloscDanychRamki > -1))
 		{
 			//obs³uga ramek telemetrii
 			if ((m_chPolecenie >= PK_TELEMETRIA1) && (m_chPolecenie <= PK_TELEMETRIA4))
@@ -498,12 +499,12 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				if (!m_chIloscDanychRamki)	//wykrzacza siê na zerowych ramkach typu OK, wiêc zrób niezerowy rozmiar danych
 					m_chIloscDanychRamki = 1;
 				//zbierz dane ramki do struktury
-				stRamka.chPolecenie = m_chPolecenie;
-				stRamka.chZnakCzasu = m_chZnakCzasu;
-				stRamka.chRozmiar = m_chIloscDanychRamki;
-				stRamka.chAdrNadawcy = m_chAdresNadawcy;
+				stRamka.cPolecenie = m_chPolecenie;
+				stRamka.cZnakCzasu = m_chZnakCzasu;
+				stRamka.cRozmiar = m_chIloscDanychRamki;
+				stRamka.cAdrNadawcy = m_chAdresNadawcy;
 				for (uint8_t d = 0; d < m_chIloscDanychRamki; d++)
-					stRamka.dane.push_back(m_chDaneWy[d]);
+					stRamka.vcDane.push_back(m_chDaneWy[d]);
 				m_vRamkaPolecenia.push_back(stRamka);	//wstaw strukturê do wektora
 				LeaveCriticalSection(&m_SekcjaKrytycznaPolecen);
 				m_Koniec = clock();
@@ -518,32 +519,32 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Przygotowuje do wys³ania ramkê komunikacyjn¹
-// [i] chAdrNad - adres nadawcy (w³asny)
-// [i] cAdrOdb - adres odbiorcy
-// [i] chZnakCzasu - znacznik czasu
-// [i] chPolecenie - polecenie do wykonania
-// [i] chDane* - wska¿nik na strukturê przekazywanych danych
-// [i] chRozmiar - rozmiar danych
+// [i] cAdrNad - adres nadawcy (w³asny)
+// [i] cdrOdb - adres odbiorcy
+// [i] cZnakCzasu - znacznik czasu
+// [i] cPolecenie - polecenie do wykonania
+// [i] cDane* - wska¿nik na strukturê przekazywanych danych
+// [i] cRozmiar - rozmiar danych
 // [o] wskRamka* - wska¿nik na bufor gotowej ramki
 // Zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CProtokol::PrzygotujRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDane, uint8_t chRozmiar, uint8_t* wskRamka)
+uint8_t CProtokol::PrzygotujRamke(uint8_t cAdrOdb, uint8_t cAdrNad, uint8_t cZnakCzasu, uint8_t cPolecenie, uint8_t* cDane, uint8_t cRozmiar, uint8_t* wskRamka)
 {
 	uint8_t n;
 	uint8_t* chKopiaDane = wskRamka;
 	uint16_t sCRC = 0;
 
 	*wskRamka++ = NAGLOWEK;
-	*wskRamka++ = chAdrOdb;
-	*wskRamka++ = chAdrNad;
-	*wskRamka++ = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
-	//*wskRamka++ = 0x12;
-	*wskRamka++ = chPolecenie;
-	*wskRamka++ = chRozmiar;
-	for (n = 0; n < chRozmiar; n++)
-		*wskRamka++ = *chDane++;
+	*wskRamka++ = cAdrOdb;
+	*wskRamka++ = cAdrNad;
+	//*wskRamka++ = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
+	*wskRamka++ = cZnakCzasu;
+	*wskRamka++ = cPolecenie;
+	*wskRamka++ = cRozmiar;
+	for (n = 0; n < cRozmiar; n++)
+		*wskRamka++ = *cDane++;
 		
-	for (n=1; n< chRozmiar + ROZM_CIALA_RAMKI-2; n++)	//zacznij liczyæ od adresu odbiorcy (1) do CRC (-2)
+	for (n=1; n< cRozmiar + ROZM_CIALA_RAMKI-2; n++)	//zacznij liczyæ od adresu odbiorcy (1) do CRC (-2)
 		sCRC = LiczCRC16(*(chKopiaDane+n), sCRC);
 
 	*wskRamka++ = sCRC & 0xFF;	//m³odszy przodem
@@ -576,25 +577,25 @@ uint16_t CProtokol::LiczCRC16(uint8_t dane, uint16_t crc)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Wys³a ramkê komunikacyjn¹ przez UART
-// [i] chAdrNad - adres nadawcy (w³asny)
+// [i] cAdrNad - adres nadawcy (w³asny)
 // [i] cAdrOdb - adres odbiorcy
-// [i] chPolecenie - polecenie do wykonania
-// [i] chDaneWy* - wskaŸnik na strukturê danych do wys³ania
-// [i] chRozmiarWy - rozmiar danych do wys³ania
-// [i] chDaneWe* - wskaŸnik na strukturê danych do odebrania
-// [i] chRozmiarWe* - wskaŸnik na rozmiar odebranych danych
+// [i] cPolecenie - polecenie do wykonania
+// [i] cDaneWy* - wskaŸnik na strukturê danych do wys³ania
+// [i] cRozmiarWy - rozmiar danych do wys³ania
+// [i] cDaneWe* - wskaŸnik na strukturê danych do odebrania
+// [i] cRozmiarWe* - wskaŸnik na rozmiar odebranych danych
 // [i] iCzasNaRamke - dopuszczalny czas przeznaczony na wys³anie ramki
 // Zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_t chPolecenie, uint8_t* chDaneWy, uint8_t chRozmiarWy, uint8_t* chDaneWe, uint8_t* chRozmiarWe, uint32_t iCzasNaRamke)
+uint8_t CProtokol::WyslijOdbierzRamke(uint8_t cAdrOdb, uint8_t cAdrNad, uint8_t cPolecenie, uint8_t* cDaneWy, uint8_t cRozmiarWy, uint8_t* cDaneWe, uint8_t* cRozmiarWe, uint32_t iCzasNaRamke)
 {
-	uint8_t* chKopiaDaneWe;
-	uint8_t* chKopiaRozmiarWe;
+	uint8_t* cKopiaDaneWe;
+	uint8_t* cKopiaRozmiarWe;
 	BOOL bPolecenieGotowe = FALSE;
 	BOOL bRamkaOK = FALSE;
-	uint8_t chLicznikRetransmisji = 0;
-	uint8_t chErr = ERR_OK;
-
+	uint8_t cLicznikRetransmisji = 0;
+	uint8_t cErr = ERR_OK;
+	uint8_t cZnacznikCzasu;
 	uint32_t nErr;
 	int32_t nRozmiar, nIndeksRamki;
 	uint8_t chRamka[ROZMIAR_RAMKI_UART];
@@ -602,32 +603,34 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 	uint32_t iCzasOczekiwania;
 
 	//zachowaj wskaŸniki. Bêd¹ potrzebne do retransmisji.
-	chKopiaDaneWe = chDaneWe;
-	chKopiaRozmiarWe = chRozmiarWe;
+	cKopiaDaneWe = cDaneWe;
+	cKopiaRozmiarWe = cRozmiarWe;
 
 	m_chStanProtokolu = PR_ODBIOR_NAGL;	//resetuj stan protoko³u odbiorczego
-	PrzygotujRamke(chAdrOdb, chAdrNad, chPolecenie, chDaneWy, chRozmiarWy, chRamka);
+	cZnacznikCzasu = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
+	PrzygotujRamke(cAdrOdb, cAdrNad, cZnacznikCzasu, cPolecenie, cDaneWy, cRozmiarWy, chRamka);
+	
 
-	while (!bPolecenieGotowe && (chLicznikRetransmisji < TR_PROB_WYSLANIA))
+	while (!bPolecenieGotowe && (cLicznikRetransmisji < TR_PROB_WYSLANIA))
 	{
 		//je¿eli przed wys³aniem polecenia w buforze odbiorczym s¹ jakieœ dane to wyczyœæ je 
-		chErr = CzyscBuforPortu(m_chTypPortu);
-		if (chErr != ERR_OK)
-			return chErr;
+		cErr = CzyscBuforPortu(m_chTypPortu);
+		if (cErr != ERR_OK)
+			return cErr;
 
 		//je¿eli ponowne wys³anie ramki
-		if (chLicznikRetransmisji > 0)
+		if (cLicznikRetransmisji > 0)
 		{
 			//odtwórz wskaŸniki
-			chDaneWe = chKopiaDaneWe;
-			chRozmiarWe = chKopiaRozmiarWe;
+			cDaneWe = cKopiaDaneWe;
+			cRozmiarWe = cKopiaRozmiarWe;
 		}
 
 		//wyslij ramkê
-		TRACE("Wyœlij ramkê: %d, rt: %d\n", chPolecenie, chLicznikRetransmisji);
+		TRACE("Wyœlij ramkê: %d, rt: %d\n", cPolecenie, cLicznikRetransmisji);
 
-		chErr = WyslijRamke(m_chTypPortu, chRamka, chRozmiarWy + ROZM_CIALA_RAMKI);
-		if (chErr == ERR_OK)
+		cErr = WyslijRamke(m_chTypPortu, chRamka, cRozmiarWy + ROZM_CIALA_RAMKI);
+		if (cErr == ERR_OK)
 		{
 			//gdy przyjdzie odpowiedŸ to zostanie wygenerowane zdarzenie: m_hZdarzenieRamkaDanychGotowa. Czekaj na nie
 			ckCzasPocz¹tku = clock();
@@ -648,22 +651,22 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 					nIndeksRamki = nRozmiar - 1;	//zapamiêtaj indeks ramki
 
 					//odpowiedzi¹ mo¿e byæ ramka PK_BLAD z kodem b³êdu: OK gdy w porz¹dku lub inny gdy b³¹d
-					if (m_vRamkaPolecenia[nIndeksRamki].chPolecenie == PK_BLAD)
+					if (m_vRamkaPolecenia[nIndeksRamki].cPolecenie == PK_BLAD)
 					{
-						if (!m_vRamkaPolecenia[nIndeksRamki].dane.empty())	
+						if (!m_vRamkaPolecenia[nIndeksRamki].vcDane.empty())	
 						{
-							chErr = m_vRamkaPolecenia[nIndeksRamki].dane[0];	//zwracany kod b³êdu
-							if (chErr == ERR_OK)
+							cErr = m_vRamkaPolecenia[nIndeksRamki].vcDane[0];	//zwracany kod b³êdu
+							if (cErr == ERR_OK)
 							{
-								if (m_vRamkaPolecenia[nIndeksRamki].dane[1] == chPolecenie)	//czy zwracana jest odpowiedŸ na wys³ane polecenie?
+								if (m_vRamkaPolecenia[nIndeksRamki].vcDane[1] == cPolecenie)	//czy zwracana jest odpowiedŸ na wys³ane polecenie?
 									bRamkaOK = TRUE;
 							}
 						}
 					}
-					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odczytane dane
+					//lub odpowiedz¹ jest ramka o takim samym poleceniu zawieraj¹ca odczytane dane i takim samym znaczniku czasu
 					else
 					{
-						if (m_vRamkaPolecenia[nIndeksRamki].chPolecenie == chPolecenie)
+						if ((m_vRamkaPolecenia[nIndeksRamki].cPolecenie == cPolecenie) && (m_vRamkaPolecenia[nIndeksRamki].cZnakCzasu == cZnacznikCzasu))
 							bRamkaOK = TRUE;
 					}
 				}
@@ -671,23 +674,23 @@ uint8_t CProtokol::WyslijOdbierzRamke(uint8_t chAdrOdb, uint8_t chAdrNad, uint8_
 
 			if (iCzasOczekiwania < iCzasNaRamke)
 			{
-				nRozmiar = (uint32_t)m_vRamkaPolecenia[nIndeksRamki].dane.size();
-				*chRozmiarWe = nRozmiar;
+				nRozmiar = (uint32_t)m_vRamkaPolecenia[nIndeksRamki].vcDane.size();
+				*cRozmiarWe = nRozmiar;
 				for (int n = 0; n < nRozmiar; n++)
-					*chDaneWe++ = m_vRamkaPolecenia[nIndeksRamki].dane[n];
+					*cDaneWe++ = m_vRamkaPolecenia[nIndeksRamki].vcDane[n];
 				bPolecenieGotowe = TRUE;
 			}
 			else
 			{
-				chLicznikRetransmisji++;
-				chErr = ERR_TIMEOUT;
+				cLicznikRetransmisji++;
+				cErr = ERR_TIMEOUT;
 			}
 		}
 		else
-			if ((chErr == ERR_NOT_CONNECTED) || (chErr == ERR_SEND_DATA))
-				return chErr;
+			if ((cErr == ERR_NOT_CONNECTED) || (cErr == ERR_SEND_DATA))
+				return cErr;
 	}
-	return chErr;
+	return cErr;
 }
 
 

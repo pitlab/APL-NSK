@@ -14,7 +14,7 @@ protected:
     CSfera3DView();
     virtual ~CSfera3DView();
     DECLARE_MESSAGE_MAP()
-    double m_dZoom = 0.5;
+    float m_fZoom = 0.5;
     CD2DSolidColorBrush* m_pBrushBlack;
     CD2DSolidColorBrush* m_pBrushGray;
     CD2DSolidColorBrush* m_pBrushR;

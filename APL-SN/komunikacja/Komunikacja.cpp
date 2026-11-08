@@ -703,10 +703,11 @@ uint8_t CKomunikacja::WlasciwyWatekDekodujRamkiPolecen ()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 uint8_t CKomunikacja::WyslijOK()
 {
-	uint8_t chRamka[ROZM_CIALA_RAMKI];
+	uint8_t cRamka[ROZM_CIALA_RAMKI];
+	uint8_t cZnacznikCzasu = (uint8_t)(clock() * 100 / CLOCKS_PER_SEC);	//czas w "tickach" setnych sekund;
 
-	getProtokol().PrzygotujRamke(m_chAdresAutopilota, ADRES_STACJI, PK_OK, NULL, 0, chRamka);
-	return getProtokol().WyslijRamke(m_chTypPolaczenia, chRamka, ROZM_CIALA_RAMKI);
+	getProtokol().PrzygotujRamke(m_chAdresAutopilota, ADRES_STACJI, cZnacznikCzasu, PK_OK, NULL, 0, cRamka);
+	return getProtokol().WyslijRamke(m_chTypPolaczenia, cRamka, ROZM_CIALA_RAMKI);
 }
 
 

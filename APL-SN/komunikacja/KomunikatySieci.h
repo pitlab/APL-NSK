@@ -26,11 +26,11 @@ struct BinaryFrame
 
 struct stRamka_t
 {
-	uint8_t chPolecenie = 0;
-	uint8_t chZnakCzasu = 0;
-	uint8_t chRozmiar = 0;
-	uint8_t chAdrNadawcy = 0;
-	std::vector <uint8_t> dane;
+	uint8_t cPolecenie = 0;
+	uint8_t cZnakCzasu = 0;
+	uint8_t cRozmiar = 0;
+	uint8_t cAdrNadawcy = 0;
+	std::vector <uint8_t> vcDane;
 };
 
 

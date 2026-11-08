@@ -115,7 +115,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	if (rOkno.right < rozmiar) //wykres XY jest symetryczny, wiêc rozmiarem bêdzie mniejszy z rozmiarów okna
 		rozmiar = rOkno.right;
 
-	float fSkala = (float)rozmiar / (NOMINALNE_MAGN)*m_dZoom;
+	float fSkala = (float)rozmiar / (NOMINALNE_MAGN)*m_fZoom;
 
 	//oœ pozioma Y
 	ptStart.x = (float)(rOkno.right - rozmiar) / 2;
@@ -162,12 +162,13 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		for (uint8_t i = 0; i < 3; i++)
 		{
 			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu
-			kat_obr[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_BSP_IMUX + i];
+			//kat_obr[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_BSP_IMUX + i];
+			//kat_obr[i] = 0.0f;
 		}
 
 		//dodaj k¹t obrotu zadany myszk¹
-		kat_obr[0] += m_ptZmianaPozycjiMyszy.y * 0.005;
-		kat_obr[1] += m_ptZmianaPozycjiMyszy.x * 0.005;
+		kat_obr[0] = m_ptZmianaPozycjiMyszy.y * 0.005f;
+		kat_obr[1] = m_ptZmianaPozycjiMyszy.x * 0.005f;
 		Obrot_wektora(wekt_we, wekt_wy, kat_obr);
 
 		ptStop.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
@@ -184,8 +185,6 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 		ptStart.y = ptStop.y;
 		
 	}
-
-
     return TRUE;
 }
 
@@ -193,7 +192,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Funkcja zwraca kolor do rysowania odcinka linii na sferze w zale¿nosci od d³ugoœci wektora magnetycznego
-// Nominalna wartoœæ jest rysowana kolorem zielonym, mniejsze niebieskim a wiêksze czerwonym
+// Nominalna wartoœæ jest rysowana kolorem zielonym, mniejsza niebieskim a wiêksza czerwonym
 // Parametry: 
 //  fD³ugoœæWektora - d³ugoœæ wektora magnetycznego w mikroteslach
 // zwraca: kolor
@@ -201,7 +200,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 D2D1_COLOR_F CSfera3DView:: UstawKolor(float fD³ugoœæWektora)
 {
 	float r, g, b;
-	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.6 * NOMINALNE_MAGN)/ (1.4 * NOMINALNE_MAGN - 0.6 * NOMINALNE_MAGN);
+	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.8 * NOMINALNE_MAGN)/ (1.2 * NOMINALNE_MAGN - 0.8 * NOMINALNE_MAGN);
 	if (fDlugoœæWzgledna > 1.0f)
 		fDlugoœæWzgledna = 1.0f;
 	if (fDlugoœæWzgledna < 0.0f)
@@ -239,9 +238,9 @@ D2D1_COLOR_F CSfera3DView:: UstawKolor(float fD³ugoœæWektora)
 BOOL CSfera3DView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if (zDelta > 0)
-		m_dZoom *= 1.1;
+		m_fZoom *= 1.1;
 	else
-		m_dZoom /= 1.1;
+		m_fZoom /= 1.1;
 	Invalidate(FALSE);
 
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
