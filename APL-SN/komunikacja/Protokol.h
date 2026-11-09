@@ -5,6 +5,8 @@
 #include "KomunikatySieci.h"
 #include "polecenia_komunikacyjne.h"
 #include "../sys_def_wspolny.h"
+#include <mutex>
+#include <vector>
 
 #define PK_UST_ROZD_KAMERY	5
 
@@ -35,6 +37,7 @@ public:
 	uint8_t OdbierzDane();
 	int m_wskaznikInstancji;
 	static int m_LicznikInstancji;
+	mutable std::mutex m_mutexDanychTelemetrii;
 	struct stEkstremaTelemetrii_t
 	{
 		float fMin = WARTOSC_MAX;
@@ -48,6 +51,7 @@ public:
 		uint16_t dane16[2];
 		uint8_t dane8[4];
 	} m_unia8_32;
+	
 
 private:
 	static UINT WatekSluchajPortuCom(LPVOID pParam);
@@ -56,8 +60,6 @@ private:
 	uint8_t AnalizujRamke(uint8_t chDaneWe, uint8_t* chStanProtokolu, uint8_t* chAdresNadawcy, uint8_t* chZnakCzasu, uint8_t* chPolecenie, uint8_t* chRozmiarDanychWy, uint8_t* chWskOdbDanej, uint8_t* chDaneWy, uint16_t* sCRC16);
 	uint8_t CzyscBuforPortu(uint8_t chTypPortu);	
 	clock_t m_Koniec;
-
-private:
 	uint8_t	m_chTypPortu;		//rodzaj nawi¹zanego po³¹czenia
 	uint8_t WlasciwyWatekSluchajPortuCom();
 	uint8_t WlasciwyWatekSluchajPortuEth();

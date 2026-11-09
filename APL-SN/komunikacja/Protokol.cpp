@@ -437,6 +437,8 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				
 				if (nNumerZmiennejwRamce)	//je¿eli coœ przysz³o
 				{
+					std::lock_guard<std::mutex> lock(m_mutexDanychTelemetrii);		//w³¹cz ochronê dostêpu do danych. Wy³¹czenie nastêpuje automatycznie po wyjsciu z nawiasu klamrowego
+
 					//je¿eli dane s¹ wysy³ane w wiecej ni¿ jednej ramce, to wszystkie te ramki maj¹ ten sam znacznik czasu. W takim przypadku scal je w jednym indeksie wektora
 					if ((m_chZnakCzasu == chZnakCzasuPoprzedniejRamki) && (!m_vDaneTelemetryczne.empty()))
 					{
@@ -448,7 +450,7 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 						}
 					}
 					else
-					{
+					{						
 						m_vDaneTelemetryczne.push_back(stDaneTele);
 						SetEvent(m_hZdarzenieRamkaTelemetriiGotowa);		//tutaj zg³aszany jest wyj¹tek
 					}
@@ -461,8 +463,6 @@ void CProtokol::AnalizujOdebraneDane(uint8_t* chDaneWe, uint32_t iOdczytano)
 				//TRACE("SetEvent: Telemetria\n");	
 			}
 			else
-
-
 			//obs³uga nietypowej ramki nios¹cej wyniki FFT
 			if (m_chPolecenie == PK_TELEM_FFT)
 			{

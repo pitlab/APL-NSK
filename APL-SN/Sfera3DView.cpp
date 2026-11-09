@@ -19,9 +19,12 @@ END_MESSAGE_MAP()
 //Konstruktor
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 CSfera3DView::CSfera3DView()
+: pWskWatkuOdswiezaniaSfery3D(FALSE)
+, m_bOknoGotowe(FALSE)
+, m_bObracanieMyszk¹(FALSE)
 {
-	m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
-	m_bOknoGotowe = FALSE;	//nie pobieraj jeszcze danych bo okno rysowania nie jest gotowe
+	//m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
+	//m_bOknoGotowe = FALSE;	//nie pobieraj jeszcze danych bo okno rysowania nie jest gotowe
     EnableD2DSupport();
 
 	m_pBrushBlack = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Black));
@@ -164,16 +167,24 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	ptStart.x = (float)(rOkno.right) / 2;
 	ptStart.y = (float)(rOkno.bottom - rozmiar) / 2;
 
-	for (size_t n = 0; n < zRozmiar; n++)
+	//dodaj k¹t obrotu zadany myszk¹
+	kat_obr[0] = m_ptZmianaPozycjiMyszy.y * 0.005f;
+	kat_obr[1] = m_ptZmianaPozycjiMyszy.x * 0.005f;
+	kat_obr[2] = 0.0f;
+
+	//pocz¹tek wykresu jest indeksem zerowym wektora
+	std::lock_guard<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii);		//w³¹cz ochronê dostêpu do danych 
+	for (uint8_t i = 0; i < 3; i++)
+		wekt_we[i] = getProtokol().m_vDaneTelemetryczne[0].dane[TID_MAGNE1X + i];
+
+	Obrot_wektora(wekt_we, wekt_wy, kat_obr);
+	ptStart.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
+	ptStart.y = (float)(rOkno.bottom / 2) - (fSkala * wekt_wy[1]);
+
+	for (size_t n = 1; n < zRozmiar; n++)
 	{
 		for (uint8_t i = 0; i < 3; i++)
-		{
-			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu
-		}
-
-		//dodaj k¹t obrotu zadany myszk¹
-		kat_obr[0] = m_ptZmianaPozycjiMyszy.y * 0.005f;
-		kat_obr[1] = m_ptZmianaPozycjiMyszy.x * 0.005f;
+			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu - po dodaniu mutexa chyba ju¿ nie
 		Obrot_wektora(wekt_we, wekt_wy, kat_obr);
 
 		ptStop.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
@@ -185,10 +196,8 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 
 		pRT->CreateSolidColorBrush(color, &pBrush);
 		pRT->DrawLine(ptStart, ptStop, pBrush, 2.0);
-
 		ptStart.x = ptStop.x;
-		ptStart.y = ptStop.y;
-		
+		ptStart.y = ptStop.y;		
 	}
     return TRUE;
 }

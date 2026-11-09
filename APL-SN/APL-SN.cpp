@@ -64,10 +64,6 @@ BEGIN_MESSAGE_MAP(CAPLSNApp, CWinAppEx)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_WYJ32828, &CAPLSNApp::OnUpdateUstawieniaWyjscRC)
 	ON_COMMAND(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUstawieniaSilniki)
 	ON_UPDATE_COMMAND_UI(ID_USTAWIENIA_SILNIKI, &CAPLSNApp::OnUpdateUstawieniaSilniki)
-	ON_COMMAND(ID_PLIK_NOWA_BRYLA, &CAPLSNApp::OnIdrSfera3d)
-	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_SFERA, &CAPLSNApp::OnUpdateIdrSfera3d)
-	ON_COMMAND(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnIdrMapaWysokosciowa)
-	ON_UPDATE_COMMAND_UI(ID_PLIK_NOWA_MAPA, &CAPLSNApp::OnUpdateIdrMapaWysokosciowa)
 END_MESSAGE_MAP()
 
 // Konstrukcja klasy CAPLSNApp
@@ -205,6 +201,18 @@ BOOL CAPLSNApp::InitInstance()
 	// Analizuj wiersz polecenia pod kątem standardowych poleceń powłoki, DDE i otwarcia pliku
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
+
+	//wybierz domyslny szablon dokumentu jako wykresy logów. W przyszłości może to być mapa
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileNew)
+	{
+		if (pDocTemplate != nullptr)
+		{
+			pDocTemplate->OpenDocumentFile(NULL); // Tworzy nowy pusty dokument wybranego typu
+		}
+
+		// Zmień akcję na FileNothing, aby standardowy mechanizm MFC nie otworzył okna dialogowego
+		cmdInfo.m_nShellCommand = CCommandLineInfo::FileNothing;
+	}
 
 	// Włącz otwieranie za pomocą polecenia Execute DDE
 	EnableShellOpen();
@@ -627,45 +635,3 @@ void CAPLSNApp::OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI)
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Uruchamia okno z nowym dokumentem typu bryła 3D
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnIdrSfera3d()
-{
-	m_pSzablonSfery3D->OpenDocumentFile(NULL);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Definiuje dostępność polecenia menu Plik -> Nowa bryła 3D
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnUpdateIdrSfera3d(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(TRUE);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Uruchamia okno z nowym dokumentem typu mapa wysokościowa
-// Zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnIdrMapaWysokosciowa()
-{
-	m_pSzablonMapyWysokosciowej->OpenDocumentFile(NULL);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Definiuje dostępność polecenia menu Plik -> Nowa mapa
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNApp::OnUpdateIdrMapaWysokosciowa(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(TRUE);
-}

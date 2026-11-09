@@ -70,10 +70,6 @@ public:
 	afx_msg void OnUpdateUstawieniaWyjscRC(CCmdUI* pCmdUI);
 	afx_msg void OnUstawieniaSilniki();
 	afx_msg void OnUpdateUstawieniaSilniki(CCmdUI* pCmdUI);
-	afx_msg void OnIdrSfera3d();
-	afx_msg void OnUpdateIdrSfera3d(CCmdUI* pCmdUI);
-	afx_msg void OnIdrMapaWysokosciowa();
-	afx_msg void OnUpdateIdrMapaWysokosciowa(CCmdUI* pCmdUI);
 };
 
 extern CAPLSNApp theApp;
