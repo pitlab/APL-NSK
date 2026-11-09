@@ -11,6 +11,7 @@ END_MESSAGE_MAP()
 
 
 CMapaWysokosciowaView::CMapaWysokosciowaView()
+: m_fZoom(1.0f)
 {
     // Enable D2D support for this window:
     EnableD2DSupport();
@@ -67,14 +68,14 @@ LRESULT CMapaWysokosciowaView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 // Parametry: 
 //  *stNMT - wskaŸnik na mapê
 //  pRenderTarget - narzêdzie rysuj¹ce
-//  pBrush - parametry pêdzla rysujacego osie
+//  pBrush - parametry pêdzla 
 // zwraca: nic
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CMapaWysokosciowaView::RysujMapeNumeryczn¹RGB512(CMapaWysokosciowaDoc::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
 {
 	size_t Indeks;
 	int16_t sPodstawaKoloru, sKolorR, sKolorG, sKolorB;
-	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
+	CComPtr<ID2D1Bitmap> m_spBitmapaMapyNMT;
 	//size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
 	size_t bufferSize = stNMT->vfWysokoœæ.size() * sizeof(float);
 	std::vector<uint8_t> bgraBuffer(bufferSize);
@@ -130,12 +131,12 @@ void CMapaWysokosciowaView::RysujMapeNumeryczn¹RGB512(CMapaWysokosciowaDoc::stNu
 
 	D2D1_SIZE_U size = D2D1::SizeU(stNMT->nKolumn, stNMT->nWierszy);
 	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-	m_spCameraBitmap.Release();
+	m_spBitmapaMapyNMT.Release();
 	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
-	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spCameraBitmap);
+	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spBitmapaMapyNMT);
 
-	if (m_spCameraBitmap)
-		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoomPoziomo, (FLOAT)stNMT->nWierszy * m_fZoomPoziomo));
+	if (m_spBitmapaMapyNMT)
+		pRT->DrawBitmap(m_spBitmapaMapyNMT, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoom, (FLOAT)stNMT->nWierszy * m_fZoom));
 }
 
 
@@ -151,9 +152,9 @@ void CMapaWysokosciowaView::RysujMapeNumeryczn¹RGB512(CMapaWysokosciowaDoc::stNu
 BOOL CMapaWysokosciowaView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if (zDelta > 0)
-		m_fZoomPoziomo *= 1.1;
+		m_fZoom *= 1.1f;
 	else
-		m_fZoomPoziomo /= 1.1;
+		m_fZoom /= 1.1f;
 	Invalidate(FALSE);	
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }

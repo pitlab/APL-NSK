@@ -16,9 +16,10 @@
 #define IDR_MAINFRAME_256               129
 #define IDR_APLSNTYPE                   130
 #define ID_WINDOW_MANAGER               131
-#define IDS_STRING2009                  132
 #define IDR_MAPA_NUMERYCZNA             132
 #define ID_VIEW_FILEVIEW                133
+#define IDR_MAPA_NUMERYCZNA2            133
+#define IDR_SFERA_MAG_TYPE              133
 #define ID_VIEW_CLASSVIEW               134
 #define ID_PROPERTIES                   135
 #define ID_OPEN                         136

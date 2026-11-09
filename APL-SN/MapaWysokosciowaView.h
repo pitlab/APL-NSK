@@ -18,7 +18,7 @@ public:
 
 protected:
     afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
-    float m_fZoomPoziomo;
+    float m_fZoom;
     CD2DSolidColorBrush* m_pBrushMapyNMT;
     CD2DTextFormat* m_pTextFormat;
     CD2DLinearGradientBrush* m_pLinearGradientBrush;

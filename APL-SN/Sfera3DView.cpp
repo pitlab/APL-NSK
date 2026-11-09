@@ -91,7 +91,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	CSfera3DDoc* pDoc = (CSfera3DDoc*)GetDocument();
     ASSERT_VALID(pDoc);
 
-	pDoc->SetTitle(_T("Magnetometr 3D"));
+	//pDoc->SetTitle(_T("Magnetometr 3D"));	//powoduje wyj¹tek
 
     CHwndRenderTarget* pRenderTarget = reinterpret_cast<CHwndRenderTarget*>(lParam);
     ASSERT_VALID(pRenderTarget);
@@ -140,18 +140,24 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	rObiekt = { (int)ptStop.x + 2, (int)ptStop.y - 20, (int)ptStop.x + 30, (int)ptStop.y };
 	pRenderTarget->DrawText(_T("X-"), rObiekt, m_pBrushBlack, m_pTextFormat);
 
-
-	//okr¹g
+	//okr¹g o sta³ym promieniu
 	ptStart.x = (float)rOkno.right / 2;
 	ptStart.y = (float)rOkno.bottom / 2;
-	promien.height = promien.width = fSkala * NOMINALNE_MAGN * cosf(INKLINACJA_MAG);
+	promien.height = promien.width = (float)(rozmiar * 0.4);
 	CD2DEllipse okrag = CD2DEllipse(ptStart, promien);
+	pRenderTarget->DrawEllipse(okrag, m_pBrushGray);
+
+	//okr¹g dla plaskiego obrotu
+	okrag.point.x = (float)rOkno.right / 2;
+	okrag.point.y = (float)rOkno.bottom / 2;
+	okrag.radiusX = okrag.radiusY = fSkala * NOMINALNE_MAGN * cosf(INKLINACJA_MAG);
 	pRenderTarget->DrawEllipse(okrag, m_pBrushBlack);
 
-	//okr¹g o sta³ym promieniu
-	promien.height = promien.width = (float)(rozmiar * 0.4);
-	okrag = CD2DEllipse(ptStart, promien);
-	pRenderTarget->DrawEllipse(okrag, m_pBrushGray);
+	//okr¹g dla zwyk³ego obrotu
+	okrag.point.x = (float)rOkno.right / 2;
+	okrag.point.y = (float)rOkno.bottom / 2;
+	okrag.radiusX = okrag.radiusY = fSkala * NOMINALNE_MAGN;
+	pRenderTarget->DrawEllipse(okrag, m_pBrushBlack);
 
 	//rysuj sferê
 	zRozmiar = getProtokol().m_vDaneTelemetryczne.size();
@@ -365,6 +371,9 @@ void CSfera3DView::OnRButtonUp(UINT nFlags, CPoint point)
 void CSfera3DView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (m_bObracanieMyszk¹)
+	{
 		m_ptZmianaPozycjiMyszy = point - m_ptPocz¹tkowaPozycjaMyszy;
+		Invalidate();
+	}
 	CView::OnMouseMove(nFlags, point);
 }

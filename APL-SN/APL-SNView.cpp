@@ -106,7 +106,6 @@ CAPLSNView::CAPLSNView() noexcept
 	// Initialize D2D resources:
 	m_pBrushWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 	m_pBrushOsiWykresu = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
-	m_pBrushMapyNMT = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 	//m_pBrushLegendy = new CD2DBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Gray));
 	
 	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 11);
@@ -290,7 +289,7 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			{
 				for (int x = 0; x < m_nRozmiarWykresuFFT; x++)
 				{
-					Indeks = ((size_t)(y * (int)m_nRozmiarWykresuFFT) + x) * sizeof(float);
+					Indeks = ((size_t)y * m_nRozmiarWykresuFFT + x) * sizeof(float);
 
 					//rysuj skalę kolorów przechodzącą z niebieskiej w czerwoną
 					chWartosc = (int8_t)(pDoc->m_fWynikFFT[y][t][x] * WODOSPAD_SKALA_KOLORU);
@@ -512,12 +511,6 @@ afx_msg LRESULT CAPLSNView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 			stKonfigLewy.rOknoWykresu.top = stKonfigLewy.rOknoWykresu.bottom + MIEJSCE_Y_MIEDZY_WYKRESAMI;
 			stKonfigPrawy.rOknoWykresu.top = stKonfigPrawy.rOknoWykresu.bottom + MIEJSCE_Y_MIEDZY_WYKRESAMI;
 		}	
-	}
-
-	if (pDoc->m_bOdczytanaMapaNMT)
-	{
-		//RysujMapeNumerycznąRG384(&GetDocument()->m_stNMT, pRenderTarget, m_pBrushMapyNMT);
-		RysujMapeNumerycznąRGB512(&GetDocument()->m_stNMT, pRenderTarget, m_pBrushMapyNMT);
 	}
 	return TRUE;
 }
@@ -915,159 +908,6 @@ float CAPLSNView::ZnajdzPodzialke(CRect okno, float fMin, float fMax)
 	}
 	fFinalnySkokPodzialki = (float)round(fFinalnySkokPodzialki) / nMnoznik;*/
 	return fFinalnySkokPodzialki;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Rysuje mapę Numerycznego Modelu Terenu. Kolory rozkladaja się 7 odcinkach po 64 stopnie jasności nastepująco:
-// RRRR = 7..4 x 64
-//    GGGG = 4..1 x 64
-// Parametry: 
-//  *stNMT - wskaźnik na mapę
-//  pRenderTarget - narzędzie rysujące
-//  pBrush - parametry pędzla rysujacego osie
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujMapeNumerycznąRG384(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
-{
-	size_t Indeks;
-	int16_t sPodstawaKoloru, sKolorR, sKolorG;
-	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-	size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
-	std::vector<uint8_t> bgraBuffer(bufferSize);
-	float fSkalaKoloru = (255 + 128) / (stNMT->fWysMax - stNMT->fWysMin);
-
-	for (int n = 0; n < stNMT->vfWysokość.size(); n++)
-	{
-		Indeks = n * sizeof(float);
-		if (stNMT->vfWysokość[n] != stNMT->fNodata)
-		{
-			//rysuj skalę kolorów przechodzącą z zielonej w czerwoną
-			sPodstawaKoloru = (int16_t)((stNMT->vfWysokość[n] - stNMT->fWysMin) * fSkalaKoloru);
-			if (sPodstawaKoloru > 255)	//tylko czerwony
-			{
-				sKolorR = sPodstawaKoloru - 128;
-				if (sKolorR > 255)
-					sKolorR = 255;
-				sKolorG = 0;
-			}
-			else
-			if (sPodstawaKoloru < 128)	//tylko zielony
-			{
-				sKolorG = 255 - sPodstawaKoloru;
-				if (sKolorG > 255)
-					sKolorG = 255;
-				sKolorR = 0;
-			}
-			else
-			{
-				sKolorR = sPodstawaKoloru - 128;
-				sKolorG = 255 - sPodstawaKoloru;
-			}
-
-			bgraBuffer[Indeks + 0] = 0;					//B
-			bgraBuffer[Indeks + 1] = (uint8_t)sKolorG;	//G
-			bgraBuffer[Indeks + 2] = (uint8_t)sKolorR;	//R
-		}
-		else
-		{
-			bgraBuffer[Indeks + 0] = 250;	//B
-			bgraBuffer[Indeks + 1] = 0;		//G
-			bgraBuffer[Indeks + 2] = 0;		//R
-		}
-		bgraBuffer[Indeks + 3] = 0xFF;			//Alfa
-	}
-
-	D2D1_SIZE_U size = D2D1::SizeU(stNMT->nKolumn, stNMT->nWierszy);
-	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-	m_spCameraBitmap.Release();
-	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
-	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spCameraBitmap);
-
-	if (m_spCameraBitmap)
-		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoomPoziomo, (FLOAT)stNMT->nWierszy * m_fZoomPoziomo));
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Rysuje mapę Numerycznego Modelu Terenu. Kolory rozkladaja się 8 odcinkach po 64 stopnie jasności nastepująco:
-// RRRR = 8..5 x 64
-//   GGGG = 6..3 x 64
-//     BBBB = 4..1 x 64
-// Parametry: 
-//  *stNMT - wskaźnik na mapę
-//  pRenderTarget - narzędzie rysujące
-//  pBrush - parametry pędzla rysujacego osie
-// zwraca: nic
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void CAPLSNView::RysujMapeNumerycznąRGB512(MapaWysokosciowa::stNumerycznyModelTerenu_t* stNMT, CHwndRenderTarget* pRenderTarget, CD2DSolidColorBrush* pBrush)
-{
-	size_t Indeks;
-	int16_t sPodstawaKoloru, sKolorR, sKolorG, sKolorB;
-	CComPtr<ID2D1Bitmap> m_spCameraBitmap;
-	//size_t bufferSize = ((size_t)stNMT->nKolumn * stNMT->nWierszy * sizeof(float));
-	size_t bufferSize = stNMT->vfWysokość.size() * sizeof(float);
-	std::vector<uint8_t> bgraBuffer(bufferSize);
-	float fSkalaKoloru = (8 * 64) / (stNMT->fWysMax - stNMT->fWysMin);
-
-	//for (int n = 0; n < stNMT->vfWysokość.size(); n++)
-	for (int n = 0; n < stNMT->nKolumn * stNMT->nWierszy; n++)
-	{
-		Indeks = n * sizeof(float);
-		if (stNMT->vfWysokość[n] != stNMT->fNodata)
-		{
-			//rysuj skalę kolorów przechodzącą z czerwonej przez zieloną w niebieską z częścią wspólną 128 miedzy sąsiadujacymu kolorami
-			sPodstawaKoloru = (int16_t)((stNMT->vfWysokość[n] - stNMT->fWysMin) * fSkalaKoloru);
-			if (sPodstawaKoloru > (6 * 64))	//tylko czerwony
-			{
-				sKolorB = 0;
-				sKolorG = 0;
-				sKolorR = sPodstawaKoloru - (4 * 64);
-			}
-			else
-			if (sPodstawaKoloru > (4 * 64))	//czerwono-zielony
-			{
-				sKolorB = 0;				
-				sKolorG = (6 * 64) - sPodstawaKoloru;
-				sKolorR = sPodstawaKoloru - (4 * 64);
-			}
-			else
-			if (sPodstawaKoloru > (2 * 64))	//zielono-niebieski
-			{				
-				sKolorR = 0;
-				sKolorB = (4 * 64) - sPodstawaKoloru;
-				sKolorG = sPodstawaKoloru - (6 * 64);
-			}
-			else   //tylko niebieski
-			{
-				sKolorB = (4 * 64) - sPodstawaKoloru;
-				sKolorG = 0;
-				sKolorR = 0;
-			}
-
-			bgraBuffer[Indeks + 0] = (uint8_t)sKolorB;	//B
-			bgraBuffer[Indeks + 1] = (uint8_t)sKolorG;	//G
-			bgraBuffer[Indeks + 2] = (uint8_t)sKolorR;	//R
-		}
-		else
-		{
-			bgraBuffer[Indeks + 0] = 250;	//B
-			bgraBuffer[Indeks + 1] = 0;		//G
-			bgraBuffer[Indeks + 2] = 250;	//R
-		}			
-		bgraBuffer[Indeks + 3] = 0xFF;			//Alfa		
-	}
-
-	D2D1_SIZE_U size = D2D1::SizeU(stNMT->nKolumn, stNMT->nWierszy);
-	D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-	m_spCameraBitmap.Release();
-	ID2D1RenderTarget* pRT = GetRenderTarget()->GetRenderTarget();
-	HRESULT hr = pRT->CreateBitmap(size, bgraBuffer.data(), stNMT->nKolumn * 4, &props, &m_spCameraBitmap);
-
-	if (m_spCameraBitmap)
-		pRT->DrawBitmap(m_spCameraBitmap, D2D1::RectF(0.f, 0.f, (FLOAT)stNMT->nKolumn * m_fZoomPoziomo, (FLOAT)stNMT->nWierszy * m_fZoomPoziomo));
 }
 
 

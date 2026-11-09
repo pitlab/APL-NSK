@@ -170,7 +170,7 @@ BOOL CAPLSNApp::InitInstance()
 
 	//Dokument obiektu 3D
 	//CMultiDocTemplate* pSzablonBryly3D;
-	m_pSzablonSfery3D = new CMultiDocTemplate(IDR_SFERA3D,
+	m_pSzablonSfery3D = new CMultiDocTemplate(IDR_SFERA_MAG_TYPE,
 		RUNTIME_CLASS(CSfera3DDoc),
 		RUNTIME_CLASS(CChildFrame), // niestandardowa podrzędna ramka MDI
 		RUNTIME_CLASS(CSfera3DView));
