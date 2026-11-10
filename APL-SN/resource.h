@@ -4,6 +4,7 @@
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
+#define IDD_DIALOGBAR                   103
 #define IDP_SOCKETS_INIT_FAILED         104
 #define ID_STATUSBAR_PANE1              120
 #define ID_STATUSBAR_PANE2              121
@@ -71,6 +72,7 @@
 #define IDR_OUTPUT_POPUP                182
 #define IDR_PROPERTIES                  183
 #define IDB_PROPERTIES_HC               184
+#define ID_PASEK_MAG_SFERY              188
 #define IDS_BUILD_TAB                   300
 #define IDS_DEBUG_TAB                   301
 #define IDS_FIND_TAB                    302
@@ -102,6 +104,7 @@
 #define IDD_PARAMETRY_FFT               350
 #define IDD_WYJSCIA_RC                  351
 #define IDD_REJESTRATOR                 352
+#define IDD_DLG_WIDOKU_SFERY            354
 #define IDC_COMBO_PORT_COM              1000
 #define IDC_COMBO_PREDKOSC              1001
 #define IDC_EDIT_ADRES                  1005
@@ -486,8 +489,11 @@
 #define IDC_CHECK3                      1410
 #define IDC_CHECK4                      1411
 #define IDC_CHECK5                      1412
+#define IDC_CHECK_MAG1                  1412
 #define IDC_CHECK6                      1413
+#define IDC_CHECK_MAG2                  1413
 #define IDC_CHECK7                      1414
+#define IDC_CHECK_MAG3                  1414
 #define IDC_CHECK8                      1415
 #define IDC_CHECK9                      1416
 #define IDC_CHECK10                     1417
@@ -561,9 +567,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        354
+#define _APS_NEXT_RESOURCE_VALUE        357
 #define _APS_NEXT_COMMAND_VALUE         32838
-#define _APS_NEXT_CONTROL_VALUE         1412
+#define _APS_NEXT_CONTROL_VALUE         1415
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

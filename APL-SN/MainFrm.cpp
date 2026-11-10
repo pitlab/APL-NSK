@@ -139,6 +139,26 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndProperties);
 
+	// Utwórz pasek dialogowy okna widoku sfery magnetometrów
+	HINSTANCE hOldInst = AfxGetResourceHandle();
+	AfxSetResourceHandle(AfxGetInstanceHandle());
+	
+	CFrameWnd::EnableDocking(CBRS_ALIGN_ANY);
+	if (!m_wndDlgMagnetometryWidokuSfery.Create(this, MAKEINTRESOURCE(IDD_DLG_WIDOKU_SFERY), CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_HIDE_INPLACE | WS_CHILD | WS_VISIBLE, ID_PASEK_MAG_SFERY)) // Nadaj unikalne ID dla paska w resource.h
+	{
+		TRACE0("Nie udało się utworzyć CDialogBar\n");
+		return -1;
+	}
+	AfxSetResourceHandle(hOldInst);
+	m_wndDlgMagnetometryWidokuSfery.EnableDocking(CBRS_ALIGN_ANY);
+	DockControlBar(&m_wndDlgMagnetometryWidokuSfery, AFX_IDW_DOCKBAR_TOP);
+	ShowControlBar(&m_wndDlgMagnetometryWidokuSfery, TRUE, FALSE);
+
+	CRect rect;
+	m_wndDlgMagnetometryWidokuSfery.GetWindowRect(&rect);
+	rect.right = rect.left + 300; // przykładowa szerokość
+	rect.bottom = rect.top + 30;  // przykładowa wysokość
+	RecalcLayout();
 
 	// ustaw menedżera obiektów wizualnych pod kątem rysowania wszystkich elementów interfejsu użytkownika
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerVS2008));
@@ -164,7 +184,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Zamień kolejność nazwy dokumentu i nazwy aplikacji na pasku tytułu okna. Ten
 	// zwiększa użyteczność paska zadań, ponieważ razem z miniaturą jest widoczna nazwa dokumentu.
 	ModifyStyle(0, FWS_PREFIXTITLE);
-
 	m_bPolaczono = FALSE;
 	//int NrPortu;
 	//m_cObslugaRejestru.CzytajRejestrInt(L"NrPortuCOM", &NrPortu);

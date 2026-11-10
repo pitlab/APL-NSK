@@ -20,8 +20,8 @@ protected:
     CD2DSolidColorBrush* m_pBrushR;
     CD2DSolidColorBrush* m_pBrushG;
     CD2DSolidColorBrush* m_pBrushB;
-    CD2DTextFormat* m_pTextFormat;
-    CD2DTextFormat* m_pTextFormatSkalaY;
+    CD2DTextFormat* m_pTextFormatTytu³;
+    CD2DTextFormat* m_pTextFormatOpis;
     CD2DLinearGradientBrush* m_pLinearGradientBrush;
 
     BOOL m_bKoniecWatkuOdswiezaniaTelemtrii;
@@ -34,6 +34,12 @@ protected:
 public:
     //CBryla3DDoc* GetDocument() const;
     virtual void OnDraw(CDC* pDC);
+    //CButton m_cbMag1; // Obiekt checkboxa
+    //CButton m_cbMag2;
+    //CButton m_cbMag3;
+    //afx_msg void OnCheckboxMag1Clicked();
+    //afx_msg void OnCheckboxMag2Clicked();
+    //afx_msg void OnCheckboxMag3Clicked();
     
 protected:
     afx_msg LRESULT OnDraw2d(WPARAM wParam, LPARAM lParam);
@@ -41,6 +47,9 @@ protected:
     uint8_t WlasciwyWatekInvalidujStanSfery();
     void Obrot_wektora(float *wekt_we, float *wekt_wy, float *kat_obr);
     D2D1_COLOR_F UstawKolor(float fD³ugoœæWektora);
+    BOOL m_bRysujMag1;
+    BOOL m_bRysujMag2;
+    BOOL m_bRysujMag3;
 
 
 public:
@@ -48,6 +57,7 @@ public:
     afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };
 
 

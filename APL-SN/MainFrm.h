@@ -59,6 +59,7 @@ protected:
 public:
 	CString m_strKomunikatWych;
 	BOOL m_bPolaczono;
+	CDialogBar m_wndDlgMagnetometryWidokuSfery;
 
 private:
 	CObslugaRejestru m_cObslugaRejestru;

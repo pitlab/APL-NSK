@@ -13,6 +13,8 @@ ON_WM_MOUSEWHEEL()
 ON_WM_RBUTTONDOWN()
 ON_WM_RBUTTONUP()
 ON_WM_MOUSEMOVE()
+ON_WM_CREATE()
+//ON_BN_CLICKED(ID_CHECKBOX_MAG1, CSfera3DView::OnCheckboxMag1Clicked)
 END_MESSAGE_MAP()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +35,9 @@ CSfera3DView::CSfera3DView()
 	m_pBrushG = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Green));
 	m_pBrushB = new CD2DSolidColorBrush(GetRenderTarget(), D2D1::ColorF(D2D1::ColorF::Blue));
 
-	m_pTextFormat = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 14);
-	m_pTextFormatSkalaY = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 11);
-	m_pTextFormat->Get()->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+	m_pTextFormatTytu³ = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 14);
+	m_pTextFormatOpis = new CD2DTextFormat(GetRenderTarget(), _T("Verdana"), 11);
+	m_pTextFormatTytu³->Get()->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
 
 	D2D1_GRADIENT_STOP gradientStopsT³a[2] = {
 	{0.0f, D2D1::ColorF(D2D1::ColorF::White)},
@@ -59,6 +61,22 @@ CSfera3DView::~CSfera3DView()
 	m_bKoniecWatkuOdswiezaniaTelemtrii = TRUE;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//OnCreate tworzy checkoxy wyboru magnetometru w oknie
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int CSfera3DView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// Tworzenie checkboxa wewn¹trz okna widoku (wspó³rzêdne x, y, szerokoœæ, wysokoœæ)
+	//m_cbMag1.Create(_T("Magnetometr 1"), WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, CRect(10, 40, 200, 56), this, ID_CHECKBOX_MAG1);
+	//m_cbMag2.Create(_T("Magnetometr 2"), WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, CRect(10, 60, 200, 77), this, ID_CHECKBOX_MAG2);
+	//m_cbMag3.Create(_T("Magnetometr 3"), WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, CRect(10, 80, 200, 98), this, ID_CHECKBOX_MAG3);
+
+	return 0;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,10 +127,10 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	m_bOknoGotowe = TRUE;	//mo¿na zacz¹æ pobieraæ dane do rysowania sfery
 
 		//Tytu³ wykresu
-	rObiekt = { rOkno.left + 10, 10, rOkno.right, 25 };
-	pRenderTarget->DrawText(_T("Wykres biegunowy 3D magnetometru"), rObiekt, m_pBrushBlack, m_pTextFormat);
-	rObiekt = { rOkno.left + 10, 25, rOkno.right, 40 };
-	pRenderTarget->DrawText(_T("Obrót: mysz + PPM"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	rObiekt = { rOkno.left + 15, 10, rOkno.right, 25 };
+	pRenderTarget->DrawText(_T("Wykres biegunowy 3D magnetometru"), rObiekt, m_pBrushBlack, m_pTextFormatTytu³);
+	rObiekt = { rOkno.left + 15, 25, rOkno.right, 40 };
+	pRenderTarget->DrawText(_T("Obrót: PPM + mysz"), rObiekt, m_pBrushBlack, m_pTextFormatOpis);
 
 	//rysuj uk³ad wspó³rzednych
 	int rozmiar = rOkno.bottom;
@@ -128,9 +146,9 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	ptStop.y = (float)rOkno.bottom / 2;
 	pRenderTarget->DrawLine(ptStart, ptStop, m_pBrushBlack);
 	rObiekt = { (int)ptStop.x - 20, (int)ptStop.y, (int)ptStop.x, (int)ptStop.y + 20 };
-	pRenderTarget->DrawText(_T("Y-"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	pRenderTarget->DrawText(_T("Y-"), rObiekt, m_pBrushBlack, m_pTextFormatTytu³);
 	rObiekt = { (int)ptStart.x + 5, (int)ptStart.y, (int)ptStart.x + 30, (int)ptStart.y + 20 };
-	pRenderTarget->DrawText(_T("Y+"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	pRenderTarget->DrawText(_T("Y+"), rObiekt, m_pBrushBlack, m_pTextFormatTytu³);
 
 	//oœ pionowa X
 	ptStart.x = (float)(rOkno.right) / 2;
@@ -139,14 +157,14 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	ptStop.y = (float)(rOkno.bottom - rozmiar) / 2 + rozmiar;
 	pRenderTarget->DrawLine(ptStart, ptStop, m_pBrushBlack);
 	rObiekt = { (int)ptStart.x + 2, (int)ptStart.y + 5, (int)ptStart.x + 30, (int)ptStart.y + 20 };
-	pRenderTarget->DrawText(_T("X+"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	pRenderTarget->DrawText(_T("X+"), rObiekt, m_pBrushBlack, m_pTextFormatTytu³);
 	rObiekt = { (int)ptStop.x + 2, (int)ptStop.y - 20, (int)ptStop.x + 30, (int)ptStop.y };
-	pRenderTarget->DrawText(_T("X-"), rObiekt, m_pBrushBlack, m_pTextFormat);
+	pRenderTarget->DrawText(_T("X-"), rObiekt, m_pBrushBlack, m_pTextFormatTytu³);
 
 	//okr¹g o sta³ym promieniu
 	ptStart.x = (float)rOkno.right / 2;
 	ptStart.y = (float)rOkno.bottom / 2;
-	promien.height = promien.width = (float)(rozmiar * 0.4);
+	promien.height = promien.width = (float)(rozmiar * 0.4f);
 	CD2DEllipse okrag = CD2DEllipse(ptStart, promien);
 	pRenderTarget->DrawEllipse(okrag, m_pBrushGray);
 
@@ -214,7 +232,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 D2D1_COLOR_F CSfera3DView:: UstawKolor(float fD³ugoœæWektora)
 {
 	float r, g, b;
-	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.8 * NOMINALNE_MAGN)/ (1.2 * NOMINALNE_MAGN - 0.8 * NOMINALNE_MAGN);
+	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.8f * NOMINALNE_MAGN)/ (1.2f * NOMINALNE_MAGN - 0.8f * NOMINALNE_MAGN);
 	if (fDlugoœæWzgledna > 1.0f)
 		fDlugoœæWzgledna = 1.0f;
 	if (fDlugoœæWzgledna < 0.0f)
@@ -252,9 +270,9 @@ D2D1_COLOR_F CSfera3DView:: UstawKolor(float fD³ugoœæWektora)
 BOOL CSfera3DView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if (zDelta > 0)
-		m_fZoom *= 1.1;
+		m_fZoom *= 1.1f;
 	else
-		m_fZoom /= 1.1;
+		m_fZoom /= 1.1f;
 	Invalidate(FALSE);
 
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
@@ -386,3 +404,26 @@ void CSfera3DView::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	CView::OnMouseMove(nFlags, point);
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Obs³uga klikniêcia chekboxów wyboru magnetometru
+/*//////////////////////////////////////////////////////////////////////////////////////////////////
+void CSfera3DView::OnCheckboxMag1Clicked()
+{
+	m_bRysujMag1 = (m_cbMag1.GetCheck() == BST_CHECKED);
+	Invalidate();
+}
+
+void CSfera3DView::OnCheckboxMag2Clicked()
+{
+	m_bRysujMag2 = (m_cbMag2.GetCheck() == BST_CHECKED);
+	Invalidate();
+}
+
+void CSfera3DView::OnCheckboxMag3Clicked()
+{
+	m_bRysujMag3 = (m_cbMag3.GetCheck() == BST_CHECKED);
+	Invalidate();
+}*/
