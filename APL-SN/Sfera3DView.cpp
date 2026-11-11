@@ -190,32 +190,40 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	kat_obr[1] = m_ptZmianaPozycjiMyszy.x * 0.005f;
 	kat_obr[2] = 0.0f;
 
-	//pocz¹tek wykresu jest indeksem zerowym wektora
-	std::lock_guard<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii);		//w³¹cz ochronê dostêpu do danych 
-	for (uint8_t i = 0; i < 3; i++)
-		wekt_we[i] = getProtokol().m_vDaneTelemetryczne[0].dane[TID_MAGNE1X + i];
-
-	Obrot_wektora(wekt_we, wekt_wy, kat_obr);
-	ptStart.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
-	ptStart.y = (float)(rOkno.bottom / 2) - (fSkala * wekt_wy[1]);
-
-	for (size_t n = 1; n < zRozmiar; n++)
+	//w³¹cz ochronê dostêpu do danych 
+	//std::lock_guard<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii);		
+	std::unique_lock<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii, std::try_to_lock);
+	if (lock.owns_lock())
 	{
+		if (getProtokol().m_vDaneTelemetryczne.size() == 0)
+			return FALSE;
+
+		//pocz¹tek wykresu jest indeksem zerowym wektora
 		for (uint8_t i = 0; i < 3; i++)
-			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu - po dodaniu mutexa chyba ju¿ nie
+			wekt_we[i] = getProtokol().m_vDaneTelemetryczne[0].dane[TID_MAGNE1X + i];
+
 		Obrot_wektora(wekt_we, wekt_wy, kat_obr);
+		ptStart.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
+		ptStart.y = (float)(rOkno.bottom / 2) - (fSkala * wekt_wy[1]);
 
-		ptStop.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
-		ptStop.y = (float)(rOkno.bottom / 2) - (fSkala * wekt_wy[1]);
+		for (size_t n = 1; n < zRozmiar; n++)
+		{
+			for (uint8_t i = 0; i < 3; i++)
+				wekt_we[i] = getProtokol().m_vDaneTelemetryczne[n].dane[TID_MAGNE1X + i];	//zg³asza wyj¹tek: naruszenie zasad dostêpu - po dodaniu mutexa chyba ju¿ nie
+			Obrot_wektora(wekt_we, wekt_wy, kat_obr);
 
-		CComPtr<ID2D1SolidColorBrush> pBrush;
-		fDlugoscWektoraMagn = getProtokol().m_vDaneTelemetryczne[n].dane[TID_DLUG_VMAG1];
-		D2D1_COLOR_F color = UstawKolor(fDlugoscWektoraMagn);
+			ptStop.x = (float)(rOkno.right / 2) + (fSkala * wekt_wy[0]);
+			ptStop.y = (float)(rOkno.bottom / 2) - (fSkala * wekt_wy[1]);
 
-		pRT->CreateSolidColorBrush(color, &pBrush);
-		pRT->DrawLine(ptStart, ptStop, pBrush, 2.0);
-		ptStart.x = ptStop.x;
-		ptStart.y = ptStop.y;		
+			CComPtr<ID2D1SolidColorBrush> pBrush;
+			fDlugoscWektoraMagn = getProtokol().m_vDaneTelemetryczne[n].dane[TID_DLUG_VMAG1];
+			D2D1_COLOR_F color = UstawKolor(fDlugoscWektoraMagn);
+
+			pRT->CreateSolidColorBrush(color, &pBrush);
+			pRT->DrawLine(ptStart, ptStop, pBrush, 2.0);
+			ptStart.x = ptStop.x;
+			ptStart.y = ptStop.y;
+		}
 	}
     return TRUE;
 }
@@ -232,7 +240,7 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 D2D1_COLOR_F CSfera3DView:: UstawKolor(float fD³ugoœæWektora)
 {
 	float r, g, b;
-	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.8f * NOMINALNE_MAGN)/ (1.2f * NOMINALNE_MAGN - 0.8f * NOMINALNE_MAGN);
+	float fDlugoœæWzgledna = (fD³ugoœæWektora  - 0.9f * NOMINALNE_MAGN)/ (1.1f * NOMINALNE_MAGN - 0.9f * NOMINALNE_MAGN);
 	if (fDlugoœæWzgledna > 1.0f)
 		fDlugoœæWzgledna = 1.0f;
 	if (fDlugoœæWzgledna < 0.0f)

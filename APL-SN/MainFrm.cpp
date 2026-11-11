@@ -153,11 +153,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndDlgMagnetometryWidokuSfery.EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndDlgMagnetometryWidokuSfery, AFX_IDW_DOCKBAR_TOP);
 	ShowControlBar(&m_wndDlgMagnetometryWidokuSfery, TRUE, FALSE);
-
-	CRect rect;
-	m_wndDlgMagnetometryWidokuSfery.GetWindowRect(&rect);
-	rect.right = rect.left + 300; // przykładowa szerokość
-	rect.bottom = rect.top + 30;  // przykładowa wysokość
 	RecalcLayout();
 
 	// ustaw menedżera obiektów wizualnych pod kątem rysowania wszystkich elementów interfejsu użytkownika
