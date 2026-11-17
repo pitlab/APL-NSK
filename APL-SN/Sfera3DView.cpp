@@ -191,7 +191,6 @@ LRESULT CSfera3DView::OnDraw2d(WPARAM wParam, LPARAM lParam)
 	kat_obr[2] = 0.0f;
 
 	//w³¹cz ochronê dostêpu do danych 
-	//std::lock_guard<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii);		
 	std::unique_lock<std::mutex> lock(getProtokol().m_mutexDanychTelemetrii, std::try_to_lock);
 	if (lock.owns_lock())
 	{

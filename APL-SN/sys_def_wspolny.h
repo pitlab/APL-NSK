@@ -32,8 +32,8 @@ typedef union 		//unia do konwersji między danymi 32, 16 i 8 bit
 #define INIT_WYK_KAL_WZM_ZYRO	0x00080000	//wykonano kalibrację wzmocnienia żyroskopu w danej osi
 
 #define TESTY		//włacz testowanie algorytmów, można wyłaczyć dla _nieświadowego_ końcowego użytkownika
-#define RAD2DEG				(180/M_PI)
-#define DEG2RAD				(M_PI/180)
+#define RAD2DEG				(180.0f/M_PI)
+#define DEG2RAD				(M_PI/180.0f)
 #define KELVIN				273.15f
 #define AKCEL1G				9.80665f			//przelicznik z [g] na [m/s^2]
 #define NOMINALNE_MAGN		50.582f			//nominalna wartość natężenia pola magnetycznego w Teslach dla Polski centralnej. Źródło: https://www.magnetic-declination.com/ oraz https://www.ncei.noaa.gov/sites/g/files/anmtlf171/files/inline-images/F.jpg

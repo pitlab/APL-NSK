@@ -300,14 +300,19 @@ CKomunikacja::CKomunikacja()
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE1]		= "Param. Strojenia 1";		//wartoœæ parametru stroj¹cego 1
 	m_strNazwyZmiennychTele[TID_PID_STROJENIE2]		= "Param. Strojenia 2";		//wartoœæ parametru stroj¹cego 2
 
-	m_strNazwyZmiennychTele[TID_TOF_ODLEGLOSC]		= "TOF.Odleg³oœæ [m]";		//odelg³oœæ w metrach
+	m_strNazwyZmiennychTele[TID_TOF_ODLEGLOSC]		= "TOF.Odleg³oœæ [m]";		//odleg³oœæ w metrach
 	m_strNazwyZmiennychTele[TID_TOF_STATUS]			= "TOF.Status Pomiaru";		//status pomiaru
-	m_strNazwyZmiennychTele[TID_TOF_NOWY_POMIAR]	= "TOF.Licznik Pomiarów";	//licnzik inkrementowany przy nowym pomiarze
+	m_strNazwyZmiennychTele[TID_TOF_NOWY_POMIAR]	= "TOF.Licznik Pomiarów";	//licznik inkrementowany przy nowym pomiarze
 	m_strNazwyZmiennychTele[TID_TOF_SIGMA]			= "TOF.Odchylenie std.";	//odchylenie standardowe pomiaru
 	m_strNazwyZmiennychTele[TID_TOF_REFLEKT_CELU]	= "TOF.Reflekt.celu";		//reflektancja celu
 	m_strNazwyZmiennychTele[TID_TOF_NATEZENIE_TLA]	= "TOF.Natê¿.t³a";			//poziom natê¿enia t³a
 
-	for (int n = TID_232; n <= TID_255; n++)
+	m_strNazwyZmiennychTele[TID_LIDAR_ODLEGLOSC]	= "Lidar Odleg³oœæ [m]";	//odleg³oœæ mierzona lidarem Banewake [m]
+	m_strNazwyZmiennychTele[TID_LIDAR_NATEZ_SYGN]	= "Lidar Natê¿.Sygna³u";	//natê¿enie sygna³u odbitej plamki w zakresie 0..65535
+	m_strNazwyZmiennychTele[TID_LIDAR_TEMP_CZUJN]	= "Lidar Temp.Czujn [K]";	//temperatura czujnika [K]
+
+
+	for (int n = TID_235; n <= TID_255; n++)
 		m_strNazwyZmiennychTele[n] = "-- jeszcze puste --";
 
 	m_strNazwyZmiennychTele[TID_KALMAN_WYS_X0] = "Kalm.Wys.X[0]";
