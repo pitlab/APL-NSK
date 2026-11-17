@@ -19,7 +19,7 @@ public:
 	static int m_LicznikInstancji;
 	int m_wskaznikInstancji;
 	void UstawTypPolaczenia(uint8_t chTyp) { m_chTypPolaczenia = chTyp; }
-	uint8_t Polacz(CView* pWnd);
+	uint8_t Polacz();
 	uint8_t Rozlacz();
 	void AkceptujPolaczenieETH();
 	void OdebranoDaneETH();

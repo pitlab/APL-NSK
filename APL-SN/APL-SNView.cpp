@@ -1062,6 +1062,8 @@ void CAPLSNView::OnKonfigPort()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczCom()
 {
+	uint8_t cBłąd;
+
 	getKomunikacja().UstawTypPolaczenia(UART);
 	getKomunikacja().UstawNumerPortuUART(m_nNumerPortuCom);
 	getKomunikacja().UstawPredkoscPortuUART(m_nPredkoscPortuCom);
@@ -1072,7 +1074,11 @@ void CAPLSNView::OnPolaczCom()
 	}
 	else
 	{
-		getKomunikacja().Polacz(this);
+		//cBłąd = getKomunikacja().Polacz(this);
+		cBłąd = getKomunikacja().Polacz();
+		if (cBłąd == ERR_CANT_CONNECT)
+			MessageBoxExW(this->m_hWnd, _T("Nie mogę połączyć się z portem. \nSprawdź czy nie jest już połączony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
+
 		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
 		{
 			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;
@@ -1090,6 +1096,8 @@ void CAPLSNView::OnPolaczCom()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CAPLSNView::OnPolaczEth()
 {
+	uint8_t cBłąd;
+
 	getKomunikacja().UstawTypPolaczenia(ETHK);
 	getKomunikacja().UstawNumerPortuETH(m_nNumerPortuEth);
 	getKomunikacja().UstawAdresIP(m_strAdresIP);
@@ -1100,7 +1108,9 @@ void CAPLSNView::OnPolaczEth()
 	}
 	else
 	{
-		getKomunikacja().Polacz(this);
+		cBłąd = getKomunikacja().Polacz();
+		if (cBłąd == ERR_CANT_CONNECT)
+			MessageBoxExW(this->m_hWnd, _T("Nie mogę połączyć się z portem. \nSprawdź czy nie jest już połączony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
 		if (m_bKoniecWatkuOdswiezaniaTelemtrii)
 		{
 			m_bKoniecWatkuOdswiezaniaTelemtrii = FALSE;

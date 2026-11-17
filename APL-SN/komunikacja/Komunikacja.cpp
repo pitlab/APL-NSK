@@ -424,9 +424,9 @@ void CKomunikacja::UstawRodzica(CView* pWnd)
 // Nawi¹zuje po³¹czenia ze znanymi sobie portami komunikacyjnymi
 // zwraca: kod b³êdu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t CKomunikacja::Polacz(CView* pWnd)
+uint8_t CKomunikacja::Polacz()
 {
-	uint8_t chB³¹d = ERR_NOT_CONNECTED;
+	uint8_t cB³¹d = ERR_NOT_CONNECTED;
 	Wron cWron;
 	uint8_t chNazwa[DLUGOSC_NAZWY];
 	int nIndeks = -1;
@@ -435,13 +435,13 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 	switch (m_chTypPolaczenia)
 	{
 	case UART:	
-		chB³¹d = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);
-		if (chB³¹d == ERR_OK)
+		cB³¹d = getProtokol().PolaczPort(UART, m_iNumerPortuUART, m_iPredkoscUART, 0, m_pWnd);
+		if (cB³¹d == ERR_OK)
 		{
 			m_bPolaczonoUart = TRUE;
 			//wyœlij na adres rozg³oszeniowy polecenie pobrania adresów i nazwy BSP
-			chB³¹d = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
-			if (chB³¹d == ERR_OK)
+			cB³¹d = PobierzBSP(&cWron.m_chAdres, chNazwa, &cWron.m_chAdresIP[0]);
+			if (cB³¹d == ERR_OK)
 			{
 				//sprawdŸ czy w roju jest ju¿ ten wron					
 				for (int n = 0; n < m_cRoj.vWron.size(); n++)
@@ -463,9 +463,9 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 					m_cRoj.vWron[nIndeks].m_chPolaczony = UART;
 					UstawAdresWrona(cWron.m_chAdres);	//ustaw adres na potrzeby klasy komunikacji
 				}
-				chB³¹d = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
+				cB³¹d = CzytajOkresTelemetrii(m_cRoj.vWron[nIndeks].m_sOkresTelemetrii, LICZBA_ZMIENNYCH_TELEMETRYCZNYCH);
 
-				chB³¹d = CzytajParametryFFT(&m_chWyk³adnikPotêgi, &m_chRodzajOkna, &m_chAktywneSilniki, &m_chWysterowanieMaxProcent);
+				cB³¹d = CzytajParametryFFT(&m_chWyk³adnikPotêgi, &m_chRodzajOkna, &m_chAktywneSilniki, &m_chWysterowanieMaxProcent);
 
 				SetEvent(m_hZdarzenieZmianaPolaczeniaWrona);		//wygeneruj komunikat o zmianie po³¹czenia			
 			}				
@@ -473,24 +473,24 @@ uint8_t CKomunikacja::Polacz(CView* pWnd)
 		else
 		{
 			m_bPolaczonoUart = FALSE;
-			if (chB³¹d == ERR_CANT_CONNECT)
-				MessageBoxExW(pWnd->m_hWnd, _T("Nie mogê po³¹czyæ siê z portem. \nSprawdŸ czy nie jest ju¿ po³¹czony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
+			//if (cB³¹d == ERR_CANT_CONNECT)
+				//MessageBoxExW(pWnd->m_hWnd, _T("Nie mogê po³¹czyæ siê z portem. \nSprawdŸ czy nie jest ju¿ po³¹czony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);
 		}
 		break;
 
 	case ETHS:	
-		chB³¹d = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
-		m_bPolaczonoEth = (chB³¹d == ERR_OK);
+		cB³¹d = getProtokol().PolaczPort(ETHS, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
+		m_bPolaczonoEth = (cB³¹d == ERR_OK);
 		break;
 
 	case ETHK:
 		m_bPolaczonoEth = FALSE;	//po po³aczeniu zmienna CProtokol::m_bPolaczonoEth bêdzie ustawiona w w¹tku CProtokol::WatekSluchajPortuEth() i bêdzie ustawiona w trakcie odpytania CAPLSNView::OnUpdatePolaczEth
-		chB³¹d = getProtokol().PolaczPort(ETHK, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
+		cB³¹d = getProtokol().PolaczPort(ETHK, m_iNumerPortuETH, 0, m_strAdresIP, m_pWnd);
 		break;
 	
 	default:	break;
 	}
-	return chB³¹d;
+	return cB³¹d;
 }
 
 
