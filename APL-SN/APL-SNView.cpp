@@ -1074,7 +1074,6 @@ void CAPLSNView::OnPolaczCom()
 	}
 	else
 	{
-		//cBłąd = getKomunikacja().Polacz(this);
 		cBłąd = getKomunikacja().Polacz();
 		if (cBłąd == ERR_CANT_CONNECT)
 			MessageBoxExW(this->m_hWnd, _T("Nie mogę połączyć się z portem. \nSprawdź czy nie jest już połączony."), _T("Ojojojoj!"), MB_ICONWARNING, 0);

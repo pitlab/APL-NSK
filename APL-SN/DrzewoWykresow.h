@@ -46,7 +46,7 @@ public:
 	void DodajOsobny();	
 	void UstawDaneNowegoWykresu(stZmienna_t stZmienna) { m_stZmiennaNowegoWykresu = stZmienna; }
 	void UstawKolorWykresu(COLORREF cKolor);
-	D2D1::ColorF KonwertujKolor(COLORREF cKolor);
+	D2D1::ColorF ZmienCOLORREFnaKolorF(COLORREF cKolor);
 	COLORREF ZmienKolorFNaCOLORREF(D2D1::ColorF cKolor);
 	BOOL ZnajdzWykres(HTREEITEM hWykres, int* nGrupa, int* nWykres);
 

@@ -468,7 +468,7 @@ void KonfiguracjaWyresow::OnBnClickedMfccolor()
 	HTREEITEM hWykres = m_cDrzewoWykresow.GetSelectedItem();
 	if (m_cDrzewoWykresow.ZnajdzWykres(hWykres, &nGrupa, &nWykres))
 	{
-		m_cDrzewoWykresow.vGrupaWykresow[nGrupa].vZmienne[nWykres].cKolorD2D1 = m_cDrzewoWykresow.KonwertujKolor(cKolor);
+		m_cDrzewoWykresow.vGrupaWykresow[nGrupa].vZmienne[nWykres].cKolorD2D1 = m_cDrzewoWykresow.ZmienCOLORREFnaKolorF(cKolor);
 	}
 }
 

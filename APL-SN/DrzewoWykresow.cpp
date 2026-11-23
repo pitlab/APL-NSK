@@ -251,7 +251,7 @@ BOOL DrzewoWykresow::ZnajdzWykres(HTREEITEM hWykres, int* nGrupa, int* nWykres)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void DrzewoWykresow::UstawKolorWykresu(COLORREF cKolor)
 {
-	m_cKolorD2D1 = KonwertujKolor(cKolor);		
+	m_cKolorD2D1 = ZmienCOLORREFnaKolorF(cKolor);
 }
 
 
@@ -261,19 +261,22 @@ void DrzewoWykresow::UstawKolorWykresu(COLORREF cKolor)
 // Parametry:  cKolor - kolor wejœciowy COLORREF
 // zwraca: kolor wejœciowy D2D1::ColorF
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-D2D1::ColorF DrzewoWykresow::KonwertujKolor(COLORREF cKolor)
+D2D1::ColorF DrzewoWykresow::ZmienCOLORREFnaKolorF(COLORREF cKolor)
 {
-	return D2D1::ColorF((float)GetRValue(cKolor), (float)GetGValue(cKolor), (float)GetBValue(cKolor), 1.0f);
+	return D2D1::ColorF((float)GetRValue(cKolor)/255.0f, (float)GetGValue(cKolor)/255.0f, (float)GetBValue(cKolor)/255.0f, 1.0f);
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Robi konwersje z COLORREF na D2D1::ColorF
-// Parametry:  cKolor - kolor wejœciowy COLORREF
-// zwraca: kolor wejœciowy D2D1::ColorF
+// Robi konwersje z  D2D1::ColorF na COLORREF
+// Parametry:  cKolor - kolor wejœciowy D2D1::ColorF
+// zwraca: kolor wejœciowy COLORREF
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 COLORREF DrzewoWykresow::ZmienKolorFNaCOLORREF(D2D1::ColorF cKolor)
 {
-	return COLORREF(RGB(cKolor.r, cKolor.g, cKolor.b));
+	uint8_t cR = (uint8_t)(cKolor.r * 255);
+	uint8_t cG = (uint8_t)(cKolor.g * 255);
+	uint8_t cB = (uint8_t)(cKolor.b * 255);
+	return COLORREF(RGB(cR, cG, cB));
 }
